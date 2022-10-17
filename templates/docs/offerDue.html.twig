@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <style>
+        body {
+            width: 230mm;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0;
+            font-size: 12pt;
+            background: rgb(230,230,230);
+        }
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+        .main-page {
+            width: 210mm;
+            min-height: 297mm;
+            height: 100%;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 0.3cm rgba(0,0,0,0.5);
+            font-family: 'Montserrat' !important;
+            line-height: 1.5;
+        }
+        .sub-page {
+            padding: 1cm;
+            height: 100%;
+        }
+        .sub-page h4{
+            text-align: center;
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .main-page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+                font-family: 'Montserrat';
+            }
+        }
+        .other{
+            text-align: left !important;
+        }
+        .sub-page p a{
+            font-weight: bold;
+        }
+        .ol-other li {
+            list-style-type: none;
+            counter-increment: step-counter;
+        }
+
+        .ol-other li:before {
+            content: counter(step-counter) ") ";
+            display: table-cell;
+            padding-right: 0.6em;
+        }
+        .ol-other{
+            padding: 0;
+            margin: 0;
+        }
+        li .ol-other li{
+            margin: 0;
+        }
+        .ol-other > li{
+            display: table;
+            counter-increment: step-counter;
+            margin-bottom: 0.6em;
+        }
+        ul li::before{
+            content: "- ";
+            padding-right: 0.6em;
+            display: table-cell;
+        }
+        li ul li{
+            margin: 0;
+        }
+        ul > li{
+            display: table;
+            counter-increment: step-counter;
+            margin-bottom: 0.6em;
+        }
+    </style>
+</head>
+<body>
+<div class="main-page">
+    <div class="sub-page">
+        <p style="text-align: center;">UMOWA CESJI WIERZYTELNOŚCI Z TYTUŁU UMOWY NAJMU</p>
+        <p style="text-align: center;">zawarta w dniu ………………. w ……………………. (zwana dalej „Umową”) pomiędzy:</p>
+        <br>
+        <p>…………………………………… (imię i nazwisko/nazwa), ……………………………………….…………………………………. (adres miejsca zamieszkania/siedziby), ……………………… (PESEL/NIP), zarejestrowaną w Rejestrze Przedsiębiorców Krajowego Rejestru Sądowego pod numerem: ……………………. (w przypadku spółek osobowych lub kapitałowych)/ prowadzącą jednoosobową działalność gospodarczą pod firmą: ………………………………………………………….., zarejestrowaną w CEIDG (w przypadku jednoosobowych przedsiębiorców)</p>
+        <br>
+        <p>zwaną dalej „Wynajmującym”</p>
+        <br>
+        <p>a</p>
+        <br>
+        <p>…………………………………… (imię i nazwisko/nazwa), ……………………………………….…………………………………. (adres miejsca zamieszkania/siedziby), ……………………… (PESEL/NIP), zarejestrowaną w Rejestrze Przedsiębiorców Krajowego Rejestru Sądowego pod numerem: ……………………. (w przypadku spółek osobowych lub kapitałowych)/ prowadzącą jednoosobową działalność gospodarczą pod firmą: ………………………………………………………….., zarejestrowaną w CEIDG (w przypadku jednoosobowych przedsiębiorców)</p>
+        <br>
+        <p>zwaną dalej „Inwestorem”</p>
+        <br>
+        <p>zwanymi dalej łącznie „Stronami”</p>
+        <br>
+        <h4>§ 1</h4>
+        <h4>Oświadczenia Stron</h4>
+        <ol>
+            <li>Wynajmujący oświadcza, że w dniu ………………… zawarł z
+                {{ tenantData }} (dane najemcy nieruchomości – imię i nazwisko/nazwa, adres miejsca zamieszkania/siedziby, PESEL/NIP), zwanym dalej „Najemcą”, Umowę Najmu prywatnego/instytucjonalnego, na podstawie której oddał Najemcy do używania budynek mieszkalny/lokal mieszkalny/lokal użytkowy na okres do dnia ……………………, za zapłatą comiesięcznego czynszu w wysokości ………… zł (słownie: ………………………………………………………………… złotych).</li>
+            <li>Inwestor oświadcza, że zapoznał się z treścią umowy najmu przed zawarciem Umowy.</li>
+            <li>Wynajmujący oświadcza, że:
+                <ol type="a">
+                    <li>wierzytelności będące przedmiotem Umowy nie były przedmiotem cesji dokonanej na rzecz innej osoby trzeciej;
+                    </li>
+                    <li>wierzytelności wynikające z umowy najmu, obejmujące zaległy czynsz najmu/inne opłaty, istnieją, są wymagalne i nieprzedawnione, zaś wierzytelności z tytułu przyszłych należności z czynszu najmu/innych opłat powstaną w przyszłości;</li>
+                    <li>postanowienia Umowy Najmu zawartej z Najemcą nie wyłączają ani nie ograniczają możliwości zbycia wierzytelności;</li>
+                    <li>w dniu zawarcia Umowy nie posiada względem Najemcy żadnych zobowiązań, które mogłyby być przedmiotem wzajemnych potrąceń;</li>
+                    <li>wierzytelności wynikające z Umowy Najmu nie są przedmiotem postępowania sądowego, egzekucji komorniczej, postępowania likwidacyjnego, upadłościowego ani restrukturyzacyjnego.</li>
+                </ol>
+            </li>
+            <li>Inwestor oświadcza, że posiada środki finansowe niezbędne do wykonania zobowiązań wynikających z Umowy. </li>
+            <li>Umowa zostaje zawarta przy wykorzystaniu funkcjonalności aplikacji FLATAPP (dalej zwanej Aplikacją), której operatorem jest INSIDE PARK APLIKACJA spółka z ograniczoną odpowiedzialnością, z siedzibą w Toruniu (87-100), przy ul. Prostej 12-14/1, wpisana do Krajowego Rejestru Sądowego pod nr 0000754803, NIP: 7123376120 (dalej jako Operator).</li>
+        </ol>
+        <br>
+        <h4>§ 2</h4>
+        <h4>Przedmiot Umowy</h4>
+        <ol>
+            <li>Strony zgodnie oświadczają, iż Wynajmujący zbywa na rzecz Inwestora wierzytelności, których podstawą jest umowa najmu zawarta z Najemcą, tj.:
+                <ol type="a">
+                    <li>należności z tytułu zaległego czynszu najmu w wysokości …………… zł (słownie: ……………………………………………………. złotych);</li>
+                    <li>wierzytelności z tytułu przyszłych należności z czynszu najmu za okres do dnia …………………………., w wysokości ………..…… zł (słownie: ……………………………………………………. złotych);</li>
+                    <li>należności z tytułu zaległych opłat (prąd, gaz, woda) w łącznej wysokości ……………… zł (słownie: ……………………………………………………. złotych);</li>
+                    <li>wierzytelności z tytułu przyszłych należności z opłat (prąd, gaz, woda) za okres do dnia …………………………., w wysokości ………..…… zł (słownie: ……………………………………………………. złotych);</li>
+                    <li>przyszłe roszczenia przeciwko Najemcy o naprawienie szkody z powodu uszkodzenia lub pogorszenia przedmiotu najmu, zwane dalej „Wierzytelnościami”,<br>zaś Inwestor nabywa Wierzytelności za kwotę ………..…… zł (słownie: ……………………………………………………. złotych).</li>
+                </ol>
+            </li>
+            <li style="background-color: yellow;">Szczegółowy wykaz Wierzytelności, ze wskazaniem kwot należności i terminów ich płatności, stanowi Załącznik nr 1 do Umowy.</li>
+            <li style="background-color: yellow;">Przeniesienie Wierzytelności na rzecz Inwestora nastąpi z chwilą zawarcia Umowy.</li>
+        </ol>
+        <br>
+        <h4>§ 3</h4>
+        <h4>Zapłata ceny przez Inwestora</h4>
+        <ol>
+            <li>Inwestor zapłaci na rzecz Wynajmującego cenę nabycia Wierzytelności w kwocie ………..…… zł (słownie: ……………………………………………………. złotych) netto, powiększonej o właściwą stawkę podatku VAT (w przypadku podmiotów będących czynnymi podatnikami podatku VAT). </li>
+            <li>Zapłata ceny nastąpi jednorazowo, nie później niż do dnia ………………………./ zapłata ceny nastąpi w ratach, płatnych do ….. dnia każdego miesiąca z góry.</li>
+            <li>Płatność będzie następować na rachunek bankowy Wynajmującego o numerze …………………………………………………………………………..</li>
+            <li style="background-color: yellow;">W przypadku jakiegokolwiek opóźnienia w płatności ceny, Wynajmujący będzie uprawniony do naliczania ustawowych odsetek za opóźnienie.</li>
+            <li>niezbędnej staranności, by wszelkie rozliczenia ze Stronami Umowy (po potrąceniu wynagrodzenia zgodnie z wiążącym cennikiem ustalonym w Aplikacji), następowały w terminie 7 dni od dnia zarachowania płatności na rachunku Operatora. </li>
+        </ol>
+        <br>
+        <h4>§ 4</h4>
+        <h4>Zawiadomienie Najemcy o przelewie Wierzytelności</h4>
+        <ol>
+            <li>Wynajmujący zobowiązany jest do poinformowania Najemcy o przelewie Wierzytelności w terminie 7 dni od dnia zawarcia Umowy. </li>
+            <li>Wzór zawiadomienia Najemcy o przelewie Wierzytelności stanowi Załącznik nr 2 do Umowy. Zawiadomienie może nastąpić przy wykorzystaniu powiadomień Aplikacji.</li>
+            <li>W przypadku zapłaty przez Najemcę Wierzytelności na rzecz Wynajmującego zamiast na rzecz Inwestora, Wynajmujący  zobowiązuje  się  do  niezwłocznego, nie później niż w terminie 3 dni od dnia otrzymania środków,  przekazania  otrzymanej  kwoty  na rachunek bankowy Inwestora o numerze ……………………………………………….</li>
+        </ol>
+        <br>
+        <h4>§ 5</h4>
+        <h4>Prawa i obowiązki Stron związane z Umową Najmu</h4>
+        <ol>
+            <li>Przeniesienie Wierzytelności na rzecz Inwestora nie spowoduje wygaśnięcia stosunku najmu, istniejącego między Wynajmującym a Najemcą.</li>
+            <li>Wszystkie obowiązki związane z wykonywaniem Umowy Najmu pozostają po stronie Wynajmującego.</li>
+            <li style="background-color: yellow;">Czynności prawne zmierzające do wygaśnięcia stosunku najmu z Najemcą, w tym złożenie oświadczenia o wypowiedzeniu umowy najmu, mogą zostać dokonane wyłącznie przez Wynajmującego. W przypadku cesji wierzytelności przyszłych, doprowadzenie do rozwiązania Umowy Najmu przez Wynajmującego wymaga pisemnej zgody Inwestora (pod rygorem nieważności). </li>
+        </ol>
+        <br>
+        <h4>§ 6</h4>
+        <h4>Postanowienia końcowe</h4>
+        <ol>
+            <li>Umowa wchodzi w życie z dniem jej podpisania przez Strony.</li>
+            <li>Wszelkie zmiany do Umowy wymagają formy dokumentowej. Zmiana może nastąpić przy użyciu Aplikacji.</li>
+            <li>We wszelkich sprawach nieuregulowanych w Umowie znajdą zastosowanie przepisy powszechnie obowiązującego polskiego prawa, w szczególności Kodeksu cywilnego.</li>
+            <li>Umowa została sporządzona w 2 jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.</li>
+        </ol>
+        <br>
+        <br>
+        <p>Załączniki<ul>
+            <li>Załącznik nr 1 - szczegółowy wykaz Wierzytelności</li>
+            <li>Załącznik nr 2 – wzór zawiadomienia Najemcy o przelewie Wierzytelności</li>
+        </ul></p>
+        <br>
+        <br>
+        <p>…………………………..<br>Wynajmujący</p>
+        <br>
+        <p>…………………………..<br>Inwestor</p>
+    </div>
+</div>
+</body>
+</html>
