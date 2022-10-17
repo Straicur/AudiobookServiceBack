@@ -3,14 +3,12 @@
 namespace App\Tests;
 
 use App\Entity\AuthenticationToken;
-use App\Entity\TenzieResult;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\RoleRepository;
-use App\Repository\TenzieResultRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\ValueGenerator\AuthTokenGenerator;
@@ -85,20 +83,5 @@ class DatabaseMockManager
         $authenticationTokenRepository->add($authenticationToken);
 
         return $authenticationTokenRepository->findOneBy(["id" => $authenticationToken->getId()]);
-    }
-
-    public function testFunc_addTenzieResult(User $user, int $level, string $title, string $time, bool $deleted = false): TenzieResult
-    {
-        $tenzieResultRepository = $this->getService(TenzieResultRepository::class);
-
-        $newTenzieResult = new TenzieResult($user, $title, $level, $time);
-
-        if ($deleted) {
-            $newTenzieResult->setDeleted(true);
-        }
-
-        $tenzieResultRepository->add($newTenzieResult);
-
-        return $newTenzieResult;
     }
 }
