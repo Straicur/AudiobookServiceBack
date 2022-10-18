@@ -53,6 +53,7 @@ class AuthorizationController extends AbstractController
      *
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Post(
         description: "Method used to authorize user credentials. Return authorized token",
         security: [],

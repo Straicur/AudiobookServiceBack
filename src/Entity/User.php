@@ -36,13 +36,17 @@ class User
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
     private Collection $roles;
 
-    public function __construct()
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
+    private MyList $myList;
+
+    public function __construct(MyList $myList)
     {
         $this->dateCreate = new \DateTime("now");
         $this->active = true;
         $this->banned = false;
         $this->userInformation = null;
         $this->roles = new ArrayCollection();
+        $this->myList = $myList;
     }
 
     /**
@@ -178,6 +182,23 @@ class User
     public function removeRole(Role $role): self
     {
         $this->roles->removeElement($role);
+
+        return $this;
+    }
+
+    public function getMyList(): MyList
+    {
+        return $this->myList;
+    }
+
+    public function setMyList(MyList $myList): self
+    {
+        // set the owning side of the relation if necessary
+        if ($myList->getUser() !== $this) {
+            $myList->setUser($this);
+        }
+
+        $this->myList = $myList;
 
         return $this;
     }
