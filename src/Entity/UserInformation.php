@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enums\UserEvidenceType;
 use App\Repository\UserInformationRepository;
 use Doctrine\ORM\Mapping as ORM;
 

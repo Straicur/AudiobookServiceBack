@@ -24,7 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[OA\Tag(name: "Register")]
 class RegisterController extends AbstractController
 {
-    //Dodający - ma dodać plus daje mu range Guest, po czym wysyłam email z linkiem(generacja jak password że trzymam w hashu)
+    //Dodający - ma dodać plus daje mu range Guest, po czym wysyłam email z linkiem(generacja jak password że trzymam w hashu) //dodaj mu też listę od razu
     //Odbierający na getcie i on zczytuje(szuka czy jest aktywny i czy nie ma już odpowiedniej rangi),dezaktywuje i ustawia rangę User
     //Wysyłający jeszcze raz, a reszte dezaktywuje
 }
