@@ -24,13 +24,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * CreateUserCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:users:create',
+    name: 'audiobookservice:admin:create',
     description: 'Add user to service',
 )]
-class CreateUserCommand extends Command
+class AddAdminCommand extends Command
 {
     private UserRepository $userRepository;
 
@@ -45,12 +44,12 @@ class CreateUserCommand extends Command
     private MyListRepository $myListRepository;
 
     public function __construct(
-        UserRepository            $userRepository,
-        RoleRepository            $roleRepository,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository    $userPasswordRepository,
-        UserSettingsRepository    $userSettingsRepository,
-        MyListRepository          $myListRepository,
+        UserRepository              $userRepository,
+        RoleRepository              $roleRepository,
+        UserInformationRepository   $userInformationRepository,
+        UserPasswordRepository      $userPasswordRepository,
+        UserSettingsRepository      $userSettingsRepository,
+        MyListRepository      $myListRepository,
     )
     {
         $this->userRepository = $userRepository;
@@ -70,7 +69,6 @@ class CreateUserCommand extends Command
         $this->addArgument('email', InputArgument::REQUIRED, 'User e-mail address');
         $this->addArgument('phone', InputArgument::REQUIRED, 'User phone number');
         $this->addArgument('password', InputArgument::REQUIRED, 'User password');
-        $this->addArgument('roles', InputArgument::IS_ARRAY, 'User roles');
     }
 
     /**
@@ -85,7 +83,6 @@ class CreateUserCommand extends Command
         $email = $input->getArgument("email");
         $phone = $input->getArgument("phone");
         $password = $input->getArgument("password");
-        $roles = $input->getArgument("roles");
 
         $passwordGenerator = new PasswordHashGenerator($password);
 
@@ -95,18 +92,26 @@ class CreateUserCommand extends Command
             "E-mail:       " . $email,
             "Phone number: " . $phone,
             "Password:     " . str_repeat("*", strlen($password)),
-            "System roles: " . implode(",", $roles),
         ]);
 
         $userEntity = new User();
 
         $this->userRepository->add($userEntity, false);
 
+        $roles = ["Administrator", "User", "Guest"];
+
         $roleEntities = $this->roleRepository->findBy([
             "name" => $roles
         ]);
 
+        $isAdministrator = false;
+
         foreach ($roleEntities as $roleEntity) {
+
+            if ($roleEntity->getName() == "Administrator") {
+                $isAdministrator = true;
+            }
+
             $userEntity->addRole($roleEntity);
         }
 
@@ -119,6 +124,10 @@ class CreateUserCommand extends Command
         $this->userInformationRepository->add($userInformationEntity, false);
 
         $userSettingsEntity = new UserSettings($userEntity);
+
+        if($isAdministrator){
+            $userSettingsEntity->setAdmin(true);
+        }
 
         $this->userSettingsRepository->add($userSettingsEntity, false);
 

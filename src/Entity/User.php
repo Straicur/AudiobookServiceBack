@@ -37,16 +37,16 @@ class User
     private Collection $roles;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
-    private MyList $myList;
+    private ?MyList $myList;
 
-    public function __construct(MyList $myList)
+    public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
         $this->active = true;
         $this->banned = false;
         $this->userInformation = null;
         $this->roles = new ArrayCollection();
-        $this->myList = $myList;
+        $this->myList = null;
     }
 
     /**
@@ -186,7 +186,7 @@ class User
         return $this;
     }
 
-    public function getMyList(): MyList
+    public function getMyList(): ?MyList
     {
         return $this->myList;
     }
