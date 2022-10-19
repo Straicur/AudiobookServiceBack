@@ -25,7 +25,7 @@ class AudiobookCategory
     private ?AudiobookCategory $parent = null;
 
     #[ORM\ManyToMany(targetEntity: Audiobook::class, mappedBy: 'categories')]
-    private ArrayCollection $audiobooks;
+    private Collection $audiobooks;
 
     /**
      * @param string $name

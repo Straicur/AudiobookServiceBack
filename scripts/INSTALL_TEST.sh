@@ -17,4 +17,7 @@ for i in "${roles[@]}"
 do
   APP_ENV=test symfony console audiobookservice:roles:add "$i"
 done
-  APP_ENV=test  symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian11@gmial.com" "980921223" "zaq12wsx" "Administrator" "User"
+
+  APP_ENV=test   symfony console audiobookservice:institution:add "audioInstitution@gmial.com" "980921223" 4 20
+  APP_ENV=test   symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audio.com" "980921223" "zaq12wsx"
+  APP_ENV=test   symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian11@gmial.com" "980921223" "zaq12wsx" "User"

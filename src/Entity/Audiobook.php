@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +20,7 @@ class Audiobook
     private Uuid $id;
 
     #[ORM\ManyToMany(targetEntity: AudiobookCategory::class, inversedBy: 'audiobooks')]
-    private ArrayCollection $categories;
+    private Collection $categories;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $title;
@@ -53,7 +54,6 @@ class Audiobook
 
     #[ORM\Column(type: 'integer')]
     private int $age;
-    // todo tu odpowiedni enum z przedziałami
 
     /**
      * @param string $title
@@ -63,11 +63,11 @@ class Audiobook
      * @param \DateTime $year
      * @param string $duration
      * @param string $size
-     * @param int $parts
+     * @param AudiobookAgeRange $parts
      * @param string $description
      * @param int $age
      */
-    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, int $age)
+    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, AudiobookAgeRange $parts, string $description, int $age)
     {
         $this->title = $title;
         $this->author = $author;
@@ -76,7 +76,7 @@ class Audiobook
         $this->year = $year;
         $this->duration = $duration;
         $this->size = $size;
-        $this->parts = $parts;
+        $this->parts = $parts->value;
         $this->description = $description;
         $this->age = $age;
         $this->categories = new ArrayCollection();
@@ -231,14 +231,20 @@ class Audiobook
         return $this;
     }
 
-    public function getAge(): int
+    public function getAge(): AudiobookAgeRange
     {
-        return $this->age;
+        return match ($this->age) {
+            1 => AudiobookAgeRange::FROM3TO7,
+            2 => AudiobookAgeRange::FROM7TO12,
+            3 => AudiobookAgeRange::FROM12TO16,
+            4 => AudiobookAgeRange::FROM16TO18,
+            5 => AudiobookAgeRange::ABOVE18,
+        };
     }
 
-    public function setAge(int $age): self
+    public function setAge(AudiobookAgeRange $age): self
     {
-        $this->age = $age;
+        $this->age = $age->value;
 
         return $this;
     }

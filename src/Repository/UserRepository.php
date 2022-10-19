@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -49,6 +50,23 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param Role $role
+     * @return User[]
+     */
+    public function getUsersByRole(Role $role): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.roles', 'r')
+            ->where('r.id = :role')
+            ->andWhere('u.banned = false')
+            ->setParameter('role', $role->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

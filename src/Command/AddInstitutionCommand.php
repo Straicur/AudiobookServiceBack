@@ -2,12 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\Institution;
 use App\Exception\DataNotFoundException;
-use App\Repository\RoleRepository;
-use App\Repository\UserInformationRepository;
-use App\Repository\UserPasswordRepository;
-use App\Repository\UserRepository;
-use App\Repository\UserSettingsRepository;
+use App\Repository\InstitutionRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,52 +13,32 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * CreateUserCommand
+ * AddInstitutionCommand
  *
  */
 #[AsCommand(
-    name: 'audiobookservice:users:create',
+    name: 'audiobookservice:institution:add',
     description: 'Add user to service',
 )]
 class AddInstitutionCommand extends Command
 {
-    private UserRepository $userRepository;
-
-    private RoleRepository $roleRepository;
-
-    private UserInformationRepository $userInformationRepository;
-
-    private UserPasswordRepository $userPasswordRepository;
-
-    private UserSettingsRepository $userSettingsRepository;
-
+    private InstitutionRepository $institutionRepository;
 
     public function __construct(
-        UserRepository            $userRepository,
-        RoleRepository            $roleRepository,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository    $userPasswordRepository,
-        UserSettingsRepository    $userSettingsRepository,
-
+        InstitutionRepository $institutionRepository,
     )
     {
-        $this->userRepository = $userRepository;
-        $this->userPasswordRepository = $userPasswordRepository;
-        $this->roleRepository = $roleRepository;
-        $this->userInformationRepository = $userInformationRepository;
-        $this->userSettingsRepository = $userSettingsRepository;
+        $this->institutionRepository = $institutionRepository;
 
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this->addArgument('firstname', InputArgument::REQUIRED, 'User firstname');
-        $this->addArgument('lastname', InputArgument::REQUIRED, 'User lastname');
-        $this->addArgument('email', InputArgument::REQUIRED, 'User e-mail address');
-        $this->addArgument('phone', InputArgument::REQUIRED, 'User phone number');
-        $this->addArgument('password', InputArgument::REQUIRED, 'User password');
-        $this->addArgument('roles', InputArgument::IS_ARRAY, 'User roles');
+        $this->addArgument('email', InputArgument::REQUIRED, 'Institution firstname');
+        $this->addArgument('phoneNumber', InputArgument::REQUIRED, 'Institution phoneNumber');
+        $this->addArgument('maxAdmins', InputArgument::REQUIRED, 'Institution max number of admins');
+        $this->addArgument('maxUsers', InputArgument::REQUIRED, 'Institution max number of users');
     }
 
     /**
@@ -69,6 +46,28 @@ class AddInstitutionCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+
+        $email = $input->getArgument("email");
+        $phoneNumber = $input->getArgument("phoneNumber");
+        $maxAdmins = $input->getArgument("maxAdmins");
+        $maxUsers = $input->getArgument("maxUsers");
+
+
+        $io->text([
+            "Email:        " . $email,
+            "PhoneNumber:  " . $phoneNumber,
+            "MaxAdmins:    " . $maxAdmins,
+            "MaxUsers:     " . $maxUsers,
+        ]);
+
+        if (count($this->institutionRepository->findAll()) > 0)
+        {
+            return Command::FAILURE;
+        }
+
+        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"],$email,$phoneNumber,$maxAdmins,$maxUsers));
+
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');
 

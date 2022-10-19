@@ -8,6 +8,7 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
+use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
@@ -23,10 +24,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * CreateUserCommand
+ * AddAdminCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:admin:create',
+    name: 'audiobookservice:admin:add',
     description: 'Add user to service',
 )]
 class AddAdminCommand extends Command
@@ -43,13 +44,16 @@ class AddAdminCommand extends Command
 
     private MyListRepository $myListRepository;
 
+    private InstitutionRepository $institutionRepository;
+
     public function __construct(
-        UserRepository              $userRepository,
-        RoleRepository              $roleRepository,
-        UserInformationRepository   $userInformationRepository,
-        UserPasswordRepository      $userPasswordRepository,
-        UserSettingsRepository      $userSettingsRepository,
-        MyListRepository      $myListRepository,
+        UserRepository            $userRepository,
+        RoleRepository            $roleRepository,
+        UserInformationRepository $userInformationRepository,
+        UserPasswordRepository    $userPasswordRepository,
+        UserSettingsRepository    $userSettingsRepository,
+        MyListRepository          $myListRepository,
+        InstitutionRepository     $institutionRepository,
     )
     {
         $this->userRepository = $userRepository;
@@ -58,6 +62,7 @@ class AddAdminCommand extends Command
         $this->userInformationRepository = $userInformationRepository;
         $this->userSettingsRepository = $userSettingsRepository;
         $this->myListRepository = $myListRepository;
+        $this->institutionRepository = $institutionRepository;
 
         parent::__construct();
     }
@@ -83,6 +88,20 @@ class AddAdminCommand extends Command
         $email = $input->getArgument("email");
         $phone = $input->getArgument("phone");
         $password = $input->getArgument("password");
+
+        $institution = $this->institutionRepository->findOneBy([
+            "name"=>$_ENV["INSTITUTION_NAME"]
+        ]);
+
+        $administrator = $this->roleRepository->findOneBy([
+            "name" => "Administrator"
+        ]);
+
+        if($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator)))
+        {
+            $io->info("To much admins");
+            return Command::FAILURE;
+        }
 
         $passwordGenerator = new PasswordHashGenerator($password);
 
@@ -125,7 +144,7 @@ class AddAdminCommand extends Command
 
         $userSettingsEntity = new UserSettings($userEntity);
 
-        if($isAdministrator){
+        if ($isAdministrator) {
             $userSettingsEntity->setAdmin(true);
         }
 

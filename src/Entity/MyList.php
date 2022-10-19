@@ -19,7 +19,7 @@ class MyList
     private Uuid $id;
 
     #[ORM\ManyToMany(targetEntity: Audiobook::class)]
-    private ArrayCollection $audiobooks;
+    private Collection $audiobooks;
 
     #[ORM\OneToOne(inversedBy: 'myList', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
