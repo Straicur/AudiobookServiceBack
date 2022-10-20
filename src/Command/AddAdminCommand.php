@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\MyList;
+use App\Entity\ProposedAudiobooks;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
@@ -10,6 +11,7 @@ use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
+use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
@@ -46,6 +48,8 @@ class AddAdminCommand extends Command
 
     private InstitutionRepository $institutionRepository;
 
+    private ProposedAudiobooksRepository $proposedAudiobooksRepository;
+
     public function __construct(
         UserRepository            $userRepository,
         RoleRepository            $roleRepository,
@@ -54,6 +58,7 @@ class AddAdminCommand extends Command
         UserSettingsRepository    $userSettingsRepository,
         MyListRepository          $myListRepository,
         InstitutionRepository     $institutionRepository,
+        ProposedAudiobooksRepository $proposedAudiobooksRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -63,6 +68,7 @@ class AddAdminCommand extends Command
         $this->userSettingsRepository = $userSettingsRepository;
         $this->myListRepository = $myListRepository;
         $this->institutionRepository = $institutionRepository;
+        $this->proposedAudiobooksRepository = $proposedAudiobooksRepository;
 
         parent::__construct();
     }
@@ -137,6 +143,10 @@ class AddAdminCommand extends Command
         $userMyList = new MyList($userEntity);
 
         $this->myListRepository->add($userMyList);
+
+        $userProposedAudiobooks = new ProposedAudiobooks($userEntity);
+
+        $this->proposedAudiobooksRepository->add($userProposedAudiobooks);
 
         $userInformationEntity = new UserInformation($userEntity, $email, $phone, $firstname, $lastname);
 

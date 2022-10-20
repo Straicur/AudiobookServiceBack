@@ -27,12 +27,16 @@ class AudiobookCategory
     #[ORM\ManyToMany(targetEntity: Audiobook::class, mappedBy: 'categories')]
     private Collection $audiobooks;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $active;
+
     /**
      * @param string $name
      */
     public function __construct(string $name)
     {
         $this->name = $name;
+        $this->active = false;
         $this->audiobooks = new ArrayCollection();
     }
 
@@ -66,36 +70,6 @@ class AudiobookCategory
     }
 
     /**
-     * @return Collection<int, self>
-     */
-    public function getAudiobookCategories(): Collection
-    {
-        return $this->audiobookCategories;
-    }
-
-    public function addAudiobookCategory(self $audiobookCategory): self
-    {
-        if (!$this->audiobookCategories->contains($audiobookCategory)) {
-            $this->audiobookCategories[] = $audiobookCategory;
-            $audiobookCategory->setParent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAudiobookCategory(self $audiobookCategory): self
-    {
-        if ($this->audiobookCategories->removeElement($audiobookCategory)) {
-            // set the owning side to null (unless already changed)
-            if ($audiobookCategory->getParent() === $this) {
-                $audiobookCategory->setParent(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Audiobook>
      */
     public function getAudiobooks(): Collection
@@ -118,6 +92,18 @@ class AudiobookCategory
         if ($this->audiobooks->removeElement($audiobook)) {
             $audiobook->removeCategory($this);
         }
+
+        return $this;
+    }
+
+    public function getActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }

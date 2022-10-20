@@ -39,6 +39,9 @@ class User
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
     private ?MyList $myList;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist', 'remove'])]
+    private ?ProposedAudiobooks $proposedAudiobooks;
+
     public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
@@ -199,6 +202,23 @@ class User
         }
 
         $this->myList = $myList;
+
+        return $this;
+    }
+
+    public function getProposedAudiobooks(): ?ProposedAudiobooks
+    {
+        return $this->proposedAudiobooks;
+    }
+
+    public function setProposedAudiobooks(ProposedAudiobooks $proposedAudiobooks): self
+    {
+        // set the owning side of the relation if necessary
+        if ($proposedAudiobooks->getUser() !== $this) {
+            $proposedAudiobooks->setUser($this);
+        }
+
+        $this->proposedAudiobooks = $proposedAudiobooks;
 
         return $this;
     }

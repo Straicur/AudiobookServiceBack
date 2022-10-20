@@ -3,12 +3,14 @@
 namespace App\Command;
 
 use App\Entity\MyList;
+use App\Entity\ProposedAudiobooks;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
 use App\Repository\MyListRepository;
+use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
@@ -44,13 +46,16 @@ class CreateUserCommand extends Command
 
     private MyListRepository $myListRepository;
 
+    private ProposedAudiobooksRepository $proposedAudiobooksRepository;
+
     public function __construct(
-        UserRepository            $userRepository,
-        RoleRepository            $roleRepository,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository    $userPasswordRepository,
-        UserSettingsRepository    $userSettingsRepository,
-        MyListRepository          $myListRepository,
+        UserRepository               $userRepository,
+        RoleRepository               $roleRepository,
+        UserInformationRepository    $userInformationRepository,
+        UserPasswordRepository       $userPasswordRepository,
+        UserSettingsRepository       $userSettingsRepository,
+        MyListRepository             $myListRepository,
+        ProposedAudiobooksRepository $proposedAudiobooksRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -59,6 +64,7 @@ class CreateUserCommand extends Command
         $this->userInformationRepository = $userInformationRepository;
         $this->userSettingsRepository = $userSettingsRepository;
         $this->myListRepository = $myListRepository;
+        $this->proposedAudiobooksRepository = $proposedAudiobooksRepository;
 
         parent::__construct();
     }
@@ -113,6 +119,10 @@ class CreateUserCommand extends Command
         $userMyList = new MyList($userEntity);
 
         $this->myListRepository->add($userMyList);
+
+        $userProposedAudiobooks = new ProposedAudiobooks($userEntity);
+
+        $this->proposedAudiobooksRepository->add($userProposedAudiobooks);
 
         $userInformationEntity = new UserInformation($userEntity, $email, $phone, $firstname, $lastname);
 
