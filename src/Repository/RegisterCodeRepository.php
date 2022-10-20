@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\AuthenticationToken;
 use App\Entity\RegisterCode;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -49,6 +51,19 @@ class RegisterCodeRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param User $user
+     * @return void
+     */
+    public function setCodesToNotActive(User $user):void{
+        $qb = $this->createQueryBuilder('rc')
+            ->set("rc.active","false")
+            ->leftJoin('rc.user', 'u')
+            ->where("u.id = :user")
+            ->setParameter("user", $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+    }
 //    /**
 //     * @return RegisterCode[] Returns an array of RegisterCode objects
 //     */

@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Annotation\AuthValidation;
-use App\Entity\AuthenticationToken;
+use App\Entity\MyList;
+use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
@@ -14,16 +14,17 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Query\RegisterConfirmSendQuery;
 use App\Query\RegisterQuery;
-use App\Repository\AuthenticationTokenRepository;
+use App\Repository\InstitutionRepository;
+use App\Repository\MyListRepository;
+use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
-use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
-use App\ValueGenerator\AuthTokenGenerator;
+use App\ValueGenerator\RegisterCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -51,11 +52,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "Register")]
 class RegisterController extends AbstractController
 {
-    //Dodający - ma dodać plus daje mu range Guest, po czym wysyłam email z linkiem(generacja jak password że trzymam w hashu)
-    // //dodaj mu też listę od razu i jeszcze sprawdzenie czy w instytucji nie ma już odpowiednich danych
-
-    //Odbierający na getcie i on zczytuje(szuka czy jest aktywny i czy nie ma już odpowiedniej rangi),dezaktywuje i ustawia rangę User
-    //Wysyłający jeszcze raz, a reszte dezaktywuje
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestServiceInterface
@@ -65,6 +61,9 @@ class RegisterController extends AbstractController
      * @param RegisterCodeRepository $registerCodeRepository
      * @param MailerInterface $mailer
      * @param RoleRepository $roleRepository
+     * @param MyListRepository $myListRepository
+     * @param ProposedAudiobooksRepository $proposedAudiobooksRepository
+     * @param InstitutionRepository $institutionRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -89,67 +88,93 @@ class RegisterController extends AbstractController
         ]
     )]
     public function register(
-        Request                   $request,
-        RequestServiceInterface   $requestServiceInterface,
-        UserInformationRepository $userInformationRepository,
-        UserRepository            $userRepository,
-        LoggerInterface           $endpointLogger,
-        RegisterCodeRepository    $registerCodeRepository,
-        MailerInterface           $mailer,
-        RoleRepository            $roleRepository
+        Request                      $request,
+        RequestServiceInterface      $requestServiceInterface,
+        UserInformationRepository    $userInformationRepository,
+        UserRepository               $userRepository,
+        LoggerInterface              $endpointLogger,
+        RegisterCodeRepository       $registerCodeRepository,
+        MailerInterface              $mailer,
+        RoleRepository               $roleRepository,
+        MyListRepository             $myListRepository,
+        ProposedAudiobooksRepository $proposedAudiobooksRepository,
+        InstitutionRepository $institutionRepository,
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
 
-//            $duplicateUser = $userInformationRepository->findOneBy([
-//                "email" => $registerQuery->getEmail()
-//            ]);
-//
-//            if ($duplicateUser != null) {
-//                $endpointLogger->error("Email already exists");
-//                throw new DataNotFoundException(["register.put.invalid.email"]);
-//            }
-//
-//            $newUser = new User();
-//
-//            $newUser->setUserInformation(new UserInformation(
-//                $newUser,
-//                $registerQuery->getEmail(),
-//                $registerQuery->getPhoneNumber(),
-//                $registerQuery->getFirstname(),
-//                $registerQuery->getLastname()
-//            ));
-//
-//            $userRole = $roleRepository->findOneBy([
-//                "name" => "Guest"
-//            ]);
-//
-//            $newUser->addRole($userRole);
-//            $newUser->setActive(true);
-//
-//            $userRepository->add($newUser);
-//
-//            $registerCodeGenerator = new RegisterCodeGenerator();
-//
-//            $registerCode = new RegisterCode($newUser, $registerCodeGenerator);
-//
-//            $registerCodeRepository->add($registerCode);
-//
-//            if ($_ENV["APP_ENV"] != "test") {
-//                $email = (new TemplatedEmail())
-//                    ->from('mosinskidamian12@gmail.com')
-//                    ->to($newUser->getUserInformation()->getEmail())
-//                    ->subject('Kod aktywacji konta')
-//                    ->htmlTemplate('emails/register.html.twig')
-//                    ->context([
-//                        "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
-//                        "code" => $registerCode->getCode()
-//                    ]);
-//
-//                $mailer->send($email);
-//            }
+            $duplicateUser = $userInformationRepository->findOneBy([
+                "email" => $registerQuery->getEmail()
+            ]);
+
+            if ($duplicateUser != null) {
+                $endpointLogger->error("Email already exists");
+                throw new DataNotFoundException(["register.put.invalid.email"]);
+            }
+
+            $institution = $institutionRepository->findOneBy([
+                "name"=>$_ENV["INSTITUTION_NAME"]
+            ]);
+
+            $guest = $roleRepository->findOneBy([
+                "name" => "Guest"
+            ]);
+
+            if($institution->getMaxUsers() < count($userRepository->getUsersByRole($guest)))
+            {
+                $endpointLogger->error("Too much users");
+                throw new DataNotFoundException(["register.put.invalid.amount.of.users"]);
+            }
+
+            $newUser = new User();
+
+            $newUser->setUserInformation(new UserInformation(
+                $newUser,
+                $registerQuery->getEmail(),
+                $registerQuery->getPhoneNumber(),
+                $registerQuery->getFirstname(),
+                $registerQuery->getLastname()
+            ));
+            $userMyList = new MyList($newUser);
+
+            $myListRepository->add($userMyList);
+
+            $userProposedAudiobooks = new ProposedAudiobooks($newUser);
+
+            $proposedAudiobooksRepository->add($userProposedAudiobooks);
+
+            $userRole = $roleRepository->findOneBy([
+                "name" => "Guest"
+            ]);
+
+            $newUser->addRole($userRole);
+            $newUser->setActive(true);
+
+            $userRepository->add($newUser);
+
+            $registerCodeGenerator = new RegisterCodeGenerator();
+
+            $registerCode = new RegisterCode($registerCodeGenerator, $newUser);
+
+            $registerCodeRepository->add($registerCode);
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from('mosinskidamian12@gmail.com')
+                    ->to($newUser->getUserInformation()->getEmail())
+                    ->subject('Kod aktywacji konta')
+                    ->htmlTemplate('emails/register.html.twig')
+                    ->context([
+                        "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
+                        "code" => $registerCodeGenerator->getBeforeGenerate(),
+                        "userEmail" => $newUser->getUserInformation()->getEmail(),
+                        "url" => "123.3213.321"
+                    ]);
+                // todo tu znajdź ten url serwera
+                $mailer->send($email);
+            }
 
             return ResponseTool::getResponse();
         } else {
@@ -162,19 +187,16 @@ class RegisterController extends AbstractController
      * @param Request $request
      * @param RequestServiceInterface $requestServiceInterface
      * @param LoggerInterface $usersLogger
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
      * @param LoggerInterface $endpointLogger
      * @param RegisterCodeRepository $registerCodeRepository
-     * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param RoleRepository $roleRepository
      * @param UserRepository $userRepository
+     * @param UserInformationRepository $userInformationRepository
+     * @param RegisterCode $id
      * @return Response
      * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      */
-    #[Route("/api/register/code", name: "apiRegisterConfirm", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Guest"])]
+    #[Route("/api/register/{email}{id}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Patch(
         description: "Method used to confirm user registration",
         security: [],
@@ -183,77 +205,51 @@ class RegisterController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: AuthorizationSuccessModel::class)
+                content: new Model(type: AuthorizationSuccessModel::class)
             ),
         ]
     )]
     public function registerConfirm(
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        LoggerInterface                $usersLogger,
-        UserPasswordRepository         $userPasswordRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        LoggerInterface                $endpointLogger,
-        RegisterCodeRepository         $registerCodeRepository,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        RoleRepository                 $roleRepository,
-        UserRepository                 $userRepository
+        Request                   $request,
+        RequestServiceInterface   $requestServiceInterface,
+        LoggerInterface           $usersLogger,
+        LoggerInterface           $endpointLogger,
+        RegisterCodeRepository    $registerCodeRepository,
+        RoleRepository            $roleRepository,
+        UserRepository            $userRepository,
+        UserInformationRepository $userInformationRepository,
+        RegisterCode              $id
     ): Response
     {
-//        $registerConfirmQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmQuery::class);
-//
-//        if ($registerConfirmQuery instanceof RegisterConfirmQuery) {
-//
-//            $user = $authorizedUserService->getAuthorizedUser();
-//
-//            $registerCode = $registerCodeRepository->findOneBy([
-//                "code" => $registerConfirmQuery->getRegisterCode(),
-//                "user" => $user->getId()
-//            ]);
-//
-//            if ($registerCode == null || $registerCode->getDateAccept() != null || $registerCode->getUsed()) {
-//                $endpointLogger->error("Invalid Credentials");
-//                throw new DataNotFoundException(["register.confirm.code.credentials"]);
-//            }
-//
-//            $registerCode->setUsed(true);
-//            $registerCode->setDateAccept(new \DateTime('Now'));
-//
-//            $registerCodeRepository->add($registerCode);
-//
-//            $userRole = $roleRepository->findOneBy([
-//                "name" => "User"
-//            ]);
-//
-//            $user->addRole($userRole);
-//            $user->setActive(true);
-//
-//            $userRepository->add($user);
-//
-//            $passwordEntity = $userPasswordRepository->findOneBy([
-//                "user" => $user,
-//            ]);
-//
-//            if ($passwordEntity == null) {
-//                $endpointLogger->error("Invalid Credentials");
-//                throw new DataNotFoundException(["register.confirm.password.credentials"]);
-//            }
-//
-//            $authTokenGenerator = new AuthTokenGenerator($user);
-//
-//            $authenticationToken = new AuthenticationToken($user, $authTokenGenerator);
-//            $authenticationTokenRepository->add($authenticationToken);
-//
-//            $usersLogger->info("LOGIN", [$user->getId()->__toString()]);
-//
-//            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken());
-//
-//            return ResponseTool::getResponse($responseModel);
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("register.confirm.patch.invalid.query");
-//        }
-        return ResponseTool::getResponse();
+        $userEmail = $request->query->get('email');
+
+        $user = $userInformationRepository->findOneBy([
+            "email" => $userEmail
+        ])->getUser();
+
+
+        if (!$id->getActive() || $id->getDateAccept() != null) {
+            $endpointLogger->error("Invalid Credentials");
+            throw new DataNotFoundException(["register.confirm.code.credentials"]);
+        }
+
+        $id->setActive(false);
+        $id->setDateAccept(new \DateTime('Now'));
+
+        $registerCodeRepository->add($id);
+
+        $userRole = $roleRepository->findOneBy([
+            "name" => "User"
+        ]);
+
+        $user->addRole($userRole);
+        $user->setActive(true);
+
+        $userRepository->add($user);
+
+        return $this->render(
+            'emails/registered.html.twig'
+        );
     }
 
     /**
@@ -263,13 +259,13 @@ class RegisterController extends AbstractController
      * @param MailerInterface $mailer
      * @param RegisterCodeRepository $registerCodeRepository
      * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws TransportExceptionInterface
      */
     #[Route("/api/register/code/send", name: "apiRegisterCodeSend", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Guest"])]
     #[OA\Post(
         description: "Method used to send registration code again",
         security: [],
@@ -294,45 +290,47 @@ class RegisterController extends AbstractController
         MailerInterface                $mailer,
         RegisterCodeRepository         $registerCodeRepository,
         AuthorizedUserServiceInterface $authorizedUserService,
+        UserInformationRepository      $userInformationRepository
     ): Response
     {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 
         if ($registerConfirmSendQuery instanceof RegisterConfirmSendQuery) {
 
-//            $user = $authorizedUserService->getAuthorizedUser();
-//
-//            if ($user->getUserInformation()->getEmail() != $registerConfirmSendQuery->getEmail()) {
-//                $endpointLogger->error("Invalid Credentials");
-//                throw new DataNotFoundException(["register.code.send.user.credentials"]);
-//            }
-//
-//            $registerCode = $registerCodeRepository->getUsedCode($user);
-//
-//            if ($registerCode != null) {
-//                $endpointLogger->error("Invalid Credentials");
-//                throw new DataNotFoundException(["register.code.send.invalid.credentials"]);
-//            }
-//
-//            $registerCodeGenerator = new RegisterCodeGenerator();
-//
-//            $registerCode = new RegisterCode($user, $registerCodeGenerator);
-//
-//            $registerCodeRepository->add($registerCode);
-//
-//            if ($_ENV["APP_ENV"] != "test") {
-//                $email = (new TemplatedEmail())
-//                    ->from('mosinskidamian12@gmail.com')
-//                    ->to($user->getUserInformation()->getEmail())
-//                    ->subject('Kod aktywacji konta')
-//                    ->htmlTemplate('emails/register.html.twig')
-//                    ->context([
-//                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-//                        "code" => $registerCode->getCode()
-//                    ]);
-//
-//                $mailer->send($email);
-//            }
+            $userInfo = $userInformationRepository->findOneBy([
+                "email" => $registerConfirmSendQuery->getEmail()
+            ]);
+
+            $user = $userInfo->getUser();
+
+            if ($user->isActive() || $user->isBanned()) {
+                $endpointLogger->error("Invalid Credentials");
+                throw new DataNotFoundException(["register.code.send.user.credentials"]);
+            }
+
+            $registerCodeRepository->setCodesToNotActive($user);
+
+            $registerCodeGenerator = new RegisterCodeGenerator();
+
+            $registerCode = new RegisterCode($registerCodeGenerator, $user);
+
+            $registerCodeRepository->add($registerCode);
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from('mosinskidamian12@gmail.com')
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Kod aktywacji konta')
+                    ->htmlTemplate('emails/register.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "code" => $registerCodeGenerator->getBeforeGenerate(),
+                        "userEmail" => $user->getUserInformation()->getEmail(),
+                        "url" => "123.3213.321"
+                    ]);
+                // todo tu znajdź ten url serwera
+                $mailer->send($email);
+            }
 
             return ResponseTool::getResponse();
         } else {

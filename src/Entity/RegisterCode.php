@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RegisterCodeRepository;
+use App\ValueGenerator\RegisterCodeGenerator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -33,14 +34,12 @@ class RegisterCode
     private User $user;
 
     /**
-     * @param Uuid $id
-     * @param string $code
+     * @param RegisterCodeGenerator $code
      * @param User $user
      */
-    public function __construct(Uuid $id, string $code, User $user)
+    public function __construct(RegisterCodeGenerator $code, User $user)
     {
-        $this->id = $id;
-        $this->code = $code;
+        $this->code = $code->generate();
         $this->dateAdd = new \DateTime('Now');
         $this->active = true;
         $this->user = $user;
