@@ -63,21 +63,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-    /**
-    //     * @param User $user
-    //     * @return AuthenticationToken[]
-    //     */
-    public function getActiveUserTenzieResults(User $user):array{
 
-        $qb = $this->createQueryBuilder('tr')
-            ->leftJoin("tr.user","u")
-            ->andWhere("u.id = :user")
-            ->setParameter("user", $user->getId()->toBinary());
-
-        $query = $qb->getQuery();
-
-        return $query->execute();
-    }
 //    /**
 //     * @return AuthenticationToken[] Returns an array of AuthenticationToken objects
 //     */

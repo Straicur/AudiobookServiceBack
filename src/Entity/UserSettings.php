@@ -16,6 +16,9 @@ class UserSettings
     #[ORM\Column(type: 'boolean')]
     private bool $normal;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $admin;
+
     /**
      * @param User $user
      */
@@ -23,6 +26,7 @@ class UserSettings
     {
         $this->user = $user;
         $this->normal = true;
+        $this->admin = false;
     }
 
     /**
@@ -58,6 +62,18 @@ class UserSettings
     public function setNormal(bool $normal): void
     {
         $this->normal = $normal;
+    }
+
+    public function getAdmin(): bool
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(bool $admin): self
+    {
+        $this->admin = $admin;
+
+        return $this;
     }
 
 }

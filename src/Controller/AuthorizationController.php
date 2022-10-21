@@ -6,12 +6,13 @@ use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Exception\PermissionException;
 use App\Model\AuthorizationSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
+use App\Model\PermissionNotGrantedModel;
 use App\Query\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
-use App\Repository\PdfDocsRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Service\AuthorizedUserServiceInterface;
@@ -43,6 +44,12 @@ use Symfony\Component\Routing\Annotation\Route;
     description: "Data not found",
     content: new Model(type: DataNotFoundModel::class)
 )]
+#[OA\Response(
+    response: 403,
+    description: "User have no permission",
+    content: new Model(type: PermissionNotGrantedModel::class)
+)]
+
 #[OA\Tag(name: "Authorize")]
 class AuthorizationController extends AbstractController
 {
@@ -50,6 +57,7 @@ class AuthorizationController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws DataNotFoundException
      * @throws TransportExceptionInterface
+     * @throws PermissionException
      *
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
@@ -90,30 +98,43 @@ class AuthorizationController extends AbstractController
 
         if ($userInformationEntity == null) {
             throw new DataNotFoundException(["user.credentials"]);
-        } else {
+        }
 
-            if($userInformationEntity->getUser()->isBanned()){
-                 throw new DataNotFoundException(["user.banned"]);
-            }
+        if($userInformationEntity->getUser()->isBanned()){
+             throw new DataNotFoundException(["user.banned"]);
+        }
 
-            $passwordEntity = $userPasswordRepository->findOneBy([
-                "user" => $userInformationEntity->getUser(),
-                "password" => $passwordHashGenerator->generate()
-            ]);
+        $roles = $userInformationEntity->getUser()->getRoles();
+        $isUser = false;
 
-            if ($passwordEntity == null) {
-                throw new DataNotFoundException(["user.credentials"]);
-            } else {
-                $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
-
-                $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
-                $authenticationTokenRepository->add($authenticationToken);
-
-                $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
-
-                $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken());
+        foreach ($roles as $role){
+            if($role->getName() == "User"){
+                $isUser=true;
             }
         }
+
+        if(!$isUser){
+            throw new PermissionException("user.credentials");
+        }
+        $passwordEntity = $userPasswordRepository->findOneBy([
+            "user" => $userInformationEntity->getUser(),
+            "password" => $passwordHashGenerator->generate()
+        ]);
+
+        if ($passwordEntity == null) {
+            throw new DataNotFoundException(["user.credentials"]);
+        }
+
+        $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
+
+        $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
+        $authenticationTokenRepository->add($authenticationToken);
+
+        $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
+
+        $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken());
+
+
 
         return ResponseTool::getResponse($responseModel);
     }

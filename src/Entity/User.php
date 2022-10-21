@@ -36,13 +36,20 @@ class User
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
     private Collection $roles;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
+    private ?MyList $myList;
+
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist', 'remove'])]
+    private ?ProposedAudiobooks $proposedAudiobooks;
+
     public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
-        $this->active = true;
+        $this->active = false;
         $this->banned = false;
         $this->userInformation = null;
         $this->roles = new ArrayCollection();
+        $this->myList = null;
     }
 
     /**
@@ -178,6 +185,40 @@ class User
     public function removeRole(Role $role): self
     {
         $this->roles->removeElement($role);
+
+        return $this;
+    }
+
+    public function getMyList(): ?MyList
+    {
+        return $this->myList;
+    }
+
+    public function setMyList(MyList $myList): self
+    {
+        // set the owning side of the relation if necessary
+        if ($myList->getUser() !== $this) {
+            $myList->setUser($this);
+        }
+
+        $this->myList = $myList;
+
+        return $this;
+    }
+
+    public function getProposedAudiobooks(): ?ProposedAudiobooks
+    {
+        return $this->proposedAudiobooks;
+    }
+
+    public function setProposedAudiobooks(ProposedAudiobooks $proposedAudiobooks): self
+    {
+        // set the owning side of the relation if necessary
+        if ($proposedAudiobooks->getUser() !== $this) {
+            $proposedAudiobooks->setUser($this);
+        }
+
+        $this->proposedAudiobooks = $proposedAudiobooks;
 
         return $this;
     }

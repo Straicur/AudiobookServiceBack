@@ -3,16 +3,21 @@
 namespace App\Tests;
 
 use App\Entity\AuthenticationToken;
+use App\Entity\Institution;
+use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Repository\AuthenticationTokenRepository;
+use App\Repository\InstitutionRepository;
+use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
+use App\ValueGenerator\RegisterCodeGenerator;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DatabaseMockManager
@@ -43,7 +48,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $landlord = null, array $userSettings = [], string $bankAccount = null): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -59,7 +64,12 @@ class DatabaseMockManager
         if ($banned) {
             $user->setBanned(true);
         }
-
+        if ($notActive) {
+            $user->setActive(false);
+        }
+        else{
+            $user->setActive(true);
+        }
         $userRepository->add($user);
 
         $userRepository->add($user);
@@ -83,5 +93,39 @@ class DatabaseMockManager
         $authenticationTokenRepository->add($authenticationToken);
 
         return $authenticationTokenRepository->findOneBy(["id" => $authenticationToken->getId()]);
+    }
+
+    public function testFunc_addRegisterCode(User $user, \DateTime $dateAccept = null, bool $active = false, string $code = null): RegisterCode
+    {
+        $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
+
+        if ($code) {
+            $registerCodeGenerator = new RegisterCodeGenerator($code);
+        }
+        else{
+            $registerCodeGenerator = new RegisterCodeGenerator();
+        }
+
+        $newRegisterCode = new RegisterCode($registerCodeGenerator, $user);
+
+        if ($dateAccept != null) {
+            $newRegisterCode->setDateAccept($dateAccept);
+        }
+        if ($active) {
+            $newRegisterCode->setActive($active);
+        }
+
+        $registerCodeRepository->add($newRegisterCode);
+
+        return $newRegisterCode;
+    }
+
+    public function testFunc_getInstitution(): Institution
+    {
+        $institutionRepository = $this->getService(InstitutionRepository::class);
+
+        return $institutionRepository->findOneBy([
+            "name"=>$_ENV["INSTITUTION_NAME"]
+        ]);
     }
 }

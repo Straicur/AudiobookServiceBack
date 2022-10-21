@@ -15,4 +15,7 @@ for i in "${roles[@]}"
 do
   symfony console audiobookservice:roles:add "$i"
 done
-  symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian11@gmial.com" "980921223" "zaq12wsx" "Administrator" "User"
+
+  symfony console audiobookservice:institution:add "audioInstitution@gmial.com" "980921223" 4 20
+  symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audio.com" "980921223" "zaq12wsx"
+  symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian11@gmial.com" "980921223" "zaq12wsx" "User"

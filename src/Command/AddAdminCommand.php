@@ -9,6 +9,7 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
+use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
@@ -25,14 +26,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * CreateUserCommand
- *
+ * AddAdminCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:users:create',
+    name: 'audiobookservice:admin:add',
     description: 'Add user to service',
 )]
-class CreateUserCommand extends Command
+class AddAdminCommand extends Command
 {
     private UserRepository $userRepository;
 
@@ -46,15 +46,18 @@ class CreateUserCommand extends Command
 
     private MyListRepository $myListRepository;
 
+    private InstitutionRepository $institutionRepository;
+
     private ProposedAudiobooksRepository $proposedAudiobooksRepository;
 
     public function __construct(
-        UserRepository               $userRepository,
-        RoleRepository               $roleRepository,
-        UserInformationRepository    $userInformationRepository,
-        UserPasswordRepository       $userPasswordRepository,
-        UserSettingsRepository       $userSettingsRepository,
-        MyListRepository             $myListRepository,
+        UserRepository            $userRepository,
+        RoleRepository            $roleRepository,
+        UserInformationRepository $userInformationRepository,
+        UserPasswordRepository    $userPasswordRepository,
+        UserSettingsRepository    $userSettingsRepository,
+        MyListRepository          $myListRepository,
+        InstitutionRepository     $institutionRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository
     )
     {
@@ -64,6 +67,7 @@ class CreateUserCommand extends Command
         $this->userInformationRepository = $userInformationRepository;
         $this->userSettingsRepository = $userSettingsRepository;
         $this->myListRepository = $myListRepository;
+        $this->institutionRepository = $institutionRepository;
         $this->proposedAudiobooksRepository = $proposedAudiobooksRepository;
 
         parent::__construct();
@@ -76,7 +80,6 @@ class CreateUserCommand extends Command
         $this->addArgument('email', InputArgument::REQUIRED, 'User e-mail address');
         $this->addArgument('phone', InputArgument::REQUIRED, 'User phone number');
         $this->addArgument('password', InputArgument::REQUIRED, 'User password');
-        $this->addArgument('roles', InputArgument::IS_ARRAY, 'User roles');
     }
 
     /**
@@ -91,7 +94,20 @@ class CreateUserCommand extends Command
         $email = $input->getArgument("email");
         $phone = $input->getArgument("phone");
         $password = $input->getArgument("password");
-        $roles = $input->getArgument("roles");
+
+        $institution = $this->institutionRepository->findOneBy([
+            "name"=>$_ENV["INSTITUTION_NAME"]
+        ]);
+
+        $administrator = $this->roleRepository->findOneBy([
+            "name" => "Administrator"
+        ]);
+
+        if($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator)))
+        {
+            $io->info("To much admins");
+            return Command::FAILURE;
+        }
 
         $passwordGenerator = new PasswordHashGenerator($password);
 
@@ -101,18 +117,26 @@ class CreateUserCommand extends Command
             "E-mail:       " . $email,
             "Phone number: " . $phone,
             "Password:     " . str_repeat("*", strlen($password)),
-            "System roles: " . implode(",", $roles),
         ]);
 
         $userEntity = new User();
 
         $this->userRepository->add($userEntity, false);
 
+        $roles = ["Administrator", "User", "Guest"];
+
         $roleEntities = $this->roleRepository->findBy([
             "name" => $roles
         ]);
 
+        $isAdministrator = false;
+
         foreach ($roleEntities as $roleEntity) {
+
+            if ($roleEntity->getName() == "Administrator") {
+                $isAdministrator = true;
+            }
+
             $userEntity->addRole($roleEntity);
         }
 
@@ -129,6 +153,10 @@ class CreateUserCommand extends Command
         $this->userInformationRepository->add($userInformationEntity, false);
 
         $userSettingsEntity = new UserSettings($userEntity);
+
+        if ($isAdministrator) {
+            $userSettingsEntity->setAdmin(true);
+        }
 
         $this->userSettingsRepository->add($userSettingsEntity, false);
 
