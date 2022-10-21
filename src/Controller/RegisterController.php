@@ -21,7 +21,6 @@ use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\RegisterCodeGenerator;
@@ -58,6 +57,7 @@ class RegisterController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
      * @param LoggerInterface $endpointLogger
+     * @param LoggerInterface $usersLogger
      * @param RegisterCodeRepository $registerCodeRepository
      * @param MailerInterface $mailer
      * @param RoleRepository $roleRepository
@@ -93,12 +93,13 @@ class RegisterController extends AbstractController
         UserInformationRepository    $userInformationRepository,
         UserRepository               $userRepository,
         LoggerInterface              $endpointLogger,
+        LoggerInterface              $usersLogger,
         RegisterCodeRepository       $registerCodeRepository,
         MailerInterface              $mailer,
         RoleRepository               $roleRepository,
         MyListRepository             $myListRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
-        InstitutionRepository $institutionRepository,
+        InstitutionRepository        $institutionRepository,
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
@@ -115,15 +116,14 @@ class RegisterController extends AbstractController
             }
 
             $institution = $institutionRepository->findOneBy([
-                "name"=>$_ENV["INSTITUTION_NAME"]
+                "name" => $_ENV["INSTITUTION_NAME"]
             ]);
 
             $guest = $roleRepository->findOneBy([
                 "name" => "Guest"
             ]);
 
-            if($institution->getMaxUsers() < count($userRepository->getUsersByRole($guest)))
-            {
+            if ($institution->getMaxUsers() < count($userRepository->getUsersByRole($guest))) {
                 $endpointLogger->error("Too much users");
                 throw new DataNotFoundException(["register.put.invalid.amount.of.users"]);
             }
@@ -172,10 +172,10 @@ class RegisterController extends AbstractController
                         "userEmail" => $newUser->getUserInformation()->getEmail(),
                         "url" => "http://127.0.0.1:8000"
                     ]);
-                // todo tu znajdź ten url serwera
                 $mailer->send($email);
             }
 
+            $usersLogger->info("user." . $newUser->getUserInformation()->getEmail() . "registered");
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
@@ -185,7 +185,6 @@ class RegisterController extends AbstractController
 
     /**
      * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
      * @param LoggerInterface $usersLogger
      * @param LoggerInterface $endpointLogger
      * @param RegisterCodeRepository $registerCodeRepository
@@ -208,10 +207,8 @@ class RegisterController extends AbstractController
             ),
         ]
     )]
-
     public function registerConfirm(
         Request                   $request,
-        RequestServiceInterface   $requestServiceInterface,
         LoggerInterface           $usersLogger,
         LoggerInterface           $endpointLogger,
         RegisterCodeRepository    $registerCodeRepository,
@@ -258,6 +255,8 @@ class RegisterController extends AbstractController
 
         $userRepository->add($user);
 
+        $usersLogger->info("user." . $user->getUserInformation()->getEmail() . "successfully registered and confirmed");
+
         return $this->render(
             'emails/registered.html.twig'
         );
@@ -267,9 +266,9 @@ class RegisterController extends AbstractController
      * @param Request $request
      * @param RequestServiceInterface $requestServiceInterface
      * @param LoggerInterface $endpointLogger
+     * @param LoggerInterface $usersLogger
      * @param MailerInterface $mailer
      * @param RegisterCodeRepository $registerCodeRepository
-     * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
@@ -295,13 +294,13 @@ class RegisterController extends AbstractController
         ]
     )]
     public function registerCodeSend(
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        LoggerInterface                $endpointLogger,
-        MailerInterface                $mailer,
-        RegisterCodeRepository         $registerCodeRepository,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        UserInformationRepository      $userInformationRepository
+        Request                   $request,
+        RequestServiceInterface   $requestServiceInterface,
+        LoggerInterface           $endpointLogger,
+        LoggerInterface           $usersLogger,
+        MailerInterface           $mailer,
+        RegisterCodeRepository    $registerCodeRepository,
+        UserInformationRepository $userInformationRepository
     ): Response
     {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
@@ -311,6 +310,11 @@ class RegisterController extends AbstractController
             $userInfo = $userInformationRepository->findOneBy([
                 "email" => $registerConfirmSendQuery->getEmail()
             ]);
+
+            if ($userInfo == null) {
+                $endpointLogger->error("Invalid Credentials");
+                throw new DataNotFoundException(["register.code.send.user.credentials"]);
+            }
 
             $user = $userInfo->getUser();
 
@@ -342,6 +346,7 @@ class RegisterController extends AbstractController
                 $mailer->send($email);
             }
 
+            $usersLogger->info("user." . $user->getUserInformation()->getEmail() . "got new confim email");
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
