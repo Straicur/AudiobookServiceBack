@@ -13,7 +13,7 @@ class UserInformation
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 510)]
+    #[ORM\Column(type: 'string', length: 510, unique: true)]
     private string $email;
 
     #[ORM\Column(type: 'string', length: 16)]

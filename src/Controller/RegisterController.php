@@ -151,7 +151,6 @@ class RegisterController extends AbstractController
             ]);
 
             $newUser->addRole($userRole);
-            $newUser->setActive(true);
 
             $userRepository->add($newUser);
 
@@ -196,7 +195,7 @@ class RegisterController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      */
-    #[Route("/api/register/{email}{code}", name: "apiRegisterConfirm", methods: ["GET"])]
+    #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Patch(
         description: "Method used to confirm user registration",
         security: [],
@@ -209,6 +208,7 @@ class RegisterController extends AbstractController
             ),
         ]
     )]
+
     public function registerConfirm(
         Request                   $request,
         RequestServiceInterface   $requestServiceInterface,
@@ -220,20 +220,26 @@ class RegisterController extends AbstractController
         UserInformationRepository $userInformationRepository,
     ): Response
     {
-        $userEmail = $request->query->get('email');
-        $code = $request->query->get('code');
+        $userEmail = $request->get('email');
+        $code = $request->get('code');
 
-        $user = $userInformationRepository->findOneBy([
+        $userInformation = $userInformationRepository->findOneBy([
             "email" => $userEmail
-        ])->getUser();
+        ]);
 
+        if ($userInformation == null) {
+            $endpointLogger->error("Invalid Credentials");
+            throw new DataNotFoundException(["register.confirm.code.credentials"]);
+        }
+
+        $user = $userInformation->getUser();
         $registerCodeGenerator = new RegisterCodeGenerator($code);
 
         $registerCode = $registerCodeRepository->findOneBy([
             "code" => $registerCodeGenerator->generate()
         ]);
 
-        if (!$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
+        if ($registerCode == null || !$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
             $endpointLogger->error("Invalid Credentials");
             throw new DataNotFoundException(["register.confirm.code.credentials"]);
         }
@@ -333,7 +339,6 @@ class RegisterController extends AbstractController
                         "userEmail" => $user->getUserInformation()->getEmail(),
                         "url" => "http://127.0.0.1:8000"
                     ]);
-                // todo tu znajdź ten url serwera
                 $mailer->send($email);
             }
 

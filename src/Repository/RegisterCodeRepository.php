@@ -57,12 +57,12 @@ class RegisterCodeRepository extends ServiceEntityRepository
      */
     public function setCodesToNotActive(User $user):void{
         $qb = $this->createQueryBuilder('rc')
+            ->update()
             ->set("rc.active","false")
-            ->leftJoin('rc.user', 'u')
-            ->where("u.id = :user")
+            ->where("rc.user = :user")
             ->setParameter("user", $user->getId()->toBinary());
 
-        $query = $qb->getQuery();
+        $qb->getQuery()->execute();
     }
 //    /**
 //     * @return RegisterCode[] Returns an array of RegisterCode objects

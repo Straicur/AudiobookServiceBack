@@ -45,7 +45,7 @@ class User
     public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
-        $this->active = true;
+        $this->active = false;
         $this->banned = false;
         $this->userInformation = null;
         $this->roles = new ArrayCollection();
