@@ -1,8 +1,7 @@
 
 <div>
     <p>Witaj {{ userName }},</p>
-    <p>Zarejestrowałeś się w naszym serwisie.Teraz aktywuj konto aby móc korzystać z serwisu w pełni.</p>
-    <p>Oto twój kod aktywacyjny konto: {{ code }} .</p>
+    <p>Aktywuj konto aby korzstać z serwisu.</p>
+    <p>Kliknij w link aktywacyjny .<a href='{{ url }}/api/register/?email={{ userEmail }}&code={{ code }}'>Kliknij aby aktywować</a></p>
 </div>
 
-/api/register/{email}{id}

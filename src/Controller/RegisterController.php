@@ -137,6 +137,7 @@ class RegisterController extends AbstractController
                 $registerQuery->getFirstname(),
                 $registerQuery->getLastname()
             ));
+
             $userMyList = new MyList($newUser);
 
             $myListRepository->add($userMyList);
@@ -170,7 +171,7 @@ class RegisterController extends AbstractController
                         "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $newUser->getUserInformation()->getEmail(),
-                        "url" => "123.3213.321"
+                        "url" => "http://127.0.0.1:8000"
                     ]);
                 // todo tu znajdź ten url serwera
                 $mailer->send($email);
@@ -192,11 +193,10 @@ class RegisterController extends AbstractController
      * @param RoleRepository $roleRepository
      * @param UserRepository $userRepository
      * @param UserInformationRepository $userInformationRepository
-     * @param RegisterCode $id
      * @return Response
      * @throws DataNotFoundException
      */
-    #[Route("/api/register/{email}{id}", name: "apiRegisterConfirm", methods: ["GET"])]
+    #[Route("/api/register/{email}{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Patch(
         description: "Method used to confirm user registration",
         security: [],
@@ -218,25 +218,30 @@ class RegisterController extends AbstractController
         RoleRepository            $roleRepository,
         UserRepository            $userRepository,
         UserInformationRepository $userInformationRepository,
-        RegisterCode              $id
     ): Response
     {
         $userEmail = $request->query->get('email');
+        $code = $request->query->get('code');
 
         $user = $userInformationRepository->findOneBy([
             "email" => $userEmail
         ])->getUser();
 
+        $registerCodeGenerator = new RegisterCodeGenerator($code);
 
-        if (!$id->getActive() || $id->getDateAccept() != null) {
+        $registerCode = $registerCodeRepository->findOneBy([
+            "code" => $registerCodeGenerator->generate()
+        ]);
+
+        if (!$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
             $endpointLogger->error("Invalid Credentials");
             throw new DataNotFoundException(["register.confirm.code.credentials"]);
         }
 
-        $id->setActive(false);
-        $id->setDateAccept(new \DateTime('Now'));
+        $registerCode->setActive(false);
+        $registerCode->setDateAccept(new \DateTime('Now'));
 
-        $registerCodeRepository->add($id);
+        $registerCodeRepository->add($registerCode);
 
         $userRole = $roleRepository->findOneBy([
             "name" => "User"
@@ -326,7 +331,7 @@ class RegisterController extends AbstractController
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $user->getUserInformation()->getEmail(),
-                        "url" => "123.3213.321"
+                        "url" => "http://127.0.0.1:8000"
                     ]);
                 // todo tu znajdź ten url serwera
                 $mailer->send($email);
