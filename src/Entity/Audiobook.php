@@ -83,7 +83,7 @@ class Audiobook
         $this->description = $description;
         $this->age = $age;
         $this->categories = new ArrayCollection();
-        $this->active = $active;
+        $this->active = false;
     }
 
     public function getId(): Uuid

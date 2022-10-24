@@ -2,22 +2,35 @@
 
 namespace App\Tests;
 
+use App\Entity\Audiobook;
+use App\Entity\AudiobookCategory;
+use App\Entity\AudiobookInfo;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
+use App\Entity\MyList;
+use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
+use App\Enums\AudiobookAgeRange;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookInfoRepository;
+use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
+use App\Repository\MyListRepository;
+use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\ValueGenerator\AuthTokenGenerator;
+use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use OpenApi\Examples\Petstore30\Models\Category;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DatabaseMockManager
@@ -127,5 +140,72 @@ class DatabaseMockManager
         return $institutionRepository->findOneBy([
             "name"=>$_ENV["INSTITUTION_NAME"]
         ]);
+    }
+
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, AudiobookAgeRange $parts, string $description, int $age, array $categories, string $encoded = null): Audiobook
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+
+        $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age);
+
+        if ($encoded != null) {
+            $newAudiobook->setEncoded($encoded);
+        }
+
+        foreach ($categories as $category){
+            $newAudiobook->addCategory($category);
+        }
+
+        $audiobookRepository->add($newAudiobook);
+
+        return $newAudiobook;
+    }
+
+    public function testFunc_addAudiobookCategory(string $name, AudiobookCategory $parent = null): AudiobookCategory
+    {
+        $registerCodeRepository = $this->getService(AudiobookCategoryRepository::class);
+
+        $categoryKeyGenerator = new CategoryKeyGenerator();
+
+        $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
+
+        if ($parent != null) {
+            $newAudiobookCategory->setParent($parent);
+        }
+
+        $registerCodeRepository->add($newAudiobookCategory);
+
+        return $newAudiobookCategory;
+    }
+
+    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate): AudiobookInfo
+    {
+        $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
+
+        $newRegisterCode = new AudiobookInfo($user,$audiobook,$part,$endedTime,$watchingDate);
+
+        $registerCodeRepository->add($newRegisterCode);
+
+        return $newRegisterCode;
+    }
+
+    public function testFunc_addMyList(User $user, Audiobook $audiobook): void
+    {
+        $myListRepository = $this->getService(MyListRepository::class);
+
+        $myList = $user->getMyList();
+        $myList->addAudiobook($audiobook);
+
+        $myListRepository->add($myList);
+    }
+
+    public function testFunc_addProposedAudiobooks(User $user, Audiobook $audiobook): void
+    {
+        $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
+
+        $proposedAudiobooks = $user->getProposedAudiobooks();
+        $proposedAudiobooks->addAudiobook($audiobook);
+
+        $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 }
