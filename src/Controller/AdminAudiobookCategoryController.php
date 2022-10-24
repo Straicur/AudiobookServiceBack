@@ -104,7 +104,7 @@ class AdminAudiobookCategoryController extends AbstractController
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
 
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminCategory.add.invalid.query");
@@ -221,9 +221,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/remove/audiobook", name: "adminCategoryRemoveAudiobook", methods: ["POST"])]
+    #[Route("/api/admin/category/remove/audiobook", name: "adminCategoryRemoveAudiobook", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Delete(
         description: "Endpoint is removing audiobook from given category",
         requestBody: new OA\RequestBody(
             required: true,
@@ -337,7 +337,7 @@ class AdminAudiobookCategoryController extends AbstractController
             )
         ]
     )]
-    public function adminCategory(
+    public function adminCategories(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -361,9 +361,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/active", name: "adminCategoryActive", methods: ["POST"])]
+    #[Route("/api/admin/category/active", name: "adminCategoryActive", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is activating given category",
         requestBody: new OA\RequestBody(
             required: true,

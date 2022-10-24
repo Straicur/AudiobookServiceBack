@@ -70,7 +70,7 @@ class Audiobook
      * @param string $description
      * @param int $age
      */
-    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, AudiobookAgeRange $parts, string $description, int $age)
+    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age)
     {
         $this->title = $title;
         $this->author = $author;
@@ -79,9 +79,9 @@ class Audiobook
         $this->year = $year;
         $this->duration = $duration;
         $this->size = $size;
-        $this->parts = $parts->value;
+        $this->parts = $parts;
         $this->description = $description;
-        $this->age = $age;
+        $this->age = $age->value;
         $this->categories = new ArrayCollection();
         $this->active = false;
     }

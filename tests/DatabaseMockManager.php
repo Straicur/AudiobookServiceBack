@@ -142,7 +142,7 @@ class DatabaseMockManager
         ]);
     }
 
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, AudiobookAgeRange $parts, string $description, int $age, array $categories, string $encoded = null): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age, array $categories, string $encoded = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
