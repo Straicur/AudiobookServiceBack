@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookCategoryRepository;
+use App\ValueGenerator\ValueGeneratorInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,14 +31,19 @@ class AudiobookCategory
     #[ORM\Column(type: 'boolean')]
     private bool $active;
 
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private string $categoryKey;
+
     /**
      * @param string $name
+     * @param ValueGeneratorInterface $categoryKeyGenerator
      */
-    public function __construct(string $name)
+    public function __construct(string $name, ValueGeneratorInterface $categoryKeyGenerator)
     {
         $this->name = $name;
         $this->active = false;
         $this->audiobooks = new ArrayCollection();
+        $this->categoryKey = $categoryKeyGenerator->generate();
     }
 
     public function getId(): Uuid
@@ -104,6 +110,18 @@ class AudiobookCategory
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getCategoryKey(): string
+    {
+        return $this->categoryKey;
+    }
+
+    public function setCategoryKey(ValueGeneratorInterface $categoryKeyGenerator): self
+    {
+        $this->categoryKey = $categoryKeyGenerator->generate();
 
         return $this;
     }
