@@ -53,5 +53,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "Audiobook")]
 class AudiobookController extends AbstractController
 {
-
+    //1 - Pobranie cover.jpg
+    //2 - Pobranie parta(w obie strony)
 }

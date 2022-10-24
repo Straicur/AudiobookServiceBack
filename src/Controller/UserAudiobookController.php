@@ -53,5 +53,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "UserAudiobook")]
 class UserAudiobookController extends AbstractController
 {
-
+    //1 - Pobranie całej listy kategorii(paginacja)(z aktywnymi audiobookami)(aktywnych kategorii)
+    //2 - Pobranie listy proponowanych audiobooków
+    //3 - Pobranie detali audiobooka(wraz z tym czy jest w mojej liscie)(jeśli jest aktywny)
+    //4 - Pobranie danych o odtwarzaniu audiobooka
+    //5 - Dodanie do mojej listy
+    //6 - Pobranie audiobooków z mojej listy
 }

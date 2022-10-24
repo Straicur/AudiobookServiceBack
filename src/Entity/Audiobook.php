@@ -55,6 +55,9 @@ class Audiobook
     #[ORM\Column(type: 'integer')]
     private int $age;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $active;
+
     /**
      * @param string $title
      * @param string $author
@@ -80,6 +83,7 @@ class Audiobook
         $this->description = $description;
         $this->age = $age;
         $this->categories = new ArrayCollection();
+        $this->active = $active;
     }
 
     public function getId(): Uuid
@@ -245,6 +249,18 @@ class Audiobook
     public function setAge(AudiobookAgeRange $age): self
     {
         $this->age = $age->value;
+
+        return $this;
+    }
+
+    public function getActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }

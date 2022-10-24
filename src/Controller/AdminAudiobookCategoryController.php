@@ -50,8 +50,14 @@ use Symfony\Component\Routing\Annotation\Route;
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 
-#[OA\Tag(name: "Audiobook")]
-class AudiobookCategoryController extends AbstractController
+#[OA\Tag(name: "AdminAudiobookCategory")]
+class AdminAudiobookCategoryController extends AbstractController
 {
-
+    //1 - Dodanie(na start nie widoczna)
+    //2 - Edycja(nazwa)
+    //3 - Usunięcie - bez usuwania całej kategori tylko kategorii z audiobooków
+    //4 - Unięcie audiobooka z kategorii
+    //5 - Pobranie wszystkich audiobooków mających kategorie(z paginacją)
+    //6 - Pobranie wszystkich kategorii(drzewo)
+    //7 - Ustawienie widoczności(flaga active)
 }

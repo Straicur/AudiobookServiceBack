@@ -50,11 +50,16 @@ use Symfony\Component\Routing\Annotation\Route;
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 
-#[OA\Tag(name: "User")]
-class UserController extends AbstractController
+#[OA\Tag(name: "AdminAudiobook")]
+class AdminAudiobookController extends AbstractController
 {
-    //1 - Zmiana hasła
-    //2 - Zmiana emaila
-    //3 - Usunięcie konta
-    //4 - Zmiana numeru tel
+    //1 - Pobranie danych audiobooka(z wszystkimi danymi kategorii(nazwa,id),aktywności)
+    //2 - Dodanie audiobooka(w jednym folderze wszystkie) z wyborem kategorii
+    //3 - Edycja
+    //4 - Usunięcie(wszędzie)
+    //5 - Pobranie zipa
+    //6 - Ponowne przesłanie
+    //7 - Lista wszystkich audiobooków
+    //8 - Lista Ostatnio dodanych audiobooków
+    //9 - Aktywacja audiobooka
 }

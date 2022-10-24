@@ -50,8 +50,15 @@ use Symfony\Component\Routing\Annotation\Route;
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 
-#[OA\Tag(name: "Admin")]
-class AdminController extends AbstractController
+#[OA\Tag(name: "AdminUser")]
+class AdminUserController extends AbstractController
 {
-
+    //1 - Usunięcie Usera
+    //2 - Dodanie mu roli
+    //3 - Usunięcie roli
+    //4 - Aktywacja
+    //5 - Zmiana hasła
+    //6 - Zmiana numeru tel
+    //7 - Pobranie listy userów(pagiancja)(najważniejsze info)
+    //8 - Pobranie detali usera
 }
