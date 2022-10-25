@@ -24,7 +24,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User","Administrator"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -222,7 +222,6 @@ class AdminCategoryActiveTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

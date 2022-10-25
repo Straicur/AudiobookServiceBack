@@ -38,7 +38,7 @@ class Audiobook
     private \DateTime $year;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $encoded;
+    private ?string $encoded = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $duration;
@@ -84,6 +84,7 @@ class Audiobook
         $this->age = $age->value;
         $this->categories = new ArrayCollection();
         $this->active = false;
+        $this->audiobooks = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -261,6 +262,18 @@ class Audiobook
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

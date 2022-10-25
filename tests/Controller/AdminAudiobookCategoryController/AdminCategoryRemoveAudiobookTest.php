@@ -35,7 +35,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "categoryId" => $category2->getId(),
+            "categoryId" => $category1->getId(),
             "audiobookId" => $audiobook->getId(),
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -236,7 +236,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+
     }
 
     /**

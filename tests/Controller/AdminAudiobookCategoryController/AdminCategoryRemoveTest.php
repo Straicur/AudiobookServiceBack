@@ -32,6 +32,10 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory("3", $category2);
+        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
+        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category4);
+        $category6 = $this->databaseMockManager->testFunc_addAudiobookCategory("6");
 
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
 
@@ -49,7 +53,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $this->assertCount(1,$audiobookCategoryRepository->findAll());
+        $this->assertCount(2,$audiobookCategoryRepository->findAll());
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "id"=>$audiobook->getId()
@@ -188,7 +192,6 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

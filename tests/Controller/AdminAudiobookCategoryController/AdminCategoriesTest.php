@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\AdminAudiobookCategoryController;
 
-use App\Repository\AudiobookCategoryRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -29,6 +28,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
         /// step 2
         $crawler = self::$webClient->request("GET", "/api/admin/categories", server: [
             "HTTP_authorization" => $token->getToken()
@@ -45,7 +45,9 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("categories", $responseContent);
-        $this->assertCount(4, $responseContent["categories"]);
+        $this->assertCount(1, $responseContent["categories"]);
+
+        $this->assertCount(2, $responseContent["categories"][0]["children"]);
     }
     /**
      * step 1 - Preparing data
@@ -83,7 +85,6 @@ class AdminCategoriesTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

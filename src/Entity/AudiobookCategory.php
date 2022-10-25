@@ -22,9 +22,6 @@ class AudiobookCategory
     #[ORM\Column(type: 'string', length: 50)]
     private string $name;
 
-    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
-    private ?AudiobookCategory $parent = null;
-
     #[ORM\ManyToMany(targetEntity: Audiobook::class, mappedBy: 'categories')]
     private Collection $audiobooks;
 
@@ -33,6 +30,10 @@ class AudiobookCategory
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $categoryKey;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
+    private ?AudiobookCategory $parent = null;
 
     /**
      * @param string $name
@@ -59,18 +60,6 @@ class AudiobookCategory
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
 
         return $this;
     }
@@ -126,4 +115,15 @@ class AudiobookCategory
         return $this;
     }
 
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
 }

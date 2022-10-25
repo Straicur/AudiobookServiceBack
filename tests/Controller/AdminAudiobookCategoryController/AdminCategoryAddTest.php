@@ -46,7 +46,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
 
-        $this->assertCount(1, $audiobookCategoryRepository->findAll());
+        $this->assertCount(3, $audiobookCategoryRepository->findAll());
     }
 
     /**
@@ -174,7 +174,6 @@ class AdminCategoryAddTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

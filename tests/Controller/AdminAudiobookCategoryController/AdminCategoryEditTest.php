@@ -174,7 +174,6 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

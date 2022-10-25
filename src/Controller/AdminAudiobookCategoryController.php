@@ -3,21 +3,32 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\AudiobookCategory;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AdminCategoriesSuccessModel;
+use App\Model\AdminCategoryAudiobookModel;
+use App\Model\AdminCategoryAudiobooksSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\ServiceCategoriesSuccessModel;
+use App\Query\AdminCategoriesQuery;
 use App\Query\AdminCategoryActiveQuery;
 use App\Query\AdminCategoryAddQuery;
 use App\Query\AdminCategoryAudiobooksQuery;
 use App\Query\AdminCategoryEditQuery;
 use App\Query\AdminCategoryRemoveAudiobookQuery;
 use App\Query\AdminCategoryRemoveQuery;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
+use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
+use App\ValueGenerator\CategoryDeleteGenerator;
+use App\ValueGenerator\CategoryKeyGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -64,7 +75,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/add", name: "adminCategoryAdd", methods: ["PUT"])]
@@ -82,7 +95,6 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -91,18 +103,34 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $adminCategoryAddQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
 
         if ($adminCategoryAddQuery instanceof AdminCategoryAddQuery) {
 
+            $categoryKey = new CategoryKeyGenerator();
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $newCategory = new AudiobookCategory($adminCategoryAddQuery->getName(), $categoryKey);
+
+            $additionalData = $adminCategoryAddQuery->getAdditionalData();
+
+            if (array_key_exists("parentId", $additionalData) && $additionalData["parentId"] != "") {
+
+                $parentAudiobookCategory = $audiobookCategoryRepository->findOneBy([
+                    "id" => $additionalData["parentId"]
+                ]);
+
+                if ($parentAudiobookCategory == null) {
+                    $endpointLogger->error("AudiobookCategory dont exist");
+                    throw new DataNotFoundException(["adminCategory.add.AudiobookCategory.not.exist"]);
+                }
+
+                $newCategory->setParent($parentAudiobookCategory);
+            }
+
+            $audiobookCategoryRepository->add($newCategory);
 
             return ResponseTool::getResponse(httpCode: 201);
         } else {
@@ -116,7 +144,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/edit", name: "adminCategoryEdit", methods: ["PATCH"])]
@@ -134,7 +164,6 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -143,17 +172,24 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
 
         if ($adminCategoryEditQuery instanceof AdminCategoryEditQuery) {
+            $category = $audiobookCategoryRepository->findOneBy([
+                "id" => $adminCategoryEditQuery->getCategoryId()
+            ]);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.edit.AudiobookCategory.not.exist"]);
+            }
+
+            $category->setName($adminCategoryEditQuery->getName());
+
+            $audiobookCategoryRepository->add($category);
 
             return ResponseTool::getResponse();
         } else {
@@ -167,7 +203,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/remove", name: "adminCategoryRemove", methods: ["DELETE"])]
@@ -185,7 +223,6 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -194,17 +231,24 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminCategoryRemoveQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
 
         if ($adminCategoryRemoveQuery instanceof AdminCategoryRemoveQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $category = $audiobookCategoryRepository->findOneBy([
+                "id" => $adminCategoryRemoveQuery->getCategoryId()
+            ]);
+
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.remove.AudiobookCategory.not.exist"]);
+            }
+
+            $audiobookCategoryRepository->remove($category);
 
             return ResponseTool::getResponse();
         } else {
@@ -218,7 +262,10 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/remove/audiobook", name: "adminCategoryRemoveAudiobook", methods: ["DELETE"])]
@@ -236,7 +283,6 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -245,17 +291,35 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminCategoryRemoveAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
 
         if ($adminCategoryRemoveAudiobookQuery instanceof AdminCategoryRemoveAudiobookQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $category = $audiobookCategoryRepository->findOneBy([
+                "id" => $adminCategoryRemoveAudiobookQuery->getCategoryId()
+            ]);
+
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.remove.audiobook.AudiobookCategory.not.exist"]);
+            }
+
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminCategoryRemoveAudiobookQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminCategory.remove.audiobook.Audiobook.not.exist"]);
+            }
+
+            $audiobook->removeCategory($category);
+
+            $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
         } else {
@@ -269,7 +333,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/audiobooks", name: "adminCategoryAudiobooks", methods: ["POST"])]
@@ -287,7 +353,7 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminCategoryAudiobooksSuccessModel::class),
             )
         ]
     )]
@@ -296,22 +362,52 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
     ): Response
     {
         $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
 
         if ($adminCategoryAudiobooksQuery instanceof AdminCategoryAudiobooksQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $category = $audiobookCategoryRepository->findOneBy([
+                "categoryKey" => $adminCategoryAudiobooksQuery->getCategoryKey()
+            ]);
 
-            return ResponseTool::getResponse();
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.remove.audiobook.AudiobookCategory.not.exist"]);
+            }
+
+            $successModel = new AdminCategoryAudiobooksSuccessModel();
+
+            $audiobooks = $category->getAudiobooks();
+
+            foreach ($audiobooks as $audiobook) {
+                $audiobookModel = new AdminCategoryAudiobookModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getVersion(),
+                    $audiobook->getAlbum(),
+                    $audiobook->getYear(),
+                    $audiobook->getDuration(),
+                    $audiobook->getSize(),
+                    $audiobook->getParts(),
+                    $audiobook->getDescription(),
+                    $audiobook->getAge(),
+                    $audiobook->getActive()
+                );
+                if ($audiobook->getEncoded() != null) {
+                    $audiobookModel->setEncoded($audiobook->getEncoded());
+                }
+
+                $successModel->addAudiobook($audiobookModel);
+            }
+
+            return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminCategory.audiobooks.invalid.query");
+            throw new InvalidJsonDataException("adminCategoryAudiobooks.invalid.query");
         }
     }
 
@@ -320,20 +416,25 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/categories", name: "adminCategories", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Get(
         description: "Endpoint is returning all categories in system",
-        requestBody: new OA\RequestBody(),
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminCategoriesQuery::class),
+                type: "object"
+            ),
+        ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminCategoriesSuccessModel::class)
             )
         ]
     )]
@@ -342,15 +443,19 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
     ): Response
     {
+        $categories = $audiobookCategoryRepository->findBy([
+            "parent" => null
+        ]);
 
-//        if ( == null) {
-//            $endpointLogger->error("Offer dont exist");
-//            throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//        }
-        return ResponseTool::getResponse();
+        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository);
+
+        $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
+
+        return ResponseTool::getResponse($successModel);
+
     }
 
     /**
@@ -358,7 +463,9 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/category/active", name: "adminCategoryActive", methods: ["PATCH"])]
@@ -376,7 +483,6 @@ class AdminAudiobookCategoryController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -385,17 +491,23 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $adminCategoryActiveQuery = $requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
 
         if ($adminCategoryActiveQuery instanceof AdminCategoryActiveQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $category = $audiobookCategoryRepository->findOneBy([
+                "id" => $adminCategoryActiveQuery->getCategoryId()
+            ]);
+
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.active.AudiobookCategory.not.exist"]);
+            }
+
+            $category->setActive($adminCategoryActiveQuery->isActive());
 
             return ResponseTool::getResponse();
         } else {
