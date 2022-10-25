@@ -4,9 +4,6 @@ namespace App\Query;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * RegisterConfirmSendQuery
- */
 class RegisterConfirmSendQuery
 {
     #[Assert\NotNull(message: "Email is null")]

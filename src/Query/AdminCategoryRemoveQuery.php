@@ -6,9 +6,6 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * AdminCategoryRemoveQuery
- */
 class AdminCategoryRemoveQuery
 {
     #[Assert\NotNull(message: "CategoryId is null")]

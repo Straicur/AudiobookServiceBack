@@ -5,10 +5,7 @@ namespace App\Query;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * AdminCategoriesQuery
- */
-class AdminCategoriesQuery
+class AdminAudiobooksNewQuery
 {
     #[Assert\NotNull(message: "Page is null")]
     #[Assert\NotBlank(message: "Page is empty")]

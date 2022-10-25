@@ -6,9 +6,6 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * AdminCategoryEditQuery
- */
 class AdminCategoryEditQuery
 {
     #[Assert\NotNull(message: "Name is null")]

@@ -3,11 +3,20 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\Audiobook;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\AdminAudiobookActiveQuery;
+use App\Query\AdminAudiobookAddQuery;
+use App\Query\AdminAudiobookDeleteQuery;
+use App\Query\AdminAudiobookEditQuery;
+use App\Query\AdminAudiobookReAddingQuery;
+use App\Query\AdminAudiobooksNewQuery;
+use App\Query\AdminAudiobooksQuery;
+use App\Query\AdminAudiobookZipQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -62,14 +71,53 @@ class AdminAudiobookController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/", name: "adminAudiobook", methods: ["POST"])]
+    #[Route("/api/admin/audiobook/{id}", name: "adminAudiobook", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is ",
+    #[OA\Get(
+        description: "Endpoint is getting details of audiobook",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookGet(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        Audiobook $id
+    ): Response
+    {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/add", name: "adminAudiobookAdd", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is adding new audiobook with files",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: AdminAudiobookAddQuery::class),
                 type: "object"
             ),
         ),
@@ -81,7 +129,7 @@ class AdminAudiobookController extends AbstractController
             )
         ]
     )]
-    public function adminAudiobook(
+    public function adminAudiobookAdd(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -89,9 +137,9 @@ class AdminAudiobookController extends AbstractController
 
     ): Response
     {
-        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+        $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
-        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        if ($adminAudiobookAddQuery instanceof AdminAudiobookAddQuery) {
 
 //            if ( == null) {
 //                $endpointLogger->error("Offer dont exist");
@@ -101,7 +149,366 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+            throw new InvalidJsonDataException("adminAudiobook.add.invalid.query");
         }
     }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/edit", name: "adminAudiobookEdit", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is editing given audiobooka data",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookEditQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookEdit(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
+
+        if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.edit.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is deleting audiobook with his files",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
+
+        if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.delete.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/zip", name: "adminAudiobookZip", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning zip blob",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookZipQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookZip(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
+
+        if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.zip.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/reAdding", name: "adminAudiobookReAdding", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is re-adding audiobook by changing files",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookReAddingQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookReAdding(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
+
+        if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.reAdding.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobooks", name: "adminAudiobooks", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of all audiobooks",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobooksQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobooks(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
+
+        if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobooks.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobooks/new", name: "adminAudiobooksNew", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning new added audiobooks",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobooksNewQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobooksNew(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobooksNewQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksNewQuery::class);
+
+        if ($adminAudiobooksNewQuery instanceof AdminAudiobooksNewQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobooks.new.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/active", name: "adminAudiobookActive", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is activating given audiobook",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookActiveQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminAudiobookActive(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
+
+        if ($adminAudiobookActiveQuery instanceof AdminAudiobookActiveQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.active.invalid.query");
+        }
+    }
+
+
 }

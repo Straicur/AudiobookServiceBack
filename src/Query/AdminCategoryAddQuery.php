@@ -7,9 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use OpenApi\Attributes as OA;
 
-/**
- * AdminCategoryAddQuery
- */
 class AdminCategoryAddQuery
 {
     #[Assert\NotNull(message: "Name is null")]

@@ -13,7 +13,6 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Model\ServiceCategoriesSuccessModel;
 use App\Query\AdminCategoriesQuery;
 use App\Query\AdminCategoryActiveQuery;
 use App\Query\AdminCategoryAddQuery;
@@ -27,7 +26,6 @@ use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
-use App\ValueGenerator\CategoryDeleteGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -63,13 +61,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminAudiobookCategory")]
 class AdminAudiobookCategoryController extends AbstractController
 {
-    //1 - Dodanie(na start nie widoczna)
-    //2 - Edycja(nazwa)
-    //3 - Usunięcie - bez usuwania całej kategori tylko kategorii z audiobooków
-    //4 - Unięcie audiobooka z kategorii
-    //5 - Pobranie wszystkich audiobooków mających kategorie(z paginacją)
-    //6 - Pobranie wszystkich kategorii(drzewo)
-    //7 - Ustawienie widoczności(flaga active)
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -423,13 +414,7 @@ class AdminAudiobookCategoryController extends AbstractController
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Get(
         description: "Endpoint is returning all categories in system",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoriesQuery::class),
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,

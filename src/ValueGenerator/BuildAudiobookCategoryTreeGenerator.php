@@ -36,11 +36,11 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 
                 $child = new AdminCategoryModel($element->getName(), $element->getActive(), $element->getCategoryKey());
 
-                if(!empty($children)){
+                if (!empty($children)) {
 
-                    $children = $this->buildTree($children,$categoryRepository, $element->getId());
+                    $children = $this->buildTree($children, $categoryRepository, $element->getId());
 
-                    foreach ($children as $parentChild){
+                    foreach ($children as $parentChild) {
                         $child->addChildren($parentChild);
                     }
                 }

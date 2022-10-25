@@ -3,16 +3,10 @@
 namespace App\Query;
 
 use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AdminCategoryAudiobooksQuery
+class AdminAudiobooksQuery
 {
-    #[Assert\NotNull(message: "CategoryKey is null")]
-    #[Assert\NotBlank(message: "CategoryKey is empty")]
-    #[Assert\Type(type: "string")]
-    private string $categoryKey;
-
     #[Assert\NotNull(message: "Page is null")]
     #[Assert\NotBlank(message: "Page is empty")]
     #[Assert\Type(type: "integer")]
@@ -55,22 +49,6 @@ class AdminCategoryAudiobooksQuery
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCategoryKey(): string
-    {
-        return $this->categoryKey;
-    }
-
-    /**
-     * @param string $categoryKey
-     */
-    public function setCategoryKey(string $categoryKey): void
-    {
-        $this->categoryKey = $categoryKey;
     }
 
 }
