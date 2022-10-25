@@ -161,7 +161,7 @@ class DatabaseMockManager
         return $newAudiobook;
     }
 
-    public function testFunc_addAudiobookCategory(string $name, AudiobookCategory $parent = null): AudiobookCategory
+    public function testFunc_addAudiobookCategory(string $name, AudiobookCategory $parent = null, bool $active = false): AudiobookCategory
     {
         $registerCodeRepository = $this->getService(AudiobookCategoryRepository::class);
 
@@ -171,6 +171,13 @@ class DatabaseMockManager
 
         if ($parent != null) {
             $newAudiobookCategory->setParent($parent);
+        }
+
+        if ($active) {
+            $newAudiobookCategory->setActive(false);
+        }
+        else{
+            $newAudiobookCategory->setActive(true);
         }
 
         $registerCodeRepository->add($newAudiobookCategory);
