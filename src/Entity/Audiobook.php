@@ -58,6 +58,9 @@ class Audiobook
     #[ORM\Column(type: 'boolean')]
     private bool $active;
 
+    #[ORM\Column(type: 'datetime')]
+    private \DateTime $dateAdd;
+
     /**
      * @param string $title
      * @param string $author
@@ -66,9 +69,9 @@ class Audiobook
      * @param \DateTime $year
      * @param string $duration
      * @param string $size
-     * @param AudiobookAgeRange $parts
+     * @param int $parts
      * @param string $description
-     * @param int $age
+     * @param AudiobookAgeRange $age
      */
     public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age)
     {
@@ -84,7 +87,7 @@ class Audiobook
         $this->age = $age->value;
         $this->categories = new ArrayCollection();
         $this->active = false;
-        $this->audiobooks = new ArrayCollection();
+        $this->dateAdd = new \DateTime('Now');
     }
 
     public function getId(): Uuid
@@ -266,14 +269,14 @@ class Audiobook
         return $this;
     }
 
-    public function getParent(): ?self
+    public function getDateAdd(): ?\DateTime
     {
-        return $this->parent;
+        return $this->dateAdd;
     }
 
-    public function setParent(?self $parent): self
+    public function setDateAdd(\DateTime $dateAdd): self
     {
-        $this->parent = $parent;
+        $this->dateAdd = $dateAdd;
 
         return $this;
     }

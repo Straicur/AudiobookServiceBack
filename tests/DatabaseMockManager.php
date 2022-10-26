@@ -142,7 +142,7 @@ class DatabaseMockManager
         ]);
     }
 
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age, array $categories, string $encoded = null): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -150,6 +150,14 @@ class DatabaseMockManager
 
         if ($encoded != null) {
             $newAudiobook->setEncoded($encoded);
+        }
+
+        if ($dateAdd != null) {
+            $newAudiobook->setDateAdd($dateAdd);
+        }
+
+        if ($active) {
+            $newAudiobook->setActive($active);
         }
 
         foreach ($categories as $category){
