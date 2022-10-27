@@ -2,10 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -49,6 +48,21 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param Audiobook $audiobook
+     * @return AudiobookCategory[]
+     */
+    public function getAudiobookCategories(Audiobook $audiobook): array
+    {
+        $qb = $this->createQueryBuilder('ac')
+            ->leftJoin('ac.audiobooks', 'a')
+            ->where('a.id = :audiobook')
+            ->setParameter('audiobook', $audiobook->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return AudiobookCategory[] Returns an array of AudiobookCategory objects
 //     */

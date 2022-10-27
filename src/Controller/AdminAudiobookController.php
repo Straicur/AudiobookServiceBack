@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AdminAudiobookCategoryModel;
 use App\Model\AdminAudiobookDetailsSuccessModel;
 use App\Model\AdminAudiobooksSuccessModel;
 use App\Model\AdminCategoryAudiobookModel;
@@ -25,7 +26,6 @@ use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
-use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -75,6 +75,7 @@ class AdminAudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -104,7 +105,7 @@ class AdminAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository $audiobookCategoryRepository
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
@@ -120,9 +121,18 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException(["adminAudiobook.audiobook.details.not.exist"]);
             }
 
-            $categories = $audiobookCategoryRepository->findBy([
-                "audiobooks"=>$audiobook
-            ]);
+            $categories = $audiobookCategoryRepository->getAudiobookCategories($audiobook);
+
+            $audiobookCategories = [];
+
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                    $category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey()
+                );
+            }
 
             $successModel = new AdminAudiobookDetailsSuccessModel(
                 $audiobook->getId(),
@@ -137,7 +147,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->getDescription(),
                 $audiobook->getAge(),
                 $audiobook->getActive(),
-                $categories
+                $audiobookCategories
             );
 
             if ($audiobook->getEncoded() != null) {
@@ -430,6 +440,7 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -486,7 +497,7 @@ class AdminAudiobookController extends AbstractController
 
                 $allAudiobooks = $audiobookRepository->findAll();
 
-                $successModel->setMaxPage($allAudiobooks / $adminAudiobooksQuery->getLimit());
+                $successModel->setMaxPage(count($allAudiobooks) / $adminAudiobooksQuery->getLimit());
                 $successModel->addAudiobook($audiobookModel);
             }
 
@@ -502,9 +513,10 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/active", name: "adminAudiobookActive", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]

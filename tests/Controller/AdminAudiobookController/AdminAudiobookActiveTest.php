@@ -41,7 +41,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -85,7 +85,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -128,7 +128,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -171,7 +171,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -216,7 +216,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -260,7 +260,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);

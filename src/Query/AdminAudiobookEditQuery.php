@@ -2,6 +2,7 @@
 
 namespace App\Query;
 
+use App\Enums\AudiobookAgeRange;
 use DateTime;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -49,18 +50,18 @@ class AdminAudiobookEditQuery
     #[Assert\Type(type: "string")]
     private string $size;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
+    #[Assert\NotNull(message: "Parts is null")]
+    #[Assert\NotBlank(message: "Parts is empty")]
     #[Assert\Type(type: "integer")]
     private int $parts;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
+    #[Assert\NotNull(message: "Description is null")]
+    #[Assert\NotBlank(message: "Description is empty")]
     #[Assert\Type(type: "string")]
     private string $description;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
+    #[Assert\NotNull(message: "Age is null")]
+    #[Assert\NotBlank(message: "Age is empty")]
     #[Assert\Type(type: "integer")]
     private int $age;
 
@@ -228,11 +229,17 @@ class AdminAudiobookEditQuery
     }
 
     /**
-     * @return int
+     * @return AudiobookAgeRange
      */
-    public function getAge(): int
+    public function getAge(): AudiobookAgeRange
     {
-        return $this->age;
+        return match ($this->age) {
+            1 => AudiobookAgeRange::FROM3TO7,
+            2 => AudiobookAgeRange::FROM7TO12,
+            3 => AudiobookAgeRange::FROM12TO16,
+            4 => AudiobookAgeRange::FROM16TO18,
+            5 => AudiobookAgeRange::ABOVE18,
+        };
     }
 
     /**

@@ -22,7 +22,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     private ?string $encoded;
 
     /**
-     * @var AdminCategoryModel[]
+     * @var AdminAudiobookCategoryModel[]
      */
     private array $categories = [];
 
@@ -268,7 +268,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @return AdminCategoryModel[]
+     * @return AdminAudiobookCategoryModel[]
      */
     public function getCategories(): array
     {
@@ -283,7 +283,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
         $this->categories = $categories;
     }
 
-    public function addCategory(AdminCategoryModel $category)
+    public function addCategory(AdminAudiobookCategoryModel $category)
     {
         $this->categories[] = $category;
     }

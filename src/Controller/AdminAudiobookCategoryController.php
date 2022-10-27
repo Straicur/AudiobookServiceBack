@@ -13,7 +13,6 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Query\AdminCategoriesQuery;
 use App\Query\AdminCategoryActiveQuery;
 use App\Query\AdminCategoryAddQuery;
 use App\Query\AdminCategoryAudiobooksQuery;
@@ -195,6 +194,7 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -373,21 +373,34 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobooks = $category->getAudiobooks();
 
-            foreach ($audiobooks as $audiobook) {
-                $audiobookModel = new AdminCategoryAudiobookModel(
-                    $audiobook->getId(),
-                    $audiobook->getTitle(),
-                    $audiobook->getAuthor(),
-                    $audiobook->getYear(),
-                    $audiobook->getDuration(),
-                    $audiobook->getSize(),
-                    $audiobook->getParts(),
-                    $audiobook->getAge(),
-                    $audiobook->getActive()
-                );
+            $minResult = $adminCategoryAudiobooksQuery->getPage() * $adminCategoryAudiobooksQuery->getLimit();
+            $maxResult = $adminCategoryAudiobooksQuery->getLimit() + $minResult;
+
+            foreach ($audiobooks as $index => $audiobook) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $audiobookModel = new AdminCategoryAudiobookModel(
+                        $audiobook->getId(),
+                        $audiobook->getTitle(),
+                        $audiobook->getAuthor(),
+                        $audiobook->getYear(),
+                        $audiobook->getDuration(),
+                        $audiobook->getSize(),
+                        $audiobook->getParts(),
+                        $audiobook->getAge(),
+                        $audiobook->getActive()
+                    );
 
                 $successModel->addAudiobook($audiobookModel);
+                } else {
+                    break;
+                }
             }
+            $successModel->setPage($adminCategoryAudiobooksQuery->getPage());
+            $successModel->setLimit($adminCategoryAudiobooksQuery->getLimit());
+
+            $successModel->setMaxPage(floor(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {

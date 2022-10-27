@@ -2,48 +2,41 @@
 
 namespace App\Model;
 
-class AdminCategoryModel implements ModelInterface
+class AdminAudiobookCategoryModel implements ModelInterface
 {
+    private string $id;
     private string $name;
     private bool $active;
     private string $categoryKey;
 
     /**
-     * @var AdminCategoryModel[]
-     */
-    private array $children = [];
-
-    /**
+     * @param string $id
      * @param string $name
      * @param bool $active
      * @param string $categoryKey
      */
-    public function __construct(string $name, bool $active, string $categoryKey)
+    public function __construct(string $id, string $name, bool $active, string $categoryKey)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->active = $active;
         $this->categoryKey = $categoryKey;
     }
 
     /**
-     * @return AdminCategoryModel[]
+     * @return string
      */
-    public function getChildren(): array
+    public function getId(): string
     {
-        return $this->children;
+        return $this->id;
     }
 
     /**
-     * @param array $children
+     * @param string $id
      */
-    public function setChildren(array $children): void
+    public function setId(string $id): void
     {
-        $this->children = $children;
-    }
-
-    public function addChildren(AdminCategoryModel $children)
-    {
-        $this->children[] = $children;
+        $this->id = $id;
     }
 
     /**

@@ -29,10 +29,19 @@ class AdminAudiobooksTest extends AbstractWebTest
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2],null,(new \DateTime("Now"))->modify("- 1 month"));
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2]);
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2],null,(new \DateTime("Now"))->modify("- 1 year"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2],null,(new \DateTime("Now"))->modify("- 1 month"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2],null,(new \DateTime("Now"))->modify("- 1 year"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2],null,(new \DateTime("Now"))->modify("- 1 month"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2],null,(new \DateTime("Now"))->modify("- 1 year"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2],null,(new \DateTime("Now"))->modify("- 1 month"));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category2],null,(new \DateTime("Now"))->modify("- 1 year"));
 
         /// step 2
         $content = [
-            "page" => 0,
+            "page" => 1,
             "limit" => 10,
         ];
 
@@ -54,7 +63,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("audiobooks", $responseContent);
-        $this->assertCount(3, $responseContent["audiobooks"]);
+        $this->assertCount(2, $responseContent["audiobooks"]);
     }
 
     /**

@@ -44,7 +44,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "year" => "27.11.2022",
             "duration" => "30",
             "size" => "30",
-            "parts" => "3",
+            "parts" => 3,
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
         ];
@@ -66,12 +66,12 @@ class AdminAudiobookEditTest extends AbstractWebTest
         $this->assertSame($audiobook1After->getAuthor(),$content["author"]);
         $this->assertSame($audiobook1After->getVersion(),$content["version"]);
         $this->assertSame($audiobook1After->getAlbum(),$content["album"]);
-        $this->assertSame($audiobook1After->getYear(),$content["year"]);
+        $this->assertSame($audiobook1After->getYear()->format('d.m.Y'),$content["year"]);
         $this->assertSame($audiobook1After->getDuration(),$content["duration"]);
         $this->assertSame($audiobook1After->getSize(),$content["size"]);
         $this->assertSame($audiobook1After->getParts(),$content["parts"]);
         $this->assertSame($audiobook1After->getDescription(),$content["description"]);
-        $this->assertSame($audiobook1After->getAge(),$content["age"]);
+        $this->assertSame($audiobook1After->getAge()->value,$content["age"]);
     }
 
     /**

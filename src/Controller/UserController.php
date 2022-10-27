@@ -66,7 +66,7 @@ class UserController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
                 type: "object"
             ),
         ),
@@ -86,9 +86,9 @@ class UserController extends AbstractController
 
     ): Response
     {
-        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-
-        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
 
 //            if ( == null) {
 //                $endpointLogger->error("Offer dont exist");
@@ -96,9 +96,9 @@ class UserController extends AbstractController
 //            }
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-        }
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
     }
 }

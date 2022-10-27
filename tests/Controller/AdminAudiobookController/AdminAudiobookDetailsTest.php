@@ -48,8 +48,21 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
         $this->assertIsArray($responseContent);
-        print_r($responseContent);
+        $this->assertArrayHasKey("id", $responseContent);
+        $this->assertArrayHasKey("title", $responseContent);
+        $this->assertArrayHasKey("author", $responseContent);
+        $this->assertArrayHasKey("version", $responseContent);
+        $this->assertArrayHasKey("album", $responseContent);
+        $this->assertArrayHasKey("year", $responseContent);
+        $this->assertArrayHasKey("duration", $responseContent);
+        $this->assertArrayHasKey("size", $responseContent);
+        $this->assertArrayHasKey("parts", $responseContent);
+        $this->assertArrayHasKey("description", $responseContent);
+        $this->assertArrayHasKey("age", $responseContent);
+        $this->assertArrayHasKey("active", $responseContent);
         $this->assertArrayHasKey("categories", $responseContent);
+        $this->assertCount(2,$responseContent["categories"]);
+
     }
      /**
      * step 1 - Preparing data
