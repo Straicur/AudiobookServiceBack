@@ -3,6 +3,8 @@
 namespace App\Service;
 
 
+use App\Exception\AudiobookConfigServiceException;
+use App\Query\AdminAudiobookAddQuery;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -13,6 +15,9 @@ class AudiobookService
 {
     private MP3FileService $MP3FileService;
     private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
+    private ?AdminAudiobookAddQuery $query = null;
+    private string $whole_dir_path = "";
+    private string $whole_zip_path = "";
 
     /**
      * @param MP3FileService $MP3FileService
@@ -24,46 +29,66 @@ class AudiobookService
         $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
     }
 
-    /**
-     * @param $object
-     * @param $setName
-     * @return bool
-     */
-    public function fileExists($object, $setName): bool
+    public function configure(AdminAudiobookAddQuery $query): void
     {
+        $this->query = $query;
+        $this->whole_dir_path = $_ENV['MAIN_DIR'] . "/" . $this->query->getHashName();
+        $this->whole_zip_path = $_ENV['MAIN_DIR'] . "/" . $this->query->getFileName();
+    }
+
+    /**
+     * @return void
+     * @throws AudiobookConfigServiceException
+     */
+    public function checkAndAddFile(): void
+    {
+        self::checkConfiguration();
+
         $fsObject = new Filesystem();
 
-        $whole_dir_path = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->hash_name;
+        self::checkOrCreateAudiobookFolder($fsObject);
 
-        if (!$fsObject->exists($whole_dir_path)) {
-            $old = umask(0);
-            $fsObject->mkdir($whole_dir_path, 0775);
-            umask($old);
-        }
-
-        $file = $whole_dir_path . "/" . $object->hash_name . $object->part_nr;
+        $file = $this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart();
 
         if (!$fsObject->exists($file)) {
-            return true;
-        } elseif ($fsObject->exists($file)) {
-            return false;
-        } else {
-            return false;
+            self::addFileToFolder();
         }
     }
 
     /**
-     * @param $object
-     * @param $setName
-     * @return bool
+     * @param Filesystem $fsObject
+     * @return void
      */
-    public function lastFile($object, $setName): bool
+    private function checkOrCreateAudiobookFolder(Filesystem $fsObject): void
     {
-        $whole_dir_path = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->hash_name;
+        if (!$fsObject->exists($this->whole_dir_path)) {
+            $old = umask(0);
+            $fsObject->mkdir($this->whole_dir_path, 0775);
+            umask($old);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function addFileToFolder(): void
+    {
+        $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getParts(), "w");
+        fwrite($base64File,$this->query->getBase64());
+        fclose($base64File);
+    }
+
+    /**
+     * @return bool
+     * @throws AudiobookConfigServiceException
+     */
+    public function lastFile(): bool
+    {
+        self::checkConfiguration();
 
         $amountOfFiles = 0;
 
-        if ($handle = opendir($whole_dir_path)) {
+        if ($handle = opendir($this->whole_dir_path)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     $amountOfFiles += 1;
@@ -72,41 +97,36 @@ class AudiobookService
             closedir($handle);
         }
 
-        if ($amountOfFiles == $object->all_parts_nr) {
-            return true;
-        } else {
-            return false;
-        }
+       return ($amountOfFiles == $this->query->getParts());
     }
 
     /**
-     * @param $object
-     * @param $setName
      * @return false|string
+     * @throws AudiobookConfigServiceException
      */
-    public function combineFiles($object, $setName): bool|string
+    public function combineFiles(): bool|string
     {
-        try {
+        self::checkConfiguration();
 
-            $finalFile = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->file_name . ".zip";
+            $finalFile = $this->whole_zip_path . ".zip";
 
             $zipFile = fopen($finalFile, "a");
-            $path = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->hash_name;
 
-            $zipfiles = array_diff(scandir($path), array('.', '..'));
+            $zipFiles = array_diff(scandir($this->whole_dir_path), array('.', '..'));
             $result = [];
 
-            foreach ($zipfiles as $file) {
-                $hash = strlen($object->hash_name);
-                array_push($result, substr($file, $hash));
+            foreach ($zipFiles as $file) {
+                $hash = strlen($this->query->getHashName());
+                $result[] = substr($file, $hash);
             }
+
             sort($result);
 
             foreach ($result as $file) {
 
-                $partFile = fopen($_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->hash_name . "/" . $object->hash_name . $file, "r");
+                $partFile = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $file, "r");
 
-                $readData = fread($partFile, filesize($_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->hash_name . "/" . $object->hash_name . $file));
+                $readData = fread($partFile, filesize($this->whole_dir_path . "/" . $this->query->getHashName() . $file));
 
                 fwrite($zipFile, base64_decode($readData, true));
 
@@ -116,7 +136,8 @@ class AudiobookService
 
             fclose($zipFile);
 
-            $it = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+            $it = new RecursiveDirectoryIterator($this->whole_dir_path, FilesystemIterator::SKIP_DOTS);
+
             $files = new RecursiveIteratorIterator($it,
                 RecursiveIteratorIterator::CHILD_FIRST);
             foreach ($files as $file) {
@@ -127,29 +148,25 @@ class AudiobookService
                 }
             }
 
-            if (rmdir($path)) {
-                return $finalFile;
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            print_r($e);
-            return false;
-        }
+            rmdir($this->whole_dir_path);
+
+            return $finalFile;
     }
 
     /**
      * @param $file_name
-     * @param $setName
      * @return array
+     * @throws AudiobookConfigServiceException
      */
-    public function createAudiobookJsonData($file_name, $setName): array
+    public function createAudiobookJsonData($file_name): array
     {
+        self::checkConfiguration();
+
         $id3Data = [];
         $mp3Size = 0;
         $mp3Duration = "";
         $parts = 0;
-        if ($handle = opendir($_ENV['MAIN_DIR'] . "/" . $setName . "/" . $file_name)) {
+        if ($handle = opendir($_ENV['MAIN_DIR'] . "/" . $file_name)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     $file_parts = pathinfo($entry);
@@ -159,7 +176,7 @@ class AudiobookService
 
                             $parts++;
 
-                            $mp3Dir = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $file_name . "/" . $mp3file;
+                            $mp3Dir = $_ENV['MAIN_DIR'] . "/" . $file_name . "/" . $mp3file;
 
                             $mp3Duration = $this->MP3FileService->getDuration();
 
@@ -197,22 +214,21 @@ class AudiobookService
         $id3Data['title'] = $file_name;
 
         return ($id3Data);
-
     }
 
     /**
-     * @param $object
-     * @param $setName
-     * @param $fileName
      * @return bool|array
+     * @throws AudiobookConfigServiceException
      */
-    public function unzip($object, $setName, $fileName): bool|array
+    public function unzip(): bool|array
     {
-        $file = $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->file_name . ".zip";
-        $path = $_ENV['MAIN_DIR'] . "/" . $setName;
+        self::checkConfiguration();
+
+        $file = $this->whole_zip_path . ".zip";
+        $path = $_ENV['MAIN_DIR'];
 
         $zip = new ZipArchive;
-        $res = $zip->open($fileName);
+        $res = $zip->open($file);
 
         if ($res === TRUE) {
 
@@ -222,11 +238,22 @@ class AudiobookService
             $zip->close();
             unlink($file);
 
-            rename($_ENV['MAIN_DIR'] . "/" . $setName . "/" . $dir, $_ENV['MAIN_DIR'] . "/" . $setName . "/" . $object->file_name);
+            rename($_ENV['MAIN_DIR'] . "/" . $dir, $this->whole_zip_path);
 
-            return $this->createAudiobookJsonData($object->file_name, $setName);
+            return $this->createAudiobookJsonData($this->query->getFileName());
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @return void
+     * @throws AudiobookConfigServiceException
+     */
+    private function checkConfiguration(): void
+    {
+        if($this->query == null){
+            throw new AudiobookConfigServiceException();
         }
     }
 }

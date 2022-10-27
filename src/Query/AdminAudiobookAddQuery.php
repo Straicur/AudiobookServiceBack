@@ -2,7 +2,10 @@
 
 namespace App\Query;
 
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use OpenApi\Attributes as OA;
 
 class AdminAudiobookAddQuery
 {
@@ -31,6 +34,43 @@ class AdminAudiobookAddQuery
     #[Assert\Type(type: "integer")]
     private int $parts;
 
+    protected array $categories = [];
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addPropertyConstraint('categories', new Assert\Collection([
+            'categories' => new Assert\Optional([
+                new Assert\NotBlank(message: "Categories is empty"),
+                new Assert\All(constraints: [
+                    new Assert\NotBlank(),
+                    new Assert\Uuid()
+                ])
+            ])
+        ]));
+    }
+
+    /**
+     * @param array $categories
+     */
+    #[OA\Property(property: "categories", type: "array", nullable: true, attachables: [
+            new OA\Items(type: "string", example: "UUID")
+    ])]
+    public function setCategories(array $categories): void
+    {
+//        if (array_key_exists("categories", $categories)) {
+//            $searchData["city"] = Uuid::fromString($categories["categories"]);
+//        }
+
+        $this->categories = $categories;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCategories(): array
+    {
+        return $this->categories;
+    }
     /**
      * @return string
      */

@@ -205,7 +205,13 @@ class AdminAudiobookController extends AbstractController
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
-
+            //todo pliki robie tam w serwisie i one mają mi zwrócić te wszystkie potrzebne pliki
+            // A tu dodaje już do bazy plus dodaje też do kategorii
+            // Zostaje mi jeszcze do przejrzenia tamten serwis i po tym dobre rozbicie go bo jest syfem
+            // Na koniec pisze test do tego, uogólniam żeby zrobić retransmiję i lece z next
+            // Do usunięcia robie oddzielny serwis
+            // Dodaj może jeszcze endp dodający img bo ni ma
+            // Zipa z api flat
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
