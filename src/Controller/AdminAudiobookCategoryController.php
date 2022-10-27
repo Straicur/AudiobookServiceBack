@@ -378,19 +378,13 @@ class AdminAudiobookCategoryController extends AbstractController
                     $audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
-                    $audiobook->getVersion(),
-                    $audiobook->getAlbum(),
                     $audiobook->getYear(),
                     $audiobook->getDuration(),
                     $audiobook->getSize(),
                     $audiobook->getParts(),
-                    $audiobook->getDescription(),
                     $audiobook->getAge(),
                     $audiobook->getActive()
                 );
-                if ($audiobook->getEncoded() != null) {
-                    $audiobookModel->setEncoded($audiobook->getEncoded());
-                }
 
                 $successModel->addAudiobook($audiobookModel);
             }

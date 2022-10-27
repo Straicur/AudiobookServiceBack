@@ -5,40 +5,57 @@ namespace App\Model;
 use App\Enums\AudiobookAgeRange;
 use OpenApi\Attributes as OA;
 
-class AdminCategoryAudiobookModel implements ModelInterface
+class AdminAudiobookDetailsSuccessModel implements ModelInterface
 {
     private string $id;
     private string $title;
     private string $author;
+    private string $version;
+    private string $album;
     private int $year;
     private string $duration;
     private string $size;
     private int $parts;
+    private string $description;
     private int $age;
     private bool $active;
+    private ?string $encoded;
+
+    /**
+     * @var AdminCategoryModel[]
+     */
+    private array $categories = [];
 
     /**
      * @param string $id
      * @param string $title
      * @param string $author
+     * @param string $version
+     * @param string $album
      * @param \DateTime $year
      * @param string $duration
      * @param string $size
      * @param int $parts
+     * @param string $description
      * @param AudiobookAgeRange $age
      * @param bool $active
+     * @param array $categories
      */
-    public function __construct(string $id, string $title, string $author, \DateTime $year, string $duration, string $size, int $parts, AudiobookAgeRange $age, bool $active)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
     {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
+        $this->version = $version;
+        $this->album = $album;
         $this->year = $year->getTimestamp();
         $this->duration = $duration;
         $this->size = $size;
         $this->parts = $parts;
+        $this->description = $description;
         $this->age = $age->value;
         $this->active = $active;
+        $this->categories = $categories;
     }
 
     /**
@@ -90,6 +107,38 @@ class AdminCategoryAudiobookModel implements ModelInterface
     }
 
     /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlbum(): string
+    {
+        return $this->album;
+    }
+
+    /**
+     * @param string $album
+     */
+    public function setAlbum(string $album): void
+    {
+        $this->album = $album;
+    }
+
+    /**
      * @return int
      */
     public function getYear(): int
@@ -103,6 +152,22 @@ class AdminCategoryAudiobookModel implements ModelInterface
     public function setYear(\DateTime $year): void
     {
         $this->year = $year->getTimestamp();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEncoded(): ?string
+    {
+        return $this->encoded;
+    }
+
+    /**
+     * @param string $encoded
+     */
+    public function setEncoded(string $encoded): void
+    {
+        $this->encoded = $encoded;
     }
 
     /**
@@ -154,6 +219,22 @@ class AdminCategoryAudiobookModel implements ModelInterface
     }
 
     /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @return int
      */
     public function getAge(): int
@@ -186,4 +267,24 @@ class AdminCategoryAudiobookModel implements ModelInterface
         $this->active = $active;
     }
 
+    /**
+     * @return AdminCategoryModel[]
+     */
+    public function getCategories(): array
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param array $categories
+     */
+    public function setCategories(array $categories): void
+    {
+        $this->categories = $categories;
+    }
+
+    public function addCategory(AdminCategoryModel $category)
+    {
+        $this->categories[] = $category;
+    }
 }

@@ -13,11 +13,6 @@ class AdminAudiobookDetailsQuery
     #[Assert\Uuid]
     private Uuid $audiobookId;
 
-    #[Assert\NotNull(message: "CategoryKey is null")]
-    #[Assert\NotBlank(message: "CategoryKey is empty")]
-    #[Assert\Type(type: "string")]
-    private string $categoryKey;
-
     /**
      * @return Uuid
      */
@@ -33,20 +28,5 @@ class AdminAudiobookDetailsQuery
     public function setAudiobookId(string $audiobookId): void
     {
         $this->audiobookId = Uuid::fromString($audiobookId);;
-    }
-    /**
-     * @return string
-     */
-    public function getCategoryKey(): string
-    {
-        return $this->categoryKey;
-    }
-
-    /**
-     * @param string $categoryKey
-     */
-    public function setCategoryKey(string $categoryKey): void
-    {
-        $this->categoryKey = $categoryKey;
     }
 }

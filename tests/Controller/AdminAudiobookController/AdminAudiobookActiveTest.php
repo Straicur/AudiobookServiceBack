@@ -4,6 +4,7 @@ namespace App\Tests\Controller\AdminAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -21,9 +22,9 @@ class AdminAudiobookActiveTest extends AbstractWebTest
      */
     public function test_adminAudiobookActiveCorrect(): void
     {
-        $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
 
-        $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
@@ -48,11 +49,11 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $category1After = $audiobookCategoryRepository->findOneBy([
-            "id" => $category1->getId()
+        $audiobook1After = $audiobookRepository->findOneBy([
+            "id" => $audiobook1->getId()
         ]);
 
-        $this->assertTrue($category1After->getActive());
+        $this->assertTrue($audiobook1After->getActive());
     }
 
     /**
@@ -101,13 +102,13 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
     /**
      * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ServiceId
+     * step 2 - Preparing JsonBodyContent with bad audiobookId
      * step 3 - Sending Request
      * step 4 - Checking response
      *
      * @return void
      */
-    public function test_adminAudiobookActiveIncorrectCategoryId(): void
+    public function test_adminAudiobookActiveIncorrectAudiobookId(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -167,8 +168,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, [$category2], active: true);
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        $content = [
-        ];
+        $content = [];
 
         /// step 2
         $crawler = self::$webClient->request("PATCH", "/api/admin/category/active", server: [

@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Entity\Audiobook;
+use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AdminAudiobookDetailsSuccessModel;
+use App\Model\AdminAudiobooksSuccessModel;
+use App\Model\AdminCategoryAudiobookModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
@@ -15,12 +18,14 @@ use App\Query\AdminAudiobookDeleteQuery;
 use App\Query\AdminAudiobookDetailsQuery;
 use App\Query\AdminAudiobookEditQuery;
 use App\Query\AdminAudiobookReAddingQuery;
-use App\Query\AdminAudiobooksNewQuery;
 use App\Query\AdminAudiobooksQuery;
 use App\Query\AdminAudiobookZipQuery;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
+use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -69,7 +74,9 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/details", name: "adminAudiobookDetails", methods: ["POST"])]
@@ -87,7 +94,7 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
     )]
@@ -96,23 +103,51 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        Audiobook $id
+        AudiobookRepository            $audiobookRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository
     ): Response
     {
-
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookDetailsQuery->getAudiobookId()
+            ]);
 
-            return ResponseTool::getResponse();
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.audiobook.details.not.exist"]);
+            }
+
+            $categories = $audiobookCategoryRepository->findBy([
+                "audiobooks"=>$audiobook
+            ]);
+
+            $successModel = new AdminAudiobookDetailsSuccessModel(
+                $audiobook->getId(),
+                $audiobook->getTitle(),
+                $audiobook->getAuthor(),
+                $audiobook->getVersion(),
+                $audiobook->getAlbum(),
+                $audiobook->getYear(),
+                $audiobook->getDuration(),
+                $audiobook->getSize(),
+                $audiobook->getParts(),
+                $audiobook->getDescription(),
+                $audiobook->getAge(),
+                $audiobook->getActive(),
+                $categories
+            );
+
+            if ($audiobook->getEncoded() != null) {
+                $successModel->setEncoded($audiobook->getEncoded());
+            }
+
+            return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminAudiobook.add.invalid.query");
+            throw new InvalidJsonDataException("adminAudiobook.details.invalid.query");
         }
 
     }
@@ -173,13 +208,15 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/edit", name: "adminAudiobookEdit", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Patch(
-        description: "Endpoint is editing given audiobooka data",
+        description: "Endpoint is editing given audiobook data",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -191,7 +228,6 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -200,17 +236,34 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
 
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookEditQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.edit.audiobook.not.exist"]);
+            }
+
+            $audiobook->setTitle($adminAudiobookEditQuery->getTitle());
+            $audiobook->setAuthor($adminAudiobookEditQuery->getAuthor());
+            $audiobook->setVersion($adminAudiobookEditQuery->getVersion());
+            $audiobook->setAlbum($adminAudiobookEditQuery->getAlbum());
+            $audiobook->setYear($adminAudiobookEditQuery->getYear());
+            $audiobook->setDuration($adminAudiobookEditQuery->getDuration());
+            $audiobook->setSize($adminAudiobookEditQuery->getSize());
+            $audiobook->setParts($adminAudiobookEditQuery->getParts());
+            $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
+            $audiobook->setAge($adminAudiobookEditQuery->getAge());
+
+            $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
         } else {
@@ -395,7 +448,7 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -404,19 +457,40 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $successModel = new AdminAudiobooksSuccessModel();
 
-            return ResponseTool::getResponse();
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit());
+
+            foreach ($audiobooks as $audiobook) {
+                $audiobookModel = new AdminCategoryAudiobookModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getYear(),
+                    $audiobook->getDuration(),
+                    $audiobook->getSize(),
+                    $audiobook->getParts(),
+                    $audiobook->getAge(),
+                    $audiobook->getActive()
+                );
+
+                $successModel->setPage($adminAudiobooksQuery->getPage());
+                $successModel->setLimit($adminAudiobooksQuery->getLimit());
+
+                $allAudiobooks = $audiobookRepository->findAll();
+
+                $successModel->setMaxPage($allAudiobooks / $adminAudiobooksQuery->getLimit());
+                $successModel->addAudiobook($audiobookModel);
+            }
+
+            return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobooks.invalid.query");
@@ -430,6 +504,7 @@ class AdminAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/admin/audiobook/active", name: "adminAudiobookActive", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -446,7 +521,6 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -455,17 +529,23 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
 
         if ($adminAudiobookActiveQuery instanceof AdminAudiobookActiveQuery) {
-            //Posortowane od najnowszych
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookActiveQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.active.audiobook.not.exist"]);
+            }
+
+            $audiobook->setActive($adminAudiobookActiveQuery->isActive());
+            $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
         } else {

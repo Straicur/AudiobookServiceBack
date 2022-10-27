@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Audiobook;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -49,6 +47,25 @@ class AudiobookRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param int $limit
+     * @param int $page
+     * @return Audiobook[]
+     */
+    public function getAudiobooksByPage( int $page, int $limit): array
+    {
+        $minResult = $page * $limit;
+        $maxResult = $limit + $minResult;
+
+        $qb = $this->createQueryBuilder('a')
+            ->orderBy("a.dateAdd", "DESC")
+            ->setFirstResult($minResult)
+            ->setMaxResults($maxResult);
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects
 //     */
