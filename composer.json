@@ -41,7 +41,8 @@
     "twig/twig": "^2.12|^3.0",
     "web3p/ethereum-tx": "dev-master",
     "web3p/web3.php": "dev-master",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-zip": "*"
   },
   "config": {
     "allow-plugins": {

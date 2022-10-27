@@ -7,10 +7,7 @@ use App\Entity\User;
 use App\Exception\AuthenticationException;
 use App\Repository\AuthenticationTokenRepository;
 
-/**
- * AuthorizedUserService
- *
- */
+
 class AuthorizedUserService implements AuthorizedUserServiceInterface
 {
     private static AuthenticationTokenRepository $authenticationTokenRepository;
