@@ -5,11 +5,11 @@ namespace App\Service;
 
 class MP3FileService
 {
-    private string $filename;
+    public string $fileName = "";
 
-    public function __construct(string $filename)
+    public function configure(string $fileName): void
     {
-        $this->filename = $filename;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -17,7 +17,7 @@ class MP3FileService
      */
     public function getDuration(): string
     {
-        $fd = fopen($this->filename, "rb");
+        $fd = fopen($this->fileName, "rb");
 
         $duration = 0;
         $block = fread($fd, 100);

@@ -4,6 +4,7 @@ namespace App\Model;
 
 class AdminCategoryModel implements ModelInterface
 {
+    private string $id;
     private string $name;
     private bool $active;
     private string $categoryKey;
@@ -14,12 +15,14 @@ class AdminCategoryModel implements ModelInterface
     private array $children = [];
 
     /**
+     * @param string $id
      * @param string $name
      * @param bool $active
      * @param string $categoryKey
      */
-    public function __construct(string $name, bool $active, string $categoryKey)
+    public function __construct(string $id, string $name, bool $active, string $categoryKey)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->active = $active;
         $this->categoryKey = $categoryKey;
@@ -92,6 +95,22 @@ class AdminCategoryModel implements ModelInterface
     public function setCategoryKey(string $categoryKey): void
     {
         $this->categoryKey = $categoryKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
     }
 
 }

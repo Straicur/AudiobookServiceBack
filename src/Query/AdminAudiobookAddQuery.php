@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use OpenApi\Attributes as OA;
 
-class AdminAudiobookAddQuery
+class  AdminAudiobookAddQuery
 {
     #[Assert\NotNull(message: "HashName is null")]
     #[Assert\NotBlank(message: "HashName is empty")]
@@ -34,42 +34,42 @@ class AdminAudiobookAddQuery
     #[Assert\Type(type: "integer")]
     private int $parts;
 
-    protected array $categories = [];
+    protected array $additionalData = [];
 
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
     {
-        $metadata->addPropertyConstraint('categories', new Assert\Collection([
-            'categories' => new Assert\Optional([
-                new Assert\NotBlank(message: "Categories is empty"),
-                new Assert\All(constraints: [
-                    new Assert\NotBlank(),
-                    new Assert\Uuid()
+        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
+            'fields' => [
+                'categories' => new Assert\Optional([
+                    new Assert\NotBlank(message: "Categories is empty"),
+                    new Assert\All(constraints: [
+                        new Assert\NotBlank(),
+                        new Assert\Uuid()
+                    ])
                 ])
-            ])
+            ],
         ]));
     }
 
     /**
-     * @param array $categories
+     * @param array $additionalData
      */
-    #[OA\Property(property: "categories", type: "array", nullable: true, attachables: [
+    #[OA\Property(property: "additionalData", properties: [
+        new OA\Property(property: "categories", type: "array", nullable: true, attachables: [
             new OA\Items(type: "string", example: "UUID")
-    ])]
-    public function setCategories(array $categories): void
+        ])
+    ], type: "object")]
+    public function setAdditionalData(array $additionalData): void
     {
-//        if (array_key_exists("categories", $categories)) {
-//            $searchData["city"] = Uuid::fromString($categories["categories"]);
-//        }
-
-        $this->categories = $categories;
+        $this->additionalData = $additionalData;
     }
 
     /**
      * @return string[]
      */
-    public function getCategories(): array
+    public function getAdditionalData(): array
     {
-        return $this->categories;
+        return $this->additionalData;
     }
     /**
      * @return string

@@ -101,16 +101,13 @@ class AudiobookService
     }
 
     /**
-     * @return false|string
      * @throws AudiobookConfigServiceException
      */
-    public function combineFiles(): bool|string
+    public function combineFiles(): void
     {
         self::checkConfiguration();
 
-            $finalFile = $this->whole_zip_path . ".zip";
-
-            $zipFile = fopen($finalFile, "a");
+            $zipFile = fopen($this->whole_zip_path . ".zip", "a");
 
             $zipFiles = array_diff(scandir($this->whole_dir_path), array('.', '..'));
             $result = [];
@@ -124,9 +121,11 @@ class AudiobookService
 
             foreach ($result as $file) {
 
-                $partFile = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $file, "r");
+                $fileDir = $this->whole_dir_path . "/" . $this->query->getHashName() . $file;
 
-                $readData = fread($partFile, filesize($this->whole_dir_path . "/" . $this->query->getHashName() . $file));
+                $partFile = fopen($fileDir, "r");
+
+                $readData = fread($partFile, filesize($fileDir));
 
                 fwrite($zipFile, base64_decode($readData, true));
 
@@ -136,29 +135,55 @@ class AudiobookService
 
             fclose($zipFile);
 
-            $it = new RecursiveDirectoryIterator($this->whole_dir_path, FilesystemIterator::SKIP_DOTS);
+            self::deleteFileFolderPath();
+    }
 
-            $files = new RecursiveIteratorIterator($it,
-                RecursiveIteratorIterator::CHILD_FIRST);
-            foreach ($files as $file) {
-                if ($file->isDir()) {
-                    rmdir($file->getRealPath());
-                } else {
-                    unlink($file->getRealPath());
-                }
+    private function deleteFileFolderPath(): void
+    {
+        $it = new RecursiveDirectoryIterator($this->whole_dir_path, FilesystemIterator::SKIP_DOTS);
+
+        $files = new RecursiveIteratorIterator($it,
+            RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
             }
+        }
 
-            rmdir($this->whole_dir_path);
-
-            return $finalFile;
+        rmdir($this->whole_dir_path);
     }
 
     /**
-     * @param $file_name
+     * @return bool|array
+     * @throws AudiobookConfigServiceException
+     */
+    public function unzip(): bool|array
+    {
+        self::checkConfiguration();
+
+        $file = $this->whole_zip_path . ".zip";
+
+        $zip = new ZipArchive;
+        $res = $zip->open($file);
+
+        $dir = trim($zip->getNameIndex(0), '/');
+
+        $zip->extractTo($_ENV['MAIN_DIR']);
+        $zip->close();
+        unlink($file);
+
+        rename($_ENV['MAIN_DIR'] . "/" . $dir, $this->whole_zip_path);
+
+        return $res;
+    }
+
+    /**
      * @return array
      * @throws AudiobookConfigServiceException
      */
-    public function createAudiobookJsonData($file_name): array
+    public function createAudiobookJsonData(): array
     {
         self::checkConfiguration();
 
@@ -166,7 +191,8 @@ class AudiobookService
         $mp3Size = 0;
         $mp3Duration = "";
         $parts = 0;
-        if ($handle = opendir($_ENV['MAIN_DIR'] . "/" . $file_name)) {
+
+        if ($handle = opendir($this->whole_zip_path)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     $file_parts = pathinfo($entry);
@@ -176,7 +202,9 @@ class AudiobookService
 
                             $parts++;
 
-                            $mp3Dir = $_ENV['MAIN_DIR'] . "/" . $file_name . "/" . $mp3file;
+                            $mp3Dir = $this->whole_zip_path . "/" . $mp3file;
+
+                            $this->MP3FileService->configure($mp3Dir);
 
                             $mp3Duration = $this->MP3FileService->getDuration();
 
@@ -211,39 +239,30 @@ class AudiobookService
         $id3Data['duration'] = $mp3Duration;
         $id3Data['size'] = number_format($mp3Size / 1048576, 2);
         $id3Data['parts'] = $parts;
-        $id3Data['title'] = $file_name;
+        $id3Data['title'] = $this->query->getFileName();
 
         return ($id3Data);
     }
 
     /**
-     * @return bool|array
-     * @throws AudiobookConfigServiceException
+     * @param string $name
+     * @return bool
      */
-    public function unzip(): bool|array
+    public function removeAudiobook(string $name): bool
     {
-        self::checkConfiguration();
+        $dir = $_ENV['MAIN_DIR']."/".$name;
 
-        $file = $this->whole_zip_path . ".zip";
-        $path = $_ENV['MAIN_DIR'];
-
-        $zip = new ZipArchive;
-        $res = $zip->open($file);
-
-        if ($res === TRUE) {
-
-            $dir = trim($zip->getNameIndex(0), '/');
-
-            $zip->extractTo($path);
-            $zip->close();
-            unlink($file);
-
-            rename($_ENV['MAIN_DIR'] . "/" . $dir, $this->whole_zip_path);
-
-            return $this->createAudiobookJsonData($this->query->getFileName());
-        } else {
-            return false;
+        $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it,
+            RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
         }
+        return rmdir($dir);
     }
 
     /**
