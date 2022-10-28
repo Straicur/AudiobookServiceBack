@@ -74,7 +74,7 @@ class AudiobookService
      */
     private function addFileToFolder(): void
     {
-        $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getParts(), "w");
+        $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart(), "w");
         fwrite($base64File, $this->query->getBase64());
         fclose($base64File);
     }
@@ -92,7 +92,7 @@ class AudiobookService
         if ($handle = opendir($this->whole_dir_path)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
-                    $amountOfFiles += 1;
+                    $amountOfFiles = $amountOfFiles + 1;
                 }
             }
             closedir($handle);

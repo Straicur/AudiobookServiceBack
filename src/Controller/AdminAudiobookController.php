@@ -194,7 +194,7 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
     )]
@@ -299,7 +299,7 @@ class AdminAudiobookController extends AbstractController
                 if ($encoded != "") {
                     $newAudiobook->setEncoded($encoded);
                 }
-
+                $audiobookCategories=[];
                 if (array_key_exists("categories", $additionalData)) {
 
                     $categories = [];
@@ -317,13 +317,40 @@ class AdminAudiobookController extends AbstractController
 
                         if ($audiobookCategory != null) {
                             $newAudiobook->addCategory($audiobookCategory);
+
+                            $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                                $audiobookCategory->getId(),
+                                $audiobookCategory->getName(),
+                                $audiobookCategory->getActive(),
+                                $audiobookCategory->getCategoryKey()
+                            );
                         }
                     }
                 }
 
                 $audiobookRepository->add($newAudiobook);
 
-                return ResponseTool::getResponse(httpCode: 201);
+                $successModel = new AdminAudiobookDetailsSuccessModel(
+                    $newAudiobook->getId(),
+                    $newAudiobook->getTitle(),
+                    $newAudiobook->getAuthor(),
+                    $newAudiobook->getVersion(),
+                    $newAudiobook->getAlbum(),
+                    $newAudiobook->getYear(),
+                    $newAudiobook->getDuration(),
+                    $newAudiobook->getSize(),
+                    $newAudiobook->getParts(),
+                    $newAudiobook->getDescription(),
+                    $newAudiobook->getAge(),
+                    $newAudiobook->getActive(),
+                    $audiobookCategories
+                );
+
+                if ($newAudiobook->getEncoded() != null) {
+                    $successModel->setEncoded($newAudiobook->getEncoded());
+                }
+
+                return ResponseTool::getResponse($successModel, 201);
             } else {
                 return ResponseTool::getResponse();
             }
