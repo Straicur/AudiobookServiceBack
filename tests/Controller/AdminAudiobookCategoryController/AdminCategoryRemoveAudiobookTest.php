@@ -3,9 +3,9 @@
 namespace App\Tests\Controller\AdminAudiobookCategoryController;
 
 use App\Enums\AudiobookAgeRange;
-use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * AdminCategoryRemoveAudiobookTest
@@ -31,7 +31,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [
@@ -49,7 +49,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
-            "id"=>$audiobook->getId()
+            "id" => $audiobook->getId()
         ]);
 
         $categories = $audiobookAfter->getCategories();
@@ -57,7 +57,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $hasCategory = false;
 
         foreach ($categories as $category) {
-            if($category === $category2){
+            if ($category === $category2) {
                 $hasCategory = true;
             }
         }
@@ -81,7 +81,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [
@@ -109,6 +109,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad AudiobookId
@@ -125,7 +126,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [
@@ -153,6 +154,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -168,7 +170,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [];
@@ -209,7 +211,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [
@@ -254,7 +256,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
         /// step 2
         $content = [

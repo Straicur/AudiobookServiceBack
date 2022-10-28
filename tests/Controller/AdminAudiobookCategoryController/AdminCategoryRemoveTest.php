@@ -37,7 +37,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category4);
         $category6 = $this->databaseMockManager->testFunc_addAudiobookCategory("6");
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,[$category1,$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d", [$category1,$category2]);
 
         /// step 2
         $content = [

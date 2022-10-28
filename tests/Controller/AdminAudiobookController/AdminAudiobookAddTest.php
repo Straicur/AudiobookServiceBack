@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\AdminAudiobookController;
 
-use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRepository;
 use App\Service\AudiobookService;
 use App\Tests\AbstractWebTest;
@@ -49,6 +48,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
                 "categories" => [
                     $category2->getId()
                 ],
+                "title" => "tytul",
+                "author" => "author"
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -61,6 +62,12 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
 
-        $audiobookService->removeAudiobook($content["fileName"]);
+        $audiobookAfter = $audiobookRepository->findOneBy([
+            "title" => $content["additionalData"]['title']
+        ]);
+
+        $this->assertNotNull($audiobookAfter);
+
+        $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 }

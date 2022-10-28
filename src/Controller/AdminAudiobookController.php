@@ -35,8 +35,10 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
@@ -216,9 +218,8 @@ class AdminAudiobookController extends AbstractController
             if ($audiobookService->lastFile()) {
 
                 $audiobookService->combineFiles();
-                $audiobookService->unzip();
-
-                $ID3JsonData = $audiobookService->createAudiobookJsonData();
+                $folderDir = $audiobookService->unzip();
+                $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
                 if (array_key_exists("version", $ID3JsonData)) {
                     $version = $ID3JsonData["version"];
@@ -239,10 +240,9 @@ class AdminAudiobookController extends AbstractController
                 }
 
                 if (array_key_exists("year", $ID3JsonData)) {
-                    if(DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"])){
+                    if (DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"])) {
                         $year = DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"]);
-                    }
-                    else{
+                    } else {
                         $year = new \DateTime("Now");
                     }
                 } else {
@@ -285,13 +285,20 @@ class AdminAudiobookController extends AbstractController
                     $title = "title";
                 }
 
-                $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::FROM3TO7);
+                $additionalData = $adminAudiobookAddQuery->getAdditionalData();
+
+                if (array_key_exists("title", $additionalData)) {
+                    $title = $additionalData["title"];
+                }
+                if (array_key_exists("author", $additionalData)) {
+                    $author = $additionalData["author"];
+                }
+
+                $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::FROM3TO7, $folderDir);
 
                 if ($encoded != "") {
                     $newAudiobook->setEncoded($encoded);
                 }
-
-                $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
                 if (array_key_exists("categories", $additionalData)) {
 
@@ -320,14 +327,6 @@ class AdminAudiobookController extends AbstractController
             } else {
                 return ResponseTool::getResponse();
             }
-
-            //todo pliki robie tam w serwisie i one mają mi zwrócić te wszystkie potrzebne pliki
-            // A tu dodaje już do bazy plus dodaje też do kategorii
-            // Zostaje mi jeszcze do przejrzenia tamten serwis i po tym dobre rozbicie go bo jest syfem
-            // Na koniec pisze test do tego, uogólniam żeby zrobić retransmiję i lece z next
-            // Do usunięcia robie oddzielny serwis
-            // Dodaj może jeszcze endp dodający img bo ni ma
-            // Zipa z api flat
 
         } else {
             $endpointLogger->error("Invalid given Query");
@@ -442,7 +441,8 @@ class AdminAudiobookController extends AbstractController
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
-
+            //Wykorzystuje te fileName i removeAudiobook z serwisu
+            // Po tym usuwam z bazy i tyle
 //            if ( == null) {
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
@@ -487,17 +487,28 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookZipQuery->getAudiobookId()
+            ]);
+            //todo tu muszę dodać ten endpoint tworzący zipa i zwaracajacy go od razu
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.zip.audiobook.details.not.exist"]);
+            }
+            $response = new BinaryFileResponse($_ENV['MAIN_DIR'] . $audiobook->getTitle());
+
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                basename($_ENV['MAIN_DIR'] . $audiobook->getTitle())
+            );
+            $response->deleteFileAfterSend();
 
             return ResponseTool::getResponse();
         } else {
@@ -544,7 +555,7 @@ class AdminAudiobookController extends AbstractController
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
-
+            //TU muszę uogulnić tak żeby działało normalnie
 //            if ( == null) {
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);

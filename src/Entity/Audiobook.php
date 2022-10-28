@@ -61,6 +61,9 @@ class Audiobook
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
 
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private string $fileName;
+
     /**
      * @param string $title
      * @param string $author
@@ -73,7 +76,7 @@ class Audiobook
      * @param string $description
      * @param AudiobookAgeRange $age
      */
-    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age)
+    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age ,string $fileName)
     {
         $this->title = $title;
         $this->author = $author;
@@ -88,6 +91,7 @@ class Audiobook
         $this->categories = new ArrayCollection();
         $this->active = false;
         $this->dateAdd = new \DateTime('Now');
+        $this->fileName = $fileName;
     }
 
     public function getId(): Uuid
@@ -277,6 +281,18 @@ class Audiobook
     public function setDateAdd(\DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
+
+        return $this;
+    }
+
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(string $fileName): self
+    {
+        $this->fileName = $fileName;
 
         return $this;
     }

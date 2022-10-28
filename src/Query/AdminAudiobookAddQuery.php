@@ -46,7 +46,15 @@ class  AdminAudiobookAddQuery
                         new Assert\NotBlank(),
                         new Assert\Uuid()
                     ])
-                ])
+                ]),
+                'title' => new Assert\Optional([
+                    new Assert\NotBlank(message: "Title is empty"),
+                    new Assert\Type(type: "string")
+                ]),
+                'author' => new Assert\Optional([
+                    new Assert\NotBlank(message: "Author is empty"),
+                    new Assert\Type(type: "string")
+                ]),
             ],
         ]));
     }
@@ -56,8 +64,10 @@ class  AdminAudiobookAddQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "categories", type: "array", nullable: true, attachables: [
-            new OA\Items(type: "string", example: "UUID")
-        ])
+            new OA\Items(type: "string", example: "UUID"),
+        ]),
+        new OA\Property(property: "title", type: "string", example: "Tytuł", nullable: true),
+        new OA\Property(property: "author", type: "string", example: "Autor", nullable: true),
     ], type: "object")]
     public function setAdditionalData(array $additionalData): void
     {
