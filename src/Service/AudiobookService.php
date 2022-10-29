@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Exception\AudiobookConfigServiceException;
 use App\Query\AdminAudiobookAddQuery;
+use App\Query\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -15,7 +16,7 @@ class AudiobookService
 {
     private MP3FileService $MP3FileService;
     private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
-    private ?AdminAudiobookAddQuery $query = null;
+    private AdminAudiobookAddQuery|AdminAudiobookReAddingQuery|null $query = null;
     private string $whole_dir_path = "";
     private string $whole_zip_path = "";
 
@@ -29,7 +30,7 @@ class AudiobookService
         $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
     }
 
-    public function configure(AdminAudiobookAddQuery $query): void
+    public function configure(AdminAudiobookAddQuery|AdminAudiobookReAddingQuery $query): void
     {
         $this->query = $query;
         $this->whole_dir_path = $_ENV['MAIN_DIR'] . "/" . $this->query->getHashName();
@@ -142,7 +143,7 @@ class AudiobookService
      * @return string
      * @throws AudiobookConfigServiceException
      */
-    public function unzip(): string
+    public function unzip(bool $reAdding = false): string
     {
         self::checkConfiguration();
 
@@ -170,7 +171,11 @@ class AudiobookService
             closedir($handle);
         }
 
-        $newName = $this->whole_zip_path . $amountOfSameFolders;
+        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders -1 : $amountOfSameFolders);
+
+        if($reAdding && is_dir($newName)){
+            self::removeFolder($newName);
+        }
 
         rename($_ENV['MAIN_DIR'] . "/" . $dir, $newName);
 

@@ -35,10 +35,8 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use ZipArchive;
@@ -176,9 +174,12 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookService $audiobookService
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws AudiobookConfigServiceException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/add", name: "adminAudiobookAdd", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -300,7 +301,7 @@ class AdminAudiobookController extends AbstractController
                 if ($encoded != "") {
                     $newAudiobook->setEncoded($encoded);
                 }
-                $audiobookCategories=[];
+                $audiobookCategories = [];
                 if (array_key_exists("categories", $additionalData)) {
 
                     $categories = [];
@@ -436,9 +437,11 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookService $audiobookService
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -463,8 +466,8 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookService $audiobookService,
-        AudiobookRepository $audiobookRepository
+        AudiobookService               $audiobookService,
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
@@ -496,9 +499,10 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/audiobook/zip", name: "adminAudiobookZip", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -539,21 +543,21 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException(["adminAudiobook.zip.audiobook.details.not.exist"]);
             }
 
-            $zipFile = $audiobook->getFileName().".zip";
+            $zipFile = $audiobook->getFileName() . ".zip";
 
             $zip = new ZipArchive;
 
-            if(file_exists($zipFile)) {
+            if (file_exists($zipFile)) {
                 unlink($zipFile);
             }
 
             $r = $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-            $dir = opendir($audiobook->getFileName()."/");
+            $dir = opendir($audiobook->getFileName() . "/");
 
             while ($file = readdir($dir)) {
-                if (is_file($audiobook->getFileName()."/".$file)) {
-                    $zip->addFile($audiobook->getFileName()."/".$file,basename($audiobook->getFileName()."/" . $file));
+                if (is_file($audiobook->getFileName() . "/" . $file)) {
+                    $zip->addFile($audiobook->getFileName() . "/" . $file, basename($audiobook->getFileName() . "/" . $file));
                 }
             }
 
@@ -571,12 +575,17 @@ class AdminAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookService $audiobookService
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
+     * @throws AudiobookConfigServiceException
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/reAdding", name: "adminAudiobookReAdding", methods: ["POST"])]
+    #[Route("/api/admin/audiobook/reAdding", name: "adminAudiobookReAdding", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is re-adding audiobook by changing files",
         requestBody: new OA\RequestBody(
             required: true,
@@ -589,7 +598,7 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
     )]
@@ -598,19 +607,185 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository,
+        AudiobookService               $audiobookService,
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
-            //TU muszę uogulnić tak żeby działało normalnie
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
 
-            return ResponseTool::getResponse();
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookReAddingQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.audiobook.reAdding.not.exist"]);
+            }
+
+            $audiobookService->configure($adminAudiobookReAddingQuery);
+
+            $audiobookService->checkAndAddFile();
+
+            if ($audiobookService->lastFile()) {
+
+                $audiobookService->combineFiles();
+                $folderDir = $audiobookService->unzip(true);
+
+                $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
+
+                if (array_key_exists("version", $ID3JsonData)) {
+                    $version = $ID3JsonData["version"];
+                } else {
+                    $version = "1";
+                }
+
+                if (array_key_exists("album", $ID3JsonData)) {
+                    $album = $ID3JsonData["album"];
+                } else {
+                    $album = "album";
+                }
+
+                if (array_key_exists("author", $ID3JsonData)) {
+                    $author = $ID3JsonData["author"];
+                } else {
+                    $author = "author";
+                }
+
+                if (array_key_exists("year", $ID3JsonData)) {
+                    if (DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"])) {
+                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"]);
+                    } else {
+                        $year = new \DateTime("Now");
+                    }
+                } else {
+                    $year = new \DateTime("Now");
+                }
+
+                if (array_key_exists("encoded", $ID3JsonData)) {
+                    $encoded = $ID3JsonData["encoded"];
+                } else {
+                    $encoded = "";
+                }
+
+                if (array_key_exists("comments", $ID3JsonData)) {
+                    $description = $ID3JsonData["comments"];
+                } else {
+                    $description = "desc";
+                }
+
+                if (array_key_exists("duration", $ID3JsonData)) {
+                    $duration = $ID3JsonData["duration"];
+                } else {
+                    $duration = "1";
+                }
+
+                if (array_key_exists("size", $ID3JsonData)) {
+                    $size = $ID3JsonData["size"];
+                } else {
+                    $size = "1";
+                }
+
+                if (array_key_exists("parts", $ID3JsonData)) {
+                    $parts = $ID3JsonData["parts"];
+                } else {
+                    $parts = "1";
+                }
+
+                if (array_key_exists("title", $ID3JsonData)) {
+                    $title = $ID3JsonData["title"];
+                } else {
+                    $title = "title";
+                }
+
+                $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
+
+                if (array_key_exists("title", $additionalData)) {
+                    $title = $additionalData["title"];
+                }
+                if (array_key_exists("author", $additionalData)) {
+                    $author = $additionalData["author"];
+                }
+
+                $audiobook->setActive(false);
+                $audiobook->setTitle($title);
+                $audiobook->setAuthor($author);
+                $audiobook->setVersion($version);
+                $audiobook->setAlbum($album);
+                $audiobook->setYear($year);
+                $audiobook->setDuration($duration);
+                $audiobook->setSize($size);
+                $audiobook->setParts($parts);
+                $audiobook->setDescription($description);
+                $audiobook->setAge(AudiobookAgeRange::FROM3TO7);
+                $audiobook->setFileName($folderDir);
+
+
+                if ($encoded != "") {
+                    $audiobook->setEncoded($encoded);
+                }
+                foreach ($audiobook->getCategories() as $category) {
+                    $audiobook->removeCategory($category);
+                }
+
+                $audiobookCategories = [];
+
+                if (array_key_exists("categories", $additionalData)) {
+
+                    $categories = [];
+
+                    if (!empty($additionalData["categories"])) {
+                        foreach ($additionalData["categories"] as $category) {
+                            $categories[] = Uuid::fromString($category)->toBinary();
+                        }
+                    }
+                    foreach ($categories as $category) {
+
+                        $audiobookCategory = $audiobookCategoryRepository->findOneBy([
+                            "id" => $category
+                        ]);
+
+                        if ($audiobookCategory != null) {
+                            $audiobook->addCategory($audiobookCategory);
+
+                            $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                                $audiobookCategory->getId(),
+                                $audiobookCategory->getName(),
+                                $audiobookCategory->getActive(),
+                                $audiobookCategory->getCategoryKey()
+                            );
+                        }
+                    }
+                }
+
+                $audiobookRepository->add($audiobook);
+
+                $successModel = new AdminAudiobookDetailsSuccessModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getVersion(),
+                    $audiobook->getAlbum(),
+                    $audiobook->getYear(),
+                    $audiobook->getDuration(),
+                    $audiobook->getSize(),
+                    $audiobook->getParts(),
+                    $audiobook->getDescription(),
+                    $audiobook->getAge(),
+                    $audiobook->getActive(),
+                    $audiobookCategories
+                );
+
+                if ($audiobook->getEncoded() != null) {
+                    $successModel->setEncoded($audiobook->getEncoded());
+                }
+
+                return ResponseTool::getResponse($successModel, 201);
+            } else {
+                return ResponseTool::getResponse();
+            }
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobook.reAdding.invalid.query");
@@ -747,6 +922,5 @@ class AdminAudiobookController extends AbstractController
             throw new InvalidJsonDataException("adminAudiobook.active.invalid.query");
         }
     }
-
-
+    //todo dodatkowo endp do podmiany zdjęć
 }

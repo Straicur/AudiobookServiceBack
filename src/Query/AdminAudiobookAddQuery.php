@@ -2,10 +2,9 @@
 
 namespace App\Query;
 
-use Symfony\Component\Uid\Uuid;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
-use OpenApi\Attributes as OA;
 
 class  AdminAudiobookAddQuery
 {
@@ -81,6 +80,7 @@ class  AdminAudiobookAddQuery
     {
         return $this->additionalData;
     }
+
     /**
      * @return string
      */
