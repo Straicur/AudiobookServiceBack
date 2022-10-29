@@ -41,6 +41,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
+use ZipArchive;
 
 /**
  * AdminAudiobookController
@@ -437,6 +438,7 @@ class AdminAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -453,7 +455,6 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -462,18 +463,26 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookService $audiobookService,
+        AudiobookRepository $audiobookRepository
     ): Response
     {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
-            //Wykorzystuje te fileName i removeAudiobook z serwisu
-            // Po tym usuwam z bazy i tyle
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookDeleteQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.delete.audiobook.not.exist"]);
+            }
+
+            $audiobookRepository->remove($audiobook);
+
+            $audiobookService->removeFolder($audiobook->getFileName());
 
             return ResponseTool::getResponse();
         } else {
@@ -489,6 +498,7 @@ class AdminAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/admin/audiobook/zip", name: "adminAudiobookZip", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -505,7 +515,6 @@ class AdminAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -524,20 +533,33 @@ class AdminAudiobookController extends AbstractController
             $audiobook = $audiobookRepository->findOneBy([
                 "id" => $adminAudiobookZipQuery->getAudiobookId()
             ]);
-            //todo tu muszę dodać ten endpoint tworzący zipa i zwaracajacy go od razu
+
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["adminAudiobook.zip.audiobook.details.not.exist"]);
             }
-            $response = new BinaryFileResponse($_ENV['MAIN_DIR'] . $audiobook->getTitle());
 
-            $response->setContentDisposition(
-                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                basename($_ENV['MAIN_DIR'] . $audiobook->getTitle())
-            );
-            $response->deleteFileAfterSend();
+            $zipFile = $audiobook->getFileName().".zip";
 
-            return ResponseTool::getResponse();
+            $zip = new ZipArchive;
+
+            if(file_exists($zipFile)) {
+                unlink($zipFile);
+            }
+
+            $r = $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+            $dir = opendir($audiobook->getFileName()."/");
+
+            while ($file = readdir($dir)) {
+                if (is_file($audiobook->getFileName()."/".$file)) {
+                    $zip->addFile($audiobook->getFileName()."/".$file,basename($audiobook->getFileName()."/" . $file));
+                }
+            }
+
+            $zip->close();
+
+            return ResponseTool::getBinaryFileResponse($zipFile);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobook.zip.invalid.query");

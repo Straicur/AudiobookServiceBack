@@ -14,6 +14,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
     private const base64OnePartFile = __DIR__ . "/onePartFile.txt";
     private const base64FirstPartFile = __DIR__ . "/firstPartFile.txt";
     private const base64SecondPartFile = __DIR__ . "/secondPartFile.txt";
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -146,7 +147,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added without additional data
      * @return void
      */
-    public function test_adminAudiobookAddNoAdditionaDataCorrect(): void
+    public function test_adminAudiobookAddNoAdditionalDataCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -296,7 +297,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemoveEmptyRequestData(): void
+    public function test_adminAudiobookAddEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -335,7 +336,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemovePermission(): void
+    public function test_adminAudiobookAddPermission(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -386,7 +387,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemoveLogOut(): void
+    public function test_adminAudiobookAddLogOut(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");

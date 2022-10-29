@@ -4,7 +4,9 @@ namespace App\Tool;
 
 use App\Model\ModelInterface;
 use App\Serializer\JsonSerializer;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * ResponseTool
@@ -16,11 +18,6 @@ class ResponseTool
         "Content-Type" => "application/json"
     ];
 
-    private static array $pdfHeaders = [
-        "Content-Type" => "application/pdf",
-        'Content-Disposition'=> 'attachment; filename=document.pdf'
-    ];
-
     public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response{
         $serializeService = new JsonSerializer();
 
@@ -29,9 +26,17 @@ class ResponseTool
         return new Response($serializedObject, $httpCode, self::$headers);
     }
 
-    public static function getPDFResponse($blob, int $httpCode = 200): Response{
+    public static function getBinaryFileResponse($fileDir, int $httpCode = 200): Response{
 
-        return new Response(stream_get_contents($blob), $httpCode, self::$pdfHeaders);
+        $response = new BinaryFileResponse($fileDir);
 
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            basename($fileDir)
+        );
+
+        $response->deleteFileAfterSend();
+
+        return $response;
     }
 }

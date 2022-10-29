@@ -24,8 +24,10 @@ use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserSettingsRepository;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -65,14 +67,12 @@ class DatabaseMockManager
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
+        $myListRepository = $this->getService(MyListRepository::class);
+        $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
+        $userInformationRepository = $this->getService(UserInformationRepository::class);
+        $userSettingsRepository = $this->getService(UserSettingsRepository::class);
 
         $user = new User();
-        $userRepository->add($user);
-
-        $userInformation = new UserInformation($user, $email, $phone, $firstname, $lastname);
-
-        $user->setUserSettings(new UserSettings($user));
-        $user->setUserInformation($userInformation);
 
         if ($banned) {
             $user->setBanned(true);
@@ -83,9 +83,24 @@ class DatabaseMockManager
         else{
             $user->setActive(true);
         }
-        $userRepository->add($user);
 
-        $userRepository->add($user);
+        $userRepository->add($user,false);
+
+        $userProposedAudiobooks = new ProposedAudiobooks($user);
+
+        $proposedAudiobooksRepository->add($userProposedAudiobooks);
+
+        $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
+
+        $userInformationRepository->add($userInformationEntity, false);
+
+        $userSettingsEntity = new UserSettings($user);
+
+        $userSettingsRepository->add($userSettingsEntity, false);
+
+        $userMyList = new MyList($user);
+
+        $myListRepository->add($userMyList);
 
         $this->testFunc_addRole($user, $rolesNames);
 

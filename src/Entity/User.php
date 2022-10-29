@@ -33,7 +33,7 @@ class User
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserSettings::class, cascade: ['persist', 'remove'])]
     private UserSettings $userSettings;
 
-    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist', 'remove'])]
     private Collection $roles;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
