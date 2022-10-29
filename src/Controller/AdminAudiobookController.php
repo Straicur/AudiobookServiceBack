@@ -67,15 +67,6 @@ use ZipArchive;
 #[OA\Tag(name: "AdminAudiobook")]
 class AdminAudiobookController extends AbstractController
 {
-    //1 - Pobranie danych audiobooka(z wszystkimi danymi kategorii(nazwa,id),aktywności)
-    //2 - Dodanie audiobooka(w jednym folderze wszystkie) z wyborem kategorii
-    //3 - Edycja
-    //4 - Usunięcie(wszędzie)
-    //5 - Pobranie zipa
-    //6 - Ponowne przesłanie
-    //7 - Lista wszystkich audiobooków
-    //8 - Lista Ostatnio dodanych audiobooków
-    //9 - Aktywacja audiobooka
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -220,7 +211,9 @@ class AdminAudiobookController extends AbstractController
             if ($audiobookService->lastFile()) {
 
                 $audiobookService->combineFiles();
+
                 $folderDir = $audiobookService->unzip();
+
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
                 if (array_key_exists("version", $ID3JsonData)) {
@@ -301,7 +294,9 @@ class AdminAudiobookController extends AbstractController
                 if ($encoded != "") {
                     $newAudiobook->setEncoded($encoded);
                 }
+
                 $audiobookCategories = [];
+
                 if (array_key_exists("categories", $additionalData)) {
 
                     $categories = [];
@@ -551,7 +546,7 @@ class AdminAudiobookController extends AbstractController
                 unlink($zipFile);
             }
 
-            $r = $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+            $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
             $dir = opendir($audiobook->getFileName() . "/");
 
@@ -726,6 +721,7 @@ class AdminAudiobookController extends AbstractController
                 if ($encoded != "") {
                     $audiobook->setEncoded($encoded);
                 }
+
                 foreach ($audiobook->getCategories() as $category) {
                     $audiobook->removeCategory($category);
                 }
