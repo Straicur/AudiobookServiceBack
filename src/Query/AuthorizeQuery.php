@@ -5,12 +5,6 @@ namespace App\Query;
 use App\Controller\AuthorizationController;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Authorize Query
- *
- * @see AuthorizationController::login()
- *
- */
 class AuthorizeQuery
 {
     #[Assert\NotNull(message: "Email is null")]

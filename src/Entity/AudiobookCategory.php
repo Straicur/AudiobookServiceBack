@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookCategoryRepository;
+use App\ValueGenerator\ValueGeneratorInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,23 +22,29 @@ class AudiobookCategory
     #[ORM\Column(type: 'string', length: 50)]
     private string $name;
 
-    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
-    private ?AudiobookCategory $parent = null;
-
     #[ORM\ManyToMany(targetEntity: Audiobook::class, mappedBy: 'categories')]
     private Collection $audiobooks;
 
     #[ORM\Column(type: 'boolean')]
     private bool $active;
 
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private string $categoryKey;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
+    private ?AudiobookCategory $parent = null;
+
     /**
      * @param string $name
+     * @param ValueGeneratorInterface $categoryKeyGenerator
      */
-    public function __construct(string $name)
+    public function __construct(string $name, ValueGeneratorInterface $categoryKeyGenerator)
     {
         $this->name = $name;
         $this->active = false;
         $this->audiobooks = new ArrayCollection();
+        $this->categoryKey = $categoryKeyGenerator->generate();
     }
 
     public function getId(): Uuid
@@ -53,18 +60,6 @@ class AudiobookCategory
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
 
         return $this;
     }
@@ -108,4 +103,27 @@ class AudiobookCategory
         return $this;
     }
 
+    public function getCategoryKey(): string
+    {
+        return $this->categoryKey;
+    }
+
+    public function setCategoryKey(ValueGeneratorInterface $categoryKeyGenerator): self
+    {
+        $this->categoryKey = $categoryKeyGenerator->generate();
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
 }

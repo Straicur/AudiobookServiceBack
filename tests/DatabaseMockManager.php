@@ -2,22 +2,37 @@
 
 namespace App\Tests;
 
+use App\Entity\Audiobook;
+use App\Entity\AudiobookCategory;
+use App\Entity\AudiobookInfo;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
+use App\Entity\MyList;
+use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
+use App\Enums\AudiobookAgeRange;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookInfoRepository;
+use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
+use App\Repository\MyListRepository;
+use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserSettingsRepository;
 use App\ValueGenerator\AuthTokenGenerator;
+use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use OpenApi\Examples\Petstore30\Models\Category;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DatabaseMockManager
@@ -52,14 +67,12 @@ class DatabaseMockManager
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
+        $myListRepository = $this->getService(MyListRepository::class);
+        $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
+        $userInformationRepository = $this->getService(UserInformationRepository::class);
+        $userSettingsRepository = $this->getService(UserSettingsRepository::class);
 
         $user = new User();
-        $userRepository->add($user);
-
-        $userInformation = new UserInformation($user, $email, $phone, $firstname, $lastname);
-
-        $user->setUserSettings(new UserSettings($user));
-        $user->setUserInformation($userInformation);
 
         if ($banned) {
             $user->setBanned(true);
@@ -70,9 +83,24 @@ class DatabaseMockManager
         else{
             $user->setActive(true);
         }
-        $userRepository->add($user);
 
-        $userRepository->add($user);
+        $userRepository->add($user,false);
+
+        $userProposedAudiobooks = new ProposedAudiobooks($user);
+
+        $proposedAudiobooksRepository->add($userProposedAudiobooks);
+
+        $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
+
+        $userInformationRepository->add($userInformationEntity, false);
+
+        $userSettingsEntity = new UserSettings($user);
+
+        $userSettingsRepository->add($userSettingsEntity, false);
+
+        $userMyList = new MyList($user);
+
+        $myListRepository->add($userMyList);
 
         $this->testFunc_addRole($user, $rolesNames);
 
@@ -127,5 +155,87 @@ class DatabaseMockManager
         return $institutionRepository->findOneBy([
             "name"=>$_ENV["INSTITUTION_NAME"]
         ]);
+    }
+
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age,string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+
+        $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age, $fileName);
+
+        if ($encoded != null) {
+            $newAudiobook->setEncoded($encoded);
+        }
+
+        if ($dateAdd != null) {
+            $newAudiobook->setDateAdd($dateAdd);
+        }
+
+        if ($active) {
+            $newAudiobook->setActive($active);
+        }
+
+        foreach ($categories as $category){
+            $newAudiobook->addCategory($category);
+        }
+
+        $audiobookRepository->add($newAudiobook);
+
+        return $newAudiobook;
+    }
+
+    public function testFunc_addAudiobookCategory(string $name, AudiobookCategory $parent = null, bool $active = false): AudiobookCategory
+    {
+        $registerCodeRepository = $this->getService(AudiobookCategoryRepository::class);
+
+        $categoryKeyGenerator = new CategoryKeyGenerator();
+
+        $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
+
+        if ($parent != null) {
+            $newAudiobookCategory->setParent($parent);
+        }
+
+        if ($active) {
+            $newAudiobookCategory->setActive(false);
+        }
+        else{
+            $newAudiobookCategory->setActive(true);
+        }
+
+        $registerCodeRepository->add($newAudiobookCategory);
+
+        return $newAudiobookCategory;
+    }
+
+    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate): AudiobookInfo
+    {
+        $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
+
+        $newRegisterCode = new AudiobookInfo($user,$audiobook,$part,$endedTime,$watchingDate);
+
+        $registerCodeRepository->add($newRegisterCode);
+
+        return $newRegisterCode;
+    }
+
+    public function testFunc_addMyList(User $user, Audiobook $audiobook): void
+    {
+        $myListRepository = $this->getService(MyListRepository::class);
+
+        $myList = $user->getMyList();
+        $myList->addAudiobook($audiobook);
+
+        $myListRepository->add($myList);
+    }
+
+    public function testFunc_addProposedAudiobooks(User $user, Audiobook $audiobook): void
+    {
+        $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
+
+        $proposedAudiobooks = $user->getProposedAudiobooks();
+        $proposedAudiobooks->addAudiobook($audiobook);
+
+        $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 }

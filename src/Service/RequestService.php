@@ -8,10 +8,6 @@ use App\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * RequestService
- *
- */
 class RequestService implements RequestServiceInterface
 {
     private ValidatorInterface $validator;

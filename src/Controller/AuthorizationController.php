@@ -10,6 +10,7 @@ use App\Exception\PermissionException;
 use App\Model\AuthorizationSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
+use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Query\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
@@ -32,7 +33,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * AuthorizationController
- *
  */
 #[OA\Response(
     response: 400,
@@ -45,11 +45,15 @@ use Symfony\Component\Routing\Annotation\Route;
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
+    response: 401,
+    description: "User not authorized",
+    content: new Model(type: NotAuthorizeModel::class)
+)]
+#[OA\Response(
     response: 403,
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-
 #[OA\Tag(name: "Authorize")]
 class AuthorizationController extends AbstractController
 {
@@ -148,6 +152,7 @@ class AuthorizationController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route("/api/logout", name: "apiLogout", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Post(
         description: "Method used to logout user",
         requestBody: new OA\RequestBody(),
@@ -158,7 +163,6 @@ class AuthorizationController extends AbstractController
             ),
         ]
     )]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     public function logout(
         Request                        $request,
         AuthenticationTokenRepository  $authenticationTokenRepository,
