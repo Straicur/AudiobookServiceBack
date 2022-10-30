@@ -50,8 +50,10 @@ class UserAudiobookController extends AbstractController
     //2 - Pobranie listy proponowanych audiobooków
     //3 - Pobranie detali audiobooka(wraz z tym czy jest w mojej liscie)(jeśli jest aktywny)
     //4 - Pobranie danych o odtwarzaniu audiobooka
-    //5 - Dodanie do mojej listy
+    //5 - Dodanie/Usunięcie z mojej listy
     //6 - Pobranie audiobooków z mojej listy
+    //7 - Dodanie danych do AudiobookInformation
+    //8 - Pobranie danych z AudiobookInfo po id Audiobooka
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService

@@ -75,6 +75,7 @@ class Audiobook
      * @param int $parts
      * @param string $description
      * @param AudiobookAgeRange $age
+     * @param string $fileName
      */
     public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age ,string $fileName)
     {

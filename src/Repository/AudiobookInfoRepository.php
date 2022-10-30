@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AudiobookInfo;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -49,6 +50,25 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param User $user
+     * @return AudiobookInfo[]
+     */
+    public function getActiveAudiobookInfos(User $user): array
+    {
+        $qb = $this->createQueryBuilder('ai');
+
+        $qb->leftJoin('ai.audiobook', 'a')
+            ->leftJoin('ai.user', 'u')
+            ->where('u.id = :user')
+            ->andWhere('ai.active = true')
+            ->andWhere('a.active = true')
+            ->setParameter('user', $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return AudiobookInfo[] Returns an array of AudiobookInfo objects
 //     */

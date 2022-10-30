@@ -33,6 +33,9 @@ class AudiobookInfo
     #[ORM\Column(type: 'datetime')]
     private \DateTime $watchingDate;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $active;
+
     /**
      * @param User $user
      * @param Audiobook $audiobook
@@ -47,6 +50,7 @@ class AudiobookInfo
         $this->part = $part;
         $this->endedTime = $endedTime;
         $this->watchingDate = $watchingDate;
+        $this->active = true;
     }
 
     public function getId(): Uuid
@@ -110,6 +114,18 @@ class AudiobookInfo
     public function setWatchingDate(\DateTime $watchingDate): self
     {
         $this->watchingDate = $watchingDate;
+
+        return $this;
+    }
+
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }
