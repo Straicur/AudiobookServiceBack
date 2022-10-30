@@ -77,7 +77,7 @@ class AudiobookController extends AbstractController
             )
         ]
     )]
-    public function audiobook(
+    public function audiobookPart(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
