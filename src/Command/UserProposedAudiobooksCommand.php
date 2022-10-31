@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Audiobook;
+use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
@@ -23,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 #[AsCommand(
     name: 'audiobookservice:proposed:audiobooks',
-    description: 'Command is generating new audiobooks proposed list for users',
+    description: 'Command is generating new audiobooks proposed lists for users',
 )]
 class UserProposedAudiobooksCommand extends Command
 {
@@ -63,15 +63,15 @@ class UserProposedAudiobooksCommand extends Command
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
             if (count($myList->getAudiobooks()) + count($audiobookInfos) >= 10) {
-                $audiobookCategories = [];
+
                 $myInfoCategories = [];
+
                 foreach ($myList->getAudiobooks() as $audiobook) {
                     foreach ($audiobook->getCategories() as $category) {
-                        if($category->getActive()){
-                            if(array_key_exists($category->getId()->__toString(),$myInfoCategories)){
-                                $myInfoCategories[$category->getId()->__toString()] = $myInfoCategories[$category->getId()->__toString()]+2;
-                            }
-                            else{
+                        if ($category->getActive()) {
+                            if (array_key_exists($category->getId()->__toString(), $myInfoCategories)) {
+                                $myInfoCategories[$category->getId()->__toString()] = $myInfoCategories[$category->getId()->__toString()] + 2;
+                            } else {
                                 $myInfoCategories[$category->getId()->__toString()] = 2;
                             }
                         }
@@ -79,7 +79,7 @@ class UserProposedAudiobooksCommand extends Command
                 }
                 foreach ($audiobookInfos as $audiobookInfo) {
                     foreach ($audiobookInfo->getAudiobook()->getCategories() as $category) {
-                        if($category->getActive()) {
+                        if ($category->getActive()) {
                             if (array_key_exists($category->getId()->__toString(), $myInfoCategories)) {
                                 $myInfoCategories[$category->getId()->__toString()] = $myInfoCategories[$category->getId()->__toString()] + 1;
                             } else {
@@ -100,23 +100,51 @@ class UserProposedAudiobooksCommand extends Command
 
                 $proposedAudiobooks = $user->getProposedAudiobooks();
 
-                foreach ($proposedAudiobooks->getAudiobooks() as $audiobook){
+                foreach ($proposedAudiobooks->getAudiobooks() as $audiobook) {
                     $proposedAudiobooks->removeAudiobook($audiobook);
                 }
 
-                foreach ($categories as $categoryIndex => $category){
+                foreach ($categories as $categoryIndex => $category) {
 
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
-                        "id"=>$category,
-                        "active"=>true
+                        "id" => $category,
+                        "active" => true
                     ]);
 
-                    if($databaseCategory != null){
+                    if ($databaseCategory != null) {
                         $audiobooks = $this->audiobookRepository->getRandomSortedCategoryAudiobooks($databaseCategory);
-                        foreach ($audiobooks as $audiobookIndex => $audiobook){
-                            //todo zostaje do rozkminy jak dobrać te limity z enuma albo coś innego wymyślić
-                            // i do tego jeszcze te randomowe audiobooki
-                            if(!$this->myListRepository->getAudiobookINMyList($user,$audiobook)){
+                        shuffle($audiobooks);
+
+                        $audiobooksAdded = 0;
+                        foreach ($audiobooks as $audiobook) {
+                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::MOST_WANTED->value) {
+                                if ($audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
+                                    continue;
+                                }
+                            }
+                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::WANTED->value) {
+                                if ($audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
+                                    continue;
+                                }
+                            }
+                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::LESS_WANTED->value) {
+                                if ($audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
+                                    continue;
+                                }
+                            }
+                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::PROPOSED->value) {
+                                if ($audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
+                                    continue;
+                                }
+                            }
+                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::RANDOM->value) {
+                                if ($audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
+                                    continue;
+                                }
+                            }
+
+                            if (!$this->myListRepository->getAudiobookINMyList($user, $audiobook)) {
+                                $audiobooksAdded = $audiobooksAdded + 1;
                                 $proposedAudiobooks->addAudiobook($audiobook);
                             }
                         }
@@ -126,7 +154,7 @@ class UserProposedAudiobooksCommand extends Command
             }
         }
 
-//        $io->success("Role ${} add successfully.");
+        $io->success("Proposed audiobooks added for users");
 
         return Command::SUCCESS;
     }

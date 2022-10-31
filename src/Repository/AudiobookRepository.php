@@ -72,15 +72,13 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param AudiobookCategory $category
      * @return Audiobook[]
      */
-    public function getRandomSortedCategoryAudiobooks( AudiobookCategory $category): array
+    public function getRandomSortedCategoryAudiobooks(AudiobookCategory $category): array
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.categories', 'c')
             ->where('c.id = :category')
             ->andWhere('a.active = true')
-            ->setParameter('category', $category->getId()->toBinary())
-//            ->orderBy('a.id','RAND')
-        ;
+            ->setParameter('category', $category->getId()->toBinary());
 
         $query = $qb->getQuery();
 

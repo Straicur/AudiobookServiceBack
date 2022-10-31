@@ -63,7 +63,7 @@ class MyListRepository extends ServiceEntityRepository
             ->leftJoin('ml.user', 'u')
             ->where('a.id = :audiobook')
             ->andWhere('a.active = true')
-            ->andWhere('a.user = :user')
+            ->andWhere('ml.user = :user')
             ->setParameter('audiobook', $audiobook->getId()->toBinary())
             ->setParameter('user', $user->getId()->toBinary());
 
