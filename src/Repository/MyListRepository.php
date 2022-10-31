@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Audiobook;
 use App\Entity\MyList;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -49,6 +51,28 @@ class MyListRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param User $user
+     * @param Audiobook $audiobook
+     * @return bool
+     */
+    public function getAudiobookINMyList(User $user,Audiobook $audiobook): bool
+    {
+        $qb = $this->createQueryBuilder('ml')
+            ->leftJoin('ml.audiobooks', 'a')
+            ->leftJoin('ml.user', 'u')
+            ->where('a.id = :audiobook')
+            ->andWhere('a.active = true')
+            ->andWhere('a.user = :user')
+            ->setParameter('audiobook', $audiobook->getId()->toBinary())
+            ->setParameter('user', $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        $result = $query->execute();
+
+        return count($result) > 0;
+    }
 //    /**
 //     * @return MyList[] Returns an array of MyList objects
 //     */
