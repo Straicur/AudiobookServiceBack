@@ -62,6 +62,7 @@ class AuthorizationController extends AbstractController
      * @throws DataNotFoundException
      * @throws TransportExceptionInterface
      * @throws PermissionException
+     * @throws \Exception
      *
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
@@ -108,6 +109,10 @@ class AuthorizationController extends AbstractController
              throw new DataNotFoundException(["user.banned"]);
         }
 
+        if(!$userInformationEntity->getUser()->isActive()){
+            throw new DataNotFoundException(["user.not.active"]);
+        }
+
         $roles = $userInformationEntity->getUser()->getRoles();
         $isUser = false;
 
@@ -137,8 +142,6 @@ class AuthorizationController extends AbstractController
         $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
 
         $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken());
-
-
 
         return ResponseTool::getResponse($responseModel);
     }

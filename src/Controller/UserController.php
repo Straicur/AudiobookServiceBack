@@ -49,7 +49,7 @@ class UserController extends AbstractController
     //1 - Zmiana hasła
     //2 - Zmiana emaila
     //3 - Usunięcie konta
-    //4 - Zmiana numeru tel
+    //4 - Zmiana numeru tel,imienia,nazwiska
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -59,10 +59,10 @@ class UserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/settings/", name: "userSettings", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is ",
+    #[Route("/api/user/settings/password", name: "userSettingsPassword", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Patch(
+        description: "Endpoint is changing password of logged user",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -78,7 +78,7 @@ class UserController extends AbstractController
             )
         ]
     )]
-    public function userSettings(
+    public function userSettingsPassword(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -96,6 +96,214 @@ class UserController extends AbstractController
 //            }
 
             return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/settings/email", name: "userSettingsEmail", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is sending confirmation email to change user email",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function userSettingsEmail(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/settings/email/change/{email}/{id}", name: "userSettingsEmailChange", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Get(
+        description: "Endpoint is sending confirmation email to change user email",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function userSettingsEmailChange(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/settings/delete", name: "userSettingsDelete", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is setting user account to not active",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function userSettingsDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        //todo na później będzie lista z zbanowanymi i też dodatego odpowiendia tabela(chyba że będę miał dużo czasu to to dorób)
+        // czyli do tego jeszcze akceptacja/usunięcie prośby I tu powiadomienie i email, lista kont do usunięcia
+        // I tu może złyżyć prośbę jeśli już jakiejś w systemie nie ma
+        // Ale jak już jakąś złuży to jest ustawiany jako nieaktywny
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is changing given user informations",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function userSettingsChange(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
 //        } else {
 //            $endpointLogger->error("Invalid given Query");
 //            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
