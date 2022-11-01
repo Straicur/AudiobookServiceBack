@@ -7,6 +7,7 @@ use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
+use App\Entity\UserPassword;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\AuthorizationSuccessModel;
@@ -20,9 +21,11 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
+use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
+use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -68,6 +71,7 @@ class RegisterController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws TransportExceptionInterface
+     * @throws \Exception
      */
     #[Route("/api/register", name: "apiRegister", methods: ["PUT"])]
     #[OA\Put(
@@ -100,6 +104,7 @@ class RegisterController extends AbstractController
         MyListRepository             $myListRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
         InstitutionRepository        $institutionRepository,
+        UserPasswordRepository $userPasswordRepository
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
@@ -151,6 +156,12 @@ class RegisterController extends AbstractController
             ]);
 
             $newUser->addRole($userRole);
+
+            $passwordGenerator = new PasswordHashGenerator($registerQuery->getPassword());
+
+            $userPasswordEntity = new UserPassword($newUser, $passwordGenerator);
+
+            $userPasswordRepository->add($userPasswordEntity);
 
             $userRepository->add($newUser);
 

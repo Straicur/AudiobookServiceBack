@@ -90,6 +90,7 @@ class AdminUserController extends AbstractController
 
     ): Response
     {
+        //todo wszędzie zabezpieczenie że nie nie jest Adminem
 //        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
 //
 //        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {

@@ -26,6 +26,11 @@ class RegisterQuery
     #[Assert\Type(type: "string")]
     private string $lastname;
 
+    #[Assert\NotNull(message: "Password is null")]
+    #[Assert\NotBlank(message: "Password is empty")]
+    #[Assert\Type(type: "string")]
+    private string $password;
+
     /**
      * @return string
      */
@@ -89,4 +94,21 @@ class RegisterQuery
     {
         $this->lastname = $lastname;
     }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
 }
