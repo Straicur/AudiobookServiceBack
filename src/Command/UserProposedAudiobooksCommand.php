@@ -19,7 +19,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * UserProposedAudiobooksCommand
- *
  */
 #[AsCommand(
     name: 'audiobookservice:proposed:audiobooks',
@@ -59,44 +58,46 @@ class UserProposedAudiobooksCommand extends Command
         $users = $this->userRepository->getUsersByRole($userRole);
 
         foreach ($users as $user) {
+
             $myList = $user->getMyList();
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
             if (count($myList->getAudiobooks()) + count($audiobookInfos) >= 10) {
 
-                $myInfoCategories = [];
+                $userWantedCategories = [];
 
                 foreach ($myList->getAudiobooks() as $audiobook) {
                     foreach ($audiobook->getCategories() as $category) {
                         if ($category->getActive()) {
-                            if (array_key_exists($category->getId()->__toString(), $myInfoCategories)) {
-                                $myInfoCategories[$category->getId()->__toString()] = $myInfoCategories[$category->getId()->__toString()] + 2;
+                            if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
+                                $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 2;
                             } else {
-                                $myInfoCategories[$category->getId()->__toString()] = 2;
+                                $userWantedCategories[$category->getId()->__toString()] = 2;
                             }
                         }
                     }
                 }
+
                 foreach ($audiobookInfos as $audiobookInfo) {
                     foreach ($audiobookInfo->getAudiobook()->getCategories() as $category) {
                         if ($category->getActive()) {
-                            if (array_key_exists($category->getId()->__toString(), $myInfoCategories)) {
-                                $myInfoCategories[$category->getId()->__toString()] = $myInfoCategories[$category->getId()->__toString()] + 1;
+                            if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
+                                $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 1;
                             } else {
-                                $myInfoCategories[$category->getId()->__toString()] = 1;
+                                $userWantedCategories[$category->getId()->__toString()] = 1;
                             }
                         }
                     }
                 }
 
-                arsort($myInfoCategories);
+                arsort($userWantedCategories);
 
-                $categories = array_slice(array_keys($myInfoCategories), 0, 4, true);
-                $lastCategory = array_slice(array_keys($myInfoCategories), count($categories), count($myInfoCategories), true);
+                $selectedCategories = array_slice(array_keys($userWantedCategories), 0, 4, true);
+                $lastCategory = array_slice(array_keys($userWantedCategories), count($selectedCategories), count($userWantedCategories), true);
 
                 $lastRandomKey = array_rand($lastCategory);
 
-                $categories[] = $lastCategory[$lastRandomKey];
+                $selectedCategories[] = $lastCategory[$lastRandomKey];
 
                 $proposedAudiobooks = $user->getProposedAudiobooks();
 
@@ -104,7 +105,7 @@ class UserProposedAudiobooksCommand extends Command
                     $proposedAudiobooks->removeAudiobook($audiobook);
                 }
 
-                foreach ($categories as $categoryIndex => $category) {
+                foreach ($selectedCategories as $categoryIndex => $category) {
 
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
                         "id" => $category,
@@ -112,10 +113,13 @@ class UserProposedAudiobooksCommand extends Command
                     ]);
 
                     if ($databaseCategory != null) {
+
                         $audiobooks = $this->audiobookRepository->getRandomSortedCategoryAudiobooks($databaseCategory);
+
                         shuffle($audiobooks);
 
                         $audiobooksAdded = 0;
+
                         foreach ($audiobooks as $audiobook) {
                             if ($categoryIndex == ProposedAudiobookCategoriesRanges::MOST_WANTED->value) {
                                 if ($audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {

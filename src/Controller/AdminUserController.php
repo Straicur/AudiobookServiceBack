@@ -9,6 +9,14 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\AdminUserActivateQuery;
+use App\Query\AdminUserChangePasswordQuery;
+use App\Query\AdminUserChangePhoneQuery;
+use App\Query\AdminUserDeleteQuery;
+use App\Query\AdminUserDetailsQuery;
+use App\Query\AdminUserRoleAddQuery;
+use App\Query\AdminUserRoleRemoveQuery;
+use App\Query\AdminUsersQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -46,14 +54,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminUser")]
 class AdminUserController extends AbstractController
 {
-    //1 - Usunięcie Usera
-    //2 - Dodanie mu roli
-    //3 - Usunięcie roli
-    //4 - Aktywacja
-    //5 - Zmiana hasła
-    //6 - Zmiana numeru tel
-    //7 - Pobranie listy userów(pagiancja)(najważniejsze info)
-    //8 - Pobranie detali usera
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -63,14 +63,14 @@ class AdminUserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/user/", name: "adminUser", methods: ["POST"])]
+    #[Route("/api/admin/user/delete", name: "adminUserDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is ",
+    #[OA\Delete(
+        description: "Endpoint is deleting given user",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: AdminUserDeleteQuery::class),
                 type: "object"
             ),
         ),
@@ -82,7 +82,7 @@ class AdminUserController extends AbstractController
             )
         ]
     )]
-    public function adminUser(
+    public function adminUserDelete(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -100,6 +100,365 @@ class AdminUserController extends AbstractController
 //            }
 
             return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/role/add", name: "adminUserRoleAdd", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is Adding role to user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserRoleAddQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserRoleAdd(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+        //todo po enumie dodaje role
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/role/remove", name: "adminUserRoleRemove", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is removing role for user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserRoleRemoveQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserRoleRemove(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+    //todo po enumie usuwam role
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/activate", name: "adminUserActivate", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is activating given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserActivateQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserActivate(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is changing password of given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserChangePasswordQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserChangePassword(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/change/phone", name: "adminUserChangePhone", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is changing phone number of given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserChangePhoneQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserChangePhone(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/users", name: "adminUsers", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of users in system",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUsersQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUsers(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+        //todo lista z paginacją
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/details", name: "adminUserDetails", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning details of given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDetailsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserDetails(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+        //todo tu muszę pobrać dane z usera,userInfo,Settings?,Role
+        //Role enumem
+        return ResponseTool::getResponse();
 //        } else {
 //            $endpointLogger->error("Invalid given Query");
 //            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
