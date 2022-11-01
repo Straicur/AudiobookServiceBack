@@ -36,6 +36,7 @@ class RegisterTest extends AbstractWebTest
             "phoneNumber"=>"786768564",
             "firstname"=>"Damian",
             "lastname"=>"Mos",
+            "password"=>"zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -82,6 +83,7 @@ class RegisterTest extends AbstractWebTest
             "phoneNumber"=>"786768564",
             "firstname"=>"Damian",
             "lastname"=>"Mos",
+            "password"=>"zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -118,6 +120,7 @@ class RegisterTest extends AbstractWebTest
             "phoneNumber"=>"786768564",
             "firstname"=>"Damian",
             "lastname"=>"Mos",
+            "password"=>"zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

@@ -67,6 +67,46 @@ class UserRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * @param User $user
+     * @param Role $role
+     * @return bool
+     */
+    public function userHasRole(User $user,Role $role): bool
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.roles', 'r')
+            ->where('u.id = :user')
+            ->andWhere('r.id = :role')
+            ->andWhere('u.banned = false')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('role', $role->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return count($query->execute()) > 0;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function userIsAdmin(User $user): bool
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.roles', 'r')
+            ->where('u.id = :user')
+            ->andWhere('r.name = :role')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('role', "Administrator");
+
+        $query = $qb->getQuery();
+
+        return count($query->execute()) > 0;
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

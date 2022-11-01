@@ -26,7 +26,7 @@ class ResponseTool
         return new Response($serializedObject, $httpCode, self::$headers);
     }
 
-    public static function getBinaryFileResponse($fileDir, int $httpCode = 200): Response{
+    public static function getBinaryFileResponse($fileDir, $delete = false): BinaryFileResponse{
 
         $response = new BinaryFileResponse($fileDir);
 
@@ -35,7 +35,9 @@ class ResponseTool
             basename($fileDir)
         );
 
-        $response->deleteFileAfterSend();
+        if($delete){
+            $response->deleteFileAfterSend();
+        }
 
         return $response;
     }

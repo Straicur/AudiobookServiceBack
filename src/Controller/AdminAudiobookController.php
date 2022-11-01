@@ -558,7 +558,7 @@ class AdminAudiobookController extends AbstractController
 
             $zip->close();
 
-            return ResponseTool::getBinaryFileResponse($zipFile);
+            return ResponseTool::getBinaryFileResponse($zipFile,true);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobook.zip.invalid.query");

@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\Audiobook;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\AudiobookPartQuery;
+use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -46,25 +49,24 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "Audiobook")]
 class AudiobookController extends AbstractController
 {
-    //1 - Pobranie cover.jpg
-    //2 - Pobranie parta(w obie strony)
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/audiobook/", name: "audiobook", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route("/api/audiobook/part", name: "audiobookPart", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
-        description: "Endpoint is ",
+        description: "Endpoint is returning specific part of audiobook",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: AudiobookPartQuery::class),
                 type: "object"
             ),
         ),
@@ -72,31 +74,123 @@ class AudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
-    public function audiobook(
+    public function audiobookPart(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($audiobookPartQuery instanceof AudiobookPartQuery) {
 
-            return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $audiobookPartQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["audiobook.part.audiobook.not.exist"]);
+            }
+
+            $allParts = [];
+
+            $handle = opendir($audiobook->getFileName());
+
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+
+                    $file_parts = pathinfo($entry);
+
+                    if ($file_parts['extension'] == "mp3") {
+
+                        $allParts[] = $file_parts['basename'];
+
+                    }
+                }
+            }
+
+            $dir = "";
+
+            sort($allParts);
+
+            foreach ($allParts as $x => $val) {
+                if ($x === $audiobookPartQuery->getPart()) {
+                    $dir = $audiobook->getFileName() . "/" . $val;
+                    break;
+                }
+            }
+
+            if ($dir == "") {
+                $endpointLogger->error("Parts dont exist");
+                throw new DataNotFoundException(["audiobook.part.parts.not.exist"]);
+            }
+
+            return ResponseTool::getBinaryFileResponse($dir);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("audiobook.part.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param Audiobook $id
+     * @return Response
+     * @throws DataNotFoundException
+     */
+    #[Route("/api/audiobook/cover/{id}", name: "audiobookCover", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[OA\Get(
+        description: "Endpoint is returning cover ov given audiobook",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function audiobookCover(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        Audiobook                      $id
+    ): Response
+    {
+        $img = "";
+
+        $handle = opendir($id->getFileName());
+
+        while (false !== ($entry = readdir($handle))) {
+
+            if ($entry != "." && $entry != "..") {
+
+                $file_parts = pathinfo($entry);
+
+                if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+
+                    $img = $file_parts["basename"];
+
+                    break;
+                }
+            }
+        }
+
+        if ($img == "") {
+            $endpointLogger->error("Cover dont exist");
+            throw new DataNotFoundException(["audiobook.cover.cover.not.exist"]);
+        }
+
+        return ResponseTool::getBinaryFileResponse($id->getFileName() . "/" . $img, true);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Audiobook;
+use App\Entity\AudiobookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -61,6 +62,23 @@ class AudiobookRepository extends ServiceEntityRepository
             ->orderBy("a.dateAdd", "DESC")
             ->setFirstResult($minResult)
             ->setMaxResults($maxResult);
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    /**
+     * @param AudiobookCategory $category
+     * @return Audiobook[]
+     */
+    public function getRandomSortedCategoryAudiobooks(AudiobookCategory $category): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.categories', 'c')
+            ->where('c.id = :category')
+            ->andWhere('a.active = true')
+            ->setParameter('category', $category->getId()->toBinary());
 
         $query = $qb->getQuery();
 
