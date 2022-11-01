@@ -28,13 +28,13 @@ class AdminUsersTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "page" => 1,
+            "page" => 0,
             "limit" => 10,
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobooks", server: [
+        $crawler = self::$webClient->request("POST", "/api/admin/users", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -49,7 +49,10 @@ class AdminUsersTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("users", $responseContent);
-        $this->assertCount(3, $responseContent["users"]);
+        $this->assertArrayHasKey("page", $responseContent);
+        $this->assertArrayHasKey("limit", $responseContent);
+        $this->assertArrayHasKey("maxPage", $responseContent);
+        $this->assertCount(4, $responseContent["users"]);
     }
 
     /**
@@ -62,7 +65,7 @@ class AdminUsersTest extends AbstractWebTest
     public function test_adminUsersEmptyRequestData(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -73,7 +76,7 @@ class AdminUsersTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobooks", server: [
+        $crawler = self::$webClient->request("POST", "/api/admin/users", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -102,7 +105,7 @@ class AdminUsersTest extends AbstractWebTest
     public function test_adminUsersPermission(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User",], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User",], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -116,7 +119,7 @@ class AdminUsersTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobooks", server: [
+        $crawler = self::$webClient->request("POST", "/api/admin/users", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -145,7 +148,7 @@ class AdminUsersTest extends AbstractWebTest
     public function test_adminUsersLogOut(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -156,9 +159,9 @@ class AdminUsersTest extends AbstractWebTest
             "page" => 0,
             "limit" => 10,
         ];
-        
+
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobooks", content: json_encode($content));
+        $crawler = self::$webClient->request("POST", "/api/admin/users", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);

@@ -19,7 +19,7 @@ class User
     private Uuid $id;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateCreate;
+    private \DateTime $dateCreate;
 
     #[ORM\Column(type: 'boolean')]
     private bool $active;

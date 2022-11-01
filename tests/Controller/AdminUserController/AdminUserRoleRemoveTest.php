@@ -29,13 +29,13 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx",notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         /// step 2
         $content = [
             "userId" => $user2->getId(),
-            "role"=>UserRoles::USER
+            "role" => UserRoles::USER
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
@@ -48,10 +48,11 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
         /// step 5
         $userRole = $roleRepository->findOneBy([
-            "name"=>"User"
+            "name" => "User"
         ]);
-        $this->assertFalse($userRepository->userHasRole($user2,$userRole));
+        $this->assertFalse($userRepository->userHasRole($user2, $userRole));
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -71,7 +72,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => $user1->getId(),
-            "role"=>UserRoles::USER->value
+            "role" => UserRoles::USER->value
         ];
 
         /// step 3
@@ -93,6 +94,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad userId
@@ -104,7 +106,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     public function test_adminUserRoleRemoveIncorrectUserId(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
@@ -113,7 +115,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "role"=>UserRoles::USER->value
+            "role" => UserRoles::USER->value
         ];
 
         /// step 3
@@ -146,7 +148,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     public function test_adminUserRoleRemoveEmptyRequestData(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
@@ -182,13 +184,13 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     public function test_adminUserRoleRemovePermission(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "userId" => $user2->getId(),
-            "role"=>UserRoles::USER->value
+            "role" => UserRoles::USER->value
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -221,13 +223,13 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     public function test_adminUserRoleRemoveLogOut(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "userId" => $user2->getId(),
-            "role"=>UserRoles::USER->value
+            "role" => UserRoles::USER->value
         ];
         /// step 2
         $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/remove", content: json_encode($content));

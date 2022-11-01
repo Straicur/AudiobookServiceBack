@@ -25,13 +25,13 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx",notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         /// step 2
         $content = [
             "userId" => $user2->getId(),
-            "newPhone"=>"6699123123"
+            "newPhone" => "6699123123"
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
@@ -43,12 +43,13 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
         /// step 5
-        $user2After =  $userRepository->findOneBy([
-            "id"=>$user2->getId()
+        $user2After = $userRepository->findOneBy([
+            "id" => $user2->getId()
         ]);
-        
-        $this->assertSame($content["newPhone"],$user2After->getUserInformation()->getPhoneNumber());
+
+        $this->assertSame($content["newPhone"], $user2After->getUserInformation()->getPhoneNumber());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -68,7 +69,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => $user1->getId(),
-            "newPhone"=>"6699123123"
+            "newPhone" => "6699123123"
         ];
 
         /// step 3
@@ -90,6 +91,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad userId
@@ -101,7 +103,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     public function test_adminUserDetailsIncorrectUserId(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
@@ -109,7 +111,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "newPhone"=>"6699123123"
+            "newPhone" => "6699123123"
         ];
 
         /// step 3
@@ -142,7 +144,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     public function test_adminUserDetailsEmptyRequestData(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
@@ -178,13 +180,13 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     public function test_adminUserDetailsPermission(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "userId" => $user2->getId(),
-            "newPhone"=>"6699123123"
+            "newPhone" => "6699123123"
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -217,13 +219,13 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     public function test_adminUserDetailsLogOut(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "userId" => $user2->getId(),
-            "newPhone"=>"6699123123"
+            "newPhone" => "6699123123"
         ];
         /// step 2
         $crawler = self::$webClient->request("PATCH", "/api/admin/user/change/phone", content: json_encode($content));

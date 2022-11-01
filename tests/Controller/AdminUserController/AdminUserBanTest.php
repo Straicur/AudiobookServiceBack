@@ -2,23 +2,27 @@
 
 namespace App\Tests\Controller\AdminUserController;
 
+use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**
- * AdminUserDetailsTest
+ * AdminUserBanTest
  */
-class AdminUserDetailsTest extends AbstractWebTest
+class AdminUserBanTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
      * step 3 - Sending Request
      * step 4 - Checking response
-     * step 5 - Checking response if returned data is correct
+     * step 5 - Checking response if user is banned
      * @return void
      */
-    public function test_adminUserDetailsCorrect(): void
+    public function test_adminUserBanCorrect(): void
     {
+        $userRepository = $this->getService(UserRepository::class);
+
+        $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
@@ -26,26 +30,24 @@ class AdminUserDetailsTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "userId" => $user2->getId()
+            "userId" => $user2->getId(),
+            "banned"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
-
-        $response = self::$webClient->getResponse();
-
-        $responseContent = json_decode($response->getContent(), true);
         /// step 5
-        $this->assertIsArray($responseContent);
+        $user2After = $userRepository->findOneBy([
+            "id" => $user2->getId()
+        ]);
 
-//        $this->assertArrayHasKey("users", $responseContent);
-//        $this->assertCount(3, $responseContent["users"]);
+        $this->assertTrue($user2After->isBanned());
     }
 
     /**
@@ -56,7 +58,7 @@ class AdminUserDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectAdminUser(): void
+    public function test_adminUserBanIncorrectAdminUser(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -64,14 +66,14 @@ class AdminUserDetailsTest extends AbstractWebTest
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-
         /// step 2
         $content = [
-            "userId" => $user1->getId()
+            "userId" => $user2->getId(),
+            "banned"=>true
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -98,7 +100,7 @@ class AdminUserDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectUserId(): void
+    public function test_adminUserBanIncorrectUserId(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -108,11 +110,12 @@ class AdminUserDetailsTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
         $content = [
-            "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b"
+            "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
+            "banned"=>true
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -138,7 +141,7 @@ class AdminUserDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsEmptyRequestData(): void
+    public function test_adminUserBanEmptyRequestData(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -149,7 +152,7 @@ class AdminUserDetailsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -174,7 +177,7 @@ class AdminUserDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsPermission(): void
+    public function test_adminUserBanPermission(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
@@ -182,11 +185,12 @@ class AdminUserDetailsTest extends AbstractWebTest
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
-            "userId" => $user2->getId()
+            "userId" => $user2->getId(),
+            "banned"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -212,7 +216,7 @@ class AdminUserDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsLogOut(): void
+    public function test_adminUserBanLogOut(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -220,10 +224,11 @@ class AdminUserDetailsTest extends AbstractWebTest
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
-            "userId" => $user2->getId()
+            "userId" => $user2->getId(),
+            "banned"=>true
         ];
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/details", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);
