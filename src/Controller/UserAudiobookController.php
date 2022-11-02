@@ -3,12 +3,18 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\AudiobookCategory;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\UserAudiobookDetailsSuccessModel;
+use App\Model\UserAudiobookInfoSuccessModel;
+use App\Model\UserAudiobooksSuccessModel;
+use App\Model\UserMyListAudiobooksSuccessModel;
+use App\Model\UserProposedAudiobooksSuccessModel;
 use App\Query\UserAudiobookDetailsQuery;
 use App\Query\UserAudiobookInfoAddQuery;
 use App\Query\UserAudiobookInfoQuery;
@@ -83,7 +89,7 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -92,23 +98,50 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookCategory $audiobookCategory
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
+
+        if ($userAudiobooksQuery instanceof UserAudiobooksQuery) {
 
 //            if ( == null) {
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
 
+            $minResult = $userAudiobooksQuery->getPage() * $userAudiobooksQuery->getLimit();
+            $maxResult = $userAudiobooksQuery->getLimit() + $minResult;
+
+//            $allAudiobooks = $userRepository->findAll();
+            $allAudiobooks = 0;
+            foreach ($allAudiobooks as $index => $user) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+
+//                    $successModel->addUser(new UserModel(
+//                        $user->getId(),
+//                        $user->isActive(),
+//                        $user->isBanned(),
+//                        $user->getUserInformation()->getEmail(),
+//                        $user->getUserInformation()->getFirstname()
+//                    ));
+                } else {
+                    break;
+                }
+            }
+
+//            $successModel->setPage($userAudiobooksQuery->getPage());
+//            $successModel->setLimit($userAudiobooksQuery->getLimit());
+//
+//            $successModel->setMaxPage(floor(count($allAudiobooks) / $userAudiobooksQuery->getLimit()));
+
             return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+        }
     }
     /**
      * @param Request $request
@@ -128,7 +161,7 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: UserProposedAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -179,7 +212,7 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: UserAudiobookDetailsSuccessModel::class)
             )
         ]
     )]
@@ -230,7 +263,7 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: UserAudiobookInfoSuccessModel::class)
             )
         ]
     )]
@@ -281,7 +314,6 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -326,7 +358,7 @@ class UserAudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+                content: new Model(type: UserMyListAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -375,9 +407,8 @@ class UserAudiobookController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -398,7 +429,7 @@ class UserAudiobookController extends AbstractController
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
 
-        return ResponseTool::getResponse();
+        return ResponseTool::getResponse(httpCode: 201);
 //        } else {
 //            $endpointLogger->error("Invalid given Query");
 //            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
