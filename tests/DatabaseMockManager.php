@@ -32,7 +32,6 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
-use OpenApi\Examples\Petstore30\Models\Category;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DatabaseMockManager
@@ -79,12 +78,11 @@ class DatabaseMockManager
         }
         if ($notActive) {
             $user->setActive(false);
-        }
-        else{
+        } else {
             $user->setActive(true);
         }
 
-        $userRepository->add($user,false);
+        $userRepository->add($user, false);
 
         $userProposedAudiobooks = new ProposedAudiobooks($user);
 
@@ -129,8 +127,7 @@ class DatabaseMockManager
 
         if ($code) {
             $registerCodeGenerator = new RegisterCodeGenerator($code);
-        }
-        else{
+        } else {
             $registerCodeGenerator = new RegisterCodeGenerator();
         }
 
@@ -153,11 +150,11 @@ class DatabaseMockManager
         $institutionRepository = $this->getService(InstitutionRepository::class);
 
         return $institutionRepository->findOneBy([
-            "name"=>$_ENV["INSTITUTION_NAME"]
+            "name" => $_ENV["INSTITUTION_NAME"]
         ]);
     }
 
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age,string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -175,7 +172,7 @@ class DatabaseMockManager
             $newAudiobook->setActive($active);
         }
 
-        foreach ($categories as $category){
+        foreach ($categories as $category) {
             $newAudiobook->addCategory($category);
         }
 
@@ -198,8 +195,7 @@ class DatabaseMockManager
 
         if ($active) {
             $newAudiobookCategory->setActive(false);
-        }
-        else{
+        } else {
             $newAudiobookCategory->setActive(true);
         }
 
@@ -212,7 +208,7 @@ class DatabaseMockManager
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user,$audiobook,$part,$endedTime,$watchingDate);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate);
 
         $registerCodeRepository->add($newRegisterCode);
 
@@ -224,6 +220,7 @@ class DatabaseMockManager
         $myListRepository = $this->getService(MyListRepository::class);
 
         $myList = $user->getMyList();
+
         $myList->addAudiobook($audiobook);
 
         $myListRepository->add($myList);
@@ -234,6 +231,7 @@ class DatabaseMockManager
         $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
 
         $proposedAudiobooks = $user->getProposedAudiobooks();
+
         $proposedAudiobooks->addAudiobook($audiobook);
 
         $proposedAudiobooksRepository->add($proposedAudiobooks);

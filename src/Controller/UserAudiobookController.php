@@ -9,6 +9,11 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\UserAudiobookDetailsQuery;
+use App\Query\UserAudiobookInfoAddQuery;
+use App\Query\UserAudiobookInfoQuery;
+use App\Query\UserAudiobookLikeQuery;
+use App\Query\UserAudiobooksQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -46,7 +51,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "UserAudiobook")]
 class UserAudiobookController extends AbstractController
 {
-    //1 - Pobranie całej listy kategorii(paginacja)(z aktywnymi audiobookami)(aktywnych kategorii)
+    //1 - Pobranie całej listy kategorii(paginacja)(z aktywnymi audiobookami)(aktywnych kategorii) od tego który ma najwięcej audiobooków
     //2 - Pobranie listy proponowanych audiobooków
     //3 - Pobranie detali audiobooka(wraz z tym czy jest w mojej liscie)(jeśli jest aktywny)
     //4 - Pobranie danych o odtwarzaniu audiobooka
@@ -70,7 +75,7 @@ class UserAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserAudiobooksQuery::class),
                 type: "object"
             ),
         ),
@@ -114,17 +119,11 @@ class UserAudiobookController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/proposed/audiobooks", name: "userProposedAudiobooks", methods: ["POST"])]
+    #[Route("/api/user/proposed/audiobooks", name: "userProposedAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Get(
         description: "Endpoint is returning list of proposed audiobooks",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
@@ -172,7 +171,7 @@ class UserAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserAudiobookDetailsQuery::class),
                 type: "object"
             ),
         ),
@@ -223,7 +222,7 @@ class UserAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserAudiobookInfoQuery::class),
                 type: "object"
             ),
         ),
@@ -274,7 +273,7 @@ class UserAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserAudiobookLikeQuery::class),
                 type: "object"
             ),
         ),
@@ -318,17 +317,11 @@ class UserAudiobookController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/myList/audiobooks", name: "userMyListAudiobooks", methods: ["POST"])]
+    #[Route("/api/user/myList/audiobooks", name: "userMyListAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Get(
         description: "Endpoint is returning list of audiobooks from my list",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
@@ -376,7 +369,7 @@ class UserAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserAudiobookInfoAddQuery::class),
                 type: "object"
             ),
         ),
