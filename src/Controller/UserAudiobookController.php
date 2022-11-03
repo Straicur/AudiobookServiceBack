@@ -3,16 +3,19 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Entity\AudiobookCategory;
+use App\Entity\AudiobookInfo;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AdminAudiobookCategoryModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Model\UserAudiobookDetailsSuccessModel;
 use App\Model\UserAudiobookInfoSuccessModel;
+use App\Model\UserAudiobookModel;
 use App\Model\UserAudiobooksSuccessModel;
+use App\Model\UserCategoryModel;
 use App\Model\UserMyListAudiobooksSuccessModel;
 use App\Model\UserProposedAudiobooksSuccessModel;
 use App\Query\UserAudiobookDetailsQuery;
@@ -20,6 +23,10 @@ use App\Query\UserAudiobookInfoAddQuery;
 use App\Query\UserAudiobookInfoQuery;
 use App\Query\UserAudiobookLikeQuery;
 use App\Query\UserAudiobooksQuery;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookInfoRepository;
+use App\Repository\AudiobookRepository;
+use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -70,8 +77,9 @@ class UserAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
-     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/user/audiobooks", name: "userAudiobooks", methods: ["POST"])]
@@ -98,51 +106,57 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookCategory $audiobookCategory
+        AudiobookRepository            $audiobookRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
 
         if ($userAudiobooksQuery instanceof UserAudiobooksQuery) {
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
-
             $minResult = $userAudiobooksQuery->getPage() * $userAudiobooksQuery->getLimit();
             $maxResult = $userAudiobooksQuery->getLimit() + $minResult;
 
-//            $allAudiobooks = $userRepository->findAll();
-            $allAudiobooks = 0;
-            foreach ($allAudiobooks as $index => $user) {
+            $allCategories = $audiobookCategoryRepository->getCategoriesByCountAudiobooks();
+
+            $successModel = new UserAudiobooksSuccessModel();
+
+            foreach ($allCategories as $index => $category) {
                 if ($index < $minResult) {
                     continue;
                 } elseif ($index < $maxResult) {
 
-//                    $successModel->addUser(new UserModel(
-//                        $user->getId(),
-//                        $user->isActive(),
-//                        $user->isBanned(),
-//                        $user->getUserInformation()->getEmail(),
-//                        $user->getUserInformation()->getFirstname()
-//                    ));
+                    $categoryModel = new UserCategoryModel();
+
+                    $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category);
+
+                    foreach ($audiobooks as $audiobook) {
+                        $categoryModel->addAudiobook(new UserAudiobookModel(
+                            $audiobook->getId(),
+                            $audiobook->getTitle(),
+                            $audiobook->getAuthor(),
+                            $audiobook->getParts(),
+                            $audiobook->getAge()
+                        ));
+                    }
+                    $successModel->addCategory($categoryModel);
                 } else {
                     break;
                 }
             }
 
-//            $successModel->setPage($userAudiobooksQuery->getPage());
-//            $successModel->setLimit($userAudiobooksQuery->getLimit());
-//
-//            $successModel->setMaxPage(floor(count($allAudiobooks) / $userAudiobooksQuery->getLimit()));
+            $successModel->setPage($userAudiobooksQuery->getPage());
+            $successModel->setLimit($userAudiobooksQuery->getLimit());
 
-            return ResponseTool::getResponse();
+            $successModel->setMaxPage(floor(count($allCategories) / $userAudiobooksQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+            throw new InvalidJsonDataException("userAudiobooks.invalid.query");
         }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -170,29 +184,34 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $user = $authorizedUserService->getAuthorizedUser();
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        $audiobooks = $user->getProposedAudiobooks();
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        $successModel = new UserProposedAudiobooksSuccessModel();
+
+        foreach ($audiobooks as $audiobook) {
+            $successModel->addAudiobook(new UserAudiobookModel(
+                $audiobook->getId(),
+                $audiobook->getTitle(),
+                $audiobook->getAuthor(),
+                $audiobook->getParts(),
+                $audiobook->getAge()
+            ));
+        }
+
+        return ResponseTool::getResponse($successModel);
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -221,29 +240,63 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userAudiobookDetailsQuery instanceof UserAudiobookDetailsQuery) {
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookDetailsQuery->getAudiobookId(), $userAudiobookDetailsQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.details.audiobook.not.exist"]);
+            }
+
+            $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
+
+            $audiobookCategories = [];
+
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                    $category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey()
+                );
+            }
+
+            $successModel = new UserAudiobookDetailsSuccessModel(
+                $audiobook->getId(),
+                $audiobook->getTitle(),
+                $audiobook->getAuthor(),
+                $audiobook->getVersion(),
+                $audiobook->getAlbum(),
+                $audiobook->getYear(),
+                $audiobook->getDuration(),
+                $audiobook->getSize(),
+                $audiobook->getParts(),
+                $audiobook->getDescription(),
+                $audiobook->getAge(),
+                $audiobookCategories
+            );
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.details.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -272,29 +325,54 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userAudiobookInfoQuery instanceof UserAudiobookInfoQuery) {
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookInfoQuery->getAudiobookId(), $userAudiobookInfoQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.info.audiobook.not.exist"]);
+            }
+
+            $audiobookInfo = $audiobookInfoRepository->findOneBy([
+                "audiobook" => $audiobook->getId(),
+                "active" => true,
+                "user"=>$user->getId()
+            ]);
+
+            if ($audiobookInfo == null) {
+                $endpointLogger->error("AudiobookInfo dont exist");
+                throw new DataNotFoundException(["userAudiobook.info.audiobookInfo.not.exist"]);
+            }
+
+            $successModel = new UserAudiobookInfoSuccessModel(
+                $audiobookInfo->getPart(),
+                $audiobookInfo->getEndedTime(),
+                $audiobookInfo->getWatchingDate()
+            );
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.info.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param MyListRepository $myListRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -322,32 +400,45 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository            $audiobookRepository,
+        MyListRepository $myListRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userAudiobookLikeQuery instanceof UserAudiobookLikeQuery) {
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookLikeQuery->getAudiobookId(), $userAudiobookLikeQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.like.audiobook.not.exist"]);
+            }
+
+            $myList = $user->getMyList();
+
+            if($myListRepository->getAudiobookINMyList($user,$audiobook)){
+                $myList->removeAudiobook($audiobook);
+            }
+            else{
+                $myList->addAudiobook($audiobook);
+            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.like.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      */
     #[Route("/api/user/myList/audiobooks", name: "userMyListAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -370,21 +461,25 @@ class UserAudiobookController extends AbstractController
 
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $user = $authorizedUserService->getAuthorizedUser();
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        $audiobooks = $user->getMyList()->getAudiobooks();
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        $successModel = new UserMyListAudiobooksSuccessModel();
+
+        foreach ($audiobooks as $audiobook) {
+            $successModel->addAudiobook(new UserAudiobookModel(
+                $audiobook->getId(),
+                $audiobook->getTitle(),
+                $audiobook->getAuthor(),
+                $audiobook->getParts(),
+                $audiobook->getAge()
+            ));
+        }
+
+        return ResponseTool::getResponse($successModel);
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -417,23 +512,39 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        AudiobookRepository $audiobookRepository,
+        AudiobookInfoRepository $audiobookInfoRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userAudiobookInfoAddQuery instanceof UserAudiobookInfoAddQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookInfoAddQuery->getAudiobookId(), $userAudiobookInfoAddQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.info.audiobook.not.exist"]);
+            }
+
+            $audiobookInfoRepository->deActiveAudiobookInfos($user,$audiobook);
+
+            $newAudiobookInfo = new AudiobookInfo($user,
+                $audiobook,
+                $userAudiobookInfoAddQuery->getPart(),
+                $userAudiobookInfoAddQuery->getEndedTime(),
+                $userAudiobookInfoAddQuery->getWatchingDate()
+            );
+
+            $audiobookInfoRepository->add($newAudiobookInfo);
 
         return ResponseTool::getResponse(httpCode: 201);
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.info.add.invalid.query");
+        }
     }
-   
+
 }

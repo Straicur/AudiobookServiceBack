@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Audiobook;
 use App\Entity\AudiobookInfo;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -68,6 +69,29 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
 
         return $query->execute();
+    }
+
+    /**
+     * @param User $user
+     * @param Audiobook $audiobook
+     * @return void
+     */
+    public function deActiveAudiobookInfos(User $user,Audiobook $audiobook): void
+    {
+        $qb = $this->createQueryBuilder('ai');
+
+        $qb->update()
+            ->set("ai.active", ":status")
+            ->leftJoin('ai.audiobook', 'a')
+            ->leftJoin('ai.user', 'u')
+            ->where('u.id = :user')
+            ->andWhere('a.id = :audiobook')
+            ->setParameter("status", false)
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('audiobook', $audiobook->getId()->toBinary());
+
+        $query = $qb->getQuery();
+        $query->execute();
     }
 //    /**
 //     * @return AudiobookInfo[] Returns an array of AudiobookInfo objects
