@@ -50,6 +50,8 @@ class UserController extends AbstractController
     //2 - Zmiana emaila
     //3 - Usunięcie konta
     //4 - Zmiana numeru tel,imienia,nazwiska
+    // todo tu porządnie przemyśl te endpointy i na koniec dodaj notyfikacje jako encję
+    //Do tego jakiś enum który oznajmi z czego ma dostawać
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
