@@ -5,12 +5,12 @@ namespace App\Model;
 class UserProposedAudiobooksSuccessModel implements ModelInterface
 {
     /**
-     * @var UserAudiobookModel[]
+     * @var UserAudiobookDetailModel[]
      */
     private array $audiobooks = [];
 
     /**
-     * @return UserAudiobookModel[]
+     * @return UserAudiobookDetailModel[]
      */
     public function getAudiobooks(): array
     {
@@ -25,7 +25,7 @@ class UserProposedAudiobooksSuccessModel implements ModelInterface
         $this->audiobooks = $audiobooks;
     }
 
-    public function addAudiobook(UserAudiobookModel $audiobook): void
+    public function addAudiobook(UserAudiobookDetailModel $audiobook): void
     {
         $this->audiobooks[] = $audiobook;
     }

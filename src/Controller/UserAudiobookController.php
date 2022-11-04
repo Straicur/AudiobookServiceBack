@@ -11,6 +11,8 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\UserAudiobookCategoryModel;
+use App\Model\UserAudiobookDetailModel;
 use App\Model\UserAudiobookDetailsSuccessModel;
 use App\Model\UserAudiobookInfoSuccessModel;
 use App\Model\UserAudiobookModel;
@@ -118,7 +120,7 @@ class UserAudiobookController extends AbstractController
                     continue;
                 } elseif ($index < $maxResult) {
 
-                    $categoryModel = new UserCategoryModel($category->getName(),$category->getCategoryKey());
+                    $categoryModel = new UserCategoryModel($category->getName(), $category->getCategoryKey());
 
                     $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category);
 
@@ -181,16 +183,26 @@ class UserAudiobookController extends AbstractController
         $audiobooks = $user->getProposedAudiobooks()->getAudiobooks();
 
         $successModel = new UserProposedAudiobooksSuccessModel();
-        //todo tu i w mojej liście dodać jeszcze liste kategori
+
         foreach ($audiobooks as $audiobook) {
-            if($audiobook->getActive()){
-                $successModel->addAudiobook(new UserAudiobookModel(
+            if ($audiobook->getActive()) {
+
+                $audiobookModel = new UserAudiobookDetailModel(
                     $audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
                     $audiobook->getAge()
-                ));
+                );
+
+                foreach ($audiobook->getCategories() as $category) {
+                    $audiobookModel->addCategory(new UserAudiobookCategoryModel(
+                        $category->getName(),
+                        $category->getCategoryKey()
+                    ));
+                }
+
+                $successModel->addAudiobook($audiobookModel);
             }
 
         }
@@ -462,15 +474,26 @@ class UserAudiobookController extends AbstractController
         $successModel = new UserMyListAudiobooksSuccessModel();
 
         foreach ($audiobooks as $audiobook) {
-            if($audiobook->getActive()) {
-                $successModel->addAudiobook(new UserAudiobookModel(
+            if ($audiobook->getActive()) {
+
+                $audiobookModel = new UserAudiobookDetailModel(
                     $audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
                     $audiobook->getAge()
-                ));
+                );
+
+                foreach ($audiobook->getCategories() as $category) {
+                    $audiobookModel->addCategory(new UserAudiobookCategoryModel(
+                        $category->getName(),
+                        $category->getCategoryKey()
+                    ));
+                }
+
+                $successModel->addAudiobook($audiobookModel);
             }
+
         }
 
         return ResponseTool::getResponse($successModel);

@@ -204,11 +204,15 @@ class DatabaseMockManager
         return $newAudiobookCategory;
     }
 
-    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate): AudiobookInfo
+    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate, bool $deActive = false): AudiobookInfo
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
         $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate);
+
+        if($deActive){
+            $newRegisterCode->setActive(false);
+        }
 
         $registerCodeRepository->add($newRegisterCode);
 

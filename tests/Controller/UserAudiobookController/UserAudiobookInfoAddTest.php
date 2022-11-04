@@ -55,7 +55,57 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
 
         $this->assertCount(1, $audiobookInfoRepository->findAll());
     }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response if category was added
+     * @return void
+     */
+    public function test_userAudiobookInfoAddCorrectDeactivation(): void
+    {
+        $audiobookInfoRepository = $this->getService(AudiobookInfoRepository::class);
 
+        $this->assertInstanceOf(AudiobookInfoRepository::class, $audiobookInfoRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d1", [$category1,$category2],active: true);
+        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d2", [$category2]);
+        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d3", [$category2]);
+
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user,$audiobook1,1,"2.1",new \DateTime("Now"));
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user,$audiobook1,1,"2.1",new \DateTime("Now"),true);
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "categoryKey" => $category1->getCategoryKey(),
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
+        ];
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PUT", "/api/user/audiobook/info/add", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(201);
+
+        $this->assertCount(1, $audiobookInfoRepository->findBy([
+            "active"=>true
+        ]));
+        $this->assertCount(2, $audiobookInfoRepository->findBy([
+            "active"=>false
+        ]));
+    }
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad AudiobookId

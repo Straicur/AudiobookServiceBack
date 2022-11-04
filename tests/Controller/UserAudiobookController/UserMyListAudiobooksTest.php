@@ -63,6 +63,13 @@ class UserMyListAudiobooksTest extends AbstractWebTest
         $this->assertArrayHasKey("audiobooks", $responseContent);
         $this->assertCount(6, $responseContent["audiobooks"]);
 
+        $this->assertArrayHasKey("id", $responseContent["audiobooks"][0]);
+        $this->assertArrayHasKey("title", $responseContent["audiobooks"][0]);
+        $this->assertArrayHasKey("author", $responseContent["audiobooks"][0]);
+        $this->assertArrayHasKey("parts", $responseContent["audiobooks"][0]);
+        $this->assertArrayHasKey("age", $responseContent["audiobooks"][0]);
+        $this->assertArrayHasKey("categories", $responseContent["audiobooks"][0]);
+        $this->assertCount(2, $responseContent["audiobooks"][0]["categories"]);
     }
     /**
      * step 1 - Preparing data
