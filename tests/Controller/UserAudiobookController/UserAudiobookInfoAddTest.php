@@ -38,7 +38,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $audiobook1->getId(),
-            "categoryKey" => $category1->getCategoryKey()
+            "categoryKey" => $category1->getCategoryKey(),
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -76,7 +79,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "categoryKey" => $category1->getCategoryKey()
+            "categoryKey" => $category1->getCategoryKey(),
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -122,7 +128,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $audiobook1->getId(),
-            "categoryKey" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b"
+            "categoryKey" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -197,7 +206,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
     public function test_userAudiobookInfoAddPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -208,7 +217,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $audiobook1->getId(),
-            "categoryKey" => $category1->getCategoryKey()
+            "categoryKey" => $category1->getCategoryKey(),
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -252,7 +264,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $audiobook1->getId(),
-            "categoryKey" => $category1->getCategoryKey()
+            "categoryKey" => $category1->getCategoryKey(),
+            "part"=> 1,
+            "endedTime"=> "2.1",
+            "watchingDate"=> '01.02.2022',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

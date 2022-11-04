@@ -96,7 +96,7 @@ class AudiobookRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.categories', 'c')
             ->where('c.categoryKey = :categoryKey')
-            ->andWhere('a.audiobookId = :audiobookId')
+            ->andWhere('a.id = :audiobookId')
             ->andWhere('a.active = true')
             ->setParameter('audiobookId', $audiobookId->toBinary())
             ->setParameter('categoryKey', $categoryKey);
@@ -105,7 +105,7 @@ class AudiobookRepository extends ServiceEntityRepository
 
         $res = $query->execute();
 
-        return count($res) > 0 ? $res : null;
+        return count($res) > 0 ? $res[0] : null;
     }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects

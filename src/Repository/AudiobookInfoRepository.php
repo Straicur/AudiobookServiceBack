@@ -82,10 +82,9 @@ class AudiobookInfoRepository extends ServiceEntityRepository
 
         $qb->update()
             ->set("ai.active", ":status")
-            ->leftJoin('ai.audiobook', 'a')
-            ->leftJoin('ai.user', 'u')
-            ->where('u.id = :user')
-            ->andWhere('a.id = :audiobook')
+            ->andWhere('ai.user = :user')
+            ->andWhere('ai.audiobook = :audiobook')
+            ->andWhere('ai.active = true')
             ->setParameter("status", false)
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('audiobook', $audiobook->getId()->toBinary());

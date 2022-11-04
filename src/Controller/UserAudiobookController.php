@@ -64,14 +64,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "UserAudiobook")]
 class UserAudiobookController extends AbstractController
 {
-    //1 - Pobranie całej listy kategorii(paginacja)(z aktywnymi audiobookami)(aktywnych kategorii) od tego który ma najwięcej audiobooków
-    //2 - Pobranie listy proponowanych audiobooków
-    //3 - Pobranie detali audiobooka(wraz z tym czy jest w mojej liscie)(jeśli jest aktywny)
-    //4 - Pobranie danych o odtwarzaniu audiobooka
-    //5 - Dodanie/Usunięcie z mojej listy
-    //6 - Pobranie audiobooków z mojej listy
-    //7 - Dodanie danych do AudiobookInformation
-    //8 - Pobranie danych z AudiobookInfo po id Audiobooka
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -126,7 +118,7 @@ class UserAudiobookController extends AbstractController
                     continue;
                 } elseif ($index < $maxResult) {
 
-                    $categoryModel = new UserCategoryModel();
+                    $categoryModel = new UserCategoryModel($category->getName(),$category->getCategoryKey());
 
                     $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category);
 
@@ -163,8 +155,6 @@ class UserAudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      */
     #[Route("/api/user/proposed/audiobooks", name: "userProposedAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -188,18 +178,21 @@ class UserAudiobookController extends AbstractController
     {
         $user = $authorizedUserService->getAuthorizedUser();
 
-        $audiobooks = $user->getProposedAudiobooks();
+        $audiobooks = $user->getProposedAudiobooks()->getAudiobooks();
 
         $successModel = new UserProposedAudiobooksSuccessModel();
-
+        //todo tu i w mojej liście dodać jeszcze liste kategori
         foreach ($audiobooks as $audiobook) {
-            $successModel->addAudiobook(new UserAudiobookModel(
-                $audiobook->getId(),
-                $audiobook->getTitle(),
-                $audiobook->getAuthor(),
-                $audiobook->getParts(),
-                $audiobook->getAge()
-            ));
+            if($audiobook->getActive()){
+                $successModel->addAudiobook(new UserAudiobookModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getParts(),
+                    $audiobook->getAge()
+                ));
+            }
+
         }
 
         return ResponseTool::getResponse($successModel);
@@ -345,7 +338,7 @@ class UserAudiobookController extends AbstractController
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
                 "audiobook" => $audiobook->getId(),
                 "active" => true,
-                "user"=>$user->getId()
+                "user" => $user->getId()
             ]);
 
             if ($audiobookInfo == null) {
@@ -401,7 +394,7 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        MyListRepository $myListRepository
+        MyListRepository               $myListRepository
     ): Response
     {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
@@ -419,12 +412,13 @@ class UserAudiobookController extends AbstractController
 
             $myList = $user->getMyList();
 
-            if($myListRepository->getAudiobookINMyList($user,$audiobook)){
+            if ($myListRepository->getAudiobookINMyList($user, $audiobook)) {
                 $myList->removeAudiobook($audiobook);
-            }
-            else{
+            } else {
                 $myList->addAudiobook($audiobook);
             }
+
+            $myListRepository->add($myList);
 
             return ResponseTool::getResponse();
         } else {
@@ -468,13 +462,15 @@ class UserAudiobookController extends AbstractController
         $successModel = new UserMyListAudiobooksSuccessModel();
 
         foreach ($audiobooks as $audiobook) {
-            $successModel->addAudiobook(new UserAudiobookModel(
-                $audiobook->getId(),
-                $audiobook->getTitle(),
-                $audiobook->getAuthor(),
-                $audiobook->getParts(),
-                $audiobook->getAge()
-            ));
+            if($audiobook->getActive()) {
+                $successModel->addAudiobook(new UserAudiobookModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getParts(),
+                    $audiobook->getAge()
+                ));
+            }
         }
 
         return ResponseTool::getResponse($successModel);
@@ -485,6 +481,8 @@ class UserAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -512,8 +510,8 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookInfoRepository $audiobookInfoRepository
+        AudiobookRepository            $audiobookRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository
     ): Response
     {
         $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
@@ -529,7 +527,7 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException(["userAudiobook.info.audiobook.not.exist"]);
             }
 
-            $audiobookInfoRepository->deActiveAudiobookInfos($user,$audiobook);
+            $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
 
             $newAudiobookInfo = new AudiobookInfo($user,
                 $audiobook,
@@ -540,7 +538,7 @@ class UserAudiobookController extends AbstractController
 
             $audiobookInfoRepository->add($newAudiobookInfo);
 
-        return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: 201);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("userAudiobook.info.add.invalid.query");

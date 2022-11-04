@@ -29,6 +29,8 @@ class UserAudiobookInfoTest extends AbstractWebTest
         $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d2", [$category2]);
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user,$audiobook1,1,"2.2",new \DateTime("Now"));
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
         $content = [
@@ -49,7 +51,10 @@ class UserAudiobookInfoTest extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
         $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("id", $responseContent);
+
+        $this->assertArrayHasKey("part", $responseContent);
+        $this->assertArrayHasKey("endedTime", $responseContent);
+        $this->assertArrayHasKey("watchingDate", $responseContent);
 
     }
 
@@ -204,7 +209,7 @@ class UserAudiobookInfoTest extends AbstractWebTest
     public function test_userAudiobookInfoPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);

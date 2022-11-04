@@ -8,7 +8,7 @@ use App\Tests\AbstractWebTest;
 /**
  * UserAudiobookDetails
  */
-class UserAudiobookDetails extends AbstractWebTest
+class UserAudiobookDetailsTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
@@ -50,20 +50,18 @@ class UserAudiobookDetails extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("id", $responseContent);
-//        $this->assertArrayHasKey("title", $responseContent);
-//        $this->assertArrayHasKey("author", $responseContent);
-//        $this->assertArrayHasKey("version", $responseContent);
-//        $this->assertArrayHasKey("album", $responseContent);
-//        $this->assertArrayHasKey("year", $responseContent);
-//        $this->assertArrayHasKey("duration", $responseContent);
-//        $this->assertArrayHasKey("size", $responseContent);
-//        $this->assertArrayHasKey("parts", $responseContent);
-//        $this->assertArrayHasKey("description", $responseContent);
-//        $this->assertArrayHasKey("age", $responseContent);
-//        $this->assertArrayHasKey("active", $responseContent);
-//        $this->assertArrayHasKey("categories", $responseContent);
-//        $this->assertCount(2, $responseContent["categories"]);
-
+        $this->assertArrayHasKey("title", $responseContent);
+        $this->assertArrayHasKey("author", $responseContent);
+        $this->assertArrayHasKey("version", $responseContent);
+        $this->assertArrayHasKey("album", $responseContent);
+        $this->assertArrayHasKey("year", $responseContent);
+        $this->assertArrayHasKey("duration", $responseContent);
+        $this->assertArrayHasKey("size", $responseContent);
+        $this->assertArrayHasKey("parts", $responseContent);
+        $this->assertArrayHasKey("description", $responseContent);
+        $this->assertArrayHasKey("age", $responseContent);
+        $this->assertArrayHasKey("categories", $responseContent);
+        $this->assertCount(2, $responseContent["categories"]);
     }
 
     /**
@@ -217,7 +215,7 @@ class UserAudiobookDetails extends AbstractWebTest
     public function test_userAudiobookDetailsPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);

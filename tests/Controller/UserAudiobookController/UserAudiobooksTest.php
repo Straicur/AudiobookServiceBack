@@ -28,9 +28,15 @@ class UserAudiobooksTest extends AbstractWebTest
         $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
 
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d1", [$category1,$category2],active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d2", [$category2]);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d3", [$category2]);
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t1","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d1", [$category1,$category2],active: true);
+        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t2","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d2", [$category2],active: true);
+        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t3","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d3", [$category2],active: true);
+        $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook("t4","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d4", [$category1,$category2],active: true);
+        $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook("t5","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d5", [$category2],active: true);
+        $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook("t6","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d6", [$category5]);
+        $audiobook7 = $this->databaseMockManager->testFunc_addAudiobook("t7","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d7", [$category1,$category4],active: true);
+        $audiobook8 = $this->databaseMockManager->testFunc_addAudiobook("t8","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d8", [$category4]);
+        $audiobook9 = $this->databaseMockManager->testFunc_addAudiobook("t9","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d9", [$category4],active: true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -54,10 +60,16 @@ class UserAudiobooksTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-//        $this->assertArrayHasKey("categories", $responseContent);
-//        $this->assertCount(1, $responseContent["categories"]);
-//
-//        $this->assertCount(2, $responseContent["categories"][0]["children"]);
+        $this->assertArrayHasKey("page", $responseContent);
+        $this->assertArrayHasKey("limit", $responseContent);
+        $this->assertArrayHasKey("maxPage", $responseContent);
+
+        $this->assertArrayHasKey("categories", $responseContent);
+        $this->assertCount(4, $responseContent["categories"]);
+        $this->assertCount(5, $responseContent["categories"][0]["audiobooks"]);
+        $this->assertArrayHasKey("name", $responseContent["categories"][0]);
+        $this->assertArrayHasKey("categoryKey", $responseContent["categories"][0]);
+        $this->assertSame($category2->getCategoryKey(), $responseContent["categories"][0]["categoryKey"]);
     }
     /**
      * step 1 - Preparing data
@@ -114,7 +126,7 @@ class UserAudiobooksTest extends AbstractWebTest
     public function test_userAudiobooksPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -130,7 +142,6 @@ class UserAudiobooksTest extends AbstractWebTest
             "page" => 0,
             "limit" => 10
         ];
-
 
         /// step 2
         $crawler = self::$webClient->request("POST", "/api/user/audiobooks", server: [
