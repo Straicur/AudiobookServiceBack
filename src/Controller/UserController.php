@@ -9,19 +9,27 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\UserResetPasswordConfirmQuery;
 use App\Query\UserResetPasswordQuery;
 use App\Query\UserSettingsChangeQuery;
 use App\Query\UserSettingsEmailQuery;
 use App\Query\UserSettingsPasswordQuery;
+use App\Repository\UserInformationRepository;
+use App\Repository\UserPasswordRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
+use App\ValueGenerator\PasswordHashGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -50,21 +58,16 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "User")]
 class UserController extends AbstractController
 {
-    //1 - Zmiana hasła
-    //2 - Zmiana emaila
-    //3 - Usunięcie konta
-    //4 - Zmiana numeru tel,imienia,nazwiska
-    //5 - Endpointy od resetu hasła !!!!
-    // todo tu porządnie przemyśl te endpointy i na koniec dodaj notyfikacje jako encję
-    //Do tego jakiś enum który oznajmi z czego ma dostawać
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserPasswordRepository $userPasswordRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
     #[Route("/api/user/settings/password", name: "userSettingsPassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -81,7 +84,6 @@ class UserController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -90,32 +92,50 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserPasswordRepository         $userPasswordRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userSettingsPasswordQuery instanceof UserSettingsPasswordQuery) {
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $userPassword = $userPasswordRepository->findOneBy([
+                "user" => $user->getId()
+            ]);
+
+            $passwordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getOldPassword());
+
+            if ($passwordGenerator->generate() != $userPassword->getPassword()) {
+                $endpointLogger->error("Password dont exist");
+                throw new DataNotFoundException(["userSettings.password.password.not.exist"]);
+            }
+
+            $newPasswordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getNewPassword());
+
+            $userPassword->setPassword($newPasswordGenerator);
+
+            $userPasswordRepository->add($userPassword);
 
             return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userSettings.password.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserInformationRepository $userInformationRepository
+     * @param UserRepository $userRepository
+     * @param MailerInterface $mailer
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
      */
     #[Route("/api/user/settings/email", name: "userSettingsEmail", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -132,7 +152,6 @@ class UserController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -141,32 +160,71 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserInformationRepository      $userInformationRepository,
+        UserRepository                 $userRepository,
+        MailerInterface                $mailer,
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
-        //todo tu ustawiam flagę edited i datę ale najpierw sprawdzam czy nie jest już ustawiona i czy data nie jest mniejsza od dzisiejszej
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        if ($userSettingsEmailQuery instanceof UserSettingsEmailQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $userOldEmail = $userInformationRepository->findOneBy([
+                "email" => $userSettingsEmailQuery->getOldEmail()
+            ]);
+
+            if ($userOldEmail == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["userSettings.email.oldEmail.not.exist"]);
+            }
+
+            $userNewEmail = $userInformationRepository->findOneBy([
+                "email" => $userSettingsEmailQuery->getNewEmail()
+            ]);
+
+            if ($userNewEmail != null) {
+                $endpointLogger->error("User exist");
+                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+            }
+
+            $user->setEdited(true);
+            $user->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+
+            $userRepository->add($user);
+
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from('mosinskidamian12@gmail.com')
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Kod aktywacji konta')
+                    ->htmlTemplate('emails/userSettingsEmailChange.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "id" => $user->getId()->__toString(),
+                        "userEmail" => $user->getUserInformation()->getEmail(),
+                        "url" => "http://127.0.0.1:8000"
+                    ]);
+                $mailer->send($email);
+            }
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userSettings.email.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserInformationRepository $userInformationRepository
+     * @param UserRepository $userRepository
      * @return Response
      * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      */
     #[Route("/api/user/settings/email/change/{email}/{id}", name: "userSettingsEmailChange", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
@@ -185,26 +243,49 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserInformationRepository      $userInformationRepository,
+        UserRepository                 $userRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userEmail = $request->get('email');
+        $userId = $request->get('id');
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
-        //todo tu sprawdzam po tym jak zczyta mi id user i czy email się nie powtarza
-        // czy flaga tego usera jest dobrze ustawiona, jeśli nie to błąd
-        // i na koniec ustawiam flagę na false
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        $user = $userRepository->findOneBy([
+            "id" => $userId
+        ]);
+
+        if ($user == null || !$user->getEdited() || ($user->getEditableDate() != null && ((new \DateTime("Now")) > $user->getEditableDate()))) {
+            $endpointLogger->error("User dont exist");
+            throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+        }
+
+        $userNewEmail = $userInformationRepository->findOneBy([
+            "email" => $userEmail
+        ]);
+
+        if ($userNewEmail != null) {
+            $endpointLogger->error("User exist");
+            throw new DataNotFoundException(["userSettings.email.change.newEmail.exist"]);
+        }
+
+        $user->setEdited(false);
+
+        $userRepository->add($user);
+
+        $userInformation = $user->getUserInformation();
+
+        $userInformation->setEmail($userEmail);
+
+        $userInformationRepository->add($userInformation);
+
+        return $this->render(
+            'pages/userSettingsEmailChange.html.twig',
+            [
+                "url" => $_ENV["FRONTEND_URL"]
+            ]
+        );
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -260,13 +341,14 @@ class UserController extends AbstractController
 //            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
 //        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserInformationRepository $userInformationRepository
      * @return Response
-     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["PATCH"])]
@@ -292,32 +374,41 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserInformationRepository      $userInformationRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ($userSettingsChangeQuery instanceof UserSettingsChangeQuery) {
+            $user = $authorizedUserService->getAuthorizedUser();
 
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+            $userInformation = $user->getUserInformation();
+
+            $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
+            $userInformation->setLastname($userSettingsChangeQuery->getLastName());
+            $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
+
+            $userInformationRepository->add($userInformation);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userSettings.change.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param MailerInterface $mailer
+     * @param UserInformationRepository $userInformationRepository
+     * @param UserRepository $userRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
      */
     #[Route("/api/user/reset/password", name: "userResetPassword", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
@@ -334,7 +425,6 @@ class UserController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -343,38 +433,74 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        MailerInterface                $mailer,
+        UserInformationRepository      $userInformationRepository,
+        UserRepository                 $userRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
-        //todo tu ustawiam flagę edited i datę ale najpierw sprawdzam czy nie jest już ustawiona i czy data nie jest mniejsza od dzisiejszej
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        if ($userResetPasswordQuery instanceof UserResetPasswordQuery) {
+
+            $userInformation = $userInformationRepository->findOneBy([
+                "email" => $userResetPasswordQuery->getEmail()
+            ]);
+
+            if ($userInformation == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+            }
+
+            $user = $userInformation->getUser();
+            $user->setEdited(true);
+            $user->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+
+            $userRepository->add($user);
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from('mosinskidamian12@gmail.com')
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Kod aktywacji konta')
+                    ->htmlTemplate('emails/userSettingsResetPassword.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "id" => $user->getId()->__toString(),
+                        "url" => $_ENV["FRONTEND_URL"]
+                    ]);
+                $mailer->send($email);
+            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserPasswordRepository $userPasswordRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
-    #[Route("/api/user/reset/password/confirm/{id}/{pass}", name: "userResetPasswordConfirm", methods: ["GET"])]
+    #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
-    #[OA\Get(
+    #[OA\Post(
         description: "Endpoint is changing user password",
-        requestBody: new OA\RequestBody(),
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserResetPasswordConfirmQuery::class),
+                type: "object"
+            ),
+        ),
         responses: [
             new OA\Response(
                 response: 200,
@@ -387,24 +513,41 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserRepository                 $userRepository,
+        UserPasswordRepository         $userPasswordRepository
     ): Response
     {
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
-        //todo tu sprawdzam po tym jak zczyta mi id user i czy email się nie powtarza
-        // czy flaga tego usera jest dobrze ustawiona, jeśli nie to błąd
-        // i na koniec ustawiam flagę na false
-        return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+        if ($userResetPasswordConfirmQuery instanceof UserResetPasswordConfirmQuery) {
+
+            $user = $userRepository->findOneBy([
+                "id" => $userResetPasswordConfirmQuery->getUserId()
+            ]);
+
+            if ($user == null || !$user->getEdited() || ($user->getEditableDate() != null && ((new \DateTime("Now")) > $user->getEditableDate()))) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["userReset.password.confirm.user.dont.exist"]);
+            }
+
+            $user->setEdited(false);
+
+            $userRepository->add($user);
+
+            $password = $userPasswordRepository->findOneBy([
+                "user" => $user->getId()
+            ]);
+
+            $passwordGenerator = new PasswordHashGenerator($userResetPasswordConfirmQuery->getPassword());
+
+            $password->setPassword($passwordGenerator);
+
+            $userPasswordRepository->add($password);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userReset.password.confirm.invalid.query");
+        }
     }
 }

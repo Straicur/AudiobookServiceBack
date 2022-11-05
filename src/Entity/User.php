@@ -247,7 +247,7 @@ class User
         return $this->editableDate;
     }
 
-    public function setEditableDate(?\DateTime $editableDate): self
+    public function setEditableDate(\DateTime $editableDate): self
     {
         $this->editableDate = $editableDate;
 

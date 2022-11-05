@@ -47,7 +47,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEditable(): void
+    public function test_userSettingsEmailIncorrectEditableDate(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("-1 month"));
@@ -72,12 +72,12 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
     /**
      * step 1 - Preparing data
-     * step 2 - Sending Request with bad Edite bool
+     * step 2 - Sending Request with bad EditFlag
      * step 3 - Checking response
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEdite(): void
+    public function test_userSettingsEmailIncorrectEditFlag(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",editableDate: (new \DateTime("Now"))->modify("-1 month"));

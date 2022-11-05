@@ -27,11 +27,10 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $passwordGenerator1 = new PasswordHashGenerator("zaq12wsx");
         $passwordGenerator2 = new PasswordHashGenerator("zaq12WSX");
         /// step 2
         $content = [
-            "oldPassword"=>$passwordGenerator1->generate(),
+            "oldPassword"=>"zaq12wsx",
             "newPassword"=>"zaq12WSX",
         ];
 
@@ -46,7 +45,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
         /// step 5
         $userPassword = $userPasswordRepository->findOneBy([
-            "id"=>$user->getId()
+            "user"=>$user->getId()
         ]);
 
         $this->assertSame($userPassword->getPassword(),$passwordGenerator2->generate());
@@ -65,12 +64,10 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $passwordGenerator1 = new PasswordHashGenerator("zaq12wsw");
-        $passwordGenerator2 = new PasswordHashGenerator("zaq12WSX");
         /// step 2
         $content = [
-            "oldPassword"=>$passwordGenerator1->generate(),
-            "newPassword"=>"zaq12WSX",
+            "oldPassword"=>"zaq12WSX",
+            "newPassword"=>"zaq12Wsa",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -139,10 +136,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
-        $passwordGenerator1 = new PasswordHashGenerator("zaq12wsx");
-
         $content = [
-            "oldPassword"=>$passwordGenerator1->generate(),
+            "oldPassword"=>"zaq12wsx",
             "newPassword"=>"zaq12WSX",
         ];
 
@@ -178,10 +173,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $passwordGenerator1 = new PasswordHashGenerator("zaq12wsx");
-
         $content = [
-            "oldPassword"=>$passwordGenerator1->generate(),
+            "oldPassword"=>"zaq12wsx",
             "newPassword"=>"zaq12WSX",
         ];
 

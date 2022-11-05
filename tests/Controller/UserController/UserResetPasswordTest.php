@@ -96,9 +96,7 @@ class UserResetPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $content = [
-            "email" => $user->getUserInformation()->getEmail()
-        ];
+        $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
