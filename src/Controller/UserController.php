@@ -9,6 +9,10 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\UserResetPasswordQuery;
+use App\Query\UserSettingsChangeQuery;
+use App\Query\UserSettingsEmailQuery;
+use App\Query\UserSettingsPasswordQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -50,6 +54,7 @@ class UserController extends AbstractController
     //2 - Zmiana emaila
     //3 - Usunięcie konta
     //4 - Zmiana numeru tel,imienia,nazwiska
+    //5 - Endpointy od resetu hasła !!!!
     // todo tu porządnie przemyśl te endpointy i na koniec dodaj notyfikacje jako encję
     //Do tego jakiś enum który oznajmi z czego ma dostawać
     /**
@@ -68,7 +73,7 @@ class UserController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserSettingsPasswordQuery::class),
                 type: "object"
             ),
         ),
@@ -119,7 +124,7 @@ class UserController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserSettingsEmailQuery::class),
                 type: "object"
             ),
         ),
@@ -147,7 +152,7 @@ class UserController extends AbstractController
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
-
+        //todo tu ustawiam flagę edited i datę ale najpierw sprawdzam czy nie jest już ustawiona i czy data nie jest mniejsza od dzisiejszej
         return ResponseTool::getResponse();
 //        } else {
 //            $endpointLogger->error("Invalid given Query");
@@ -164,21 +169,14 @@ class UserController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/user/settings/email/change/{email}/{id}", name: "userSettingsEmailChange", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Get(
         description: "Endpoint is sending confirmation email to change user email",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -198,7 +196,9 @@ class UserController extends AbstractController
 //                $endpointLogger->error("Offer dont exist");
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
-
+        //todo tu sprawdzam po tym jak zczyta mi id user i czy email się nie powtarza
+        // czy flaga tego usera jest dobrze ustawiona, jeśli nie to błąd
+        // i na koniec ustawiam flagę na false
         return ResponseTool::getResponse();
 //        } else {
 //            $endpointLogger->error("Invalid given Query");
@@ -214,9 +214,9 @@ class UserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/settings/delete", name: "userSettingsDelete", methods: ["POST"])]
+    #[Route("/api/user/settings/delete", name: "userSettingsDelete", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is setting user account to not active",
         requestBody: new OA\RequestBody(
             required: true,
@@ -269,14 +269,14 @@ class UserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["POST"])]
+    #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is changing given user informations",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
+                ref: new Model(type: UserSettingsChangeQuery::class),
                 type: "object"
             ),
         ),
@@ -284,7 +284,6 @@ class UserController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -305,6 +304,103 @@ class UserController extends AbstractController
 //                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
 //            }
 
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/reset/password", name: "userResetPassword", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: false, roles: [])]
+    #[OA\Post(
+        description: "Endpoint is sending reset password email",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserResetPasswordQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
+            )
+        ]
+    )]
+    public function userResetPassword(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+        //todo tu ustawiam flagę edited i datę ale najpierw sprawdzam czy nie jest już ustawiona i czy data nie jest mniejsza od dzisiejszej
+        return ResponseTool::getResponse();
+//        } else {
+//            $endpointLogger->error("Invalid given Query");
+//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+//        }
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/reset/password/confirm/{id}/{pass}", name: "userResetPasswordConfirm", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: false, roles: [])]
+    #[OA\Get(
+        description: "Endpoint is changing user password",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userResetPasswordConfirm(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+
+    ): Response
+    {
+//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
+//
+//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+
+//            if ( == null) {
+//                $endpointLogger->error("Offer dont exist");
+//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
+//            }
+        //todo tu sprawdzam po tym jak zczyta mi id user i czy email się nie powtarza
+        // czy flaga tego usera jest dobrze ustawiona, jeśli nie to błąd
+        // i na koniec ustawiam flagę na false
         return ResponseTool::getResponse();
 //        } else {
 //            $endpointLogger->error("Invalid given Query");

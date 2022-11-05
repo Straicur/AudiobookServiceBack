@@ -3,7 +3,6 @@
 namespace App\Tests\Controller\UserAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
-use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Tests\AbstractWebTest;
 

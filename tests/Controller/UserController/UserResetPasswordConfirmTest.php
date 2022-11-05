@@ -2,59 +2,74 @@
 
 namespace App\Tests\Controller\UserController;
 
-use App\Repository\UserRepository;
+use App\Repository\UserPasswordRepository;
 use App\Tests\AbstractWebTest;
+use App\ValueGenerator\PasswordHashGenerator;
 
 /**
- * UserSettingsEmailChangeTest
+ * UserResetPasswordConfirmTest
  */
-class UserSettingsEmailChangeTest extends AbstractWebTest
+class UserResetPasswordConfirmTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
+     * step 2 - Sending Request
      * step 3 - Checking response
-     * step 4 - Checking response if all data has changed
+     * step 4 - Checking response if password and editable flag has changed
      * @return void
      */
-    public function test_userSettingsEmailCorrect(): void
+    public function test_userResetPasswordConfirmCorrect(): void
     {
-        $userRepository = $this->getService(UserRepository::class);
+        $userPasswordRepository = $this->getService(UserPasswordRepository::class);
 
-        $this->assertInstanceOf(UserRepository::class, $userRepository);
+        $this->assertInstanceOf(UserPasswordRepository::class, $userPasswordRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/".$user->getId()->__toString());
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm/".$user->getId()->__toString()."/".$newPassword);
 
         /// step 3
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $userAfter = $userRepository->findOneBy([
-            "id"=>$user->getId()
-        ]);
         /// step 4
-        $this->assertSame($userAfter->getUserInformation()->getEmail(), "test2@cos.pl");
-        $this->assertFalse($userAfter->getEdited());
+        $password = $userPasswordRepository->findOneBy([
+            "user"=>$user->getId()
+        ]);
+
+        $userAfter = $password->getUser();
+
+        $this->assertSame($newPassword, $password->getPassword());
+        $this->assertSame($userAfter->getEdited(), false);
     }
+
     /**
      * step 1 - Preparing data
-     * step 2 - Sending Request with bad Editable date
+     * step 2 - Sending Request with bad UserId
      * step 3 - Checking response
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEditable(): void
+    public function test_userResetPasswordConfirmIncorrectId(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("-1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/".$user->getId()->__toString());
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm/66666c4e-16e6-1ecc-9890-a7e8b0073d3b/".$newPassword);
         /// step 3
         $this->assertResponseStatusCodeSame(404);
 
@@ -72,19 +87,59 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
     /**
      * step 1 - Preparing data
-     * step 2 - Sending Request with bad Edite bool
+     * step 2 - Sending Request without Pass
      * step 3 - Checking response
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEdite(): void
+    public function test_userResetPasswordConfirmEmptyPass(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
+        /// step 2
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm/".$user->getId()->__toString()."/");
+        /// step 3
+        $this->assertResponseStatusCodeSame(404);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey("data", $responseContent);
+    }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request with bad user edit flag
+     * step 3 - Checking response
+     *
+     * @return void
+     */
+    public function test_userResetPasswordConfirmIncorrectUserEditFlag(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",editableDate: (new \DateTime("Now"))->modify("-1 month"));
 
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/".$user->getId()->__toString());
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm/".$user->getId()->__toString()."/".$newPassword);
         /// step 3
         $this->assertResponseStatusCodeSame(404);
 
@@ -102,51 +157,24 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
     /**
      * step 1 - Preparing data
-     * step 2 - Sending Request with bad CategoryKey
+     * step 2 - Sending Request with bad EditableDate
      * step 3 - Checking response
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectUserId(): void
+    public function test_userResetPasswordConfirmIncorrectUserEditableDate(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("-1 month"));
+
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/66666c4e-16e6-1ecc-9890-a7e8b0073d3b");
-        /// step 3
-        $this->assertResponseStatusCodeSame(404);
-
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
-    }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad CategoryKey
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsEmailIncorrectEmail(): void
-    {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
-
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/".$user->getId()->__toString());
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm/".$user->getId()->__toString()."/".$newPassword);
         /// step 3
         $this->assertResponseStatusCodeSame(404);
 
@@ -169,14 +197,19 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailEmptyRequestData(): void
+    public function test_userResetPasswordConfirmEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
+        $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $newPassword = $passwordGenerator->generate();
+
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change//");
+        $crawler = self::$webClient->request("GET", "/api/user/reset/password/confirm//");
         /// step 3
         $this->assertResponseStatusCodeSame(404);
 
@@ -192,5 +225,4 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
-
 }

@@ -62,7 +62,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -76,10 +76,19 @@ class DatabaseMockManager
         if ($banned) {
             $user->setBanned(true);
         }
+
         if ($notActive) {
             $user->setActive(false);
         } else {
             $user->setActive(true);
+        }
+
+        if($edited){
+            $user->setEdited($edited);
+        }
+
+        if($editableDate != null){
+            $user->setEditableDate($editableDate);
         }
 
         $userRepository->add($user, false);
