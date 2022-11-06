@@ -59,7 +59,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user);
+        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user,true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -92,7 +92,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
     public function test_userSettingsDeletePermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2

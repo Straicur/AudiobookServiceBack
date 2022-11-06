@@ -294,9 +294,12 @@ class UserController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @param UserRepository $userRepository
+     * @param MailerInterface $mailer
      * @return Response
      * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
      * @throws TransportExceptionInterface
      */
     #[Route("/api/user/settings/delete", name: "userSettingsDelete", methods: ["PATCH"])]
@@ -316,27 +319,28 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserDeleteRepository $userDeleteRepository,
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        UserRepository $userRepository,
-        MailerInterface $mailer
+        UserDeleteRepository           $userDeleteRepository,
+        AuthenticationTokenRepository  $authenticationTokenRepository,
+        UserRepository                 $userRepository,
+        MailerInterface                $mailer
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
+
         $userInDelete = $userDeleteRepository->userInList($user);
 
-        if ( $userInDelete ) {
+        if ($userInDelete) {
             $endpointLogger->error("User in list");
             throw new DataNotFoundException(["userSettings.delete.exist"]);
         }
 
         $user->setActive(false);
-        $userRepository->add($user,false);
+        $userRepository->add($user, false);
 
         $activeAuthenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
 
         if ($activeAuthenticationToken != null) {
-            $activeAuthenticationToken->setDateExpired((new \DateTime("now"))->modify("-1 hour"));
+            $activeAuthenticationToken->setDateExpired((new \DateTime("now"))->modify("-1 day"));
             $authenticationTokenRepository->add($activeAuthenticationToken, false);
         }
 
