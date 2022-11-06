@@ -11,6 +11,7 @@ use App\Entity\MyList;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
+use App\Entity\UserDelete;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
@@ -24,6 +25,7 @@ use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -248,5 +250,26 @@ class DatabaseMockManager
         $proposedAudiobooks->addAudiobook($audiobook);
 
         $proposedAudiobooksRepository->add($proposedAudiobooks);
+    }
+
+    public function testFunc_addUserDelete(User $user,bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    {
+        $userDeleteRepository = $this->getService(UserDeleteRepository::class);
+
+        $newUserDelete = new UserDelete($user);
+
+        if($deleted){
+            $newUserDelete->setDeleted($deleted);
+        }
+        if($declined){
+            $newUserDelete->setDeclined($declined);
+        }
+        if($dateDeleted != null){
+            $newUserDelete->setDateDeleted($dateDeleted);
+        }
+
+        $userDeleteRepository->add($newUserDelete);
+
+        return $newUserDelete;
     }
 }

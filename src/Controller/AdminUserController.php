@@ -768,9 +768,9 @@ class AdminUserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/user/delete/list", name: "adminUserDeleteList", methods: ["GET"])]
+    #[Route("/api/admin/user/delete/list", name: "adminUserDeleteList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Get(
+    #[OA\Post(
         description: "Endpoint is returning list of users to delete",
         requestBody: new OA\RequestBody(
             required: true,

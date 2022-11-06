@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\UserDelete;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
@@ -14,6 +15,8 @@ use App\Query\UserResetPasswordQuery;
 use App\Query\UserSettingsChangeQuery;
 use App\Query\UserSettingsEmailQuery;
 use App\Query\UserSettingsPasswordQuery;
+use App\Repository\AuthenticationTokenRepository;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -294,23 +297,17 @@ class UserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
      */
     #[Route("/api/user/settings/delete", name: "userSettingsDelete", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Patch(
         description: "Endpoint is setting user account to not active",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-//                ref: new Model(type: InvestmentPaymentDuePaymentsQuery::class),
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-//                content: new Model(type: InvestmentPaymentDuePaymentsSuccessModel::class)
             )
         ]
     )]
@@ -319,27 +316,48 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
+        UserDeleteRepository $userDeleteRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer
     ): Response
     {
-        //todo na później będzie lista z zbanowanymi i też dodatego odpowiendia tabela(chyba że będę miał dużo czasu to to dorób)
-        // czyli do tego jeszcze akceptacja/usunięcie prośby I tu powiadomienie i email, lista kont do usunięcia
-        // I tu może złyżyć prośbę jeśli już jakiejś w systemie nie ma
-        // Ale jak już jakąś złuży to jest ustawiany jako nieaktywny
-//        $investmentPaymentDuePaymentsQuery = $requestService->getRequestBodyContent($request, InvestmentPaymentDuePaymentsQuery::class);
-//
-//        if ($investmentPaymentDuePaymentsQuery instanceof InvestmentPaymentDuePaymentsQuery) {
+        $user = $authorizedUserService->getAuthorizedUser();
+        $userInDelete = $userDeleteRepository->userInList($user);
 
-//            if ( == null) {
-//                $endpointLogger->error("Offer dont exist");
-//                throw new DataNotFoundException(["investmentPaymentDuePayments.investmentPaymentDueOffer.not.exist"]);
-//            }
+        if ( $userInDelete ) {
+            $endpointLogger->error("User in list");
+            throw new DataNotFoundException(["userSettings.delete.exist"]);
+        }
+
+        $user->setActive(false);
+        $userRepository->add($user,false);
+
+        $activeAuthenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
+
+        if ($activeAuthenticationToken != null) {
+            $activeAuthenticationToken->setDateExpired((new \DateTime("now"))->modify("-1 hour"));
+            $authenticationTokenRepository->add($activeAuthenticationToken, false);
+        }
+
+        $userDelete = new UserDelete($user);
+
+        $userDeleteRepository->add($userDelete);
+
+        if ($_ENV["APP_ENV"] != "test") {
+            $email = (new TemplatedEmail())
+                ->from($_ENV["INSTITUTION_EMAIL"])
+                ->to($user->getUserInformation()->getEmail())
+                ->subject('Prośba o usunięcie konta jest przetwarzana')
+                ->htmlTemplate('emails/userDeleteProcessing.html.twig')
+                ->context([
+                    "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                ]);
+            $mailer->send($email);
+        }
 
         return ResponseTool::getResponse();
-//        } else {
-//            $endpointLogger->error("Invalid given Query");
-//            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
-//        }
+
     }
 
     /**

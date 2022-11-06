@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\UserDelete;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -47,6 +48,22 @@ class UserDeleteRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function userInList(User $user): bool
+    {
+        $qb = $this->createQueryBuilder('ud');
+
+        $qb->where('ud.user = :user')
+            ->andWhere('((ud.deleted = true) OR (ud.dateDeleted IS NOT NULL))')
+            ->setParameter('user', $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return count($query->execute()) > 0;
+    }
 //    /**
 //     * @return UserDelete[] Returns an array of UserDelete objects
 //     */
