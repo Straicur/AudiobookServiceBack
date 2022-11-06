@@ -63,7 +63,25 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+    /**
+     * @param User $user
+     * @return AuthenticationToken|null
+     */
+    public function getLastActiveUserAuthenticationToken(User $user):?AuthenticationToken{
+        $qb = $this->createQueryBuilder('at')
+            ->where('at.user = :user')
+            ->andWhere('at.dateExpired > :today')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('today', new \DateTime("now"))
+            ->addOrderBy('at.dateExpired', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(1);
 
+        $query = $qb->getQuery();
+        $res = $query->execute();
+
+        return count($res) > 0 ? $res[0] : null;
+    }
 //    /**
 //     * @return AuthenticationToken[] Returns an array of AuthenticationToken objects
 //     */

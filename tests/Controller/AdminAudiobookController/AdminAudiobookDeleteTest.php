@@ -84,11 +84,12 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $audiobookAfter = $audiobookRepository->findAll();
 
-        $this->assertCount(0,$audiobookAfter);
+        $this->assertCount(0, $audiobookAfter);
 
         $this->assertFalse(is_dir($dir));
 
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -171,6 +172,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content

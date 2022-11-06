@@ -77,7 +77,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "audiobookId"=>$audiobookAfterFirst->getId(),
+            "audiobookId" => $audiobookAfterFirst->getId(),
             "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
             "fileName" => "Base",
             "base64" => $readData,
@@ -106,11 +106,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfter);
 
-        $this->assertSame($audiobookAfter->getTitle(),$content["additionalData"]['title']);
-        $this->assertSame($audiobookAfter->getAuthor(),$content["additionalData"]['author']);
-        $this->assertNotSame($audiobookAfterFirst->getParts(),$audiobookAfter->getParts());
-        $this->assertNotSame($audiobookAfterFirst->getDescription(),$audiobookAfter->getDescription());
-        $this->assertNotSame($audiobookAfterFirst->getSize(),$audiobookAfter->getSize());
+        $this->assertSame($audiobookAfter->getTitle(), $content["additionalData"]['title']);
+        $this->assertSame($audiobookAfter->getAuthor(), $content["additionalData"]['author']);
+        $this->assertNotSame($audiobookAfterFirst->getParts(), $audiobookAfter->getParts());
+        $this->assertNotSame($audiobookAfterFirst->getDescription(), $audiobookAfter->getDescription());
+        $this->assertNotSame($audiobookAfterFirst->getSize(), $audiobookAfter->getSize());
 
         $hasSecondCategory = false;
 
@@ -124,6 +124,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -185,7 +186,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "audiobookId"=>$audiobookAfterFirst->getId(),
+            "audiobookId" => $audiobookAfterFirst->getId(),
             "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
             "fileName" => "Base",
             "base64" => $readData,
@@ -215,9 +216,10 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
 
-        $audiobookService->removeFolder($_ENV['MAIN_DIR']."/".$content["hashName"]);
+        $audiobookService->removeFolder($_ENV['MAIN_DIR'] . "/" . $content["hashName"]);
 
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -265,7 +267,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "audiobookId"=>$audiobookAfterFirst->getId(),
+            "audiobookId" => $audiobookAfterFirst->getId(),
             "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
             "fileName" => "Base",
             "base64" => $readData,
@@ -287,9 +289,9 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfter);
 
-        $this->assertNotSame($audiobookAfterFirst->getParts(),$audiobookAfter->getParts());
-        $this->assertNotSame($audiobookAfterFirst->getDescription(),$audiobookAfter->getDescription());
-        $this->assertNotSame($audiobookAfterFirst->getSize(),$audiobookAfter->getSize());
+        $this->assertNotSame($audiobookAfterFirst->getParts(), $audiobookAfter->getParts());
+        $this->assertNotSame($audiobookAfterFirst->getDescription(), $audiobookAfter->getDescription());
+        $this->assertNotSame($audiobookAfterFirst->getSize(), $audiobookAfter->getSize());
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -462,6 +464,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad permission
@@ -481,14 +484,14 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $audiobookAfterFirst = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d6", [$category2]);
+        $audiobookAfterFirst = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d6", [$category2]);
 
         $fileBase = fopen(self::base64ReAddingPartFile, "r");
         $readData = fread($fileBase, filesize(self::base64ReAddingPartFile,));
 
         /// step 2
         $content = [
-            "audiobookId"=>$audiobookAfterFirst->getId(),
+            "audiobookId" => $audiobookAfterFirst->getId(),
             "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
             "fileName" => "Base",
             "base64" => $readData,
@@ -522,6 +525,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without token
@@ -541,7 +545,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $audiobookAfterFirst = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d6", [$category2]);
+        $audiobookAfterFirst = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d6", [$category2]);
 
         $fileBase = fopen(self::base64OnePartFile, "r");
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
@@ -551,7 +555,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "audiobookId"=>$audiobookAfterFirst->getId(),
+            "audiobookId" => $audiobookAfterFirst->getId(),
             "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
             "fileName" => "Base",
             "base64" => $readData,

@@ -31,7 +31,7 @@ class AdminUserBanTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => $user2->getId(),
-            "banned"=>true
+            "banned" => true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
@@ -69,7 +69,7 @@ class AdminUserBanTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => $user2->getId(),
-            "banned"=>true
+            "banned" => true
         ];
 
         /// step 3
@@ -111,7 +111,7 @@ class AdminUserBanTest extends AbstractWebTest
         /// step 2
         $content = [
             "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "banned"=>true
+            "banned" => true
         ];
 
         /// step 3
@@ -186,7 +186,7 @@ class AdminUserBanTest extends AbstractWebTest
 
         $content = [
             "userId" => $user2->getId(),
-            "banned"=>true
+            "banned" => true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -225,7 +225,7 @@ class AdminUserBanTest extends AbstractWebTest
 
         $content = [
             "userId" => $user2->getId(),
-            "banned"=>true
+            "banned" => true
         ];
         /// step 2
         $crawler = self::$webClient->request("PATCH", "/api/admin/user/ban", content: json_encode($content));

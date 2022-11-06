@@ -67,6 +67,7 @@ class RegisterController extends AbstractController
      * @param MyListRepository $myListRepository
      * @param ProposedAudiobooksRepository $proposedAudiobooksRepository
      * @param InstitutionRepository $institutionRepository
+     * @param UserPasswordRepository $userPasswordRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -173,7 +174,7 @@ class RegisterController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($newUser->getUserInformation()->getEmail())
                     ->subject('Kod aktywacji konta')
                     ->htmlTemplate('emails/register.html.twig')
@@ -204,6 +205,7 @@ class RegisterController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
+     * @throws \Exception
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Patch(
@@ -269,7 +271,10 @@ class RegisterController extends AbstractController
         $usersLogger->info("user." . $user->getUserInformation()->getEmail() . "successfully registered and confirmed");
 
         return $this->render(
-            'emails/registered.html.twig'
+            'pages/registered.html.twig',
+            [
+                "url"=>$_ENV["FRONTEND_URL"]
+            ]
         );
     }
 
@@ -344,7 +349,7 @@ class RegisterController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
                     ->subject('Kod aktywacji konta')
                     ->htmlTemplate('emails/register.html.twig')

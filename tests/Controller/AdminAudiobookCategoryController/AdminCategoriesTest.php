@@ -49,6 +49,7 @@ class AdminCategoriesTest extends AbstractWebTest
 
         $this->assertCount(2, $responseContent["categories"][0]["children"]);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad permission

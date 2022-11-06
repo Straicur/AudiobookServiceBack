@@ -40,6 +40,7 @@ class LoginTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("token", $responseContent);
     }
+
     /**
      * step 1 - Preparing JsonBodyContent where there is no email tester@asuri.pl
      * step 2 - Sending Request
@@ -66,6 +67,7 @@ class LoginTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Sending Request without content
      * step 2 - Checking response

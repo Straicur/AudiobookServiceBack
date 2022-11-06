@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\AdminUserController;
 
-use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -18,7 +17,7 @@ class AdminUserDeleteTest extends AbstractWebTest
 //     * step 5 - Checking response if user is deleted
 //     * @return void
 //     */
-//    public function test_adminUserDetailsCorrect(): void
+//    public function test_adminUserDeleteCorrect(): void
 //    {
 //        $userRepository = $this->getService(UserRepository::class);
 //
@@ -56,7 +55,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectAdminUser(): void
+    public function test_adminUserDeleteIncorrectAdminUser(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -97,7 +96,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectUserId(): void
+    public function test_adminUserDeleteIncorrectUserId(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -137,7 +136,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsEmptyRequestData(): void
+    public function test_adminUserDeleteEmptyRequestData(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -173,7 +172,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsPermission(): void
+    public function test_adminUserDeletePermission(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
@@ -211,7 +210,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsLogOut(): void
+    public function test_adminUserDeleteLogOut(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);

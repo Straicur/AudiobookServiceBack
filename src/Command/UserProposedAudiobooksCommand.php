@@ -114,7 +114,7 @@ class UserProposedAudiobooksCommand extends Command
 
                     if ($databaseCategory != null) {
 
-                        $audiobooks = $this->audiobookRepository->getRandomSortedCategoryAudiobooks($databaseCategory);
+                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory);
 
                         shuffle($audiobooks);
 

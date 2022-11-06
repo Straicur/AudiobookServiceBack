@@ -63,6 +63,41 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * @param Audiobook $audiobook
+     * @return AudiobookCategory[]
+     */
+    public function getAudiobookActiveCategories(Audiobook $audiobook): array
+    {
+        $qb = $this->createQueryBuilder('ac')
+            ->leftJoin('ac.audiobooks', 'a')
+            ->where('a.id = :audiobook')
+            ->andWhere('ac.active = true')
+            ->setParameter('audiobook', $audiobook->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+
+    /**
+     * @return AudiobookCategory[]
+     */
+    public function getCategoriesByCountAudiobooks(): array
+    {
+        $qb = $this->createQueryBuilder('ac')
+            ->leftJoin('ac.audiobooks', 'a')
+            ->select('COUNT(a) AS HIDDEN audiobooks', 'ac')
+            ->where('ac.active = true')
+            ->orderBy('audiobooks',"DESC")
+            ->groupBy('ac');
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return AudiobookCategory[] Returns an array of AudiobookCategory objects
 //     */

@@ -86,6 +86,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -178,6 +179,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content

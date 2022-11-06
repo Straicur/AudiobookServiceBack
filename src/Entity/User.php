@@ -42,6 +42,12 @@ class User
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist', 'remove'])]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $edited;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $editableDate;
+
     public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
@@ -50,6 +56,7 @@ class User
         $this->userInformation = null;
         $this->roles = new ArrayCollection();
         $this->myList = null;
+        $this->edited = false;
     }
 
     /**
@@ -219,6 +226,30 @@ class User
         }
 
         $this->proposedAudiobooks = $proposedAudiobooks;
+
+        return $this;
+    }
+
+    public function getEdited(): bool
+    {
+        return $this->edited;
+    }
+
+    public function setEdited(bool $edited): self
+    {
+        $this->edited = $edited;
+
+        return $this;
+    }
+
+    public function getEditableDate(): ?\DateTime
+    {
+        return $this->editableDate;
+    }
+
+    public function setEditableDate(\DateTime $editableDate): self
+    {
+        $this->editableDate = $editableDate;
 
         return $this;
     }

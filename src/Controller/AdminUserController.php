@@ -6,23 +6,29 @@ use App\Annotation\AuthValidation;
 use App\Enums\UserRoles;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AdminUserDeleteListSuccessModel;
 use App\Model\AdminUserDetailsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\UserDeleteModel;
 use App\Model\UserModel;
 use App\Query\AdminUserActivateQuery;
 use App\Query\AdminUserBanQuery;
 use App\Query\AdminUserChangePasswordQuery;
 use App\Query\AdminUserChangePhoneQuery;
+use App\Query\AdminUserDeleteAcceptQuery;
+use App\Query\AdminUserDeleteDeclineQuery;
+use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
 use App\Query\AdminUserDetailsQuery;
 use App\Query\AdminUserRoleAddQuery;
 use App\Query\AdminUserRoleRemoveQuery;
 use App\Query\AdminUsersQuery;
 use App\Repository\RoleRepository;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -33,9 +39,12 @@ use App\ValueGenerator\PasswordHashGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -64,69 +73,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminUser")]
 class AdminUserController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/admin/user/delete", name: "adminUserDelete", methods: ["DELETE"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Delete(
-        description: "Endpoint is deleting given user",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-            )
-        ]
-    )]
-    public function adminUserDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-    ): Response
-    {
-        $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
-
-        if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
-
-            $user = $userRepository->findOneBy([
-                "id" => $adminUserDeleteQuery->getUserId()
-            ]);
-
-            if ($user == null) {
-                $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.delete.user.not.exist"]);
-            }
-
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
-            }
-
-            $userRepository->remove($user);
-
-            return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.delete.invalid.query");
-        }
-    }
-
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -734,6 +680,345 @@ class AdminUserController extends AbstractController
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminUser.details.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     */
+    #[Route("/api/admin/user/delete", name: "adminUserDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Delete(
+        description: "Endpoint is deleting given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        MailerInterface                $mailer
+    ): Response
+    {
+        $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
+
+        if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
+
+            $user = $userRepository->findOneBy([
+                "id" => $adminUserDeleteQuery->getUserId()
+            ]);
+
+            if ($user == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["adminUser.delete.user.not.exist"]);
+            }
+
+            if ($userRepository->userIsAdmin($user)) {
+                $endpointLogger->error("User is admin");
+                throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
+            }
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from($_ENV["INSTITUTION_EMAIL"])
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Konto usunięte')
+                    ->htmlTemplate('emails/userDeleted.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                    ]);
+                $mailer->send($email);
+            }
+
+            $userRepository->remove($user);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.delete.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/delete/list", name: "adminUserDeleteList", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of users to delete",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteListQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserDeleteListSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserDeleteList(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository
+    ): Response
+    {
+        $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
+
+        if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
+
+            $successModel = new AdminUserDeleteListSuccessModel();
+
+            $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
+            $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
+
+            $allDeleteUsers = $userDeleteRepository->findAll();
+
+            foreach ($allDeleteUsers as $index => $userDelete) {
+
+                $user = $userDelete->getUser();
+
+                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $userDeleteModel = new UserDeleteModel(
+                        $user->getId(),
+                        $user->isActive(),
+                        $user->isBanned(),
+                        $user->getUserInformation()->getEmail(),
+                        $user->getUserInformation()->getFirstname(),
+                        $userDelete->getDeleted(),
+                        $userDelete->getDeclined()
+                    );
+
+
+                    if ($userDelete->getDateDeleted() != null) {
+                        $userDeleteModel->setDateDeleted($userDelete->getDateDeleted());
+                    }
+
+                    $successModel->addUser($userDeleteModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminUserDeleteListQuery->getPage());
+            $successModel->setLimit($adminUserDeleteListQuery->getLimit());
+
+            $successModel->setMaxPage(floor(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.delete.list.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     */
+    #[Route("/api/admin/user/delete/accept", name: "adminUserDeleteAccept", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is deleting given user",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteAcceptQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserDeleteAccept(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserDeleteRepository           $userDeleteRepository,
+        MailerInterface                $mailer
+    ): Response
+    {
+        $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
+
+        if ($adminUserDeleteAcceptQuery instanceof AdminUserDeleteAcceptQuery) {
+
+            $userDelete = $userDeleteRepository->findOneBy([
+                "user" => $adminUserDeleteAcceptQuery->getUserId()
+            ]);
+
+            if ($userDelete == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["adminUser.delete.accept.user.not.exist"]);
+            }
+            $user = $userDelete->getUser();
+
+            $userInDelete = $userDeleteRepository->userInList($user);
+
+            if ($userInDelete) {
+                $endpointLogger->error("User in list");
+                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+            }
+
+            $userDelete->setDeleted(true);
+            $userDelete->setDateDeleted(new \DateTime("Now"));
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from($_ENV["INSTITUTION_EMAIL"])
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Konto usunięte')
+                    ->htmlTemplate('emails/userDeleted.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                    ]);
+                $mailer->send($email);
+            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.delete.accept.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     */
+    #[Route("/api/admin/user/delete/decline", name: "adminUserDeleteDecline", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is declining user request to delete his account",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteDeclineQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserDeleteDecline(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository,
+        MailerInterface                $mailer
+    ): Response
+    {
+        $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
+
+        if ($adminUserDeleteDeclineQuery instanceof AdminUserDeleteDeclineQuery) {
+
+            $userDelete = $userDeleteRepository->findOneBy([
+                "user" => $adminUserDeleteDeclineQuery->getUserId()
+            ]);
+
+            if ($userDelete == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["adminUser.delete.decline.user.not.exist"]);
+            }
+
+            $user = $userDelete->getUser();
+
+            $userInDelete = $userDeleteRepository->userInList($user);
+
+            if ($userInDelete) {
+                $endpointLogger->error("User in list");
+                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+            }
+
+            $userDelete->setDeclined(true);
+
+            $userDeleteRepository->add($userDelete, false);
+
+            $user->setActive(true);
+
+            $userRepository->add($user);
+
+            if ($_ENV["APP_ENV"] != "test") {
+                $email = (new TemplatedEmail())
+                    ->from($_ENV["INSTITUTION_EMAIL"])
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject('Usunięcie odrzucone')
+                    ->htmlTemplate('emails/userDeletedDecline.html.twig')
+                    ->context([
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                    ]);
+                $mailer->send($email);
+            }
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.delete.decline.invalid.query");
         }
     }
 }

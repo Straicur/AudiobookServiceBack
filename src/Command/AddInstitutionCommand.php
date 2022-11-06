@@ -35,7 +35,6 @@ class AddInstitutionCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('email', InputArgument::REQUIRED, 'Institution firstname');
         $this->addArgument('phoneNumber', InputArgument::REQUIRED, 'Institution phoneNumber');
         $this->addArgument('maxAdmins', InputArgument::REQUIRED, 'Institution max number of admins');
         $this->addArgument('maxUsers', InputArgument::REQUIRED, 'Institution max number of users');
@@ -48,14 +47,12 @@ class AddInstitutionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $email = $input->getArgument("email");
         $phoneNumber = $input->getArgument("phoneNumber");
         $maxAdmins = $input->getArgument("maxAdmins");
         $maxUsers = $input->getArgument("maxUsers");
 
 
         $io->text([
-            "Email:        " . $email,
             "PhoneNumber:  " . $phoneNumber,
             "MaxAdmins:    " . $maxAdmins,
             "MaxUsers:     " . $maxUsers,
@@ -66,7 +63,7 @@ class AddInstitutionCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"],$email,$phoneNumber,$maxAdmins,$maxUsers));
+        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"],$_ENV["INSTITUTION_EMAIL"],$phoneNumber,$maxAdmins,$maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

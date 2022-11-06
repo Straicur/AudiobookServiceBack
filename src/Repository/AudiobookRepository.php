@@ -6,6 +6,7 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Audiobook>
@@ -53,7 +54,7 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param int $page
      * @return Audiobook[]
      */
-    public function getAudiobooksByPage( int $page, int $limit): array
+    public function getAudiobooksByPage(int $page, int $limit): array
     {
         $minResult = $page * $limit;
         $maxResult = $limit + $minResult;
@@ -72,7 +73,7 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param AudiobookCategory $category
      * @return Audiobook[]
      */
-    public function getRandomSortedCategoryAudiobooks(AudiobookCategory $category): array
+    public function getActiveCategoryAudiobooks(AudiobookCategory $category): array
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.categories', 'c')
@@ -83,6 +84,28 @@ class AudiobookRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
 
         return $query->execute();
+    }
+
+    /**
+     * @param Uuid $audiobookId
+     * @param string $categoryKey
+     * @return Audiobook|null
+     */
+    public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey): ?Audiobook
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.categories', 'c')
+            ->where('c.categoryKey = :categoryKey')
+            ->andWhere('a.id = :audiobookId')
+            ->andWhere('a.active = true')
+            ->setParameter('audiobookId', $audiobookId->toBinary())
+            ->setParameter('categoryKey', $categoryKey);
+
+        $query = $qb->getQuery();
+
+        $res = $query->execute();
+
+        return count($res) > 0 ? $res[0] : null;
     }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects

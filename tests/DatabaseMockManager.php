@@ -11,6 +11,7 @@ use App\Entity\MyList;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
+use App\Entity\UserDelete;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
@@ -24,6 +25,7 @@ use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -32,7 +34,6 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
-use OpenApi\Examples\Petstore30\Models\Category;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DatabaseMockManager
@@ -63,7 +64,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -77,14 +78,22 @@ class DatabaseMockManager
         if ($banned) {
             $user->setBanned(true);
         }
+
         if ($notActive) {
             $user->setActive(false);
-        }
-        else{
+        } else {
             $user->setActive(true);
         }
 
-        $userRepository->add($user,false);
+        if($edited){
+            $user->setEdited($edited);
+        }
+
+        if($editableDate != null){
+            $user->setEditableDate($editableDate);
+        }
+
+        $userRepository->add($user, false);
 
         $userProposedAudiobooks = new ProposedAudiobooks($user);
 
@@ -129,8 +138,7 @@ class DatabaseMockManager
 
         if ($code) {
             $registerCodeGenerator = new RegisterCodeGenerator($code);
-        }
-        else{
+        } else {
             $registerCodeGenerator = new RegisterCodeGenerator();
         }
 
@@ -153,11 +161,11 @@ class DatabaseMockManager
         $institutionRepository = $this->getService(InstitutionRepository::class);
 
         return $institutionRepository->findOneBy([
-            "name"=>$_ENV["INSTITUTION_NAME"]
+            "name" => $_ENV["INSTITUTION_NAME"]
         ]);
     }
 
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age,string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -175,7 +183,7 @@ class DatabaseMockManager
             $newAudiobook->setActive($active);
         }
 
-        foreach ($categories as $category){
+        foreach ($categories as $category) {
             $newAudiobook->addCategory($category);
         }
 
@@ -198,8 +206,7 @@ class DatabaseMockManager
 
         if ($active) {
             $newAudiobookCategory->setActive(false);
-        }
-        else{
+        } else {
             $newAudiobookCategory->setActive(true);
         }
 
@@ -208,11 +215,15 @@ class DatabaseMockManager
         return $newAudiobookCategory;
     }
 
-    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate): AudiobookInfo
+    public function testFunc_addAudiobookInfo(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate, bool $deActive = false): AudiobookInfo
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user,$audiobook,$part,$endedTime,$watchingDate);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate);
+
+        if($deActive){
+            $newRegisterCode->setActive(false);
+        }
 
         $registerCodeRepository->add($newRegisterCode);
 
@@ -224,6 +235,7 @@ class DatabaseMockManager
         $myListRepository = $this->getService(MyListRepository::class);
 
         $myList = $user->getMyList();
+
         $myList->addAudiobook($audiobook);
 
         $myListRepository->add($myList);
@@ -234,8 +246,30 @@ class DatabaseMockManager
         $proposedAudiobooksRepository = $this->getService(ProposedAudiobooksRepository::class);
 
         $proposedAudiobooks = $user->getProposedAudiobooks();
+
         $proposedAudiobooks->addAudiobook($audiobook);
 
         $proposedAudiobooksRepository->add($proposedAudiobooks);
+    }
+
+    public function testFunc_addUserDelete(User $user,bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    {
+        $userDeleteRepository = $this->getService(UserDeleteRepository::class);
+
+        $newUserDelete = new UserDelete($user);
+
+        if($deleted){
+            $newUserDelete->setDeleted($deleted);
+        }
+        if($declined){
+            $newUserDelete->setDeclined($declined);
+        }
+        if($dateDeleted != null){
+            $newUserDelete->setDateDeleted($dateDeleted);
+        }
+
+        $userDeleteRepository->add($newUserDelete);
+
+        return $newUserDelete;
     }
 }
