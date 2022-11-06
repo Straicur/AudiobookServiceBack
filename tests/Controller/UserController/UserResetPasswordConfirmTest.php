@@ -25,7 +25,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserPasswordRepository::class, $userPasswordRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -33,8 +33,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "userId"=>$user->getId(),
-            "password"=>"zaq12WSX",
+            "userId" => $user->getId(),
+            "password" => "zaq12WSX",
         ];
 
         $newPassword = $passwordGenerator->generate();
@@ -47,7 +47,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
         /// step 5
         $password = $userPasswordRepository->findOneBy([
-            "user"=>$user->getId()
+            "user" => $user->getId()
         ]);
 
         $userAfter = $password->getUser();
@@ -66,7 +66,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     public function test_userResetPasswordConfirmIncorrectId(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -75,8 +75,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $newPassword = $passwordGenerator->generate();
         /// step 2
         $content = [
-            "userId"=>"66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "password"=>"zaq12WSX",
+            "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
+            "password" => "zaq12WSX",
         ];
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
@@ -107,7 +107,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     public function test_userResetPasswordConfirmIncorrectUserEditFlag(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",editableDate: (new \DateTime("Now"))->modify("-1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", editableDate: (new \DateTime("Now"))->modify("-1 month"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -116,8 +116,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $newPassword = $passwordGenerator->generate();
         /// step 2
         $content = [
-            "userId"=>$user->getId(),
-            "password"=>"zaq12WSX",
+            "userId" => $user->getId(),
+            "password" => "zaq12WSX",
         ];
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
@@ -136,6 +136,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad EditableDate
@@ -147,7 +148,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     public function test_userResetPasswordConfirmIncorrectUserEditableDate(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("-1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("-1 month"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -156,8 +157,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $newPassword = $passwordGenerator->generate();
         /// step 2
         $content = [
-            "userId"=>$user->getId(),
-            "password"=>"zaq12WSX",
+            "userId" => $user->getId(),
+            "password" => "zaq12WSX",
         ];
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
@@ -176,6 +177,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -186,7 +188,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     public function test_userResetPasswordConfirmEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx",edited: true,editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 

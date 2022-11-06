@@ -73,7 +73,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $content2 = [
             "audiobookId" => $audiobookAfter->getId(),
-            "part"=>0
+            "part" => 0
         ];
 
         $dir = $audiobookAfter->getFileName();
@@ -89,6 +89,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -147,7 +148,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $content2 = [
             "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "part"=>0
+            "part" => 0
         ];
 
         $dir = $audiobookAfter->getFileName();
@@ -180,6 +181,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -269,6 +271,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad permission
@@ -291,11 +294,11 @@ class AudiobookPartTest extends AbstractWebTest
 
         $fileBase = fopen(self::base64OnePartFile, "r");
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t","a","2","d",new \DateTime("Now"),"20","20",2,"desc",AudiobookAgeRange::ABOVE18,  "d3", [$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
         $content2 = [
             "audiobookId" => $audiobook->getId(),
-            "part"=>0
+            "part" => 0
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -317,6 +320,7 @@ class AudiobookPartTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without token
@@ -375,7 +379,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $content2 = [
             "audiobookId" => $audiobookAfter->getId(),
-            "part"=>0
+            "part" => 0
         ];
 
         $dir = $audiobookAfter->getFileName();

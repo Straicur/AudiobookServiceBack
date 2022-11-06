@@ -30,8 +30,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $passwordGenerator2 = new PasswordHashGenerator("zaq12WSX");
         /// step 2
         $content = [
-            "oldPassword"=>"zaq12wsx",
-            "newPassword"=>"zaq12WSX",
+            "oldPassword" => "zaq12wsx",
+            "newPassword" => "zaq12WSX",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -45,10 +45,10 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
         /// step 5
         $userPassword = $userPasswordRepository->findOneBy([
-            "user"=>$user->getId()
+            "user" => $user->getId()
         ]);
 
-        $this->assertSame($userPassword->getPassword(),$passwordGenerator2->generate());
+        $this->assertSame($userPassword->getPassword(), $passwordGenerator2->generate());
     }
 
     /**
@@ -66,8 +66,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "oldPassword"=>"zaq12WSX",
-            "newPassword"=>"zaq12Wsa",
+            "oldPassword" => "zaq12WSX",
+            "newPassword" => "zaq12Wsa",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -90,6 +90,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -137,8 +138,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $content = [
-            "oldPassword"=>"zaq12wsx",
-            "newPassword"=>"zaq12WSX",
+            "oldPassword" => "zaq12wsx",
+            "newPassword" => "zaq12WSX",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -174,8 +175,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $content = [
-            "oldPassword"=>"zaq12wsx",
-            "newPassword"=>"zaq12WSX",
+            "oldPassword" => "zaq12wsx",
+            "newPassword" => "zaq12WSX",
         ];
 
         /// step 2

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\AdminUserController;
 
-use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**

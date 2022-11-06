@@ -88,6 +88,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -137,8 +138,9 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $audiobookService->removeFolder($_ENV['MAIN_DIR']."/".$content["hashName"]);
+        $audiobookService->removeFolder($_ENV['MAIN_DIR'] . "/" . $content["hashName"]);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -170,7 +172,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 1,
-            "additionalData"=>[]
+            "additionalData" => []
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -329,6 +331,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad permission
@@ -380,6 +383,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without token

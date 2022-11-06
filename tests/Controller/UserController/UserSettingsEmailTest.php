@@ -28,8 +28,8 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "newEmail"=>"test2@cos.pl",
-            "oldEmail"=>$user->getUserInformation()->getEmail(),
+            "newEmail" => "test2@cos.pl",
+            "oldEmail" => $user->getUserInformation()->getEmail(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -67,8 +67,8 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "newEmail"=>"test2@cos.pl",
-            "oldEmail"=>$user->getUserInformation()->getEmail(),
+            "newEmail" => "test2@cos.pl",
+            "oldEmail" => $user->getUserInformation()->getEmail(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -92,6 +92,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad OldEmail
@@ -109,8 +110,8 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "newEmail"=>"test2@cos.pl",
-            "oldEmail"=>"test3@cos.pl",
+            "newEmail" => "test2@cos.pl",
+            "oldEmail" => "test3@cos.pl",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -134,6 +135,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -182,8 +184,8 @@ class UserSettingsEmailTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $content = [
-            "newEmail"=>"test2@cos.pl",
-            "oldEmail"=>$user->getUserInformation()->getEmail(),
+            "newEmail" => "test2@cos.pl",
+            "oldEmail" => $user->getUserInformation()->getEmail(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -221,8 +223,8 @@ class UserSettingsEmailTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $content = [
-            "newEmail"=>"test2@cos.pl",
-            "oldEmail"=>$user->getUserInformation()->getEmail(),
+            "newEmail" => "test2@cos.pl",
+            "oldEmail" => $user->getUserInformation()->getEmail(),
         ];
 
         /// step 2

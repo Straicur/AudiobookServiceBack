@@ -4,7 +4,6 @@ namespace App\Tests\Controller\RegisterController;
 
 use App\Repository\RegisterCodeRepository;
 use App\Repository\UserInformationRepository;
-use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -32,11 +31,11 @@ class RegisterTest extends AbstractWebTest
         /// step 2
 
         $content = [
-            "email"=>"mosinskidamian11@gmail.com",
-            "phoneNumber"=>"786768564",
-            "firstname"=>"Damian",
-            "lastname"=>"Mos",
-            "password"=>"zaq12wsx"
+            "email" => "mosinskidamian11@gmail.com",
+            "phoneNumber" => "786768564",
+            "firstname" => "Damian",
+            "lastname" => "Mos",
+            "password" => "zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -50,16 +49,15 @@ class RegisterTest extends AbstractWebTest
 
         /// step 5
         $userAfter = $userInformationRepository->findOneBy([
-            "email"=>"mosinskidamian11@gmail.com"
+            "email" => "mosinskidamian11@gmail.com"
         ])->getUser();
 
         $this->assertNotNull($userAfter);
 
         $hasRole = false;
 
-        foreach ($userAfter->getRoles() as $role)
-        {
-            if($role->getName() == "Guest"){
+        foreach ($userAfter->getRoles() as $role) {
+            if ($role->getName() == "Guest") {
                 $hasRole = true;
             }
         }
@@ -68,6 +66,7 @@ class RegisterTest extends AbstractWebTest
         $this->assertFalse($userAfter->isActive());
         $this->assertCount(1, $registerCodeRepository->findAll());
     }
+
     /**
      * step 1 - Preparing JsonBodyContent with bad email
      * step 2 - Sending Request
@@ -79,11 +78,11 @@ class RegisterTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         /// step 1
         $content = [
-            "email"=>"test@cos.pl",
-            "phoneNumber"=>"786768564",
-            "firstname"=>"Damian",
-            "lastname"=>"Mos",
-            "password"=>"zaq12wsx"
+            "email" => "test@cos.pl",
+            "phoneNumber" => "786768564",
+            "firstname" => "Damian",
+            "lastname" => "Mos",
+            "password" => "zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -102,6 +101,7 @@ class RegisterTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing JsonBodyContent with bad institution max users
      * step 2 - Sending Request
@@ -116,11 +116,11 @@ class RegisterTest extends AbstractWebTest
         /// step 1
 
         $content = [
-            "email"=>"test2@cos.pl",
-            "phoneNumber"=>"786768564",
-            "firstname"=>"Damian",
-            "lastname"=>"Mos",
-            "password"=>"zaq12wsx"
+            "email" => "test2@cos.pl",
+            "phoneNumber" => "786768564",
+            "firstname" => "Damian",
+            "lastname" => "Mos",
+            "password" => "zaq12wsx"
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -139,6 +139,7 @@ class RegisterTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Sending Request without content
      * step 2 - Checking response

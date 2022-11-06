@@ -73,11 +73,11 @@ class RegisterConfirmTest extends AbstractWebTest
     {
 
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $registerCode = $this->databaseMockManager->testFunc_addRegisterCode($user, code: "95b7tjxrnbs88xd",active: true,dateAccept: new \DateTime('Now'));
+        $registerCode = $this->databaseMockManager->testFunc_addRegisterCode($user, code: "95b7tjxrnbs88xd", active: true, dateAccept: new \DateTime('Now'));
         /// step 1
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("GET", "/api/register/". $user->getUserInformation()->getEmail()."/95b7tjxrnbs88xd" , server: [
+        $crawler = self::$webClient->request("GET", "/api/register/" . $user->getUserInformation()->getEmail() . "/95b7tjxrnbs88xd", server: [
             "HTTP_authorization" => $token->getToken()
         ]);         /// step 3
         $this->assertResponseStatusCodeSame(404);
@@ -89,7 +89,9 @@ class RegisterConfirmTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
-    }/**
+    }
+
+    /**
      * step 1 - Preparing JsonBodyContent with bad registerCode status
      * step 2 - Sending Request
      * step 3 - Checking response
@@ -103,7 +105,7 @@ class RegisterConfirmTest extends AbstractWebTest
         /// step 1
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("GET", "/api/register/". $user->getUserInformation()->getEmail()."/UPqFDj" , server: [
+        $crawler = self::$webClient->request("GET", "/api/register/" . $user->getUserInformation()->getEmail() . "/UPqFDj", server: [
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
@@ -117,6 +119,7 @@ class RegisterConfirmTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing JsonBodyContent with bad registerCode
      * step 2 - Sending Request
@@ -131,7 +134,7 @@ class RegisterConfirmTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("GET", "/api/register/test2@cos.pl/UPqFDj" , server: [
+        $crawler = self::$webClient->request("GET", "/api/register/test2@cos.pl/UPqFDj", server: [
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
@@ -145,6 +148,7 @@ class RegisterConfirmTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Sending Request without content
      * step 2 - Checking response
@@ -157,7 +161,7 @@ class RegisterConfirmTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 1
-        $crawler = self::$webClient->request("GET", "/api/register/" , server: [
+        $crawler = self::$webClient->request("GET", "/api/register/", server: [
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 2

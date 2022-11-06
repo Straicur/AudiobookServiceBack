@@ -29,7 +29,7 @@ class UserAudiobookInfoTest extends AbstractWebTest
         $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d2", [$category2]);
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
-        $this->databaseMockManager->testFunc_addAudiobookInfo($user,$audiobook1,1,"2.2",new \DateTime("Now"));
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, "2.2", new \DateTime("Now"));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -57,6 +57,7 @@ class UserAudiobookInfoTest extends AbstractWebTest
         $this->assertArrayHasKey("watchingDate", $responseContent);
 
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent without AudiobookInfo
@@ -103,6 +104,7 @@ class UserAudiobookInfoTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad CategoryKey

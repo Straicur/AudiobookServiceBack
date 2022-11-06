@@ -45,6 +45,7 @@ class RegisterCodeSendTest extends AbstractWebTest
         $this->assertCount(2, $registerCodeRepository->findAll());
 
     }
+
     /**
      * step 1 - Preparing JsonBodyContent with bad title
      * step 2 - Sending Request

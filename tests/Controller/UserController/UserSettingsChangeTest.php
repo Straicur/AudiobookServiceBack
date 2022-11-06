@@ -28,9 +28,9 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "phoneNumber"=>"+48124124124",
-            "firstName"=>"Damian",
-            "lastName"=>"Mos",
+            "phoneNumber" => "+48124124124",
+            "firstName" => "Damian",
+            "lastName" => "Mos",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -44,13 +44,13 @@ class UserSettingsChangeTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
-            "id"=>$user->getId()
+            "id" => $user->getId()
         ]);
 
         /// step 5
-        $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(),$user->getUserInformation()->getPhoneNumber());
-        $this->assertNotSame($userAfter->getUserInformation()->getLastname(),$user->getUserInformation()->getLastname());
-        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(),$user->getUserInformation()->getFirstname());
+        $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(), $user->getUserInformation()->getPhoneNumber());
+        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), $user->getUserInformation()->getLastname());
+        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), $user->getUserInformation()->getFirstname());
     }
 
     /**
@@ -100,9 +100,9 @@ class UserSettingsChangeTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
 
         $content = [
-            "phoneNumber"=>"+48124124124",
-            "firstName"=>"Damian",
-            "lastName"=>"Mos",
+            "phoneNumber" => "+48124124124",
+            "firstName" => "Damian",
+            "lastName" => "Mos",
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -138,9 +138,9 @@ class UserSettingsChangeTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $content = [
-            "phoneNumber"=>"+48124124124",
-            "firstName"=>"Damian",
-            "lastName"=>"Mos",
+            "phoneNumber" => "+48124124124",
+            "firstName" => "Damian",
+            "lastName" => "Mos",
         ];
 
         /// step 2
