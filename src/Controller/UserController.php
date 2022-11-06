@@ -197,9 +197,9 @@ class UserController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Kod aktywacji konta')
+                    ->subject('Zmiana emaila')
                     ->htmlTemplate('emails/userSettingsEmailChange.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
@@ -459,9 +459,9 @@ class UserController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Kod aktywacji konta')
+                    ->subject('Reset hasła')
                     ->htmlTemplate('emails/userSettingsResetPassword.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),

@@ -174,7 +174,7 @@ class RegisterController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($newUser->getUserInformation()->getEmail())
                     ->subject('Kod aktywacji konta')
                     ->htmlTemplate('emails/register.html.twig')
@@ -349,7 +349,7 @@ class RegisterController extends AbstractController
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
-                    ->from('mosinskidamian12@gmail.com')
+                    ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
                     ->subject('Kod aktywacji konta')
                     ->htmlTemplate('emails/register.html.twig')
