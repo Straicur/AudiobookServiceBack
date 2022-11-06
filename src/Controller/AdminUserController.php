@@ -117,7 +117,8 @@ class AdminUserController extends AbstractController
                 $endpointLogger->error("User is admin");
                 throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
             }
-
+            //todo tu muszę dodać jeszcze email
+            // Po za tym muszę jeszcze dodać listę userów do usunięcia i odrzucenie tej prośby 
             $userRepository->remove($user);
 
             return ResponseTool::getResponse();
