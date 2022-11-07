@@ -63,10 +63,10 @@ class NotificationController extends AbstractController
      *
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/notifications", name: "apiNotifications", methods: ["POST"])]
+    #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Post(
-        description: "Method get all notifications from the system for loged user",
+        description: "Method get all notifications from the system for logged user",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -82,7 +82,7 @@ class NotificationController extends AbstractController
             )
         ]
     )]
-    public function apiNotifications(
+    public function notifications(
         AuthorizedUserServiceInterface $authorizedUserService,
         Request                        $request,
         RequestServiceInterface        $requestServiceInterface,
@@ -92,9 +92,10 @@ class NotificationController extends AbstractController
     ): Response
     {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
-        $user = $authorizedUserService->getAuthorizedUser();
 
         if ($systemNotificationQuery instanceof SystemNotificationQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
 
             $allUserSystemNotifications = $notificationRepository->findBy(["user" => $user]);
 
@@ -109,15 +110,15 @@ class NotificationController extends AbstractController
 
             $systemNotifications = [];
 
-            foreach ($userSystemNotifications as $usn) {
-                $systemNotifications[] = NotificationBuilder::read($userRepository, $usn);
+            foreach ($userSystemNotifications as $notification) {
+                $systemNotifications[] = NotificationBuilder::read($userRepository, $notification);
             }
 
             $systemNotificationSuccessModel = new NotificationsSuccessModel(
                 $systemNotifications,
                 $systemNotificationQuery->getPage(),
                 $systemNotificationQuery->getLimit(),
-                floor(count($allUserSystemNotifications) / ($systemNotificationQuery->getLimit() * 1.0))
+                floor(floor(count($allUserSystemNotifications) / $systemNotificationQuery->getLimit()))
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
@@ -138,7 +139,7 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      *
      */
-    #[Route("/api/notification", name: "apiSystemNotificationPatch", methods: ["PATCH"])]
+    #[Route("/api/notification", name: "notificationPatch", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Patch(
         description: "Method change read status for notification",
@@ -156,7 +157,7 @@ class NotificationController extends AbstractController
             )
         ]
     )]
-    public function systemNotificationPatch(
+    public function notificationPatch(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -167,11 +168,12 @@ class NotificationController extends AbstractController
         $systemNotificationQuery = $requestService->getRequestBodyContent($request, SystemNotificationPatchQuery::class);
 
         if ($systemNotificationQuery instanceof SystemNotificationPatchQuery) {
+
             $user = $authorizedUserService->getAuthorizedUser();
 
             $systemNotification = $notificationRepository->findOneBy([
                 "id" => $systemNotificationQuery->getNotificationId(),
-                "user" => $systemNotificationQuery->getUserId()
+                "user" => $user->getId()
             ]);
 
             if ($systemNotification == null) {

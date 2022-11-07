@@ -11,21 +11,21 @@ class NotificationsSuccessModel implements ModelInterface
 
     private int $page;
 
-    private int $perPage;
+    private int $limit;
 
     private int $maxPage;
 
     /**
      * @param SystemNotificationModel[] $systemNotifications
      * @param int $page
-     * @param int $perPage
+     * @param int $limit
      * @param int $maxPage
      */
-    public function __construct(array $systemNotifications, int $page, int $perPage, int $maxPage)
+    public function __construct(array $systemNotifications, int $page, int $limit, int $maxPage)
     {
         $this->systemNotifications = $systemNotifications;
         $this->page = $page;
-        $this->perPage = $perPage;
+        $this->limit = $limit;
         $this->maxPage = $maxPage;
     }
 
@@ -85,16 +85,16 @@ class NotificationsSuccessModel implements ModelInterface
     /**
      * @return int
      */
-    public function getPerPage(): int
+    public function getLimit(): int
     {
-        return $this->perPage;
+        return $this->limit;
     }
 
     /**
-     * @param int $perPage
+     * @param int $limit
      */
-    public function setPerPage(int $perPage): void
+    public function setLimit(int $limit): void
     {
-        $this->perPage = $perPage;
+        $this->limit = $limit;
     }
 }
