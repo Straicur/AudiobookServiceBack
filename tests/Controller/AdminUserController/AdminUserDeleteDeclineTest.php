@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller\AdminUserController;
 
+use App\Repository\NotificationRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
@@ -23,7 +24,9 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
     {
         $userRepository = $this->getService(UserRepository::class);
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
 
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(UserDeleteRepository::class, $userDeleteRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
@@ -60,6 +63,8 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
         ]);
 
         $this->assertTrue($userAfter->isActive());
+
+        $this->assertCount(1,$notificationRepository->findAll());
     }
 
     /**

@@ -3,9 +3,15 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Builder\NotificationBuilder;
+use App\Builder\SystemNotificationBuilder;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
+use App\Enums\SystemNotificationType;
 use App\Enums\UserRoles;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
 use App\Model\AdminUserDetailsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
@@ -27,6 +33,7 @@ use App\Query\AdminUserDetailsQuery;
 use App\Query\AdminUserRoleAddQuery;
 use App\Query\AdminUserRoleRemoveQuery;
 use App\Query\AdminUsersQuery;
+use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
@@ -944,6 +951,7 @@ class AdminUserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws TransportExceptionInterface
+     * @throws NotificationException
      */
     #[Route("/api/admin/user/delete/decline", name: "adminUserDeleteDecline", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -970,7 +978,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer
+        MailerInterface                $mailer,
+        NotificationRepository $notificationRepository
     ): Response
     {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
@@ -1014,6 +1023,17 @@ class AdminUserController extends AbstractController
                     ]);
                 $mailer->send($email);
             }
+
+            $notificationBuilder = new NotificationBuilder();
+
+            $notification = $notificationBuilder
+                ->setType(NotificationType::PROPOSED)
+                ->setAction($userDelete->getId())
+                ->setUser($user)
+                ->setUserAction(NotificationUserType::SYSTEM)
+                ->build();
+
+            $notificationRepository->add($notification);
 
             return ResponseTool::getResponse();
         } else {

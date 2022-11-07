@@ -5,8 +5,9 @@ namespace App\Builder;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Exception\NotificationException;
-use App\Model\SystemNotificationModel;
+use App\Model\NotificationModel;
 use App\Repository\UserRepository;
 use Symfony\Component\Uid\Uuid;
 
@@ -62,12 +63,23 @@ class NotificationBuilder
     }
 
     /**
-     * @param User $user
+     * @param NotificationUserType $type
      * @return $this
      */
-    public function setUserAction(User $user): NotificationBuilder
+    public function setUserAction(NotificationUserType $type): NotificationBuilder
     {
-        $this->metaData["userId"] = $user->getId()->__toString();
+        $this->metaData["user"] = $type->value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $text
+     * @return $this
+     */
+    public function setText(string $text): NotificationBuilder
+    {
+        $this->metaData["text"] = $text;
 
         return $this;
     }
@@ -87,21 +99,23 @@ class NotificationBuilder
     /**
      * @param UserRepository $userRepository
      * @param Notification $notification
-     * @return SystemNotificationModel
+     * @return NotificationModel
      */
-    public static function read(UserRepository $userRepository, Notification $notification,): SystemNotificationModel
+    public static function read(UserRepository $userRepository, Notification $notification,): NotificationModel
     {
-        $notificationModel = new SystemNotificationModel($notification->getId(), $notification->getType(), null, null, null);
+        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null);
 
         $metaData = $notification->getMetaData();
 
-        if (array_key_exists("userId", $metaData)) {
-            $user = $userRepository->findOneBy([
-                "id" => $metaData["userId"]
-            ]);
+        if (array_key_exists("user", $metaData)) {
+            if ($metaData["user"] != null) {
+                $notificationModel->setUserType($metaData["user"]);
+            }
+        }
 
-            if ($user != null) {
-                $notificationModel->setUserName($user->getUserInformation()->getFirstname());
+        if (array_key_exists("text", $metaData)) {
+            if ($metaData["text"] != "") {
+            $notificationModel->setText($metaData["text"]);
             }
         }
 
@@ -123,7 +137,12 @@ class NotificationBuilder
 
         switch ($this->notification->getType()) {
             case NotificationType::NORMAL:
-                $keys = ["userId"];
+            case NotificationType::ADMIN:
+            case NotificationType::PROPOSED:
+            case NotificationType::NEW_CATEGORY:
+            case NotificationType::NEW_AUDIOBOOK:
+            case NotificationType::USER_DELETE_DECLINE:
+                $keys = ["user"];
                 $checkAction = true;
                 break;
         }

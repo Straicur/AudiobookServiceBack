@@ -2,12 +2,17 @@
 
 namespace App\Command;
 
+use App\Builder\NotificationBuilder;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
+use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\MyListRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
@@ -33,8 +38,10 @@ class UserProposedAudiobooksCommand extends Command
     private AudiobookInfoRepository $audiobookInfoRepository;
     private AudiobookCategoryRepository $audiobookCategoryRepository;
     private AudiobookRepository $audiobookRepository;
+    private NotificationRepository $notificationRepository;
 
-    public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository)
+
+    public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository, NotificationRepository $notificationRepository)
     {
         $this->roleRepository = $roleRepository;
         $this->userRepository = $userRepository;
@@ -43,10 +50,17 @@ class UserProposedAudiobooksCommand extends Command
         $this->audiobookInfoRepository = $audiobookInfoRepository;
         $this->audiobookCategoryRepository = $audiobookCategoryRepository;
         $this->audiobookRepository = $audiobookRepository;
+        $this->notificationRepository = $notificationRepository;
 
         parent::__construct();
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws NotificationException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -155,6 +169,17 @@ class UserProposedAudiobooksCommand extends Command
                     }
                 }
                 $this->proposedAudiobooksRepository->add($proposedAudiobooks);
+
+                $notificationBuilder = new NotificationBuilder();
+
+                $notification = $notificationBuilder
+                    ->setType(NotificationType::USER_DELETE_DECLINE)
+                    ->setAction($proposedAudiobooks->getId())
+                    ->setUser($user)
+                    ->setUserAction(NotificationUserType::ADMIN)
+                    ->build();
+
+                $this->notificationRepository->add($notification);
             }
         }
 

@@ -51,6 +51,11 @@ class Notification
     {
         return match ($this->type) {
             1 => NotificationType::NORMAL,
+            2 => NotificationType::ADMIN,
+            3 => NotificationType::PROPOSED,
+            4 => NotificationType::NEW_CATEGORY,
+            5 => NotificationType::NEW_AUDIOBOOK,
+            6 => NotificationType::USER_DELETE_DECLINE,
         };
     }
 

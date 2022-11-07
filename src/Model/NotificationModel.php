@@ -6,30 +6,32 @@ use App\Enums\NotificationType;
 use Symfony\Component\Uid\Uuid;
 use OpenApi\Attributes as OA;
 
-class SystemNotificationModel implements ModelInterface
+class NotificationModel implements ModelInterface
 {
     private string $id;
 
     private ?string $actionId;
 
-    private ?string $userName;
+    private ?int $userType;
 
     private int $notificationType;
 
     private ?int $dateAdd;
 
+    private ?string $text;
+
     /**
      * @param string $id
      * @param NotificationType $notificationType
      * @param string|null $actionId
-     * @param string|null $userName
+     * @param int|null $userType
      */
-    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?string $userName)
+    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType)
     {
         $this->id = $id;
         $this->notificationType = $notificationType->value;
         $this->actionId = $actionId;
-        $this->userName = $userName;
+        $this->userType = $userType;
     }
 
     /**
@@ -65,19 +67,19 @@ class SystemNotificationModel implements ModelInterface
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getUserName(): ?string
+    public function getUserType(): ?int
     {
-        return $this->userName;
+        return $this->userType;
     }
 
     /**
-     * @param string $userName
+     * @param int $userType
      */
-    public function setUserName(string $userName): void
+    public function setUserType(int $userType): void
     {
-        $this->userName = $userName;
+        $this->userType = $userType;
     }
 
     /**
@@ -112,4 +114,21 @@ class SystemNotificationModel implements ModelInterface
     {
         $this->dateAdd = $dateAdd->getTimestamp();
     }
+
+    /**
+     * @return string|null
+     */
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param string|null $text
+     */
+    public function setText(?string $text): void
+    {
+        $this->text = $text;
+    }
+
 }
