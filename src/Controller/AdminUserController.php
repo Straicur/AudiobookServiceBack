@@ -14,10 +14,12 @@ use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
 use App\Model\AdminUserDetailsSuccessModel;
+use App\Model\AdminUserNotificationsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
+use App\Model\NotificationsSuccessModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Model\UserDeleteModel;
 use App\Model\UserModel;
@@ -30,6 +32,9 @@ use App\Query\AdminUserDeleteDeclineQuery;
 use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
 use App\Query\AdminUserDetailsQuery;
+use App\Query\AdminUserNotificationPatchQuery;
+use App\Query\AdminUserNotificationPutQuery;
+use App\Query\AdminUserNotificationsQuery;
 use App\Query\AdminUserRoleAddQuery;
 use App\Query\AdminUserRoleRemoveQuery;
 use App\Query\AdminUsersQuery;
@@ -947,11 +952,12 @@ class AdminUserController extends AbstractController
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
+     * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
      * @throws NotificationException
+     * @throws TransportExceptionInterface
      */
     #[Route("/api/admin/user/delete/decline", name: "adminUserDeleteDecline", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -1040,5 +1046,143 @@ class AdminUserController extends AbstractController
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminUser.delete.decline.invalid.query");
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     * @throws NotificationException
+     */
+    #[Route("/api/admin/user/notifications", name: "adminUserNotifications", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of negotiations in system",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserNotificationsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserNotifications(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository,
+        MailerInterface                $mailer,
+        NotificationRepository $notificationRepository
+    ): Response
+    {
+        return ResponseTool::getResponse();
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     * @throws NotificationException
+     */
+    #[Route("/api/admin/user/notification", name: "adminUserNotificationPut", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is adding notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationPutQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserNotificationPut(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository,
+        MailerInterface                $mailer,
+        NotificationRepository $notificationRepository
+    ): Response
+    {
+        return ResponseTool::getResponse(null,201);
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @param MailerInterface $mailer
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws TransportExceptionInterface
+     * @throws NotificationException
+     */
+    #[Route("/api/admin/user/notification", name: "adminUserNotificationPatch", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is editing notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationPatchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserNotificationPatch(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository,
+        MailerInterface                $mailer,
+        NotificationRepository $notificationRepository
+    ): Response
+    {
+        return ResponseTool::getResponse();
     }
 }

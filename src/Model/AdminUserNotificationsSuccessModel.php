@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class NotificationsSuccessModel implements ModelInterface
+class AdminUserNotificationsSuccessModel implements ModelInterface
 {
     /**
      * @var NotificationModel[]
