@@ -11,6 +11,11 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminUserNotificationPatchQuery
 {
+    #[Assert\NotNull(message: "NotificationId is null")]
+    #[Assert\NotBlank(message: "NotificationId is blank")]
+    #[Assert\Uuid]
+    private Uuid $notificationId;
+
     #[Assert\NotNull(message: "NotificationType is null")]
     #[Assert\NotBlank(message: "NotificationType is empty")]
     #[Assert\Type(type: "integer")]
@@ -70,6 +75,23 @@ class AdminUserNotificationPatchQuery
      * @return Uuid
      */
     #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    public function getNotificationId(): Uuid
+    {
+        return $this->notificationId;
+    }
+
+    /**
+     * @param string $notificationId
+     */
+    public function setNotificationId(string $notificationId): void
+    {
+        $this->notificationId = Uuid::fromString($notificationId);;
+    }
+
+    /**
+     * @return Uuid
+     */
+    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
     public function getUserId(): Uuid
     {
         return $this->userId;
@@ -80,7 +102,7 @@ class AdminUserNotificationPatchQuery
      */
     public function setUserId(string $userId): void
     {
-        $this->userId = Uuid::fromString($userId);;
+        $this->userId = Uuid::fromString($userId);
     }
 
     /**
