@@ -19,7 +19,6 @@ use App\Model\AdminUsersSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
-use App\Model\NotificationsSuccessModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Model\UserDeleteModel;
 use App\Model\UserModel;
@@ -919,7 +918,7 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+                throw new DataNotFoundException(["adminUser.delete.accept.exist"]);
             }
 
             $userDelete->setDeleted(true);
@@ -985,7 +984,7 @@ class AdminUserController extends AbstractController
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
-        NotificationRepository $notificationRepository
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
@@ -1007,7 +1006,7 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+                throw new DataNotFoundException(["adminUser.delete.accept.exist"]);
             }
 
             $userDelete->setDeclined(true);
@@ -1087,13 +1086,38 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        NotificationRepository $notificationRepository
+        NotificationRepository         $notificationRepository
     ): Response
     {
-        return ResponseTool::getResponse();
+        $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
+
+        if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
+
+            $allUserSystemNotifications = $notificationRepository->findBy([], [
+                "dateAdd" => "DESC"
+            ],
+                $adminUserNotificationsQuery->getLimit(), $adminUserNotificationsQuery->getPage());
+
+            $systemNotifications = [];
+
+            foreach ($allUserSystemNotifications as $notification) {
+                $systemNotifications[] = NotificationBuilder::read($notification);
+            }
+
+            $systemNotificationSuccessModel = new AdminUserNotificationsSuccessModel(
+                $systemNotifications,
+                $adminUserNotificationsQuery->getPage(),
+                $adminUserNotificationsQuery->getLimit(),
+                floor(floor(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()))
+            );
+
+            return ResponseTool::getResponse($systemNotificationSuccessModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notifications.invalid.query");
+        }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -1131,13 +1155,10 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        NotificationRepository $notificationRepository
+        NotificationRepository         $notificationRepository
     ): Response
     {
-        return ResponseTool::getResponse(null,201);
+        return ResponseTool::getResponse(null, 201);
     }
 
     /**
@@ -1176,13 +1197,53 @@ class AdminUserController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
+        UserRepository $userRepository,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        NotificationRepository $notificationRepository
+        NotificationRepository         $notificationRepository
     ): Response
     {
-        return ResponseTool::getResponse();
+        $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
+
+        if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
+
+            $notification = $notificationRepository->findOneBy([
+                "id" => $adminUserNotificationPatchQuery->getNotificationId()
+            ]);
+
+            if ($notification == null) {
+                $endpointLogger->error("Notification dont exist");
+                throw new DataNotFoundException(["adminUser.notification.patch.dont.exist"]);
+            }
+            $user = $userRepository->findOneBy([
+                "id" => $adminUserNotificationPatchQuery->getUserId()
+            ]);
+
+            if ($user == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["adminUser.user.patch.dont.exist"]);
+            }
+            $notificationBuilder = new NotificationBuilder($notification);
+
+            $notificationBuilder
+                ->setType($adminUserNotificationPatchQuery->getNotificationType())
+                ->setAction($adminUserNotificationPatchQuery->getActionId())
+                ->setUser($user)
+                ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
+
+            $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
+
+            if (array_key_exists("text", $additionalData)) {
+                $notificationBuilder->setText($additionalData["text"]);
+            }
+
+            $notification = $notificationBuilder->build();
+
+            $notificationRepository->add($notification);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query");
+        }
     }
 }

@@ -111,7 +111,7 @@ class NotificationController extends AbstractController
             $systemNotifications = [];
 
             foreach ($userSystemNotifications as $notification) {
-                $systemNotifications[] = NotificationBuilder::read($userRepository, $notification);
+                $systemNotifications[] = NotificationBuilder::read($notification);
             }
 
             $systemNotificationSuccessModel = new NotificationsSuccessModel(

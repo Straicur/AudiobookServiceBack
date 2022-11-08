@@ -65,7 +65,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -100,7 +100,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -142,7 +142,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -179,7 +179,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -217,7 +217,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -255,7 +255,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "role" => UserRoles::USER->value
         ];
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification", content: json_encode($content));
+        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);

@@ -62,12 +62,12 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
         $this->assertIsArray($responseContent);
-        print_r($responseContent);
+
         $this->assertArrayHasKey("systemNotifications", $responseContent);
         $this->assertArrayHasKey("page", $responseContent);
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(12, $responseContent["systemNotifications"]);
+        $this->assertCount(10, $responseContent["systemNotifications"]);
     }
 
     /**

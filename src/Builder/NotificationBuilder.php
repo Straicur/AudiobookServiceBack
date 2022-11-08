@@ -24,9 +24,14 @@ class NotificationBuilder
      */
     private array $metaData = [];
 
-    public function __construct()
+    public function __construct(?Notification $notification = null)
     {
-        $this->notification = new Notification();
+        if($notification != null){
+            $this->notification = $notification;
+        }
+        else{
+            $this->notification = new Notification();
+        }
     }
 
     /**
@@ -97,11 +102,10 @@ class NotificationBuilder
     }
 
     /**
-     * @param UserRepository $userRepository
      * @param Notification $notification
      * @return NotificationModel
      */
-    public static function read(UserRepository $userRepository, Notification $notification,): NotificationModel
+    public static function read(Notification $notification,): NotificationModel
     {
         $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null);
 

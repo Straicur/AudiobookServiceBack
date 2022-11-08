@@ -46,7 +46,7 @@ class AdminUserNotificationPatchQuery
                 'text' => new Assert\Optional([
                     new Assert\NotBlank(message: "Text is empty"),
                     new Assert\NotNull(),
-                    new Assert\Uuid()
+                    new Assert\Type(type: "string")
                 ])
             ]
         ]));
