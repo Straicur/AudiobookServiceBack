@@ -2,10 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Audiobook;
+use App\Entity\AudiobookCategory;
 use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -106,6 +109,32 @@ class UserRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
 
         return count($query->execute()) > 0;
+    }
+
+    /**
+     * @param Audiobook $audiobook
+     * @return User[]
+     */
+    public function getUsersWhereAudiobookInProposed(Audiobook $audiobook): array
+    {
+        $audiobookCategories = [];
+        foreach ($audiobook->getCategories() as $category) {
+            $audiobookCategories[] = $category->getId()->toBinary();
+        }
+
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.proposedAudiobooks', 'pa')
+            ->leftJoin('pa.audiobooks', 'a')
+            ->leftJoin('a.categories', 'c')
+            ->where('c.id IN (:categories)')
+            ->andWhere('u.banned = false')
+            ->andWhere('u.active = true')
+            ->setParameter('categories', $audiobookCategories);
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
     }
 //    /**
 //     * @return User[] Returns an array of User objects

@@ -21,17 +21,6 @@ class AdminUserNotificationPutQuery
     #[Assert\Type(type: "integer")]
     private int $notificationUserType;
 
-    #[Assert\NotNull(message: "ActionId is null")]
-    #[Assert\NotBlank(message: "ActionId is blank")]
-    #[Assert\Uuid]
-    private Uuid $actionId;
-
-    #[Assert\NotNull(message: "UserId is null")]
-    #[Assert\NotBlank(message: "UserId is blank")]
-    #[Assert\Uuid]
-    private Uuid $userId;
-
-
     protected array $additionalData = [];
 
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
@@ -41,8 +30,18 @@ class AdminUserNotificationPutQuery
                 'text' => new Assert\Optional([
                     new Assert\NotBlank(message: "Text is empty"),
                     new Assert\NotNull(),
+                    new Assert\Type("string")
+                ]),
+                'actionId' => new Assert\Optional([
+                    new Assert\NotBlank(message: "ActionId is empty"),
+                    new Assert\NotNull(),
                     new Assert\Uuid()
-                ])
+                ]),
+                'userId' => new Assert\Optional([
+                    new Assert\NotBlank(message: "UserId is empty"),
+                    new Assert\NotNull(),
+                    new Assert\Uuid()
+                ]),
             ]
         ]));
     }
@@ -52,9 +51,19 @@ class AdminUserNotificationPutQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "text", type: "string", example: "desc", nullable: true),
+        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true),
+        new OA\Property(property: "userId", type: "string", example: "UUID", nullable: true),
     ], type: "object")]
     public function setAdditionalData(array $additionalData): void
     {
+        if (array_key_exists("actionId", $additionalData)) {
+            $additionalData["actionId"] = Uuid::fromString($additionalData["actionId"]);
+        }
+
+        if (array_key_exists("userId", $additionalData)) {
+            $additionalData["userId"] = Uuid::fromString($additionalData["userId"]);
+        }
+
         $this->additionalData = $additionalData;
     }
 
@@ -64,40 +73,6 @@ class AdminUserNotificationPutQuery
     public function getAdditionalData(): array
     {
         return $this->additionalData;
-    }
-
-    /**
-     * @return Uuid
-     */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
-    public function getUserId(): Uuid
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @param string $userId
-     */
-    public function setUserId(string $userId): void
-    {
-        $this->userId = Uuid::fromString($userId);;
-    }
-
-    /**
-     * @return Uuid
-     */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
-    public function getActionId(): Uuid
-    {
-        return $this->actionId;
-    }
-
-    /**
-     * @param string $actionId
-     */
-    public function setActionId(string $actionId): void
-    {
-        $this->actionId = Uuid::fromString($actionId);;
     }
 
     /**
