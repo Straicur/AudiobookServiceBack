@@ -859,6 +859,94 @@ class AdminUserController extends AbstractController
             throw new InvalidJsonDataException("adminUser.delete.list.invalid.query");
         }
     }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/to/delete/list", name: "adminUserToDeleteList", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of users reade to delete",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteListQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserDeleteListSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserToDeleteList(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository
+    ): Response
+    {
+        $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
+
+        if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
+
+            $successModel = new AdminUserDeleteListSuccessModel();
+
+            $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
+            $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
+
+            $allDeleteUsers = $userDeleteRepository->getUsersToDelete();
+
+            foreach ($allDeleteUsers as $index => $userDelete) {
+
+                $user = $userDelete->getUser();
+
+                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $userDeleteModel = new UserDeleteModel(
+                        $user->getId(),
+                        $user->isActive(),
+                        $user->isBanned(),
+                        $user->getUserInformation()->getEmail(),
+                        $user->getUserInformation()->getFirstname(),
+                        $userDelete->getDeleted(),
+                        $userDelete->getDeclined()
+                    );
+
+
+                    if ($userDelete->getDateDeleted() != null) {
+                        $userDeleteModel->setDateDeleted($userDelete->getDateDeleted());
+                    }
+
+                    $successModel->addUser($userDeleteModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminUserDeleteListQuery->getPage());
+            $successModel->setLimit($adminUserDeleteListQuery->getLimit());
+
+            $successModel->setMaxPage(floor(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.to.delete.list.invalid.query");
+        }
+    }
 
     /**
      * @param Request $request
