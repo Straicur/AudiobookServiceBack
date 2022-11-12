@@ -8,7 +8,6 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Exception\NotificationException;
 use App\Model\NotificationModel;
-use App\Repository\UserRepository;
 use Symfony\Component\Uid\Uuid;
 
 
@@ -26,10 +25,9 @@ class NotificationBuilder
 
     public function __construct(?Notification $notification = null)
     {
-        if($notification != null){
+        if ($notification != null) {
             $this->notification = $notification;
-        }
-        else{
+        } else {
             $this->notification = new Notification();
         }
     }
@@ -119,7 +117,7 @@ class NotificationBuilder
 
         if (array_key_exists("text", $metaData)) {
             if ($metaData["text"] != "") {
-            $notificationModel->setText($metaData["text"]);
+                $notificationModel->setText($metaData["text"]);
             }
         }
 

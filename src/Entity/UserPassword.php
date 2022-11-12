@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 class UserPassword
 {
     #[ORM\Id]
-    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 512)]

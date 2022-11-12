@@ -18,7 +18,7 @@ class AuthenticationToken
     private Uuid $id;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 512)]

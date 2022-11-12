@@ -21,8 +21,8 @@ class ProposedAudiobooks
     #[ORM\ManyToMany(targetEntity: Audiobook::class)]
     private Collection $audiobooks;
 
-    #[ORM\OneToOne(inversedBy: 'proposedAudiobooks', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(inversedBy: 'proposedAudiobooks', targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
     private User $user;
 
     public function __construct(User $user)

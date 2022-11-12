@@ -27,19 +27,19 @@ class User
     #[ORM\Column(type: 'boolean')]
     private bool $banned;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist'])]
     private ?UserInformation $userInformation;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserSettings::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserSettings::class, cascade: ['persist'])]
     private UserSettings $userSettings;
 
-    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $roles;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class)]
     private ?MyList $myList;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class)]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
     #[ORM\Column(type: 'boolean')]

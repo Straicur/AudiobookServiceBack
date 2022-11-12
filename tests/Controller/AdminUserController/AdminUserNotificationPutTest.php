@@ -202,6 +202,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -218,6 +219,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d6", [$category5], active: true);
 
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook1);
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user4, $audiobook1);
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user2, $audiobook2);
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user2, $audiobook5);
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user3, $audiobook6);
 
         /// step 2
         $content = [
@@ -239,7 +244,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
         /// step 5
-        $this->assertCount(1, $notificationRepository->findAll());
+        $this->assertCount(2, $notificationRepository->findAll());
 
     }
 

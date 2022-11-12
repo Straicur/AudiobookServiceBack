@@ -4,10 +4,8 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
-use App\Builder\SystemNotificationBuilder;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\SystemNotificationType;
 use App\Enums\UserRoles;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
