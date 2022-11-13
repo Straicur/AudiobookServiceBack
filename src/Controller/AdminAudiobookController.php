@@ -116,7 +116,7 @@ class AdminAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["adminAudiobook.audiobook.details.not.exist"]);
+                throw new DataNotFoundException(["adminAudiobook.details.audiobook.not.exist"]);
             }
 
             $categories = $audiobookCategoryRepository->getAudiobookCategories($audiobook);
@@ -535,7 +535,7 @@ class AdminAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["adminAudiobook.zip.audiobook.details.not.exist"]);
+                throw new DataNotFoundException(["adminAudiobook.zip.audiobook.not.exist"]);
             }
 
             $zipFile = $audiobook->getFileName() . ".zip";
@@ -617,7 +617,7 @@ class AdminAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["adminAudiobook.audiobook.reAdding.not.exist"]);
+                throw new DataNotFoundException(["adminAudiobook.reAdding.audiobook.not.exist"]);
             }
 
             $audiobookService->configure($adminAudiobookReAddingQuery);

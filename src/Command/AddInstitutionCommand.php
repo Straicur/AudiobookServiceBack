@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Institution;
-use App\Exception\DataNotFoundException;
 use App\Repository\InstitutionRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -41,7 +40,9 @@ class AddInstitutionCommand extends Command
     }
 
     /**
-     * @throws DataNotFoundException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

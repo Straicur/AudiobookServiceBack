@@ -53,7 +53,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @throws AuthenticationException
      * @throws PermissionException
      */
-    public function onControllerCall(ControllerEvent $event)
+    public function onControllerCall(ControllerEvent $event): void
     {
         $controller = $event->getController();
         $request = $event->getRequest();
@@ -123,7 +123,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @param ExceptionEvent $event
      * @return void
      */
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
 
@@ -200,7 +200,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @return void
      * @throws PermissionException
      */
-    private function checkRoles(User $user, array $roles)
+    private function checkRoles(User $user, array $roles): void
     {
         $userRoles = $user->getRoles();
 

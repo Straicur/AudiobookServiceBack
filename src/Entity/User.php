@@ -203,7 +203,6 @@ class User
 
     public function setMyList(MyList $myList): self
     {
-        // set the owning side of the relation if necessary
         if ($myList->getUser() !== $this) {
             $myList->setUser($this);
         }
@@ -220,7 +219,6 @@ class User
 
     public function setProposedAudiobooks(ProposedAudiobooks $proposedAudiobooks): self
     {
-        // set the owning side of the relation if necessary
         if ($proposedAudiobooks->getUser() !== $this) {
             $proposedAudiobooks->setUser($this);
         }

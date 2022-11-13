@@ -401,6 +401,7 @@ class AdminUserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
     #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -1094,7 +1095,7 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["adminUser.delete.accept.exist"]);
+                throw new DataNotFoundException(["adminUser.delete.decline.user.not.in.list.exist"]);
             }
 
             $userDelete->setDeclined(true);
@@ -1141,13 +1142,9 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
+     * @param NotificationRepository $notificationRepository
      * @return Response
-     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     * @throws NotificationException
      */
     #[Route("/api/admin/user/notifications", name: "adminUserNotifications", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -1433,14 +1430,12 @@ class AdminUserController extends AbstractController
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
+     * @param LoggerInterface $endpointLogger
+     * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
      * @throws NotificationException
      */
     #[Route("/api/admin/user/notification", name: "adminUserNotificationPatch", methods: ["PATCH"])]

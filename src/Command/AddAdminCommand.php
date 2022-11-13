@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
-use App\Exception\DataNotFoundException;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
@@ -83,7 +82,10 @@ class AddAdminCommand extends Command
     }
 
     /**
-     * @throws DataNotFoundException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -171,7 +173,7 @@ class AddAdminCommand extends Command
             "UserPasswordEntity:    " . $userPasswordEntity->getUser()->getId()
         ]);
 
-        $io->success('Success');
+        $io->success('Admin user added');
 
         return Command::SUCCESS;
     }

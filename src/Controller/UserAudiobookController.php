@@ -204,7 +204,6 @@ class UserAudiobookController extends AbstractController
 
                 $successModel->addAudiobook($audiobookModel);
             }
-
         }
 
         return ResponseTool::getResponse($successModel);
@@ -493,7 +492,6 @@ class UserAudiobookController extends AbstractController
 
                 $successModel->addAudiobook($audiobookModel);
             }
-
         }
 
         return ResponseTool::getResponse($successModel);
@@ -547,7 +545,7 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.info.audiobook.not.exist"]);
+                throw new DataNotFoundException(["userAudiobook.add.info.audiobook.not.exist"]);
             }
 
             $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
@@ -564,7 +562,7 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.info.add.invalid.query");
+            throw new InvalidJsonDataException("userAudiobook.add.info.invalid.query");
         }
     }
 

@@ -80,7 +80,10 @@ class CreateUserCommand extends Command
     }
 
     /**
-     * @throws DataNotFoundException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -144,7 +147,7 @@ class CreateUserCommand extends Command
             "UserPasswordEntity:    " . $userPasswordEntity->getUser()->getId()
         ]);
 
-        $io->success('Success');
+        $io->success('User added');
 
         return Command::SUCCESS;
     }
