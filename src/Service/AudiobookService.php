@@ -12,7 +12,7 @@ use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 use ZipArchive;
 
-class AudiobookService
+class AudiobookService implements AudiobookServiceInterface
 {
     private MP3FileService $MP3FileService;
     private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
@@ -140,6 +140,7 @@ class AudiobookService
     }
 
     /**
+     * @param bool $reAdding
      * @return string
      * @throws AudiobookConfigServiceException
      */
