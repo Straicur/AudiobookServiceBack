@@ -167,7 +167,7 @@ class AdminUserDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getRoles(): array
     {
