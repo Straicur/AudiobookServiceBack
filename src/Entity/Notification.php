@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\NotificationType;
 use App\Repository\NotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -17,11 +18,11 @@ class Notification
     private Uuid $id;
 
     #[ORM\Column(type: 'integer')]
-    private int $type;
+    private ?int $type;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private ?User $user;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
@@ -30,25 +31,15 @@ class Notification
     private bool $readStatus;
 
     #[ORM\Column(type: 'uuid')]
-    private Uuid $actionId;
+    private ?Uuid $actionId;
 
     #[ORM\Column(type: 'text')]
-    private string $metaData;
+    private ?string $metaData;
 
-    /**
-     * @param int $type
-     * @param User $user
-     * @param Uuid $actionId
-     * @param string $metaData
-     */
-    public function __construct(int $type, User $user, Uuid $actionId, string $metaData)
+    public function __construct()
     {
-        $this->type = $type;
-        $this->user = $user;
         $this->dateAdd = new \DateTime('Now');
         $this->readStatus = false;
-        $this->actionId = $actionId;
-        $this->metaData = $metaData;
     }
 
     public function getId(): Uuid
@@ -56,14 +47,21 @@ class Notification
         return $this->id;
     }
 
-    public function getType(): int
+    public function getType(): NotificationType
     {
-        return $this->type;
+        return match ($this->type) {
+            1 => NotificationType::NORMAL,
+            2 => NotificationType::ADMIN,
+            3 => NotificationType::PROPOSED,
+            4 => NotificationType::NEW_CATEGORY,
+            5 => NotificationType::NEW_AUDIOBOOK,
+            6 => NotificationType::USER_DELETE_DECLINE,
+        };
     }
 
-    public function setType(int $type): self
+    public function setType(NotificationType $type): self
     {
-        $this->type = $type;
+        $this->type = $type->value;
 
         return $this;
     }
@@ -116,9 +114,9 @@ class Notification
         return $this;
     }
 
-    public function getMetaData(): string
+    public function getMetaData(): array
     {
-        return $this->metaData;
+        return json_decode($this->metaData, true);
     }
 
     public function setMetaData(string $metaData): self

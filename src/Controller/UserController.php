@@ -197,7 +197,6 @@ class UserController extends AbstractController
 
             $userRepository->add($user);
 
-
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
@@ -361,7 +360,6 @@ class UserController extends AbstractController
         }
 
         return ResponseTool::getResponse();
-
     }
 
     /**
@@ -496,7 +494,7 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("investmentPaymentDuePayments.invalid.query");
+            throw new InvalidJsonDataException("userSettings.email.invalid.query");
         }
     }
 

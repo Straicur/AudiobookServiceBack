@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Institution;
-use App\Exception\DataNotFoundException;
 use App\Repository\InstitutionRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -41,7 +40,9 @@ class AddInstitutionCommand extends Command
     }
 
     /**
-     * @throws DataNotFoundException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -58,12 +59,11 @@ class AddInstitutionCommand extends Command
             "MaxUsers:     " . $maxUsers,
         ]);
 
-        if (count($this->institutionRepository->findAll()) > 0)
-        {
+        if (count($this->institutionRepository->findAll()) > 0) {
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"],$_ENV["INSTITUTION_EMAIL"],$phoneNumber,$maxAdmins,$maxUsers));
+        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"], $_ENV["INSTITUTION_EMAIL"], $phoneNumber, $maxAdmins, $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

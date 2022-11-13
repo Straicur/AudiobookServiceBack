@@ -3,7 +3,7 @@
 namespace App\Service;
 
 
-class MP3FileService
+class MP3FileService implements MP3FileServiceInterface
 {
     public string $fileName = "";
 

@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
-use App\Exception\DataNotFoundException;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
@@ -51,13 +50,13 @@ class AddAdminCommand extends Command
     private ProposedAudiobooksRepository $proposedAudiobooksRepository;
 
     public function __construct(
-        UserRepository            $userRepository,
-        RoleRepository            $roleRepository,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository    $userPasswordRepository,
-        UserSettingsRepository    $userSettingsRepository,
-        MyListRepository          $myListRepository,
-        InstitutionRepository     $institutionRepository,
+        UserRepository               $userRepository,
+        RoleRepository               $roleRepository,
+        UserInformationRepository    $userInformationRepository,
+        UserPasswordRepository       $userPasswordRepository,
+        UserSettingsRepository       $userSettingsRepository,
+        MyListRepository             $myListRepository,
+        InstitutionRepository        $institutionRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository
     )
     {
@@ -83,7 +82,10 @@ class AddAdminCommand extends Command
     }
 
     /**
-     * @throws DataNotFoundException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -96,15 +98,14 @@ class AddAdminCommand extends Command
         $password = $input->getArgument("password");
 
         $institution = $this->institutionRepository->findOneBy([
-            "name"=>$_ENV["INSTITUTION_NAME"]
+            "name" => $_ENV["INSTITUTION_NAME"]
         ]);
 
         $administrator = $this->roleRepository->findOneBy([
             "name" => "Administrator"
         ]);
 
-        if($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator)))
-        {
+        if ($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator))) {
             $io->info("To much admins");
             return Command::FAILURE;
         }
@@ -172,7 +173,7 @@ class AddAdminCommand extends Command
             "UserPasswordEntity:    " . $userPasswordEntity->getUser()->getId()
         ]);
 
-        $io->success('Success');
+        $io->success('Admin user added');
 
         return Command::SUCCESS;
     }

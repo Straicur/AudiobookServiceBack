@@ -22,7 +22,7 @@ class MyList
     private Collection $audiobooks;
 
     #[ORM\OneToOne(inversedBy: 'myList', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
     private User $user;
 
     public function __construct(User $user)

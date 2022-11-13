@@ -17,7 +17,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
      * step 5 - Checking response if returned data is correct
      * @return void
      */
-    public function test_userSettingsDeleteCorrect(): void
+    public function test_adminUserDeleteListCorrect(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -66,7 +66,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsDeleteEmptyRequestData(): void
+    public function test_adminUserDeleteListEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -108,7 +108,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsDeletePermission(): void
+    public function test_adminUserDeleteListPermission(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -153,7 +153,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsDeleteLogOut(): void
+    public function test_adminUserDeleteListLogOut(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");

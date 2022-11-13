@@ -114,7 +114,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
                 if ($parentAudiobookCategory == null) {
                     $endpointLogger->error("AudiobookCategory dont exist");
-                    throw new DataNotFoundException(["adminCategory.add.AudiobookCategory.not.exist"]);
+                    throw new DataNotFoundException(["adminCategory.add.audiobookCategory.not.exist"]);
                 }
 
                 $newCategory->setParent($parentAudiobookCategory);
@@ -174,7 +174,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($category == null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
-                throw new DataNotFoundException(["adminCategory.edit.AudiobookCategory.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.edit.audiobookCategory.not.exist"]);
             }
 
             $category->setName($adminCategoryEditQuery->getName());
@@ -236,7 +236,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($category == null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
-                throw new DataNotFoundException(["adminCategory.remove.AudiobookCategory.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.remove.audiobookCategory.not.exist"]);
             }
 
             $audiobookCategoryRepository->remove($category);
@@ -296,7 +296,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($category == null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
-                throw new DataNotFoundException(["adminCategory.remove.audiobook.AudiobookCategory.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.remove.audiobook.audiobookCategory.not.exist"]);
             }
 
             $audiobook = $audiobookRepository->findOneBy([
@@ -305,7 +305,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["adminCategory.remove.audiobook.Audiobook.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.remove.audiobook.audiobook.not.exist"]);
             }
 
             $audiobook->removeCategory($category);
@@ -366,7 +366,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($category == null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
-                throw new DataNotFoundException(["adminCategory.remove.audiobook.AudiobookCategory.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.audiobooks.audiobookCategory.not.exist"]);
             }
 
             $successModel = new AdminCategoryAudiobooksSuccessModel();
@@ -392,7 +392,7 @@ class AdminAudiobookCategoryController extends AbstractController
                         $audiobook->getActive()
                     );
 
-                $successModel->addAudiobook($audiobookModel);
+                    $successModel->addAudiobook($audiobookModel);
                 } else {
                     break;
                 }
@@ -405,7 +405,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminCategoryAudiobooks.invalid.query");
+            throw new InvalidJsonDataException("adminCategory.audiobooks.invalid.query");
         }
     }
 
@@ -496,7 +496,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if ($category == null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
-                throw new DataNotFoundException(["adminCategory.active.AudiobookCategory.not.exist"]);
+                throw new DataNotFoundException(["adminCategory.active.audiobookCategory.not.exist"]);
             }
 
             $category->setActive($adminCategoryActiveQuery->isActive());

@@ -3,7 +3,6 @@
 namespace App\Query;
 
 use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminCategoryAudiobooksQuery

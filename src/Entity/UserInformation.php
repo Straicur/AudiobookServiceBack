@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 class UserInformation
 {
     #[ORM\Id]
-    #[ORM\OneToOne(inversedBy: 'userInformation', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(inversedBy: 'userInformation', targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 510, unique: true)]

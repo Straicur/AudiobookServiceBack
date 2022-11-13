@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\UserAudiobookController;
+namespace App\Tests\Controller\UserController;
 
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;

@@ -3,11 +3,16 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Builder\NotificationBuilder;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
 use App\Model\AdminUserDetailsSuccessModel;
+use App\Model\AdminUserNotificationsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
@@ -24,9 +29,14 @@ use App\Query\AdminUserDeleteDeclineQuery;
 use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
 use App\Query\AdminUserDetailsQuery;
+use App\Query\AdminUserNotificationPatchQuery;
+use App\Query\AdminUserNotificationPutQuery;
+use App\Query\AdminUserNotificationsQuery;
 use App\Query\AdminUserRoleAddQuery;
 use App\Query\AdminUserRoleRemoveQuery;
 use App\Query\AdminUsersQuery;
+use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
@@ -391,6 +401,7 @@ class AdminUserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
     #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -855,6 +866,95 @@ class AdminUserController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/to/delete/list", name: "adminUserToDeleteList", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of users reade to delete",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserDeleteListQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserDeleteListSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserToDeleteList(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository
+    ): Response
+    {
+        $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
+
+        if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
+
+            $successModel = new AdminUserDeleteListSuccessModel();
+
+            $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
+            $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
+
+            $allDeleteUsers = $userDeleteRepository->getUsersToDelete();
+
+            foreach ($allDeleteUsers as $index => $userDelete) {
+
+                $user = $userDelete->getUser();
+
+                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $userDeleteModel = new UserDeleteModel(
+                        $user->getId(),
+                        $user->isActive(),
+                        $user->isBanned(),
+                        $user->getUserInformation()->getEmail(),
+                        $user->getUserInformation()->getFirstname(),
+                        $userDelete->getDeleted(),
+                        $userDelete->getDeclined()
+                    );
+
+
+                    if ($userDelete->getDateDeleted() != null) {
+                        $userDeleteModel->setDateDeleted($userDelete->getDateDeleted());
+                    }
+
+                    $successModel->addUser($userDeleteModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminUserDeleteListQuery->getPage());
+            $successModel->setLimit($adminUserDeleteListQuery->getLimit());
+
+            $successModel->setMaxPage(floor(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.to.delete.list.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
      * @return Response
@@ -907,7 +1007,7 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+                throw new DataNotFoundException(["adminUser.delete.accept.exist"]);
             }
 
             $userDelete->setDeleted(true);
@@ -940,9 +1040,11 @@ class AdminUserController extends AbstractController
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
+     * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws NotificationException
      * @throws TransportExceptionInterface
      */
     #[Route("/api/admin/user/delete/decline", name: "adminUserDeleteDecline", methods: ["PATCH"])]
@@ -970,7 +1072,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer
+        MailerInterface                $mailer,
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
@@ -992,7 +1095,7 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["userSettings.delete.accept.exist"]);
+                throw new DataNotFoundException(["adminUser.delete.decline.user.not.in.list.exist"]);
             }
 
             $userDelete->setDeclined(true);
@@ -1015,10 +1118,396 @@ class AdminUserController extends AbstractController
                 $mailer->send($email);
             }
 
+            $notificationBuilder = new NotificationBuilder();
+
+            $notification = $notificationBuilder
+                ->setType(NotificationType::PROPOSED)
+                ->setAction($userDelete->getId())
+                ->setUser($user)
+                ->setUserAction(NotificationUserType::SYSTEM)
+                ->build();
+
+            $notificationRepository->add($notification);
+
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminUser.delete.decline.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/notifications", name: "adminUserNotifications", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of negotiations in system",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationsQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserNotificationsSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserNotifications(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+        $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
+
+        if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
+
+            $allUserSystemNotifications = $notificationRepository->findBy([], [
+                "dateAdd" => "DESC"
+            ],
+                $adminUserNotificationsQuery->getLimit(), $adminUserNotificationsQuery->getPage());
+
+            $systemNotifications = [];
+
+            foreach ($allUserSystemNotifications as $notification) {
+                $systemNotifications[] = NotificationBuilder::read($notification);
+            }
+
+            $systemNotificationSuccessModel = new AdminUserNotificationsSuccessModel(
+                $systemNotifications,
+                $adminUserNotificationsQuery->getPage(),
+                $adminUserNotificationsQuery->getLimit(),
+                floor(floor(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()))
+            );
+
+            return ResponseTool::getResponse($systemNotificationSuccessModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notifications.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param NotificationRepository $notificationRepository
+     * @param UserRepository $userRepository
+     * @param RoleRepository $roleRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws NotificationException
+     */
+    #[Route("/api/admin/user/notification", name: "adminUserNotificationPut", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is adding notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationPutQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserNotificationPut(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        NotificationRepository         $notificationRepository,
+        UserRepository                 $userRepository,
+        RoleRepository                 $roleRepository,
+        AudiobookRepository            $audiobookRepository
+    ): Response
+    {
+        $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
+
+        if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
+
+            $additionalData = $adminUserNotificationPutQuery->getAdditionalData();
+
+            switch ($adminUserNotificationPutQuery->getNotificationType()) {
+                case NotificationType::NORMAL:
+
+                    $userRole = $roleRepository->findOneBy([
+                        "name" => "User"
+                    ]);
+
+                    $users = $userRepository->getUsersByRole($userRole);
+
+                    foreach ($users as $user) {
+                        $notificationBuilder = new NotificationBuilder();
+
+                        $notificationBuilder
+                            ->setType($adminUserNotificationPutQuery->getNotificationType())
+                            ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                            ->setUser($user)
+                            ->setAction($user->getId());
+
+                        if (array_key_exists("text", $additionalData)) {
+                            $notificationBuilder->setText($additionalData["text"]);
+                        }
+
+                        $notification = $notificationBuilder->build();
+
+                        $notificationRepository->add($notification);
+                    }
+
+                    break;
+                case NotificationType::ADMIN:
+                    if (!array_key_exists("userId", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no userId");
+                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                    }
+
+                    $user = $userRepository->findOneBy([
+                        "id" => $additionalData["userId"]
+                    ]);
+
+                    if ($user == null) {
+                        $endpointLogger->error("User dont exist");
+                        throw new DataNotFoundException(["adminUser.notification.put.user.dont.exist"]);
+                    }
+
+                    $notificationBuilder = new NotificationBuilder();
+
+                    $notificationBuilder
+                        ->setType($adminUserNotificationPutQuery->getNotificationType())
+                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                        ->setUser($user)
+                        ->setAction($user->getId());
+
+                    if (array_key_exists("text", $additionalData)) {
+                        $notificationBuilder->setText($additionalData["text"]);
+                    }
+
+                    $notification = $notificationBuilder->build();
+
+                    $notificationRepository->add($notification);
+
+                    break;
+                case NotificationType::PROPOSED:
+                    break;
+                case NotificationType::NEW_CATEGORY:
+                    if (!array_key_exists("actionId", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no actionId");
+                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                    }
+
+                    $userRole = $roleRepository->findOneBy([
+                        "name" => "User"
+                    ]);
+
+                    $users = $userRepository->getUsersByRole($userRole);
+
+                    foreach ($users as $user) {
+                        $notificationBuilder = new NotificationBuilder();
+
+                        $notificationBuilder
+                            ->setType($adminUserNotificationPutQuery->getNotificationType())
+                            ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                            ->setAction($additionalData["actionId"])
+                            ->setUser($user);
+
+                        if (array_key_exists("text", $additionalData)) {
+                            $notificationBuilder->setText($additionalData["text"]);
+                        }
+
+                        $notification = $notificationBuilder->build();
+
+                        $notificationRepository->add($notification);
+                    }
+                    break;
+                case NotificationType::NEW_AUDIOBOOK:
+                    if (!array_key_exists("actionId", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no actionId");
+                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                    }
+
+                    $audiobook = $audiobookRepository->findOneBy([
+                        "id" => $additionalData["actionId"]
+                    ]);
+
+                    if ($audiobook == null) {
+                        $endpointLogger->error("Audiobook dont exist");
+                        throw new DataNotFoundException(["adminUser.notification.put.audiobook.dont.exist"]);
+                    }
+
+                    $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
+
+                    foreach ($users as $user) {
+                        $notificationBuilder = new NotificationBuilder();
+
+                        $notificationBuilder
+                            ->setType($adminUserNotificationPutQuery->getNotificationType())
+                            ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                            ->setAction($additionalData["actionId"])
+                            ->setUser($user);
+
+                        if (array_key_exists("text", $additionalData)) {
+                            $notificationBuilder->setText($additionalData["text"]);
+                        }
+
+                        $notification = $notificationBuilder->build();
+
+                        $notificationRepository->add($notification);
+                    }
+                    break;
+                case NotificationType::USER_DELETE_DECLINE:
+                    if (!array_key_exists("actionId", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no actionId");
+                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                    }
+
+                    if (!array_key_exists("userId", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no userId");
+                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                    }
+
+                    $user = $userRepository->findOneBy([
+                        "id" => $additionalData["userId"]
+                    ]);
+
+                    if ($user == null) {
+                        $endpointLogger->error("User dont exist");
+                        throw new DataNotFoundException(["adminUser.notification.put.user.dont.exist"]);
+                    }
+
+                    $notificationBuilder = new NotificationBuilder();
+
+                    $notificationBuilder
+                        ->setType($adminUserNotificationPutQuery->getNotificationType())
+                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                        ->setAction($additionalData["actionId"])
+                        ->setUser($user);
+
+                    if (array_key_exists("text", $additionalData)) {
+                        $notificationBuilder->setText($additionalData["text"]);
+                    }
+
+                    $notification = $notificationBuilder->build();
+
+                    $notificationRepository->add($notification);
+
+                    break;
+            }
+
+            return ResponseTool::getResponse(null, 201);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+        }
+
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param UserRepository $userRepository
+     * @param LoggerInterface $endpointLogger
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     * @throws NotificationException
+     */
+    #[Route("/api/admin/user/notification", name: "adminUserNotificationPatch", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is editing notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationPatchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserNotificationPatch(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        UserRepository                 $userRepository,
+        LoggerInterface                $endpointLogger,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+        $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
+
+        if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
+
+            $notification = $notificationRepository->findOneBy([
+                "id" => $adminUserNotificationPatchQuery->getNotificationId()
+            ]);
+
+            if ($notification == null) {
+                $endpointLogger->error("Notification dont exist");
+                throw new DataNotFoundException(["adminUser.notification.patch.notification.dont.exist"]);
+            }
+
+            $user = $userRepository->findOneBy([
+                "id" => $adminUserNotificationPatchQuery->getUserId()
+            ]);
+
+            if ($user == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["adminUser.notification.patch.user.dont.exist"]);
+            }
+            $notificationBuilder = new NotificationBuilder($notification);
+
+            $notificationBuilder
+                ->setType($adminUserNotificationPatchQuery->getNotificationType())
+                ->setAction($adminUserNotificationPatchQuery->getActionId())
+                ->setUser($user)
+                ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
+
+            $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
+
+            if (array_key_exists("text", $additionalData)) {
+                $notificationBuilder->setText($additionalData["text"]);
+            }
+
+            $notification = $notificationBuilder->build();
+
+            $notificationRepository->add($notification);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query");
         }
     }
 }

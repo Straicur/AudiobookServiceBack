@@ -14,6 +14,7 @@ class UserAudiobooksSuccessModel implements ModelInterface
     private int $limit;
 
     private int $maxPage;
+
     /**
      * @return UserCategoryModel[]
      */

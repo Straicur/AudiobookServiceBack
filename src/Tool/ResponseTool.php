@@ -18,7 +18,8 @@ class ResponseTool
         "Content-Type" => "application/json"
     ];
 
-    public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response{
+    public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response
+    {
         $serializeService = new JsonSerializer();
 
         $serializedObject = $responseModel != null ? $serializeService->serialize($responseModel) : null;
@@ -26,7 +27,8 @@ class ResponseTool
         return new Response($serializedObject, $httpCode, self::$headers);
     }
 
-    public static function getBinaryFileResponse($fileDir, $delete = false): BinaryFileResponse{
+    public static function getBinaryFileResponse($fileDir, $delete = false): BinaryFileResponse
+    {
 
         $response = new BinaryFileResponse($fileDir);
 
@@ -35,7 +37,7 @@ class ResponseTool
             basename($fileDir)
         );
 
-        if($delete){
+        if ($delete) {
             $response->deleteFileAfterSend();
         }
 

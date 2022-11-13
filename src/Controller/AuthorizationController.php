@@ -105,24 +105,24 @@ class AuthorizationController extends AbstractController
             throw new DataNotFoundException(["user.credentials"]);
         }
 
-        if($userInformationEntity->getUser()->isBanned()){
-             throw new DataNotFoundException(["user.banned"]);
+        if ($userInformationEntity->getUser()->isBanned()) {
+            throw new DataNotFoundException(["user.banned"]);
         }
 
-        if(!$userInformationEntity->getUser()->isActive()){
+        if (!$userInformationEntity->getUser()->isActive()) {
             throw new DataNotFoundException(["user.not.active"]);
         }
 
         $roles = $userInformationEntity->getUser()->getRoles();
         $isUser = false;
 
-        foreach ($roles as $role){
-            if($role->getName() == "User"){
-                $isUser=true;
+        foreach ($roles as $role) {
+            if ($role->getName() == "User") {
+                $isUser = true;
             }
         }
 
-        if(!$isUser){
+        if (!$isUser) {
             throw new PermissionException("user.credentials");
         }
         $passwordEntity = $userPasswordRepository->findOneBy([

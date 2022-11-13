@@ -27,21 +27,20 @@ class RequestService implements RequestServiceInterface
     {
         $bodyContent = $request->getContent();
 
-        try{
+        try {
             $query = $this->serializer->deserialize($bodyContent, $className);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new InvalidJsonDataException($className, null, [$e->getMessage()]);
         }
 
-        if($query instanceof $className){
+        if ($query instanceof $className) {
             $validationErrors = $this->validator->validate($query);
-            if($validationErrors->count() > 0){
+            if ($validationErrors->count() > 0) {
                 throw new InvalidJsonDataException($className, $validationErrors);
             }
 
             return $query;
-        }
-        else{
+        } else {
             throw new InvalidJsonDataException($className);
         }
     }

@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-class AudiobooksID3TagsReaderService
+class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceInterface
 {
-    var array $systemTags = array(
+    private array $systemTags = array(
         'TIT2',
         'TALB',
         'TPE1',
@@ -23,7 +23,7 @@ class AudiobooksID3TagsReaderService
         'COMM',
         'TCOM'
     );
-    var array $systemTagsTitles = array(
+    private array $systemTagsTitles = array(
         'title',
         'album',
         'author',
@@ -42,7 +42,7 @@ class AudiobooksID3TagsReaderService
         'comments',
         'composer'
     );
-    var array $olderSystemTags = array(
+    private array $olderSystemTags = array(
         'TT2',
         'TAL',
         'TP1',
@@ -51,7 +51,7 @@ class AudiobooksID3TagsReaderService
         'TLE',
         'ULT'
     );
-    var array $olderSystemTagsTitles = array(
+    private array $olderSystemTagsTitles = array(
         'title',
         'album',
         'author',
@@ -61,7 +61,7 @@ class AudiobooksID3TagsReaderService
         'lyric'
     );
 
-    function getTagsInfo($path): array
+    public function getTagsInfo(string $path): array
     {
         $fileSize = filesize($path);
 

@@ -2,9 +2,9 @@
 
 namespace App\Query;
 
+use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use OpenApi\Attributes as OA;
 
 class UserAudiobookInfoQuery
 {
@@ -17,6 +17,7 @@ class UserAudiobookInfoQuery
     #[Assert\NotBlank(message: "CategoryKey is empty")]
     #[Assert\Type(type: "string")]
     private string $categoryKey;
+
     /**
      * @return Uuid
      */

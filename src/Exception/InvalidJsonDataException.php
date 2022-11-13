@@ -37,14 +37,14 @@ class InvalidJsonDataException extends \Exception implements ResponseExceptionIn
     {
         $validationErrors = [];
 
-        for($i=0; $i<$this->validationErrors?->count();$i++){
+        for ($i = 0; $i < $this->validationErrors?->count(); $i++) {
             $validationError = $this->validationErrors->get($i);
 
-            $validationErrors[] = "[".$validationError->getPropertyPath()."] -> ". $validationError->getMessage();
+            $validationErrors[] = "[" . $validationError->getPropertyPath() . "] -> " . $validationError->getMessage();
         }
 
-        if($this->errors != null){
-            foreach ($this->errors as $error){
+        if ($this->errors != null) {
+            foreach ($this->errors as $error) {
                 $validationErrors[] = $error;
             }
         }

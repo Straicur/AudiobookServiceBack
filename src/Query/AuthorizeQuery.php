@@ -2,7 +2,6 @@
 
 namespace App\Query;
 
-use App\Controller\AuthorizationController;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AuthorizeQuery

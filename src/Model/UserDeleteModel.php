@@ -22,7 +22,7 @@ class UserDeleteModel
      * @param bool $deleted
      * @param bool $declined
      */
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname,bool $deleted ,bool $declined)
+    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, bool $deleted, bool $declined)
     {
         $this->id = $id;
         $this->active = $active;

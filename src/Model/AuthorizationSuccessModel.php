@@ -34,7 +34,8 @@ class AuthorizationSuccessModel implements ModelInterface
         $this->token = $token;
     }
 
-    static function getModel():array{
+    static function getModel(): array
+    {
         return (array)AuthorizationSuccessModel::class;
     }
 }

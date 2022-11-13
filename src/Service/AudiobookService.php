@@ -12,7 +12,7 @@ use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 use ZipArchive;
 
-class AudiobookService
+class AudiobookService implements AudiobookServiceInterface
 {
     private MP3FileService $MP3FileService;
     private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
@@ -140,6 +140,7 @@ class AudiobookService
     }
 
     /**
+     * @param bool $reAdding
      * @return string
      * @throws AudiobookConfigServiceException
      */
@@ -171,9 +172,9 @@ class AudiobookService
             closedir($handle);
         }
 
-        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders -1 : $amountOfSameFolders);
+        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders - 1 : $amountOfSameFolders);
 
-        if($reAdding && is_dir($newName)){
+        if ($reAdding && is_dir($newName)) {
             self::removeFolder($newName);
         }
 

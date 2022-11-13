@@ -17,6 +17,7 @@ class AdminCategoryRemoveAudiobookQuery
     #[Assert\NotBlank(message: "AudiobookId is empty")]
     #[Assert\Uuid]
     private Uuid $audiobookId;
+
     /**
      * @return Uuid
      */

@@ -36,9 +36,9 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
-        SerializerInterface $jsonSerializer,
-        LoggerInterface $responseLogger,
-        LoggerInterface $requestLogger,
+        SerializerInterface           $jsonSerializer,
+        LoggerInterface               $responseLogger,
+        LoggerInterface               $requestLogger,
     )
     {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
@@ -53,12 +53,12 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @throws AuthenticationException
      * @throws PermissionException
      */
-    public function onControllerCall(ControllerEvent $event)
+    public function onControllerCall(ControllerEvent $event): void
     {
         $controller = $event->getController();
         $request = $event->getRequest();
 
-        if(is_array($controller)){
+        if (is_array($controller)) {
             $method = $controller[1];
             $controller = $controller[0];
 
@@ -67,25 +67,23 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 $reflectionMethod = $controllerReflectionClass->getMethod($method);
                 $methodAttributes = $reflectionMethod->getAttributes(AuthValidation::class);
 
-                if(count($methodAttributes) == 1){
+                if (count($methodAttributes) == 1) {
                     $authValidationAttribute = $methodAttributes[0]->newInstance();
 
-                    if($authValidationAttribute instanceof AuthValidation){
-                        if($authValidationAttribute->isCheckAuthToken()){
+                    if ($authValidationAttribute instanceof AuthValidation) {
+                        if ($authValidationAttribute->isCheckAuthToken()) {
                             $authorizationHeaderField = $request->headers->get("authorization");
 
-                            if($authorizationHeaderField == null){
+                            if ($authorizationHeaderField == null) {
                                 throw new AuthenticationException();
-                            }
-                            else{
+                            } else {
                                 $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
 
-                                if($authToken == null){
+                                if ($authToken == null) {
                                     throw new AuthenticationException();
-                                }
-                                else{
+                                } else {
                                     $loggedUserData = [
-                                        "method" => $reflectionMethod->class."::".$reflectionMethod->name,
+                                        "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
                                         "user_id" => $authToken->getUser()->getId(),
                                         "token_auth_id" => $authToken->getId(),
                                         "user_data" => [
@@ -125,26 +123,26 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @param ExceptionEvent $event
      * @return void
      */
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
 
-        if($exception instanceof ResponseExceptionInterface){
+        if ($exception instanceof ResponseExceptionInterface) {
             $loggingContext = [
                 "statusCode" => $exception->getResponse()->getStatusCode(),
-                "file" => "[".$exception->getLine()."](".$exception->getFile().")",
+                "file" => "[" . $exception->getLine() . "](" . $exception->getFile() . ")",
                 "responseData" => json_decode($exception->getResponse()->getContent(), true)
             ];
 
             $this->responseLogger->info("ResponseException", $loggingContext);
 
             $event->setResponse($exception->getResponse());
-        }
-        else{
+        } else {
             $this->responseLogger->critical("ResponseException", ["class" => $exception::class, "data" => $exception]);
 
-            switch ($exception::class){
-                case NotFoundHttpException::class: {
+            switch ($exception::class) {
+                case NotFoundHttpException::class:
+                {
                     $notFoundException = new DataNotFoundException([$exception->getMessage()]);
 
                     $event->setResponse($notFoundException->getResponse());
@@ -157,14 +155,15 @@ class AuthValidationSubscriber implements EventSubscriberInterface
     /**
      * @throws NonUniqueResultException
      */
-    public function onKernelResponse(ResponseEvent $event){
+    public function onKernelResponse(ResponseEvent $event)
+    {
         $request = $event->getRequest();
         $response = $event->getResponse();
 
         $authorizationHeaderField = $request->headers->get("authorization");
 
         $authToken = null;
-        if($authorizationHeaderField != null){
+        if ($authorizationHeaderField != null) {
             $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
         }
 
@@ -176,13 +175,12 @@ class AuthValidationSubscriber implements EventSubscriberInterface
             "user" => $authToken?->getUser()->getId(),
             "statusCode" => $response->getStatusCode(),
             "headers" => $headersIterator->getArrayCopy(),
-            "responseData" => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true): null,
+            "responseData" => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true) : null,
         ];
 
-        if($response->getStatusCode() > 499){
+        if ($response->getStatusCode() > 499) {
             $this->responseLogger->error("Response data", $loggerData);
-        }
-        else{
+        } else {
             $this->responseLogger->info("Response data", $loggerData);
         }
     }
@@ -202,25 +200,26 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @return void
      * @throws PermissionException
      */
-    private function checkRoles(User $user, array $roles){
+    private function checkRoles(User $user, array $roles): void
+    {
         $userRoles = $user->getRoles();
 
         $foundRole = false;
 
-        foreach ($userRoles as $userRole){
-            foreach ($roles as $role){
-                if($userRole->getName() == $role){
+        foreach ($userRoles as $userRole) {
+            foreach ($roles as $role) {
+                if ($userRole->getName() == $role) {
                     $foundRole = true;
                     break;
                 }
             }
 
-            if($foundRole){
+            if ($foundRole) {
                 break;
             }
         }
 
-        if(!$foundRole){
+        if (!$foundRole) {
             throw new PermissionException();
         }
     }

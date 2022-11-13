@@ -15,11 +15,11 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 
     protected function setUp(): void
     {
-        if(!self::$booted){
+        if (!self::$booted) {
             self::bootKernel(["environment" => "test"]);
         }
 
-        if($this->databaseMockManager == null){
+        if ($this->databaseMockManager == null) {
             $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
         }
 

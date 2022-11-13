@@ -2,12 +2,14 @@
 
 namespace App\Tests;
 
+use App\Builder\NotificationBuilder;
 use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use App\Entity\AudiobookInfo;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
 use App\Entity\MyList;
+use App\Entity\Notification;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
@@ -16,12 +18,16 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Enums\AudiobookAgeRange;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
+use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
@@ -35,6 +41,7 @@ use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Uid\Uuid;
 
 class DatabaseMockManager
 {
@@ -85,11 +92,11 @@ class DatabaseMockManager
             $user->setActive(true);
         }
 
-        if($edited){
+        if ($edited) {
             $user->setEdited($edited);
         }
 
-        if($editableDate != null){
+        if ($editableDate != null) {
             $user->setEditableDate($editableDate);
         }
 
@@ -221,7 +228,7 @@ class DatabaseMockManager
 
         $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate);
 
-        if($deActive){
+        if ($deActive) {
             $newRegisterCode->setActive(false);
         }
 
@@ -252,24 +259,47 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 
-    public function testFunc_addUserDelete(User $user,bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
         $newUserDelete = new UserDelete($user);
 
-        if($deleted){
+        if ($deleted) {
             $newUserDelete->setDeleted($deleted);
         }
-        if($declined){
+        if ($declined) {
             $newUserDelete->setDeclined($declined);
         }
-        if($dateDeleted != null){
+        if ($dateDeleted != null) {
             $newUserDelete->setDateDeleted($dateDeleted);
         }
 
         $userDeleteRepository->add($newUserDelete);
 
         return $newUserDelete;
+    }
+
+    /**
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\Exception\ORMException
+     * @throws NotificationException
+     */
+    public function testFunc_addNotifications(User $user, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction): Notification
+    {
+        $systemNotificationRepository = $this->getService(NotificationRepository::class);
+
+        $newSystemNotification = new NotificationBuilder();
+
+        $newSystemNotification = $newSystemNotification
+            ->setUser($user)
+            ->setUserAction($userAction)
+            ->setAction($actionId)
+            ->setType($notificationType)
+            ->build();
+
+        $systemNotificationRepository->add($newSystemNotification);
+
+        return $newSystemNotification;
     }
 }

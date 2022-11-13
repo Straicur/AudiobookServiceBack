@@ -4,9 +4,6 @@ namespace App\Model;
 
 /**
  * PermissionNotGrantedModel
- *
- * Model which contains all fields return in response when authorized user don't have permission to resource
- *
  */
 class PermissionNotGrantedModel implements ModelInterface
 {
