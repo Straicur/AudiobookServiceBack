@@ -5,7 +5,6 @@ namespace App\Tests\Controller\AdminUserController;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\UserRoles;
 use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 
@@ -265,7 +264,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        
+
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
         /// step 2
@@ -291,6 +290,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
 
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -380,6 +380,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad actionId
@@ -425,6 +426,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -516,6 +518,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -610,6 +613,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad actionId
@@ -656,6 +660,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content

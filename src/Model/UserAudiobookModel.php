@@ -20,7 +20,7 @@ class UserAudiobookModel
      * @param int $parts
      * @param AudiobookAgeRange $age
      */
-    public function __construct(string $id, string $title, string $author, int $parts,AudiobookAgeRange $age)
+    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age)
     {
         $this->id = $id;
         $this->title = $title;

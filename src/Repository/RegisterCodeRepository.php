@@ -2,12 +2,9 @@
 
 namespace App\Repository;
 
-use App\Entity\AuthenticationToken;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -55,10 +52,11 @@ class RegisterCodeRepository extends ServiceEntityRepository
      * @param User $user
      * @return void
      */
-    public function setCodesToNotActive(User $user):void{
+    public function setCodesToNotActive(User $user): void
+    {
         $qb = $this->createQueryBuilder('rc')
             ->update()
-            ->set("rc.active","false")
+            ->set("rc.active", "false")
             ->where("rc.user = :user")
             ->setParameter("user", $user->getId()->toBinary());
 

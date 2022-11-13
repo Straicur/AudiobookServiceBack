@@ -24,9 +24,9 @@ class AuthTokenGenerator implements ValueGeneratorInterface
     {
         $dateNow = (new \DateTime("now"))->getTimestamp();
         $userId = $this->userEntity->getId()->toBinary();
-        $randomValue = rand(0, PHP_INT_MAX-1);
+        $randomValue = rand(0, PHP_INT_MAX - 1);
 
-        $tokenToHash = $userId."-".$dateNow."#".$randomValue;
+        $tokenToHash = $userId . "-" . $dateNow . "#" . $randomValue;
 
         return hash("sha512", $tokenToHash);
     }

@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Exception\AuthenticationException;
 use App\Repository\AuthenticationTokenRepository;
 
-
 class AuthorizedUserService implements AuthorizedUserServiceInterface
 {
     private static AuthenticationTokenRepository $authenticationTokenRepository;
@@ -21,7 +20,8 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
         self::$authenticationTokenRepository = $authenticationTokenRepository;
     }
 
-    public static function setAuthorizedUser(User $user){
+    public static function setAuthorizedUser(User $user)
+    {
         self::$authorizedUser = $user;
     }
 
@@ -38,7 +38,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
      */
     public static function getAuthorizedUser(): User
     {
-        if(self::$authorizedUser == null){
+        if (self::$authorizedUser == null) {
             throw new AuthenticationException();
         }
 
@@ -47,7 +47,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
 
     public static function unAuthorizeUser(): void
     {
-        if(self::$authenticationToken != null){
+        if (self::$authenticationToken != null) {
             self::$authenticationToken->setDateExpired(new \DateTime("now"));
             self::$authenticationTokenRepository->add(self::$authenticationToken);
         }

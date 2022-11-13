@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,7 +36,7 @@ class Audiobook
     private string $album;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $year;
+    private DateTime $year;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $encoded = null;
@@ -59,7 +60,7 @@ class Audiobook
     private bool $active;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    private DateTime $dateAdd;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $fileName;
@@ -69,7 +70,7 @@ class Audiobook
      * @param string $author
      * @param string $version
      * @param string $album
-     * @param \DateTime $year
+     * @param DateTime $year
      * @param string $duration
      * @param string $size
      * @param int $parts
@@ -77,7 +78,7 @@ class Audiobook
      * @param AudiobookAgeRange $age
      * @param string $fileName
      */
-    public function __construct(string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size,int $parts, string $description, AudiobookAgeRange $age ,string $fileName)
+    public function __construct(string $title, string $author, string $version, string $album, DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName)
     {
         $this->title = $title;
         $this->author = $author;
@@ -91,7 +92,7 @@ class Audiobook
         $this->age = $age->value;
         $this->categories = new ArrayCollection();
         $this->active = false;
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new DateTime('Now');
         $this->fileName = $fileName;
     }
 
@@ -172,12 +173,12 @@ class Audiobook
         return $this;
     }
 
-    public function getYear(): \DateTime
+    public function getYear(): DateTime
     {
         return $this->year;
     }
 
-    public function setYear(\DateTime $year): self
+    public function setYear(DateTime $year): self
     {
         $this->year = $year;
 
@@ -274,12 +275,12 @@ class Audiobook
         return $this;
     }
 
-    public function getDateAdd(): ?\DateTime
+    public function getDateAdd(): ?DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 

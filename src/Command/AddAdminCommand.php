@@ -51,13 +51,13 @@ class AddAdminCommand extends Command
     private ProposedAudiobooksRepository $proposedAudiobooksRepository;
 
     public function __construct(
-        UserRepository            $userRepository,
-        RoleRepository            $roleRepository,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository    $userPasswordRepository,
-        UserSettingsRepository    $userSettingsRepository,
-        MyListRepository          $myListRepository,
-        InstitutionRepository     $institutionRepository,
+        UserRepository               $userRepository,
+        RoleRepository               $roleRepository,
+        UserInformationRepository    $userInformationRepository,
+        UserPasswordRepository       $userPasswordRepository,
+        UserSettingsRepository       $userSettingsRepository,
+        MyListRepository             $myListRepository,
+        InstitutionRepository        $institutionRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository
     )
     {
@@ -96,15 +96,14 @@ class AddAdminCommand extends Command
         $password = $input->getArgument("password");
 
         $institution = $this->institutionRepository->findOneBy([
-            "name"=>$_ENV["INSTITUTION_NAME"]
+            "name" => $_ENV["INSTITUTION_NAME"]
         ]);
 
         $administrator = $this->roleRepository->findOneBy([
             "name" => "Administrator"
         ]);
 
-        if($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator)))
-        {
+        if ($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator))) {
             $io->info("To much admins");
             return Command::FAILURE;
         }

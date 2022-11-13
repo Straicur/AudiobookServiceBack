@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * PermissionException
- *
  */
 class PermissionException extends \Exception implements ResponseExceptionInterface
 {

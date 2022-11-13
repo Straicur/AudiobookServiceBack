@@ -859,6 +859,7 @@ class AdminUserController extends AbstractController
             throw new InvalidJsonDataException("adminUser.delete.list.invalid.query");
         }
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService

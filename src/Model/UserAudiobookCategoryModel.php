@@ -32,6 +32,7 @@ class UserAudiobookCategoryModel implements ModelInterface
     {
         $this->name = $name;
     }
+
     /**
      * @return string
      */

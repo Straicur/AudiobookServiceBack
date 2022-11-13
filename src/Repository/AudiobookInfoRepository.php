@@ -6,8 +6,6 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookInfo;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -76,7 +74,7 @@ class AudiobookInfoRepository extends ServiceEntityRepository
      * @param Audiobook $audiobook
      * @return void
      */
-    public function deActiveAudiobookInfos(User $user,Audiobook $audiobook): void
+    public function deActiveAudiobookInfos(User $user, Audiobook $audiobook): void
     {
         $qb = $this->createQueryBuilder('ai');
 

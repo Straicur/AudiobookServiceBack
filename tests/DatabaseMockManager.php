@@ -92,11 +92,11 @@ class DatabaseMockManager
             $user->setActive(true);
         }
 
-        if($edited){
+        if ($edited) {
             $user->setEdited($edited);
         }
 
-        if($editableDate != null){
+        if ($editableDate != null) {
             $user->setEditableDate($editableDate);
         }
 
@@ -228,7 +228,7 @@ class DatabaseMockManager
 
         $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate);
 
-        if($deActive){
+        if ($deActive) {
             $newRegisterCode->setActive(false);
         }
 
@@ -259,19 +259,19 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 
-    public function testFunc_addUserDelete(User $user,bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
         $newUserDelete = new UserDelete($user);
 
-        if($deleted){
+        if ($deleted) {
             $newUserDelete->setDeleted($deleted);
         }
-        if($declined){
+        if ($declined) {
             $newUserDelete->setDeclined($declined);
         }
-        if($dateDeleted != null){
+        if ($dateDeleted != null) {
             $newUserDelete->setDateDeleted($dateDeleted);
         }
 

@@ -105,7 +105,7 @@ class RegisterController extends AbstractController
         MyListRepository             $myListRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
         InstitutionRepository        $institutionRepository,
-        UserPasswordRepository $userPasswordRepository
+        UserPasswordRepository       $userPasswordRepository
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
@@ -273,7 +273,7 @@ class RegisterController extends AbstractController
         return $this->render(
             'pages/registered.html.twig',
             [
-                "url"=>$_ENV["FRONTEND_URL"]
+                "url" => $_ENV["FRONTEND_URL"]
             ]
         );
     }

@@ -3,8 +3,8 @@
 namespace App\Model;
 
 use App\Enums\NotificationType;
-use Symfony\Component\Uid\Uuid;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Uid\Uuid;
 
 class NotificationModel implements ModelInterface
 {

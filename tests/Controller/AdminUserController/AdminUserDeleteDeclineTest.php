@@ -64,7 +64,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $this->assertTrue($userAfter->isActive());
 
-        $this->assertCount(1,$notificationRepository->findAll());
+        $this->assertCount(1, $notificationRepository->findAll());
     }
 
     /**

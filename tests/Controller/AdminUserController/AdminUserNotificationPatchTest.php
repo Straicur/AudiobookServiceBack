@@ -5,7 +5,6 @@ namespace App\Tests\Controller\AdminUserController;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\UserRoles;
 use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 
@@ -81,14 +80,14 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             "id" => $not1->getId()
         ]);
 
-        $this->assertSame($content["notificationType"],$not1After->getType()->value);
-        $this->assertSame($content["actionId"]->toBinary(),$not1After->getActionId()->toBinary());
-        $this->assertSame($content["userId"]->toBinary(),$not1After->getUser()->getId()->toBinary());
+        $this->assertSame($content["notificationType"], $not1After->getType()->value);
+        $this->assertSame($content["actionId"]->toBinary(), $not1After->getActionId()->toBinary());
+        $this->assertSame($content["userId"]->toBinary(), $not1After->getUser()->getId()->toBinary());
 
         $metaData = $not1After->getMetaData();
 
-        $this->assertSame($metaData["user"],$content["notificationUserType"]);
-        $this->assertSame($metaData["text"],$content["additionalData"]["text"]);
+        $this->assertSame($metaData["user"], $content["notificationUserType"]);
+        $this->assertSame($metaData["text"], $content["additionalData"]["text"]);
     }
 
     /**
@@ -138,6 +137,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad userId
@@ -187,6 +187,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content

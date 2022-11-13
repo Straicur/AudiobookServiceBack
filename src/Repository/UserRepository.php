@@ -3,12 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Audiobook;
-use App\Entity\AudiobookCategory;
 use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -76,7 +74,7 @@ class UserRepository extends ServiceEntityRepository
      * @param Role $role
      * @return bool
      */
-    public function userHasRole(User $user,Role $role): bool
+    public function userHasRole(User $user, Role $role): bool
     {
         $qb = $this->createQueryBuilder('u');
 

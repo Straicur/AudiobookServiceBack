@@ -392,7 +392,7 @@ class AdminAudiobookCategoryController extends AbstractController
                         $audiobook->getActive()
                     );
 
-                $successModel->addAudiobook($audiobookModel);
+                    $successModel->addAudiobook($audiobookModel);
                 } else {
                     break;
                 }

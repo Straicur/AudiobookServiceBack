@@ -171,9 +171,9 @@ class AudiobookService
             closedir($handle);
         }
 
-        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders -1 : $amountOfSameFolders);
+        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders - 1 : $amountOfSameFolders);
 
-        if($reAdding && is_dir($newName)){
+        if ($reAdding && is_dir($newName)) {
             self::removeFolder($newName);
         }
 

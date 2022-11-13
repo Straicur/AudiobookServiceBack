@@ -86,7 +86,7 @@ class NotificationController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         Request                        $request,
         RequestServiceInterface        $requestServiceInterface,
-        NotificationRepository   $notificationRepository,
+        NotificationRepository         $notificationRepository,
         UserRepository                 $userRepository,
         LoggerInterface                $endpointLogger
     ): Response
@@ -161,7 +161,7 @@ class NotificationController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        NotificationRepository   $notificationRepository,
+        NotificationRepository         $notificationRepository,
         LoggerInterface                $endpointLogger
     ): Response
     {

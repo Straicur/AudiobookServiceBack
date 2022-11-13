@@ -50,6 +50,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
     /**
      * @throws NonUniqueResultException
      */
@@ -63,11 +64,13 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
     /**
      * @param User $user
      * @return AuthenticationToken|null
      */
-    public function getLastActiveUserAuthenticationToken(User $user):?AuthenticationToken{
+    public function getLastActiveUserAuthenticationToken(User $user): ?AuthenticationToken
+    {
         $qb = $this->createQueryBuilder('at')
             ->where('at.user = :user')
             ->andWhere('at.dateExpired > :today')

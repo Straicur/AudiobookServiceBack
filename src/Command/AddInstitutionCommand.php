@@ -58,12 +58,11 @@ class AddInstitutionCommand extends Command
             "MaxUsers:     " . $maxUsers,
         ]);
 
-        if (count($this->institutionRepository->findAll()) > 0)
-        {
+        if (count($this->institutionRepository->findAll()) > 0) {
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"],$_ENV["INSTITUTION_EMAIL"],$phoneNumber,$maxAdmins,$maxUsers));
+        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"], $_ENV["INSTITUTION_EMAIL"], $phoneNumber, $maxAdmins, $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

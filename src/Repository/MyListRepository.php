@@ -6,8 +6,6 @@ use App\Entity\Audiobook;
 use App\Entity\MyList;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -56,7 +54,7 @@ class MyListRepository extends ServiceEntityRepository
      * @param Audiobook $audiobook
      * @return bool
      */
-    public function getAudiobookINMyList(User $user,Audiobook $audiobook): bool
+    public function getAudiobookINMyList(User $user, Audiobook $audiobook): bool
     {
         $qb = $this->createQueryBuilder('ml')
             ->leftJoin('ml.audiobooks', 'a')

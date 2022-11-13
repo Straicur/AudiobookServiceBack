@@ -47,7 +47,7 @@ class AdminUserDeleteTest extends AbstractWebTest
             "id" => $id
         ]));
 
-        $this->assertCount(4,$userRepository->findAll());
+        $this->assertCount(4, $userRepository->findAll());
     }
 
     /**
