@@ -70,7 +70,6 @@ class UserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws \Exception
      */
     #[Route("/api/user/settings/password", name: "userSettingsPassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -508,7 +507,6 @@ class UserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws \Exception
      */
     #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]

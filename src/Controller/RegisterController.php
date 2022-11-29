@@ -72,7 +72,6 @@ class RegisterController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws TransportExceptionInterface
-     * @throws \Exception
      */
     #[Route("/api/register", name: "apiRegister", methods: ["PUT"])]
     #[OA\Put(
@@ -205,7 +204,6 @@ class RegisterController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
-     * @throws \Exception
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Patch(

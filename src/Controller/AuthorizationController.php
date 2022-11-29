@@ -58,12 +58,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class AuthorizationController extends AbstractController
 {
     /**
-     * @throws InvalidJsonDataException
+     * @param Request $request
+     * @param RequestServiceInterface $requestServiceInterface
+     * @param LoggerInterface $usersLogger
+     * @param UserInformationRepository $userInformationRepository
+     * @param UserPasswordRepository $userPasswordRepository
+     * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @return Response|null
      * @throws DataNotFoundException
-     * @throws TransportExceptionInterface
      * @throws PermissionException
-     * @throws \Exception
-     *
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
     #[OA\Post(
