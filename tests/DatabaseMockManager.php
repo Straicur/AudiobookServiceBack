@@ -6,6 +6,7 @@ use App\Builder\NotificationBuilder;
 use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use App\Entity\AudiobookInfo;
+use App\Entity\AudiobookRating;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
 use App\Entity\MyList;
@@ -23,6 +24,7 @@ use App\Enums\NotificationUserType;
 use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
+use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
@@ -40,6 +42,8 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -226,7 +230,7 @@ class DatabaseMockManager
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate,$watched);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watchingDate, $watched);
 
         if ($watched) {
             $newRegisterCode->setWatched($watched);
@@ -285,8 +289,8 @@ class DatabaseMockManager
     }
 
     /**
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\Exception\ORMException
+     * @throws OptimisticLockException
+     * @throws ORMException
      * @throws NotificationException
      */
     public function testFunc_addNotifications(User $user, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction): Notification
@@ -306,4 +310,16 @@ class DatabaseMockManager
 
         return $newSystemNotification;
     }
+
+    public function testFunc_addAudiobookRating(Audiobook $audiobook, bool $rating, User $user): AudiobookRating
+    {
+        $audiobookRatingRepository = $this->getService(AudiobookRatingRepository::class);
+
+        $newSystemNotification = new AudiobookRating($audiobook, $rating, $user);
+
+        $audiobookRatingRepository->add($newSystemNotification);
+
+        return $newSystemNotification;
+    }
+
 }

@@ -592,6 +592,7 @@ class UserAudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @param AudiobookRatingRepository $ratingRepository
      * @return Response
      * @throws DataNotFoundException
@@ -621,6 +622,7 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository,
         AudiobookRatingRepository      $ratingRepository
     ): Response
     {
@@ -638,17 +640,25 @@ class UserAudiobookController extends AbstractController
             }
 
             $rating = $ratingRepository->findOneBy([
-                "audiobook"=> $audiobook->getId(),
-                "user"=> $user->getId()
+                "audiobook" => $audiobook->getId(),
+                "user" => $user->getId()
             ]);
 
-            if($rating != null){
+            if ($rating != null) {
                 $rating->setRating($userAudiobookRatingAddQuery->isRating());
-            }
-            else{
-                //todo tu sprawdzenie czy wszystkie te party mają flagi odpowiednie
+            } else {
+                $audiobookInfo = $audiobookInfoRepository->findBy([
+                    "audiobook" => $audiobook->getId(),
+                    "watched" => true,
+                    "user" => $user->getId()
+                ]);
 
-                $rating = new AudiobookRating($audiobook,$userAudiobookRatingAddQuery->isRating(),$user);
+                if (count($audiobookInfo) < $audiobook->getParts()) {
+                    $endpointLogger->error("Audiobook dont exist");
+                    throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.watched"]);
+                }
+
+                $rating = new AudiobookRating($audiobook, $userAudiobookRatingAddQuery->isRating(), $user);
             }
 
             $ratingRepository->add($rating);
@@ -714,13 +724,13 @@ class UserAudiobookController extends AbstractController
             }
 
             $goodRatings = count($ratingRepository->findBy([
-                "audiobook"=>$audiobook->getId(),
-                "rating"=>true
+                "audiobook" => $audiobook->getId(),
+                "rating" => true
             ]));
 
             $audiobookRatings = count($audiobook->getAudiobookRatings());
 
-            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel(($goodRatings/$audiobookRatings)*100));
+            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel(($goodRatings / $audiobookRatings) * 100));
 
         } else {
             $endpointLogger->error("Invalid given Query");
