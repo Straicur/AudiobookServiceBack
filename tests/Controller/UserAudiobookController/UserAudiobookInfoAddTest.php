@@ -41,6 +41,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -88,6 +89,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -134,6 +136,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -184,6 +187,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -274,6 +278,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -321,6 +326,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "part" => 1,
             "endedTime" => "2.1",
             "watchingDate" => '01.02.2022',
+            "watched"=>true
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

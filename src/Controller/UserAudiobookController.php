@@ -550,14 +550,28 @@ class UserAudiobookController extends AbstractController
 
             $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
 
-            $newAudiobookInfo = new AudiobookInfo($user,
-                $audiobook,
-                $userAudiobookInfoAddQuery->getPart(),
-                $userAudiobookInfoAddQuery->getEndedTime(),
-                $userAudiobookInfoAddQuery->getWatchingDate()
-            );
+            $audiobookInfo = $audiobookInfoRepository->findOneBy([
+                "audiobook" => $audiobook->getId(),
+                "part" => $userAudiobookInfoAddQuery->getPart(),
+                "user" => $user->getId()
+            ]);
 
-            $audiobookInfoRepository->add($newAudiobookInfo);
+            if ($audiobookInfo != null) {
+                $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
+                $audiobookInfo->setWatchingDate($userAudiobookInfoAddQuery->getWatchingDate());
+                $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
+                $audiobookInfo->setActive(true);
+            } else {
+                $audiobookInfo = new AudiobookInfo($user,
+                    $audiobook,
+                    $userAudiobookInfoAddQuery->getPart(),
+                    $userAudiobookInfoAddQuery->getEndedTime(),
+                    $userAudiobookInfoAddQuery->getWatchingDate(),
+                    $userAudiobookInfoAddQuery->getWatched()
+                );
+            }
+
+            $audiobookInfoRepository->add($audiobookInfo);
 
             return ResponseTool::getResponse(httpCode: 201);
         } else {

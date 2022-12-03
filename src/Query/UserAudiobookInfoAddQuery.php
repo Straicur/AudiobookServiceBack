@@ -34,6 +34,10 @@ class UserAudiobookInfoAddQuery
     #[Assert\Type(type: "datetime")]
     private DateTime $watchingDate;
 
+    #[Assert\NotNull(message: "Watched is null")]
+    #[Assert\Type(type: "boolean")]
+    private bool $watched;
+
     /**
      * @return Uuid
      */
@@ -114,6 +118,22 @@ class UserAudiobookInfoAddQuery
     public function setWatchingDate(string $watchingDate): void
     {
         $this->watchingDate = DateTime::createFromFormat('d.m.Y', $watchingDate);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getWatched(): bool
+    {
+        return $this->watched;
+    }
+
+    /**
+     * @param bool $watched
+     */
+    public function setWatched(bool $watched): void
+    {
+        $this->watched = $watched;
     }
 
 }
