@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookInfo;
+use App\Entity\AudiobookRating;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\AdminAudiobookCategoryModel;
@@ -16,6 +17,7 @@ use App\Model\UserAudiobookDetailModel;
 use App\Model\UserAudiobookDetailsSuccessModel;
 use App\Model\UserAudiobookInfoSuccessModel;
 use App\Model\UserAudiobookModel;
+use App\Model\UserAudiobookRatingGetSuccessModel;
 use App\Model\UserAudiobooksSuccessModel;
 use App\Model\UserCategoryModel;
 use App\Model\UserMyListAudiobooksSuccessModel;
@@ -24,9 +26,12 @@ use App\Query\UserAudiobookDetailsQuery;
 use App\Query\UserAudiobookInfoAddQuery;
 use App\Query\UserAudiobookInfoQuery;
 use App\Query\UserAudiobookLikeQuery;
+use App\Query\UserAudiobookRatingAddQuery;
+use App\Query\UserAudiobookRatingGetQuery;
 use App\Query\UserAudiobooksQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
+use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
@@ -580,5 +585,150 @@ class UserAudiobookController extends AbstractController
             throw new InvalidJsonDataException("userAudiobook.add.info.invalid.query");
         }
     }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookRatingRepository $ratingRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/rating/add", name: "userAudiobookRatingAdd", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is adding/editing user audiobook rating",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookRatingAddQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userAudiobookRatingAdd(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository,
+        AudiobookRatingRepository      $ratingRepository
+    ): Response
+    {
+        $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
+
+        if ($userAudiobookRatingAddQuery instanceof UserAudiobookRatingAddQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingAddQuery->getAudiobookId(), $userAudiobookRatingAddQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.exist"]);
+            }
+
+            $rating = $ratingRepository->findOneBy([
+                "audiobook"=> $audiobook->getId(),
+                "user"=> $user->getId()
+            ]);
+
+            if($rating != null){
+                $rating->setRating($userAudiobookRatingAddQuery->isRating());
+            }
+            else{
+                //todo tu sprawdzenie czy wszystkie te party mają flagi odpowiednie
+
+                $rating = new AudiobookRating($audiobook,$userAudiobookRatingAddQuery->isRating(),$user);
+            }
+
+            $ratingRepository->add($rating);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.add.rating.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookRatingRepository $ratingRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/rating/get", name: "userAudiobookRatingGet", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is getting audiobook overall rating",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookRatingGetQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+                content: new Model(type: UserAudiobookRatingGetSuccessModel::class)
+            )
+        ]
+    )]
+    public function userAudiobookRatingGet(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository,
+        AudiobookRatingRepository      $ratingRepository
+    ): Response
+    {
+        $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
+
+        if ($userAudiobookRatingGetQuery instanceof UserAudiobookRatingGetQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingGetQuery->getAudiobookId(), $userAudiobookRatingGetQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.exist"]);
+            }
+
+            $goodRatings = count($ratingRepository->findBy([
+                "audiobook"=>$audiobook->getId(),
+                "rating"=>true
+            ]));
+
+            $audiobookRatings = count($audiobook->getAudiobookRatings());
+
+            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel(($goodRatings/$audiobookRatings)*100));
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.add.rating.invalid.query");
+        }
+    }
+
+    //Dodanie, edycja, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
+    // Więc sprawdzenie czy nie ma rodzica i jeśli ma to nie można na niego odpowiedzieć
 
 }
