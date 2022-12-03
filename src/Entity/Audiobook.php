@@ -65,6 +65,9 @@ class Audiobook
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $fileName;
 
+    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookRating::class)]
+    private Collection $audiobookRatings;
+
     /**
      * @param string $title
      * @param string $author
@@ -94,6 +97,7 @@ class Audiobook
         $this->active = false;
         $this->dateAdd = new DateTime('Now');
         $this->fileName = $fileName;
+        $this->audiobookRatings = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -295,6 +299,36 @@ class Audiobook
     public function setFileName(string $fileName): self
     {
         $this->fileName = $fileName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AudiobookRating>
+     */
+    public function getAudiobookRatings(): Collection
+    {
+        return $this->audiobookRatings;
+    }
+
+    public function addAudiobookRating(AudiobookRating $AudiobookRating): self
+    {
+        if (!$this->audiobookRatings->contains($AudiobookRating)) {
+            $this->audiobookRatings[] = $AudiobookRating;
+            $AudiobookRating->setAudiobook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudiobookRating(AudiobookRating $AudiobookRating): self
+    {
+        if ($this->audiobookRatings->removeElement($AudiobookRating)) {
+            // set the owning side to null (unless already changed)
+            if ($AudiobookRating->getAudiobook() === $this) {
+                $AudiobookRating->setAudiobook(null);
+            }
+        }
 
         return $this;
     }

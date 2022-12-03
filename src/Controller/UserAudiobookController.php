@@ -562,7 +562,8 @@ class UserAudiobookController extends AbstractController
                 $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
                 $audiobookInfo->setActive(true);
             } else {
-                $audiobookInfo = new AudiobookInfo($user,
+                $audiobookInfo = new AudiobookInfo(
+                    $user,
                     $audiobook,
                     $userAudiobookInfoAddQuery->getPart(),
                     $userAudiobookInfoAddQuery->getEndedTime(),

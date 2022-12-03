@@ -43,6 +43,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             "watchingDate" => '01.02.2022',
             "watched"=>true
         ];
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
         $crawler = self::$webClient->request("PUT", "/api/user/audiobook/info/add", server: [
@@ -80,7 +81,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
         $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, "2.1", new \DateTime("Now"));
-        $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, "2.1", new \DateTime("Now"), true);
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 2, "2.1", new \DateTime("Now"), true);
 
         /// step 2
         $content = [
@@ -101,10 +102,12 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
 
+        $this->assertCount(2, $audiobookInfoRepository->findAll());
+
         $this->assertCount(1, $audiobookInfoRepository->findBy([
             "active" => true
         ]));
-        $this->assertCount(2, $audiobookInfoRepository->findBy([
+        $this->assertCount(1, $audiobookInfoRepository->findBy([
             "active" => false
         ]));
     }
