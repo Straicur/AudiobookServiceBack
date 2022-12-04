@@ -216,7 +216,7 @@ class AudiobookController extends AbstractController
     #[Route("/api/audiobook/comment/get", name: "audiobookCommentGet", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Put(
-        description: "Endpoint is getting audiobook overall rating",
+        description: "Endpoint is returning comments for given audiobook",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -299,7 +299,7 @@ class AudiobookController extends AbstractController
     #[Route("/api/audiobook/comment/get/detail", name: "audiobookCommentGetDetail", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Put(
-        description: "Endpoint is getting audiobook overall rating",
+        description: "Endpoint is returning child comments for given comment",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

@@ -756,7 +756,7 @@ class UserAudiobookController extends AbstractController
     #[Route("/api/user/audiobook/comment/add", name: "userAudiobookCommentAdd", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Put(
-        description: "Endpoint is getting audiobook overall rating",
+        description: "Endpoint is adding comment for given audiobook",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -777,7 +777,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository
     ): Response
     {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
@@ -791,6 +792,17 @@ class UserAudiobookController extends AbstractController
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.exist"]);
+            }
+
+            $watchedParts = $audiobookInfoRepository->findBy([
+                "audiobook" => $audiobook->getId(),
+                "user" => $user->getId(),
+                "watched" => true
+            ]);
+
+            if (floor($audiobook->getParts()/2) > $watchedParts) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.watched"]);
             }
 
             $audiobookComment = new AudiobookUserComment($userAudiobookCommentAddQuery->getComment(), $audiobook, $user);
@@ -835,7 +847,7 @@ class UserAudiobookController extends AbstractController
     #[Route("/api/user/audiobook/comment/edit", name: "userAudiobookCommentEdit", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Put(
-        description: "Endpoint is getting audiobook overall rating",
+        description: "Endpoint is editing given comment",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
