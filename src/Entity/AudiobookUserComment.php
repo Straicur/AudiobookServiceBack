@@ -25,12 +25,11 @@ class AudiobookUserComment
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user;
+    private User $user;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?AudiobookUserComment $parent = null;
-
 
     #[ORM\Column(type: 'boolean')]
     private bool $deleted;
@@ -41,15 +40,13 @@ class AudiobookUserComment
     /**
      * @param string $comment
      * @param Audiobook $audiobook
-     * @param User|null $user
-     * @param AudiobookUserComment $parent
+     * @param User $user
      */
-    public function __construct(string $comment, Audiobook $audiobook, ?User $user, AudiobookUserComment $parent)
+    public function __construct(string $comment, Audiobook $audiobook, User $user)
     {
         $this->comment = $comment;
         $this->audiobook = $audiobook;
         $this->user = $user;
-        $this->parent = $parent;
         $this->deleted = false;
         $this->edited = false;
     }

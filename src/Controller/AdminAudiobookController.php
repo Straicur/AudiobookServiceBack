@@ -18,6 +18,7 @@ use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Query\AdminAudiobookActiveQuery;
 use App\Query\AdminAudiobookAddQuery;
+use App\Query\AdminAudiobookCommentDeleteQuery;
 use App\Query\AdminAudiobookDeleteQuery;
 use App\Query\AdminAudiobookDetailsQuery;
 use App\Query\AdminAudiobookEditQuery;
@@ -26,6 +27,7 @@ use App\Query\AdminAudiobooksQuery;
 use App\Query\AdminAudiobookZipQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Service\AudiobookService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -558,7 +560,7 @@ class AdminAudiobookController extends AbstractController
 
             $zip->close();
 
-            return ResponseTool::getBinaryFileResponse($zipFile,true);
+            return ResponseTool::getBinaryFileResponse($zipFile, true);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobook.zip.invalid.query");
@@ -918,5 +920,67 @@ class AdminAudiobookController extends AbstractController
             throw new InvalidJsonDataException("adminAudiobook.active.invalid.query");
         }
     }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/comment/delete", name: "adminAudiobookCommentDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is deleting given comment",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookCommentDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminAudiobookCommentDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository
+    ): Response
+    {
+        $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
+
+        if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
+
+            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $adminAudiobookCommentDeleteQuery->getAudiobookCommentId()
+            ]);
+
+            if ($audiobookComment == null) {
+                $endpointLogger->error("Audiobook comment dont exist");
+                throw new DataNotFoundException(["adminAudiobook.delete.comment.audiobookComment.not.exist"]);
+            }
+
+            $audiobookComment->setDeleted(true);
+
+            $audiobookUserCommentRepository->add($audiobookComment);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.delete.comment.invalid.query");
+        }
+    }
+
     //todo dodatkowo endp do podmiany zdjęć
 }

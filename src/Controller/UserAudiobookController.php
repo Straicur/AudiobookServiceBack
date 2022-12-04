@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
+use App\Entity\AudiobookUserComment;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\AdminAudiobookCategoryModel;
@@ -22,6 +23,8 @@ use App\Model\UserAudiobooksSuccessModel;
 use App\Model\UserCategoryModel;
 use App\Model\UserMyListAudiobooksSuccessModel;
 use App\Model\UserProposedAudiobooksSuccessModel;
+use App\Query\UserAudiobookCommentAddQuery;
+use App\Query\UserAudiobookCommentEditQuery;
 use App\Query\UserAudiobookDetailsQuery;
 use App\Query\UserAudiobookInfoAddQuery;
 use App\Query\UserAudiobookInfoQuery;
@@ -33,6 +36,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -738,8 +742,177 @@ class UserAudiobookController extends AbstractController
         }
     }
 
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/comment/add", name: "userAudiobookCommentAdd", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is getting audiobook overall rating",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookCommentAddQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success"
+            )
+        ]
+    )]
+    public function userAudiobookCommentAdd(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository
+    ): Response
+    {
+        $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
 
-    //Dodanie, edycja ustawia flagę jeszcze oprócz edytowania,Pobranie ma być pobraniem listy całości(pobieram tylko te nie usunięte) (detale małe usera, detale komentarza wraz z ilością dieci ale nie pobranie ich od razu),Pobranie dzieci po podesłaniu id komentarza, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
+        if ($userAudiobookCommentAddQuery instanceof UserAudiobookCommentAddQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookCommentAddQuery->getAudiobookId(), $userAudiobookCommentAddQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.exist"]);
+            }
+
+            $audiobookComment = new AudiobookUserComment($userAudiobookCommentAddQuery->getComment(), $audiobook, $user);
+
+            $additionalData = $userAudiobookCommentAddQuery->getAdditionalData();
+
+            if (array_key_exists("parentId", $additionalData)) {
+
+                $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
+                    "id" => $additionalData["parentId"]
+                ]);
+
+                if ($audiobookParentComment == null || $audiobookParentComment->getParent() != null) {
+                    $endpointLogger->error("Audiobook Parent Comment dont exist");
+                    throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.parent.comment.not.exist"]);
+                }
+
+                $audiobookComment->setParent($audiobookParentComment);
+            }
+
+            $audiobookUserCommentRepository->add($audiobookComment);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.add.comment.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/comment/edit", name: "userAudiobookCommentEdit", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is getting audiobook overall rating",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookCommentEditQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userAudiobookCommentEdit(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository
+    ): Response
+    {
+        $userAudiobookCommentEditQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentEditQuery::class);
+
+        if ($userAudiobookCommentEditQuery instanceof UserAudiobookCommentEditQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookCommentEditQuery->getAudiobookId(), $userAudiobookCommentEditQuery->getCategoryKey());
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.not.exist"]);
+            }
+
+            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $userAudiobookCommentEditQuery->getAudiobookCommentId(),
+                "user" => $user->getId()
+            ]);
+
+            if ($audiobookComment == null) {
+                $endpointLogger->error("Audiobook Comment dont exist");
+                throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.comment.not.exist"]);
+            }
+
+            $audiobookComment->setDeleted($userAudiobookCommentEditQuery->isDeleted());
+            $audiobookComment->setComment($userAudiobookCommentEditQuery->getComment());
+            $audiobookComment->setEdited(true);
+
+            $additionalData = $userAudiobookCommentEditQuery->getAdditionalData();
+
+            if (array_key_exists("parentId", $additionalData)) {
+
+                $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
+                    "id" => $additionalData["parentId"]
+                ]);
+
+                if ($audiobookParentComment == null) {
+                    $endpointLogger->error("Audiobook Parent Comment dont exist");
+                    throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.parent.comment.not.exist"]);
+                }
+
+                $audiobookComment->setParent($audiobookParentComment);
+            }
+
+            $audiobookUserCommentRepository->add($audiobookComment);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.edit.comment.invalid.query");
+        }
+    }
+
+    //Pobranie ma być pobraniem listy całości(pobieram tylko te nie usunięte) (detale małe usera, detale komentarza wraz z ilością dieci ale nie pobranie ich od razu),Pobranie dzieci po podesłaniu id komentarza, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
     // Więc sprawdzenie czy nie ma rodzica i jeśli ma to nie można na niego odpowiedzieć
 
     //Dodanie, edycja, usunięcie, pobranie(przy pobraniu komentarza) like'ów dla komentarza, proste pole w bazie tak jak raiting w sumie
