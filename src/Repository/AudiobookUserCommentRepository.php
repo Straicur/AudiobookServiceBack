@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\AudiobookUserComment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,10 +22,11 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param AudiobookUserComment $entity
+     * @param bool $flush
+     * @return void
      */
-    public function add(AudiobookUserComment $entity, bool $flush = false): void
+    public function add(AudiobookUserComment $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -36,10 +35,11 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param AudiobookUserComment $entity
+     * @param bool $flush
+     * @return void
      */
-    public function remove(AudiobookUserComment $entity, bool $flush = false): void
+    public function remove(AudiobookUserComment $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {

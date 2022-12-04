@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookUserCommentRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -37,6 +35,9 @@ class AudiobookUserComment
     #[ORM\Column(type: 'boolean')]
     private bool $deleted;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $edited;
+
     /**
      * @param string $comment
      * @param Audiobook $audiobook
@@ -50,6 +51,7 @@ class AudiobookUserComment
         $this->user = $user;
         $this->parent = $parent;
         $this->deleted = false;
+        $this->edited = false;
     }
 
     public function getId(): Uuid
@@ -113,6 +115,18 @@ class AudiobookUserComment
     public function setDeleted(bool $deleted): self
     {
         $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function getEdited(): bool
+    {
+        return $this->edited;
+    }
+
+    public function setEdited(bool $edited): self
+    {
+        $this->edited = $edited;
 
         return $this;
     }

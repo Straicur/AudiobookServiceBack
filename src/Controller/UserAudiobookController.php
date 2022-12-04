@@ -738,7 +738,9 @@ class UserAudiobookController extends AbstractController
         }
     }
 
-    //Dodanie, edycja, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
+
+    //Dodanie, edycja ustawia flagę jeszcze oprócz edytowania,Pobranie ma być pobraniem listy całości(pobieram tylko te nie usunięte) (detale małe usera, detale komentarza wraz z ilością dieci ale nie pobranie ich od razu),Pobranie dzieci po podesłaniu id komentarza, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
     // Więc sprawdzenie czy nie ma rodzica i jeśli ma to nie można na niego odpowiedzieć
 
+    //Dodanie, edycja, usunięcie, pobranie(przy pobraniu komentarza) like'ów dla komentarza, proste pole w bazie tak jak raiting w sumie
 }
