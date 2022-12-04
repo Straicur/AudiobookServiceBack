@@ -68,6 +68,9 @@ class Audiobook
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookRating::class)]
     private Collection $audiobookRatings;
 
+    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookUserComment::class)]
+    private Collection $audiobookUserComments;
+
     /**
      * @param string $title
      * @param string $author
@@ -98,6 +101,7 @@ class Audiobook
         $this->dateAdd = new DateTime('Now');
         $this->fileName = $fileName;
         $this->audiobookRatings = new ArrayCollection();
+        $this->audiobookUserComments = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -327,6 +331,36 @@ class Audiobook
             // set the owning side to null (unless already changed)
             if ($AudiobookRating->getAudiobook() === $this) {
                 $AudiobookRating->setAudiobook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AudiobookUserComment>
+     */
+    public function getAudiobookUserComments(): Collection
+    {
+        return $this->audiobookUserComments;
+    }
+
+    public function addAudiobookUserComment(AudiobookUserComment $audiobookUserComment): self
+    {
+        if (!$this->audiobookUserComments->contains($audiobookUserComment)) {
+            $this->audiobookUserComments[] = $audiobookUserComment;
+            $audiobookUserComment->setAudiobook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudiobookUserComment(AudiobookUserComment $audiobookUserComment): self
+    {
+        if ($this->audiobookUserComments->removeElement($audiobookUserComment)) {
+            // set the owning side to null (unless already changed)
+            if ($audiobookUserComment->getAudiobook() === $this) {
+                $audiobookUserComment->setAudiobook(null);
             }
         }
 

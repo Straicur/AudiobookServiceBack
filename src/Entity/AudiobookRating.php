@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AudiobookRatingRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: AudiobookRatingRepository::class)]
 class AudiobookRating
@@ -38,24 +39,24 @@ class AudiobookRating
         $this->user = $user;
     }
 
-    public function getId(): ?int
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function getAudiobook(): ?Audiobook
+    public function getAudiobook(): Audiobook
     {
         return $this->audiobook;
     }
 
-    public function setAudiobook(?Audiobook $audiobook): self
+    public function setAudiobook(Audiobook $audiobook): self
     {
         $this->audiobook = $audiobook;
 
         return $this;
     }
 
-    public function getRating(): ?bool
+    public function getRating(): bool
     {
         return $this->rating;
     }
@@ -67,12 +68,12 @@ class AudiobookRating
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
