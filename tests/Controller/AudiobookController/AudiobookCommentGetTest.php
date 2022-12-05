@@ -17,16 +17,22 @@ class AudiobookCommentGetTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobookDetailsCorrect(): void
+    public function test_audiobookCommentGetCorrect(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category1, $category2], active: true);
 
+        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
+        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user1);
+        $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
+        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -35,7 +41,7 @@ class AudiobookCommentGetTest extends AbstractWebTest
             "categoryKey" => $category1->getCategoryKey()
         ];
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", server: [
+        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -48,173 +54,160 @@ class AudiobookCommentGetTest extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("id", $responseContent);
-        $this->assertArrayHasKey("title", $responseContent);
-        $this->assertArrayHasKey("author", $responseContent);
-        $this->assertArrayHasKey("version", $responseContent);
-        $this->assertArrayHasKey("album", $responseContent);
-        $this->assertArrayHasKey("year", $responseContent);
-        $this->assertArrayHasKey("duration", $responseContent);
-        $this->assertArrayHasKey("size", $responseContent);
-        $this->assertArrayHasKey("parts", $responseContent);
-        $this->assertArrayHasKey("description", $responseContent);
-        $this->assertArrayHasKey("age", $responseContent);
-        $this->assertArrayHasKey("categories", $responseContent);
-        $this->assertCount(2, $responseContent["categories"]);
+
+        $this->assertArrayHasKey("audiobookCommentGetModels", $responseContent);
+        $this->assertCount(3, $responseContent["audiobookCommentGetModels"]);
+        $this->assertArrayHasKey("id", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("comment", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("edited", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("childComments", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("myComment", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("userModel", $responseContent["audiobookCommentGetModels"][0]);
     }
 
-//    /**
-//     * step 1 - Preparing data
-//     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-//     * step 3 - Sending Request
-//     * step 4 - Checking response
-//     *
-//     * @return void
-//     */
-//    public function test_userAudiobookDetailsIncorrectCategoryKey(): void
-//    {
-//
-//        /// step 2
-//        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", server: [
-//            "HTTP_authorization" => $token->getToken()
-//        ], content: json_encode($content));
-//
-//        /// step 4
-//        $this->assertResponseStatusCodeSame(404);
-//
-//        $responseContent = self::$webClient->getResponse()->getContent();
-//
-//        $this->assertNotNull($responseContent);
-//        $this->assertNotEmpty($responseContent);
-//        $this->assertJson($responseContent);
-//
-//        $responseContent = json_decode($responseContent, true);
-//
-//        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
-//        $this->assertArrayHasKey("data", $responseContent);
-//    }
-//
-//    /**
-//     * step 1 - Preparing data
-//     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-//     * step 3 - Sending Request
-//     * step 4 - Checking response
-//     *
-//     * @return void
-//     */
-//    public function test_userAudiobookDetailsIncorrectAudiobookId(): void
-//    {
-//
-//        /// step 2
-//        $content = [
-//            "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-//            "categoryKey" => $category1->getCategoryKey()
-//        ];
-//        /// step 2
-//        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", server: [
-//            "HTTP_authorization" => $token->getToken()
-//        ], content: json_encode($content));
-//
-//        /// step 4
-//        $this->assertResponseStatusCodeSame(404);
-//
-//        $responseContent = self::$webClient->getResponse()->getContent();
-//
-//        $this->assertNotNull($responseContent);
-//        $this->assertNotEmpty($responseContent);
-//        $this->assertJson($responseContent);
-//
-//        $responseContent = json_decode($responseContent, true);
-//
-//        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
-//        $this->assertArrayHasKey("data", $responseContent);
-//    }
-//
-//    /**
-//     * step 1 - Preparing data
-//     * step 2 - Sending Request without content
-//     * step 3 - Checking response
-//     *
-//     * @return void
-//     */
-//    public function test_userAudiobookDetailsEmptyRequestData(): void
-//    {
-//
-//        /// step 2
-//        $content = [];
-//
-//        /// step 2
-//        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", server: [
-//            "HTTP_authorization" => $token->getToken()
-//        ], content: json_encode($content));
-//
-//        /// step 3
-//        $this->assertResponseStatusCodeSame(400);
-//
-//        $responseContent = self::$webClient->getResponse()->getContent();
-//
-//        $this->assertNotNull($responseContent);
-//        $this->assertNotEmpty($responseContent);
-//        $this->assertJson($responseContent);
-//
-//        $responseContent = json_decode($responseContent, true);
-//
-//        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
-//    }
-//
-//    /**
-//     * step 1 - Preparing data
-//     * step 2 - Sending Request with bad permission
-//     * step 3 - Checking response
-//     *
-//     * @return void
-//     */
-//    public function test_userAudiobookDetailsPermission(): void
-//    {
-//
-//        /// step 3
-//        $this->assertResponseStatusCodeSame(403);
-//
-//        $responseContent = self::$webClient->getResponse()->getContent();
-//
-//        $this->assertNotNull($responseContent);
-//        $this->assertNotEmpty($responseContent);
-//        $this->assertJson($responseContent);
-//
-//        $responseContent = json_decode($responseContent, true);
-//
-//        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
-//    }
-//
-//    /**
-//     * step 1 - Preparing data
-//     * step 2 - Sending Request without token
-//     * step 3 - Checking response
-//     *
-//     * @return void
-//     */
-//    public function test_userAudiobookDetailsLogOut(): void
-//    {
-//
-//        /// step 2
-//        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", content: json_encode($content));
-//
-//        /// step 3
-//        $this->assertResponseStatusCodeSame(401);
-//
-//        $responseContent = self::$webClient->getResponse()->getContent();
-//
-//        $this->assertNotNull($responseContent);
-//        $this->assertNotEmpty($responseContent);
-//        $this->assertJson($responseContent);
-//
-//        $responseContent = json_decode($responseContent, true);
-//
-//        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
-//    }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request without content
+     * step 3 - Checking response
+     *
+     * @return void
+     */
+    public function test_audiobookCommentGetEmptyRequestData(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category1, $category2], active: true);
+
+        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
+        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user1);
+        $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
+        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        /// step 2
+        $content = [];
+
+        /// step 2
+        $crawler = self::$webClient->request("POST", "/api/user/audiobook/details", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 3
+        $this->assertResponseStatusCodeSame(400);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request with bad permission
+     * step 3 - Checking response
+     *
+     * @return void
+     */
+    public function test_audiobookCommentGetPermission(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category1, $category2], active: true);
+
+        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
+        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user1);
+        $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
+        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "categoryKey" => $category1->getCategoryKey()
+        ];
+        /// step 2
+        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+        /// step 3
+        $this->assertResponseStatusCodeSame(403);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request without token
+     * step 3 - Checking response
+     *
+     * @return void
+     */
+    public function test_audiobookCommentGetLogOut(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category1, $category2], active: true);
+
+        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
+        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user1);
+        $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
+        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
+
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "categoryKey" => $category1->getCategoryKey()
+        ];
+        /// step 2
+        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [], content: json_encode($content));
+
+        /// step 3
+        $this->assertResponseStatusCodeSame(401);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+    }
 }

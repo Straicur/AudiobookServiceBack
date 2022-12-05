@@ -749,6 +749,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -844,7 +845,7 @@ class UserAudiobookController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/audiobook/comment/edit", name: "userAudiobookCommentEdit", methods: ["POST"])]
+    #[Route("/api/user/audiobook/comment/edit", name: "userAudiobookCommentEdit", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Put(
         description: "Endpoint is editing given comment",
@@ -923,9 +924,6 @@ class UserAudiobookController extends AbstractController
             throw new InvalidJsonDataException("userAudiobook.edit.comment.invalid.query");
         }
     }
-
-    //Pobranie ma być pobraniem listy całości(pobieram tylko te nie usunięte) (detale małe usera, detale komentarza wraz z ilością dieci ale nie pobranie ich od razu),Pobranie dzieci po podesłaniu id komentarza, Usunięcie komentarza, Odpowiedzenie komuś na niego, Odpowiadać można tylko na te główne nie pomniejsze
-    // Więc sprawdzenie czy nie ma rodzica i jeśli ma to nie można na niego odpowiedzieć
 
     //Dodanie, edycja, usunięcie, pobranie(przy pobraniu komentarza) like'ów dla komentarza, proste pole w bazie tak jak raiting w sumie
 }

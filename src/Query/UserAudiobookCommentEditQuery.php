@@ -30,7 +30,6 @@ class UserAudiobookCommentEditQuery
     private string $comment;
 
     #[Assert\NotNull(message: "Deleted is null")]
-    #[Assert\NotBlank(message: "Deleted is empty")]
     #[Assert\Type(type: "boolean")]
     private bool $deleted;
 

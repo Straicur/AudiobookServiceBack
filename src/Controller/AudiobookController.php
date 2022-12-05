@@ -295,6 +295,7 @@ class AudiobookController extends AbstractController
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/audiobook/comment/get/detail", name: "audiobookCommentGetDetail", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
@@ -329,10 +330,16 @@ class AudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $audiobookCommentKids = $audiobookUserCommentRepository->findOneBy([
-                "parent" => $audiobookCommentGetDetailQuery->getAudiobookCommentId(),
-                "deleted" => false
+            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $audiobookCommentGetDetailQuery->getAudiobookCommentId(),
             ]);
+
+            if ($audiobookComment == null) {
+                $endpointLogger->error("Audiobook Comment dont exist");
+                throw new DataNotFoundException(["userAudiobook.comment.get.audiobook.comment.not.exist"]);
+            }
+
+            $audiobookCommentKids = $audiobookUserCommentRepository->getParentCommentKids($audiobookComment);
 
             $successModel = new AudiobookCommentGetDetailSuccessModel();
 
@@ -346,7 +353,7 @@ class AudiobookController extends AbstractController
                 $successModel->addAudiobookCommentGetDetailModel(new AudiobookCommentGetDetailModel(
                     $userModel,
                     $audiobookCommentKid->getId(),
-                    $audiobookCommentKid->getCommen(),
+                    $audiobookCommentKid->getComment(),
                     $audiobookCommentKid->getEdited(),
                     $myComment
                 ));
