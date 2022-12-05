@@ -7,6 +7,7 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
+use App\Entity\AudiobookUserComment;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
 use App\Entity\MyList;
@@ -26,6 +27,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
@@ -315,11 +317,34 @@ class DatabaseMockManager
     {
         $audiobookRatingRepository = $this->getService(AudiobookRatingRepository::class);
 
-        $newSystemNotification = new AudiobookRating($audiobook, $rating, $user);
+        $newAudiobookRating = new AudiobookRating($audiobook, $rating, $user);
 
-        $audiobookRatingRepository->add($newSystemNotification);
+        $audiobookRatingRepository->add($newAudiobookRating);
 
-        return $newSystemNotification;
+        return $newAudiobookRating;
+    }
+
+    public function testFunc_addAudiobookUserComment(string $comment, Audiobook $audiobook, User $user,?AudiobookUserComment $parent = null , bool $deleted = false, bool $edited = false): AudiobookUserComment
+    {
+        $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
+
+        $newAudiobookUserComment = new AudiobookUserComment($comment, $audiobook, $user);
+
+        if($parent != null){
+            $newAudiobookUserComment->setParent($parent);
+        }
+
+        if($deleted){
+            $newAudiobookUserComment->setDeleted($deleted);
+        }
+
+        if($edited){
+            $newAudiobookUserComment->setEdited($edited);
+        }
+
+        $audiobookUserCommentRepository->add($newAudiobookUserComment);
+
+        return $newAudiobookUserComment;
     }
 
 }
