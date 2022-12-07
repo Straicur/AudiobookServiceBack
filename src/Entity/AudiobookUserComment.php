@@ -37,6 +37,9 @@ class AudiobookUserComment
     #[ORM\Column(type: 'boolean')]
     private bool $edited;
 
+    #[ORM\Column(type: 'datetime')]
+    private \DateTime $dateAdd;
+
     /**
      * @param string $comment
      * @param Audiobook $audiobook
@@ -49,6 +52,7 @@ class AudiobookUserComment
         $this->user = $user;
         $this->deleted = false;
         $this->edited = false;
+        $this->dateAdd = new \DateTime('Now');
     }
 
     public function getId(): Uuid
@@ -124,6 +128,18 @@ class AudiobookUserComment
     public function setEdited(bool $edited): self
     {
         $this->edited = $edited;
+
+        return $this;
+    }
+
+    public function getDateAdd(): \DateTime
+    {
+        return $this->dateAdd;
+    }
+
+    public function setDateAdd(\DateTime $dateAdd): self
+    {
+        $this->dateAdd = $dateAdd;
 
         return $this;
     }

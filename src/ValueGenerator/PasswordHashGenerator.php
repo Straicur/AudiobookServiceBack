@@ -10,6 +10,7 @@ class PasswordHashGenerator implements ValueGeneratorInterface
     private string $planeTextPassword;
 
     /**
+     * @param string|null $planeTextPassword
      * @throws \Exception
      */
     public function __construct(string $planeTextPassword = null)

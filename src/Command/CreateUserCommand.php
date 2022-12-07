@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
-use App\Exception\DataNotFoundException;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
@@ -108,6 +107,8 @@ class CreateUserCommand extends Command
         ]);
 
         $userEntity = new User();
+
+        $userEntity->setActive(true);
 
         $this->userRepository->add($userEntity, false);
 
