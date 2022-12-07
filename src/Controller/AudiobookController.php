@@ -10,6 +10,7 @@ use App\Model\AudiobookCommentGetDetailModel;
 use App\Model\AudiobookCommentGetDetailSuccessModel;
 use App\Model\AudiobookCommentGetModel;
 use App\Model\AudiobookCommentGetSuccessModel;
+use App\Model\AudiobookCommentLikeModel;
 use App\Model\AudiobookCommentUserModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
@@ -19,6 +20,7 @@ use App\Query\AudiobookCommentGetDetailQuery;
 use App\Query\AudiobookCommentGetQuery;
 use App\Query\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -238,7 +240,8 @@ class AudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
     ): Response
     {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetQuery::class);
@@ -268,15 +271,37 @@ class AudiobookController extends AbstractController
                 $audiobookParentUser = $audiobookParentComment->getUser();
                 $myComment = $audiobookParentUser === $user;
 
+                $commentLikes = $audiobookUserCommentLikeRepository->findBy([
+                    "audiobookUserComment" => $audiobookParentComment->getId(),
+                    "deleted" => false
+                ]);
+
                 $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(),$audiobookParentUser->getUserInformation()->getFirstname());
 
-                $successModel->addAudiobookCommentGetModel(new AudiobookCommentGetModel(
+                $audiobookCommentModel = new AudiobookCommentGetModel(
                     $userModel,$audiobookParentComment->getId(),
                     $audiobookParentComment->getComment(),
                     $audiobookParentComment->getEdited(),
                     $childComments
                     ,$myComment
-                ));
+                );
+
+                foreach ($commentLikes as $commentLike){
+                    if($commentLike->getLiked()){
+                        $audiobookCommentModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
+                            $commentLike->getId(),
+                            $commentLike->getLiked()
+                        ));
+                    }
+                    else{
+                        $audiobookCommentModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
+                            $commentLike->getId(),
+                            $commentLike->getLiked()
+                        ));
+                    }
+                }
+
+                $successModel->addAudiobookCommentGetModel($audiobookCommentModel);
             }
 
             return ResponseTool::getResponse($successModel);
@@ -321,7 +346,8 @@ class AudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
     ): Response
     {
         $audiobookCommentGetDetailQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetDetailQuery::class);
@@ -350,13 +376,36 @@ class AudiobookController extends AbstractController
 
                 $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(),$audiobookParentUser->getUserInformation()->getFirstname());
 
-                $successModel->addAudiobookCommentGetDetailModel(new AudiobookCommentGetDetailModel(
+                $commentLikes = $audiobookUserCommentLikeRepository->findBy([
+                    "audiobookUserComment" => $audiobookCommentKid->getId(),
+                    "deleted" => false
+                ]);
+
+                $audiobookCommentGetDetailModel = new AudiobookCommentGetDetailModel(
                     $userModel,
                     $audiobookCommentKid->getId(),
                     $audiobookCommentKid->getComment(),
                     $audiobookCommentKid->getEdited(),
                     $myComment
-                ));
+                );
+
+                foreach ($commentLikes as $commentLike){
+                    if($commentLike->getLiked()){
+                        $audiobookCommentGetDetailModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
+                            $commentLike->getId(),
+                            $commentLike->getLiked()
+                        ));
+                    }
+                    else{
+                        $audiobookCommentGetDetailModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
+                            $commentLike->getId(),
+                            $commentLike->getLiked()
+                        ));
+                    }
+                }
+
+
+                $successModel->addAudiobookCommentGetDetailModel($audiobookCommentGetDetailModel);
             }
 
             return ResponseTool::getResponse($successModel);

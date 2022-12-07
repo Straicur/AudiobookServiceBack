@@ -29,16 +29,22 @@ class AudiobookUserCommentLike
     #[ORM\JoinColumn(nullable: false)]
     private AudiobookUserComment $audiobookUserComment;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
     /**
      * @param bool $liked
      * @param AudiobookUserComment $audiobookUserComment
+     * @param User $user
      */
-    public function __construct(bool $liked, AudiobookUserComment $audiobookUserComment)
+    public function __construct(bool $liked, AudiobookUserComment $audiobookUserComment, User $user)
     {
         $this->liked = $liked;
         $this->dateAdd = new \DateTime('Now');
         $this->deleted = false;
         $this->audiobookUserComment = $audiobookUserComment;
+        $this->user = $user;
     }
 
     public function getId(): Uuid
@@ -90,6 +96,18 @@ class AudiobookUserCommentLike
     public function setAudiobookUserComment(?AudiobookUserComment $audiobookUserComment): self
     {
         $this->audiobookUserComment = $audiobookUserComment;
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -6,6 +6,7 @@ use App\Annotation\AuthValidation;
 use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
+use App\Entity\AudiobookUserCommentLike;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\AdminAudiobookCategoryModel;
@@ -25,6 +26,8 @@ use App\Model\UserMyListAudiobooksSuccessModel;
 use App\Model\UserProposedAudiobooksSuccessModel;
 use App\Query\UserAudiobookCommentAddQuery;
 use App\Query\UserAudiobookCommentEditQuery;
+use App\Query\UserAudiobookCommentLikeAddQuery;
+use App\Query\UserAudiobookCommentLikeDeleteQuery;
 use App\Query\UserAudiobookDetailsQuery;
 use App\Query\UserAudiobookInfoAddQuery;
 use App\Query\UserAudiobookInfoQuery;
@@ -36,6 +39,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
@@ -801,7 +805,7 @@ class UserAudiobookController extends AbstractController
                 "watched" => true
             ]);
 
-            if (floor($audiobook->getParts()/2) > $watchedParts) {
+            if (floor($audiobook->getParts() / 2) > $watchedParts) {
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.watched"]);
             }
@@ -925,5 +929,143 @@ class UserAudiobookController extends AbstractController
         }
     }
 
-    //Dodanie, edycja, usunięcie, pobranie(przy pobraniu komentarza) like'ów dla komentarza, proste pole w bazie tak jak raiting w sumie
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/comment/like/add", name: "userAudiobookCommentLikeAdd", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is adding/editing user audiobook comment like",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookCommentLikeAddQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userAudiobookCommentLikeAdd(
+        Request                            $request,
+        RequestServiceInterface            $requestService,
+        AuthorizedUserServiceInterface     $authorizedUserService,
+        LoggerInterface                    $endpointLogger,
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        AudiobookUserCommentRepository     $audiobookUserCommentRepository
+    ): Response
+    {
+        $userAudiobookCommentLikeAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeAddQuery::class);
+
+        if ($userAudiobookCommentLikeAddQuery instanceof UserAudiobookCommentLikeAddQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $comment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $userAudiobookCommentLikeAddQuery->getCommentId()
+            ]);
+
+            if ($comment == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.comment.like.comment.not.exist"]);
+            }
+
+            $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
+                "audiobookUserComment" => $comment->getId(),
+                "user" => $user->getId(),
+                "deleted" => false
+            ]);
+
+            if ($commentLike == null) {
+                $commentLike = new AudiobookUserCommentLike($userAudiobookCommentLikeAddQuery->isLike(), $comment, $user);
+            } else {
+                $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
+            }
+
+            $audiobookUserCommentLikeRepository->add($commentLike);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.add.comment.like.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobook/comment/like/delete", name: "userAudiobookCommentLikeDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is adding/editing user audiobook comment like",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobookCommentLikeDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userAudiobookCommentLikeDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+    ): Response
+    {
+        $userAudiobookCommentLikeDeleteQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeDeleteQuery::class);
+
+        if ($userAudiobookCommentLikeDeleteQuery instanceof UserAudiobookCommentLikeDeleteQuery) {
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
+                "id" => $userAudiobookCommentLikeDeleteQuery->getCommentLikeId(),
+                "user" => $user->getId(),
+                "deleted" => false
+            ]);
+
+            if ($commentLike == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.delete.comment.like.comment.like.not.exist"]);
+            }
+
+            $commentLike->setDeleted(true);
+
+            $audiobookUserCommentLikeRepository->add($commentLike);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobook.delete.comment.like.invalid.query");
+        }
+    }
 }

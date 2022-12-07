@@ -12,6 +12,16 @@ class AudiobookCommentGetModel
     private bool $myComment;
 
     /**
+     * @var AudiobookCommentLikeModel[]
+     */
+    private array $audiobookCommentLikeModel;
+
+    /**
+     * @var AudiobookCommentLikeModel[]
+     */
+    private array $audiobookCommentUnlikeModel;
+
+    /**
      * @param AudiobookCommentUserModel $userModel
      * @param string $id
      * @param string $comment
@@ -124,5 +134,45 @@ class AudiobookCommentGetModel
     {
         $this->myComment = $myComment;
     }
+    /**
+     * @return AudiobookCommentLikeModel[]
+     */
+    public function getAudiobookCommentLikeModel(): array
+    {
+        return $this->audiobookCommentLikeModel;
+    }
 
+    /**
+     * @param AudiobookCommentLikeModel[] $audiobookCommentLikeModel
+     */
+    public function setAudiobookCommentLikeModel(array $audiobookCommentLikeModel): void
+    {
+        $this->audiobookCommentLikeModel = $audiobookCommentLikeModel;
+    }
+
+    public function addAudiobookCommentModel(AudiobookCommentLikeModel $audiobookCommentLikeModel): void
+    {
+        $this->audiobookCommentLikeModel[] = $audiobookCommentLikeModel;
+    }
+
+    /**
+     * @return AudiobookCommentLikeModel[]
+     */
+    public function getAudiobookCommentUnlikeModel(): array
+    {
+        return $this->audiobookCommentUnlikeModel;
+    }
+
+    /**
+     * @param AudiobookCommentlikeModel[] $audiobookCommentUnlikeModel
+     */
+    public function setAudiobookCommentUnlikeModel(array $audiobookCommentUnlikeModel): void
+    {
+        $this->audiobookCommentUnlikeModel = $audiobookCommentUnlikeModel;
+    }
+
+    public function addAudiobookCommentUnlikeModel(AudiobookCommentlikeModel $audiobookCommentUnlikeModel): void
+    {
+        $this->audiobookCommentUnlikeModel[] = $audiobookCommentUnlikeModel;
+    }
 }
