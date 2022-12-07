@@ -8,6 +8,7 @@ use App\Entity\AudiobookCategory;
 use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
+use App\Entity\AudiobookUserCommentLike;
 use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
 use App\Entity\MyList;
@@ -27,6 +28,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
@@ -346,5 +348,17 @@ class DatabaseMockManager
 
         return $newAudiobookUserComment;
     }
+    public function testFunc_addAudiobookUserCommentLike(bool $liked, AudiobookUserComment $audiobookUserComment, User $user, bool $deleted = false):AudiobookUserCommentLike{
+        $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
 
+        $newAudiobookUserCommentLike = new AudiobookUserCommentLike($liked, $audiobookUserComment, $user);
+
+        if($deleted){
+            $newAudiobookUserCommentLike->setDeleted($deleted);
+        }
+
+        $audiobookUserCommentLikeRepository->add($newAudiobookUserCommentLike);
+
+        return $newAudiobookUserCommentLike;
+    }
 }

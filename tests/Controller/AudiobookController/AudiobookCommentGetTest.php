@@ -34,6 +34,11 @@ class AudiobookCommentGetTest extends AbstractWebTest
         $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
         $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
 
+        $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(true,$comment1,$user1);
+        $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(false,$comment1,$user2);
+        $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(false,$comment2,$user2,true);
+        $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(true,$comment4,$user1);
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
         $content = [
