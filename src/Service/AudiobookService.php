@@ -151,7 +151,8 @@ class AudiobookService implements AudiobookServiceInterface
         $file = $this->whole_zip_path . ".zip";
 
         $zip = new ZipArchive;
-        $res = $zip->open($file);
+
+        $zip->open($file);
 
         $dir = trim($zip->getNameIndex(0), '/');
 

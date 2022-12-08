@@ -18,6 +18,8 @@ use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Query\AdminAudiobookActiveQuery;
 use App\Query\AdminAudiobookAddQuery;
+use App\Query\AdminAudiobookChangeCoverQuery;
+use App\Query\AdminAudiobookCommentDeleteQuery;
 use App\Query\AdminAudiobookDeleteQuery;
 use App\Query\AdminAudiobookDetailsQuery;
 use App\Query\AdminAudiobookEditQuery;
@@ -26,6 +28,7 @@ use App\Query\AdminAudiobooksQuery;
 use App\Query\AdminAudiobookZipQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Service\AudiobookService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -558,7 +561,7 @@ class AdminAudiobookController extends AbstractController
 
             $zip->close();
 
-            return ResponseTool::getBinaryFileResponse($zipFile,true);
+            return ResponseTool::getBinaryFileResponse($zipFile, true);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminAudiobook.zip.invalid.query");
@@ -918,5 +921,152 @@ class AdminAudiobookController extends AbstractController
             throw new InvalidJsonDataException("adminAudiobook.active.invalid.query");
         }
     }
-    //todo dodatkowo endp do podmiany zdjęć
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/comment/delete", name: "adminAudiobookCommentDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is deleting given comment",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookCommentDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminAudiobookCommentDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository
+    ): Response
+    {
+        $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
+
+        if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
+
+            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $adminAudiobookCommentDeleteQuery->getAudiobookCommentId()
+            ]);
+
+            if ($audiobookComment == null) {
+                $endpointLogger->error("Audiobook comment dont exist");
+                throw new DataNotFoundException(["adminAudiobook.delete.comment.audiobookComment.not.exist"]);
+            }
+
+            $audiobookComment->setDeleted(true);
+
+            $audiobookUserCommentRepository->add($audiobookComment);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.delete.comment.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/audiobook/change/cover", name: "adminAudiobookChangeCover", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Put(
+        description: "Endpoint is changing given cover",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminAudiobookChangeCoverQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminAudiobookChangeCover(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository
+    ): Response
+    {
+        $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
+
+        if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
+
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminAudiobookChangeCoverQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminAudiobook.change.comment.audiobook.not.exist"]);
+            }
+
+            $img = "";
+
+            $handle = opendir($audiobook->getFileName());
+
+            while (false !== ($entry = readdir($handle))) {
+
+                if ($entry != "." && $entry != "..") {
+
+                    $file_parts = pathinfo($entry);
+
+                    if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+
+                        $img = $file_parts["basename"];
+
+                        break;
+                    }
+                }
+            }
+
+            if ($img == "") {
+                $imgFile = fopen($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), "a");
+
+            } else {
+                $img = $audiobook->getFileName() . "/" . $img;
+                $imgFile = fopen($img, "w");
+            }
+
+            fwrite($imgFile, $adminAudiobookChangeCoverQuery->getBase64());
+            fclose($imgFile);
+
+            return ResponseTool::getResponse();
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminAudiobook.change.comment.cover.query");
+        }
+    }
 }

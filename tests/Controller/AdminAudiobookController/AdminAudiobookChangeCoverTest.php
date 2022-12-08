@@ -7,12 +7,12 @@ use App\Service\AudiobookService;
 use App\Tests\AbstractWebTest;
 
 /**
- * AdminAudiobookZipTest
+ * AdminAudiobookChangeCoverTest
  */
-class AdminAudiobookZipTest extends AbstractWebTest
+class AdminAudiobookChangeCoverTest extends AbstractWebTest
 {
     private const base64OnePartFile = __DIR__ . "/onePartFile.txt";
-
+    private const base64ImgFile = __DIR__ . "/imgFile.txt";
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -21,7 +21,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookZipCorrect(): void
+    public function test_adminAudiobookChangeCoverCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -69,14 +69,19 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfter);
 
+        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
+
         $content2 = [
+            "type"=>"jpeg",
+            "base64"=>$readData2,
             "audiobookId" => $audiobookAfter->getId(),
         ];
 
         $dir = $audiobookAfter->getFileName();
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobook/zip", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
 
@@ -94,62 +99,30 @@ class AdminAudiobookZipTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookZipWrongAudiobookId(): void
+    public function test_adminAudiobookChangeCoverWrongAudiobookId(): void
     {
-        $audiobookRepository = $this->getService(AudiobookRepository::class);
-        $audiobookService = $this->getService(AudiobookService::class);
-
-        $this->assertInstanceOf(AudiobookService::class, $audiobookService);
-        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
-
-        /// step 2
-        $content = [
-            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-            "fileName" => "Base",
-            "base64" => $readData,
-            "part" => 1,
-            "parts" => 1,
-            "additionalData" => [
-                "categories" => [
-                    $category2->getId(),
-                    $category1->getId()
-                ],
-                "title" => "tytul",
-                "author" => "author"
-            ]
-        ];
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-            "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
-
-        /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
-
-        $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
-        ]);
-
-        $this->assertNotNull($audiobookAfter);
-
         $content2 = [
             "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
         ];
+        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 
-        $dir = $audiobookAfter->getFileName();
+        $content2 = [
+            "type"=>"jpeg",
+            "base64"=>$readData2,
+            "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
+        ];
 
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobook/zip", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
@@ -166,18 +139,6 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
-
-
-        $response = self::$webClient->getResponse();
-
-        /// step 5
-        $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
-        ]);
-
-        $this->assertNotNull($audiobookAfter);
-
-        $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
     /**
@@ -187,7 +148,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookZipEmptyRequestData(): void
+    public function test_adminAudiobookChangeCoverEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -195,10 +156,13 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $content2 = [];
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
+        
+        $content2 = [];
+
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobook/zip", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
@@ -222,32 +186,24 @@ class AdminAudiobookZipTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookZipPermission(): void
+    public function test_adminAudiobookChangeCoverPermission(): void
     {
-        $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 
-        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
-
-        $content = [
-            "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b"
+        $content2 = [
+            "type"=>"jpeg",
+            "base64"=>$readData2,
+            "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user2);
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobook/zip", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", server: [
             "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
+        ], content: json_encode($content2));
         /// step 3
         $this->assertResponseStatusCodeSame(403);
 
@@ -269,7 +225,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookZipLogOut(): void
+    public function test_adminAudiobookChangeCoverLogOut(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -277,16 +233,13 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
-
         $content2 = [
             "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
         ];
 
         /// step 3
 
-        $crawler = self::$webClient->request("POST", "/api/admin/audiobook/zip", content: json_encode($content2));
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", content: json_encode($content2));
         /// step 3
         $this->assertResponseStatusCodeSame(401);
 

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
 use App\Exception\DataNotFoundException;
-use App\Exception\InvalidJsonDataException;
 use App\Exception\PermissionException;
 use App\Model\AuthorizationSuccessModel;
 use App\Model\DataNotFoundModel;
@@ -28,7 +27,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -120,7 +118,7 @@ class AuthorizationController extends AbstractController
         $isUser = false;
 
         foreach ($roles as $role) {
-            if ($role->getName() == "User") {
+            if ($role->getName() == "User" || $role->getName() == "Administrator") {
                 $isUser = true;
             }
         }

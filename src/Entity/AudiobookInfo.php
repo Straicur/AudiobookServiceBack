@@ -36,14 +36,18 @@ class AudiobookInfo
     #[ORM\Column(type: 'boolean')]
     private bool $active;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $watched;
+
     /**
      * @param User $user
      * @param Audiobook $audiobook
      * @param int $part
      * @param string $endedTime
      * @param \DateTime $watchingDate
+     * @param bool $watched
      */
-    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate)
+    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate, bool $watched)
     {
         $this->user = $user;
         $this->audiobook = $audiobook;
@@ -51,6 +55,7 @@ class AudiobookInfo
         $this->endedTime = $endedTime;
         $this->watchingDate = $watchingDate;
         $this->active = true;
+        $this->watched = $watched;
     }
 
     public function getId(): Uuid
@@ -126,6 +131,18 @@ class AudiobookInfo
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getWatched(): bool
+    {
+        return $this->watched;
+    }
+
+    public function setWatched(bool $watched): self
+    {
+        $this->watched = $watched;
 
         return $this;
     }

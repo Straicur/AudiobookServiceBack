@@ -79,7 +79,7 @@ class UserAudiobooksTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookInfoEmptyRequestData(): void
+    public function test_userAudiobooksEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");

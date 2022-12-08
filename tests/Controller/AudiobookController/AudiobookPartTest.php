@@ -12,7 +12,7 @@ use App\Tests\AbstractWebTest;
  */
 class AudiobookPartTest extends AbstractWebTest
 {
-    private const base64OnePartFile = "/home/damian/ApkiPortfolio/InzRefactor/tests/Controller/AdminAudiobookController/onePartFile.txt";
+    private const base64OnePartFile = "/home/damian/ApkiPortfolio/InzRefactorBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
 
     /**
      * step 1 - Preparing data
