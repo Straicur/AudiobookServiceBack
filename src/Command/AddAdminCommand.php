@@ -122,6 +122,8 @@ class AddAdminCommand extends Command
 
         $userEntity = new User();
 
+        $userEntity->setActive(true);
+
         $this->userRepository->add($userEntity, false);
 
         $roles = ["Administrator", "User", "Guest"];
