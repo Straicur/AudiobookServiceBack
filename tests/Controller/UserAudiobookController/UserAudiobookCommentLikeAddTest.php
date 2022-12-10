@@ -4,7 +4,6 @@ namespace App\Tests\Controller\UserAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookUserCommentLikeRepository;
-use App\Repository\AudiobookUserCommentRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -58,7 +57,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         $this->assertResponseStatusCodeSame(200);
 
         /// step 5
-        $this->assertCount(1,$audiobookUserCommentLikeRepository->findAll());
+        $this->assertCount(1, $audiobookUserCommentLikeRepository->findAll());
     }
 
     /**
@@ -91,7 +90,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "commentId" => $comment2->getId(),
+            "commentId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
             "like" => true
         ];
 
