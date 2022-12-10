@@ -95,7 +95,7 @@ class AddAdminCommand extends Command
         $lastname = $input->getArgument("lastname");
         $email = $input->getArgument("email");
         $phone = $input->getArgument("phone");
-        $password = $input->getArgument("password");
+        $password = md5($input->getArgument("password"));
 
         $institution = $this->institutionRepository->findOneBy([
             "name" => $_ENV["INSTITUTION_NAME"]

@@ -92,7 +92,7 @@ class CreateUserCommand extends Command
         $lastname = $input->getArgument("lastname");
         $email = $input->getArgument("email");
         $phone = $input->getArgument("phone");
-        $password = $input->getArgument("password");
+        $password = md5($input->getArgument("password"));
         $roles = $input->getArgument("roles");
 
         $passwordGenerator = new PasswordHashGenerator($password);
