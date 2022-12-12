@@ -508,7 +508,7 @@ class UserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["POST"])]
+    #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Post(
         description: "Endpoint is changing user password",
