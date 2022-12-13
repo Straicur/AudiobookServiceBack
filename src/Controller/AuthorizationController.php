@@ -6,6 +6,8 @@ use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
+use App\Model\AuthorizationRoleModel;
+use App\Model\AuthorizationRolesModel;
 use App\Model\AuthorizationSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
@@ -142,7 +144,13 @@ class AuthorizationController extends AbstractController
 
         $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
 
-        $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken());
+        $rolesModel = new AuthorizationRolesModel();
+
+        foreach ($userInformationEntity->getUser()->getRoles() as $role) {
+            $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
+        }
+
+        $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
 
         return ResponseTool::getResponse($responseModel);
     }

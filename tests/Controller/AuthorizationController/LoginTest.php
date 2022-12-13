@@ -6,7 +6,6 @@ use App\Tests\AbstractWebTest;
 
 /**
  * LoginTest
- *
  */
 class LoginTest extends AbstractWebTest
 {
@@ -39,6 +38,7 @@ class LoginTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("token", $responseContent);
+        $this->assertArrayHasKey("roles", $responseContent);
     }
 
     /**
