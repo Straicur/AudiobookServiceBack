@@ -10,7 +10,6 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\AuthorizationSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Query\RegisterConfirmSendQuery;
@@ -214,7 +213,6 @@ class RegisterController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: AuthorizationSuccessModel::class)
             ),
         ]
     )]

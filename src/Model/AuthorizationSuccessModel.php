@@ -10,12 +10,16 @@ class AuthorizationSuccessModel implements ModelInterface
 {
     private string $token;
 
+    private AuthorizationRolesModel $roles;
+
     /**
      * @param string $token
+     * @param AuthorizationRolesModel $roles
      */
-    public function __construct(string $token)
+    public function __construct(string $token, AuthorizationRolesModel $roles)
     {
         $this->token = $token;
+        $this->roles = $roles;
     }
 
     /**
@@ -38,4 +42,21 @@ class AuthorizationSuccessModel implements ModelInterface
     {
         return (array)AuthorizationSuccessModel::class;
     }
+
+    /**
+     * @return AuthorizationRolesModel
+     */
+    public function getRoles(): AuthorizationRolesModel
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param AuthorizationRolesModel $roles
+     */
+    public function setRoles(AuthorizationRolesModel $roles): void
+    {
+        $this->roles = $roles;
+    }
+
 }

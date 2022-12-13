@@ -40,7 +40,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $newPassword = $passwordGenerator->generate();
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
 
         /// step 4
         $this->assertResponseIsSuccessful();
@@ -79,7 +79,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             "password" => "zaq12WSX",
         ];
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
         $this->assertResponseStatusCodeSame(404);
 
@@ -120,7 +120,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             "password" => "zaq12WSX",
         ];
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
         $this->assertResponseStatusCodeSame(404);
 
@@ -161,7 +161,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             "password" => "zaq12WSX",
         ];
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
         $this->assertResponseStatusCodeSame(404);
 
@@ -199,7 +199,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $content = [];
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password/confirm", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 3
         $this->assertResponseStatusCodeSame(400);
 
