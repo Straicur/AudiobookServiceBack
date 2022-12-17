@@ -3,13 +3,18 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Exception\DataNotFoundException;
-use App\Exception\InvalidJsonDataException;
+use App\Model\AdminAudiobookCategoryModel;
+use App\Model\AdminAudiobookDetailsModel;
+use App\Model\AdminStatisticBestAudiobooksSuccessModel;
+use App\Model\AdminStatisticMainSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Repository\RoleRepository;
+use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookRepository;
+use App\Repository\AuthenticationTokenRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -48,50 +53,210 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminStatistics")]
 class AdminStatisticsController extends AbstractController
 {
-//    /**
-//     * @param Request $request
-//     * @param RequestServiceInterface $requestService
-//     * @param AuthorizedUserServiceInterface $authorizedUserService
-//     * @param LoggerInterface $endpointLogger
-//     * @param UserRepository $userRepository
-//     * @param RoleRepository $roleRepository
-//     * @return Response
-//     * @throws DataNotFoundException
-//     * @throws InvalidJsonDataException
-//     */
-//    #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["POST"])]
-//    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-//    #[OA\Patch(
-//        description: "Endpoint is ",
-//        requestBody: new OA\RequestBody(
-//            required: true,
-//            content: new OA\JsonContent(
-////                ref: new Model(type: AdminUserRoleAddQuery::class),
-//                type: "object"
-//            ),
-//        ),
-//        responses: [
-//            new OA\Response(
-//                response: 200,
-//                description: "Success",
-////                content: new Model(type: UserAudiobookRatingGetSuccessModel::class)
-//            )
-//        ]
-//    )]
-//    public function adminUserRoleAdd(
-//        Request                        $request,
-//        RequestServiceInterface        $requestService,
-//        AuthorizedUserServiceInterface $authorizedUserService,
-//        LoggerInterface                $endpointLogger,
-//        UserRepository                 $userRepository,
-//        RoleRepository                 $roleRepository
-//    ): Response
-//    {
-//        return ResponseTool::getResponse();
-//    }
-    //todo
-    // endp do pobierania ilości(użytkowników w systemi,kategorii oraz audiobooków)
-    // pobierania top 3 najlepiej ocenianych
-    // pobierania ilości zarejestrowanych w ostatnim tygodniu nowych użytkowników oraz logowań
-    // pobierania ilości dodanych w ostatnim tygoniu powiadomień
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     */
+    #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is returning main statistic data",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminStatisticMainSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminStatisticMain(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository,
+        AuthenticationTokenRepository  $authenticationTokenRepository,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+        $users = count($userRepository->findBy([
+            "active" => true
+        ]));
+
+        $categories = count($audiobookCategoryRepository->findBy([
+            "active" => true
+        ]));
+
+        $audiobooks = count($audiobookRepository->findBy([
+            "active" => true
+        ]));
+
+        $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
+        $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
+        $lastWeekNotifications = $notificationRepository->getNotificationsFromLastWeak();
+
+        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications));
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @return Response
+     */
+    #[Route("/api/admin/statistic/best/audiobooks", name: "adminStatisticBestAudiobooks", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint  is returning most liked audiobooks statistics",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminStatisticBestAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminStatisticBestAudiobooks(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository
+    ): Response
+    {
+        $topAudiobooks = $audiobookRepository->getBestAudiobooks();
+
+        if (count($topAudiobooks) == 0) {
+            return ResponseTool::getResponse();
+        }
+
+        $successModel = new AdminStatisticBestAudiobooksSuccessModel();
+
+        if (count($topAudiobooks) >= 1) {
+            $firstAudiobook = $topAudiobooks[0];
+
+            $audiobookCategories = [];
+
+            $categories = $audiobookCategoryRepository->getAudiobookCategories($firstAudiobook);
+
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                    $category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey()
+                );
+            }
+
+            $firstAudiobookModel = new AdminAudiobookDetailsModel(
+                $firstAudiobook->getId(),
+                $firstAudiobook->getTitle(),
+                $firstAudiobook->getAuthor(),
+                $firstAudiobook->getVersion(),
+                $firstAudiobook->getAlbum(),
+                $firstAudiobook->getYear(),
+                $firstAudiobook->getDuration(),
+                $firstAudiobook->getSize(),
+                $firstAudiobook->getParts(),
+                $firstAudiobook->getDescription(),
+                $firstAudiobook->getAge(),
+                $firstAudiobook->getActive(),
+                $audiobookCategories
+            );
+
+            $successModel->setFirstAudiobook($firstAudiobookModel);
+        }
+        if (count($topAudiobooks) >= 2) {
+            $secondAudiobook = $topAudiobooks[1];
+
+            $audiobookCategories = [];
+
+            $categories = $audiobookCategoryRepository->getAudiobookCategories($secondAudiobook);
+
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                    $category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey()
+                );
+            }
+
+            $secondAudiobookModel = new AdminAudiobookDetailsModel(
+                $secondAudiobook->getId(),
+                $secondAudiobook->getTitle(),
+                $secondAudiobook->getAuthor(),
+                $secondAudiobook->getVersion(),
+                $secondAudiobook->getAlbum(),
+                $secondAudiobook->getYear(),
+                $secondAudiobook->getDuration(),
+                $secondAudiobook->getSize(),
+                $secondAudiobook->getParts(),
+                $secondAudiobook->getDescription(),
+                $secondAudiobook->getAge(),
+                $secondAudiobook->getActive(),
+                $audiobookCategories);
+            $successModel->setSecondAudiobook($secondAudiobookModel);
+        }
+        if (count($topAudiobooks) >= 3) {
+            $thirdAudiobook = $topAudiobooks[2];
+
+            $audiobookCategories = [];
+
+            $categories = $audiobookCategoryRepository->getAudiobookCategories($thirdAudiobook);
+
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                    $category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey()
+                );
+            }
+
+            $thirdAudiobookModel = new AdminAudiobookDetailsModel(
+                $thirdAudiobook->getId(),
+                $thirdAudiobook->getTitle(),
+                $thirdAudiobook->getAuthor(),
+                $thirdAudiobook->getVersion(),
+                $thirdAudiobook->getAlbum(),
+                $thirdAudiobook->getYear(),
+                $thirdAudiobook->getDuration(),
+                $thirdAudiobook->getSize(),
+                $thirdAudiobook->getParts(),
+                $thirdAudiobook->getDescription(),
+                $thirdAudiobook->getAge(),
+                $thirdAudiobook->getActive(),
+                $audiobookCategories);
+            $successModel->setThirdAudiobook($thirdAudiobookModel);
+        }
+
+        return ResponseTool::getResponse($successModel);
+    }
 }

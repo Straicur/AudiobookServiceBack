@@ -38,7 +38,7 @@ class Notification
 
     public function __construct()
     {
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new \DateTime('now');
         $this->readStatus = false;
     }
 

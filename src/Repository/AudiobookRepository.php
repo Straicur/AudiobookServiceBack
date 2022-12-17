@@ -107,6 +107,24 @@ class AudiobookRepository extends ServiceEntityRepository
 
         return count($res) > 0 ? $res[0] : null;
     }
+    /**
+     * @return Audiobook[]
+     */
+    public function getBestAudiobooks(): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->leftJoin('a.audiobookRatings', 'ar')
+            ->where('a.active = true')
+            ->groupBy('a')
+            ->orderBy('COUNT(ar)',"DESC")
+            ->setMaxResults(3)
+        ;
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects
 //     */
