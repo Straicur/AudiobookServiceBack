@@ -39,7 +39,7 @@ class LogoutTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Sending Request without content
+     * step 1 - Sending Request without token
      * step 2 - Checking response
      * @return void
      */

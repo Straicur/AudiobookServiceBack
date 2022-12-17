@@ -136,11 +136,15 @@ class DatabaseMockManager
         return $userRepository->findOneBy(["id" => $user->getId()]);
     }
 
-    public function testFunc_loginUser(User $user): AuthenticationToken
+    public function testFunc_loginUser(User $user, \DateTime $dateEnd = null): AuthenticationToken
     {
         $authenticationTokenRepository = $this->getService(AuthenticationTokenRepository::class);
 
         $authenticationToken = new AuthenticationToken($user, new AuthTokenGenerator($user));
+
+        if($dateEnd != null){
+            $authenticationToken->setDateExpired($dateEnd);
+        }
 
         $authenticationTokenRepository->add($authenticationToken);
 
