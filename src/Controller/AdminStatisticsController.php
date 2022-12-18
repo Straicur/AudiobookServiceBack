@@ -69,12 +69,7 @@ class AdminStatisticsController extends AbstractController
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Patch(
         description: "Endpoint is returning main statistic data",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
@@ -127,12 +122,7 @@ class AdminStatisticsController extends AbstractController
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Patch(
         description: "Endpoint  is returning most liked audiobooks statistics",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                type: "object"
-            ),
-        ),
+        requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
