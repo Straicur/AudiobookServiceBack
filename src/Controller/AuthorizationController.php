@@ -64,9 +64,10 @@ class AuthorizationController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @return Response|null
+     * @return Response
      * @throws DataNotFoundException
      * @throws PermissionException
+     * @throws \Exception
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
     #[OA\Post(
@@ -94,7 +95,7 @@ class AuthorizationController extends AbstractController
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository
-    ): ?Response
+    ): Response
     {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
@@ -164,7 +165,7 @@ class AuthorizationController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route("/api/logout", name: "apiLogout", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
         description: "Method used to logout user",
         requestBody: new OA\RequestBody(),
@@ -193,6 +194,34 @@ class AuthorizationController extends AbstractController
 
         $usersLogger->info("LOGIN", [$user->getId()->__toString()]);
 
+        return ResponseTool::getResponse();
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestServiceInterface
+     * @param LoggerInterface $usersLogger
+     * @return Response
+     */
+    #[Route("/api/authorize/check", name: "apiAuthorizeCheck", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[OA\Post(
+        description: "Method is checking if given token is authorized",
+        security: [],
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            ),
+        ]
+    )]
+    public function authorizeCheck(
+        Request                 $request,
+        RequestServiceInterface $requestServiceInterface,
+        LoggerInterface         $usersLogger,
+    ): Response
+    {
         return ResponseTool::getResponse();
     }
 }

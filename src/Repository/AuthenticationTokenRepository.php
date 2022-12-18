@@ -85,6 +85,28 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
 
         return count($res) > 0 ? $res[0] : null;
     }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfAuthenticationTokensFromLast7Days(): int
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-7 day');
+
+        $qb = $this->createQueryBuilder('at')
+            ->where('( :dateFrom <= at.dateCreate AND :dateTo >= at.dateCreate)')
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate);
+
+        $query = $qb->getQuery();
+
+        $result = $query->execute();
+
+        return count($result);
+    }
+
 //    /**
 //     * @return AuthenticationToken[] Returns an array of AuthenticationToken objects
 //     */

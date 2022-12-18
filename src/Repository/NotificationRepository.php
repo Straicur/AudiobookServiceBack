@@ -46,6 +46,26 @@ class NotificationRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+    /**
+     * @return int
+     */
+    public function getNotificationsFromLastWeak(): int
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-7 day');
+
+        $qb = $this->createQueryBuilder('n')
+            ->where('( :dateFrom <= n.dateAdd AND :dateTo >= n.dateAdd)')
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate);
+
+        $query = $qb->getQuery();
+
+        $result = $query->execute();
+
+        return count($result);
+    }
 
 //    /**
 //     * @return Notification[] Returns an array of Notification objects

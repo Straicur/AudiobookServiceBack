@@ -134,6 +134,28 @@ class UserRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * @return bool
+     */
+    public function newUsersFromLastWeak(): bool
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-7 day');
+
+        $qb = $this->createQueryBuilder('u')
+            ->where('( :dateFrom <= u.dateCreate AND :dateTo >= u.dateCreate)')
+            ->andWhere("u.active = true")
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate);
+
+        $query = $qb->getQuery();
+
+        $result = $query->execute();
+
+        return count($result);
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

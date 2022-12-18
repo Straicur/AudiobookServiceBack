@@ -112,9 +112,9 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 }
 
             } catch (\ReflectionException $e) {
-                // TODO when class or method not exits
+                //todo when class or method not exits
             } catch (NonUniqueResultException $e) {
-                // TODO reaction on error
+                //todo reaction on error
             }
         }
     }

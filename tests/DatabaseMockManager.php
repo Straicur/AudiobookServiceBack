@@ -79,7 +79,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, bool $insideParkName = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, \DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -106,6 +106,10 @@ class DatabaseMockManager
 
         if ($editableDate != null) {
             $user->setEditableDate($editableDate);
+        }
+
+        if ($addedDate != null) {
+            $user->setDateCreate($addedDate);
         }
 
         $userRepository->add($user, false);
@@ -136,11 +140,15 @@ class DatabaseMockManager
         return $userRepository->findOneBy(["id" => $user->getId()]);
     }
 
-    public function testFunc_loginUser(User $user): AuthenticationToken
+    public function testFunc_loginUser(User $user, \DateTime $dateEnd = null): AuthenticationToken
     {
         $authenticationTokenRepository = $this->getService(AuthenticationTokenRepository::class);
 
         $authenticationToken = new AuthenticationToken($user, new AuthTokenGenerator($user));
+
+        if($dateEnd != null){
+            $authenticationToken->setDateExpired($dateEnd);
+        }
 
         $authenticationTokenRepository->add($authenticationToken);
 
@@ -297,7 +305,7 @@ class DatabaseMockManager
      * @throws ORMException
      * @throws NotificationException
      */
-    public function testFunc_addNotifications(User $user, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction): Notification
+    public function testFunc_addNotifications(User $user, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, \DateTime $dateAdd = null): Notification
     {
         $systemNotificationRepository = $this->getService(NotificationRepository::class);
 
@@ -309,6 +317,10 @@ class DatabaseMockManager
             ->setAction($actionId)
             ->setType($notificationType)
             ->build();
+
+        if($dateAdd != null){
+            $newSystemNotification->setDateAdd($dateAdd);
+        }
 
         $systemNotificationRepository->add($newSystemNotification);
 
