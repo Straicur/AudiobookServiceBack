@@ -12,9 +12,6 @@ use App\Tests\AbstractWebTest;
  */
 class AudiobookPartTest extends AbstractWebTest
 {
-    //todo to jest do zmiany
-//    private const base64OnePartFile = "/home/damian/ApkiPortfolio/InzRefactorBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
-    private const base64OnePartFile = "/home/damian/Portfolio/AudiobookServiceBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -25,6 +22,7 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartCorrect(): void
     {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
 
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -37,8 +35,8 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
         $content = [
@@ -100,6 +98,8 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartWrongAudiobookId(): void
     {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
+
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
 
@@ -111,8 +111,8 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
         $content = [
@@ -192,6 +192,8 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartEmptyRequestData(): void
     {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
+
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
 
@@ -203,8 +205,8 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
         $content = [
@@ -282,6 +284,8 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartPermission(): void
     {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
+
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
@@ -293,8 +297,8 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
         $content2 = [
@@ -331,6 +335,8 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartLogOut(): void
     {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
+
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
 
@@ -342,8 +348,8 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
         $content = [
