@@ -12,8 +12,9 @@ use App\Tests\AbstractWebTest;
  */
 class AudiobookCoverTest extends AbstractWebTest
 {
-    private const base64OnePartFile = "/home/damian/ApkiPortfolio/InzRefactorBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
-
+    //todo to jest do zmiany
+//    private const base64OnePartFile = "/home/damian/ApkiPortfolio/InzRefactorBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
+    private const base64OnePartFile = "/home/damian/Portfolio/AudiobookServiceBack/tests/Controller/AdminAudiobookController/onePartFile.txt";
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
