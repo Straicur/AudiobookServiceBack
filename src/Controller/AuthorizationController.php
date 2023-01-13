@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
 use App\Exception\DataNotFoundException;
+use App\Exception\InvalidJsonDataException;
 use App\Exception\PermissionException;
 use App\Model\AuthorizationRoleModel;
 use App\Model\AuthorizationRolesModel;
@@ -61,13 +62,14 @@ class AuthorizationController extends AbstractController
      * @param Request $request
      * @param RequestServiceInterface $requestServiceInterface
      * @param LoggerInterface $usersLogger
+     * @param LoggerInterface $endpointLogger
      * @param UserInformationRepository $userInformationRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param AuthenticationTokenRepository $authenticationTokenRepository
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      * @throws PermissionException
-     * @throws \Exception
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
     #[OA\Post(
@@ -92,6 +94,7 @@ class AuthorizationController extends AbstractController
         Request                       $request,
         RequestServiceInterface       $requestServiceInterface,
         LoggerInterface               $usersLogger,
+        LoggerInterface               $endpointLogger,
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository
@@ -99,61 +102,67 @@ class AuthorizationController extends AbstractController
     {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
-        $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
+        if ($authenticationQuery instanceof AuthorizeQuery) {
 
-        $userInformationEntity = $userInformationRepository->findOneBy([
-            "email" => $authenticationQuery->getEmail()
-        ]);
+            $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
 
-        if ($userInformationEntity == null) {
-            throw new DataNotFoundException(["user.credentials"]);
-        }
+            $userInformationEntity = $userInformationRepository->findOneBy([
+                "email" => $authenticationQuery->getEmail()
+            ]);
 
-        if ($userInformationEntity->getUser()->isBanned()) {
-            throw new DataNotFoundException(["user.banned"]);
-        }
-
-        if (!$userInformationEntity->getUser()->isActive()) {
-            throw new DataNotFoundException(["user.not.active"]);
-        }
-
-        $roles = $userInformationEntity->getUser()->getRoles();
-        $isUser = false;
-
-        foreach ($roles as $role) {
-            if ($role->getName() == "User" || $role->getName() == "Administrator") {
-                $isUser = true;
+            if ($userInformationEntity == null) {
+                throw new DataNotFoundException(["user.credentials"]);
             }
+
+            if ($userInformationEntity->getUser()->isBanned()) {
+                throw new DataNotFoundException(["user.banned"]);
+            }
+
+            if (!$userInformationEntity->getUser()->isActive()) {
+                throw new DataNotFoundException(["user.not.active"]);
+            }
+
+            $roles = $userInformationEntity->getUser()->getRoles();
+            $isUser = false;
+
+            foreach ($roles as $role) {
+                if ($role->getName() == "User" || $role->getName() == "Administrator") {
+                    $isUser = true;
+                }
+            }
+
+            if (!$isUser) {
+                throw new PermissionException("user.credentials");
+            }
+            $passwordEntity = $userPasswordRepository->findOneBy([
+                "user" => $userInformationEntity->getUser(),
+                "password" => $passwordHashGenerator->generate()
+            ]);
+
+            if ($passwordEntity == null) {
+                throw new DataNotFoundException(["user.credentials"]);
+            }
+
+            $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
+
+            $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
+            $authenticationTokenRepository->add($authenticationToken);
+
+            $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
+
+            $rolesModel = new AuthorizationRolesModel();
+
+            foreach ($userInformationEntity->getUser()->getRoles() as $role) {
+                $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
+            }
+
+            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
+
+            return ResponseTool::getResponse($responseModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("auth.login.invalid.query");
         }
-
-        if (!$isUser) {
-            throw new PermissionException("user.credentials");
-        }
-        $passwordEntity = $userPasswordRepository->findOneBy([
-            "user" => $userInformationEntity->getUser(),
-            "password" => $passwordHashGenerator->generate()
-        ]);
-
-        if ($passwordEntity == null) {
-            throw new DataNotFoundException(["user.credentials"]);
-        }
-
-        $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
-
-        $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
-        $authenticationTokenRepository->add($authenticationToken);
-
-        $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
-
-        $rolesModel = new AuthorizationRolesModel();
-
-        foreach ($userInformationEntity->getUser()->getRoles() as $role) {
-            $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
-        }
-
-        $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
-
-        return ResponseTool::getResponse($responseModel);
     }
 
     /**
