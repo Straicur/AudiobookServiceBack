@@ -18,6 +18,15 @@ done
 symfony console audiobookservice:institution:add "980921223" 4 20
 symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audio.com" "980921223" "zaq12wsx"
 symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian12@gmail.com" "980921223" "zaq12wsx" "User"
+
 symfony console audiobookservice:category:add "Bajki"
 symfony console audiobookservice:category:add "Kreskówki" "Bajki"
 symfony console audiobookservice:category:add "Anime" "Bajki"
+symfony console audiobookservice:category:add "Kryminały"
+symfony console audiobookservice:category:add "Klasyczne" "Kryminały"
+symfony console audiobookservice:category:add "Skandynawskie" "Kryminały"
+symfony console audiobookservice:category:add "Szpiegowskie" "Kryminały"
+symfony console audiobookservice:category:add "Polskie" "Klasyczne"
+symfony console audiobookservice:category:add "Nowe" "Skandynawskie"
+symfony console audiobookservice:category:add "Rozwojowe"
+symfony console audiobookservice:category:add "Naukowe"

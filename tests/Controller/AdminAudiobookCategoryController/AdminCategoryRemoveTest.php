@@ -53,7 +53,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $this->assertCount(2, $audiobookCategoryRepository->findAll());
+        $this->assertCount(13, $audiobookCategoryRepository->findAll());
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "id" => $audiobook->getId()

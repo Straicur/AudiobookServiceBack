@@ -45,7 +45,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("categories", $responseContent);
-        $this->assertCount(1, $responseContent["categories"]);
+        $this->assertCount(5, $responseContent["categories"]);
 
         $this->assertCount(2, $responseContent["categories"][0]["children"]);
     }
