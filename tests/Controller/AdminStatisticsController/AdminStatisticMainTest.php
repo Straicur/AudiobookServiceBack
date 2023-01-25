@@ -19,7 +19,7 @@ class AdminStatisticMainTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminAudiobookDetailsCorrect(): void
+    public function test_adminStatisticMainCorrect(): void
     {
         /// step 1
         $admin = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -71,7 +71,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertArrayHasKey("lastWeekNotifications", $responseContent);
 
         $this->assertSame($responseContent["users"],7);
-        $this->assertSame($responseContent["categories"],2);
+        $this->assertSame($responseContent["categories"],13);
         $this->assertSame($responseContent["audiobooks"],2);
         $this->assertSame($responseContent["lastWeekRegistered"],1);
         $this->assertSame($responseContent["lastWeekLogins"],3);
@@ -83,7 +83,7 @@ class AdminStatisticMainTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_adminAudiobookDetailsLogout(): void
+    public function test_adminStatisticMainLogout(): void
     {
         /// step 1
         $admin = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");

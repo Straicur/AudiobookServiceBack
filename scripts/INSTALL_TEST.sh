@@ -20,6 +20,15 @@ done
 APP_ENV=test symfony console audiobookservice:institution:add "980921223" 4 3
 APP_ENV=test symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audio.com" "980921223" "zaq12wsx"
 APP_ENV=test symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian12@gmail.com" "980921223" "zaq12wsx" "User"
-APP_ENV=test symfony symfony console audiobookservice:category:add "Bajki"
-APP_ENV=test symfony symfony console audiobookservice:category:add "Kreskówki" "Bajki"
-APP_ENV=test symfony symfony console audiobookservice:category:add "Anime" "Bajki"
+
+APP_ENV=test symfony console audiobookservice:category:add "Bajki"
+APP_ENV=test symfony console audiobookservice:category:add "Kreskówki" "Bajki"
+APP_ENV=test symfony console audiobookservice:category:add "Anime" "Bajki"
+APP_ENV=test symfony console audiobookservice:category:add "Kryminały"
+APP_ENV=test symfony console audiobookservice:category:add "Klasyczne" "Kryminały"
+APP_ENV=test symfony console audiobookservice:category:add "Skandynawskie" "Kryminały"
+APP_ENV=test symfony console audiobookservice:category:add "Szpiegowskie" "Kryminały"
+APP_ENV=test symfony console audiobookservice:category:add "Polskie" "Klasyczne"
+APP_ENV=test symfony console audiobookservice:category:add "Nowe" "Skandynawskie"
+APP_ENV=test symfony console audiobookservice:category:add "Rozwojowe"
+APP_ENV=test symfony console audiobookservice:category:add "Naukowe"
