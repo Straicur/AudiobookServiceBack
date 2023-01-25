@@ -217,7 +217,7 @@ class DatabaseMockManager
 
     public function testFunc_addAudiobookCategory(string $name, AudiobookCategory $parent = null, bool $active = false): AudiobookCategory
     {
-        $registerCodeRepository = $this->getService(AudiobookCategoryRepository::class);
+        $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $categoryKeyGenerator = new CategoryKeyGenerator();
 
@@ -233,7 +233,7 @@ class DatabaseMockManager
             $newAudiobookCategory->setActive(true);
         }
 
-        $registerCodeRepository->add($newAudiobookCategory);
+        $audiobookCategoryRepository->add($newAudiobookCategory);
 
         return $newAudiobookCategory;
     }
