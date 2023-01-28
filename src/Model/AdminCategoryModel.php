@@ -28,6 +28,7 @@ class AdminCategoryModel implements ModelInterface
         $this->name = $name;
         $this->active = $active;
         $this->categoryKey = $categoryKey;
+        $this->parentCategoryKey = $parentCategoryKey;
     }
 
     /**
