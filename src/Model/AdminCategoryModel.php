@@ -8,6 +8,7 @@ class AdminCategoryModel implements ModelInterface
     private string $name;
     private bool $active;
     private string $categoryKey;
+    private ?string $parentCategoryKey;
 
     /**
      * @var AdminCategoryModel[]
@@ -19,13 +20,15 @@ class AdminCategoryModel implements ModelInterface
      * @param string $name
      * @param bool $active
      * @param string $categoryKey
+     * @param string|null $parentCategoryKey
      */
-    public function __construct(string $id, string $name, bool $active, string $categoryKey)
+    public function __construct(string $id, string $name, bool $active, string $categoryKey, ?string $parentCategoryKey = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
         $this->categoryKey = $categoryKey;
+        $this->parentCategoryKey = $parentCategoryKey;
     }
 
     /**
@@ -111,6 +114,22 @@ class AdminCategoryModel implements ModelInterface
     public function setId(string $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParentCategoryKey(): ?string
+    {
+        return $this->parentCategoryKey;
+    }
+
+    /**
+     * @param string|null $parentCategoryKey
+     */
+    public function setParentCategoryKey(?string $parentCategoryKey): void
+    {
+        $this->parentCategoryKey = $parentCategoryKey;
     }
 
 }
