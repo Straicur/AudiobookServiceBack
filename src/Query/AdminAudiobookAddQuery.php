@@ -43,7 +43,7 @@ class  AdminAudiobookAddQuery
                     new Assert\NotBlank(message: "Categories is empty"),
                     new Assert\All(constraints: [
                         new Assert\NotBlank(),
-                        new Assert\Uuid()
+                        new Assert\Type(type: "string")
                     ])
                 ]),
                 'title' => new Assert\Optional([

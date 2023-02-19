@@ -48,8 +48,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
-                    $category2->getId(),
-                    $category1->getId()
+                    $category2->getCategoryKey(),
+                    $category1->getCategoryKey()
                 ],
                 "title" => "tytul",
                 "author" => "author"
@@ -121,8 +121,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "parts" => 2,
             "additionalData" => [
                 "categories" => [
-                    $category2->getId(),
-                    $category1->getId()
+                    $category2->getCategoryKey(),
+                    $category1->getCategoryKey()
                 ],
                 "title" => "tytul",
                 "author" => "author"
@@ -358,7 +358,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
-                    $category2->getId()
+                    $category2->getCategoryKey()
                 ],
                 "title" => "tytul",
                 "author" => "author"
@@ -410,7 +410,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
-                    $category2->getId()
+                    $category2->getCategoryKey()
                 ],
                 "title" => "tytul",
                 "author" => "author"
