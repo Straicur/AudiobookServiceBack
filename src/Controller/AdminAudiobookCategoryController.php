@@ -9,6 +9,7 @@ use App\Exception\InvalidJsonDataException;
 use App\Model\AdminCategoriesSuccessModel;
 use App\Model\AdminCategoryAudiobookModel;
 use App\Model\AdminCategoryAudiobooksSuccessModel;
+use App\Model\AdminCategorySuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
@@ -16,6 +17,7 @@ use App\Model\PermissionNotGrantedModel;
 use App\Query\AdminCategoryActiveQuery;
 use App\Query\AdminCategoryAddQuery;
 use App\Query\AdminCategoryAudiobooksQuery;
+use App\Query\AdminCategoryDetailQuery;
 use App\Query\AdminCategoryEditQuery;
 use App\Query\AdminCategoryRemoveAudiobookQuery;
 use App\Query\AdminCategoryRemoveQuery;
@@ -501,10 +503,72 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $category->setActive($adminCategoryActiveQuery->isActive());
 
+            $audiobookCategoryRepository->add($category);
+
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminCategory.active.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/category/detail", name: "adminCategoryDetail", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is returning category details",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminCategoryDetailQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminCategorySuccessModel::class)
+            )
+        ]
+    )]
+    public function adminCategoryDetail(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookCategoryRepository    $audiobookCategoryRepository
+    ): Response
+    {
+        $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);
+
+        if ($adminCategoryDetailQuery instanceof AdminCategoryDetailQuery) {
+
+            $category = $audiobookCategoryRepository->findOneBy([
+                "categoryKey" => $adminCategoryDetailQuery->getCategoryKey()
+            ]);
+
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.detail.audiobookCategory.not.exist"]);
+            }
+
+            $successModel = new AdminCategorySuccessModel($category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null);
+
+            return ResponseTool::getResponse($successModel);
+
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminCategory.detail.invalid.query");
         }
     }
 }
