@@ -302,17 +302,12 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists("categories", $additionalData)) {
 
-                    $categories = [];
+                    $categories = $additionalData["categories"];
 
-                    if (!empty($additionalData["categories"])) {
-                        foreach ($additionalData["categories"] as $category) {
-                            $categories[] = Uuid::fromString($category)->toBinary();
-                        }
-                    }
                     foreach ($categories as $category) {
 
                         $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            "id" => $category
+                            "categoryKey" => $category
                         ]);
 
                         if ($audiobookCategory != null) {

@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class AdminCategoryModel implements ModelInterface
+class AdminCategoryModel
 {
     private string $id;
     private string $name;
