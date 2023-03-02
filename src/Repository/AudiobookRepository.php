@@ -89,16 +89,19 @@ class AudiobookRepository extends ServiceEntityRepository
     /**
      * @param Uuid $audiobookId
      * @param string $categoryKey
+     * @param bool $getActive
      * @return Audiobook|null
      */
-    public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey): ?Audiobook
+    public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey, bool $getActive = true): ?Audiobook
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.categories', 'c')
             ->where('c.categoryKey = :categoryKey')
-            ->andWhere('a.id = :audiobookId')
-            ->andWhere('a.active = true')
-            ->setParameter('audiobookId', $audiobookId->toBinary())
+            ->andWhere('a.id = :audiobookId');
+        if ($getActive) {
+            $qb->andWhere('a.active = true');
+        }
+        $qb->setParameter('audiobookId', $audiobookId->toBinary())
             ->setParameter('categoryKey', $categoryKey);
 
         $query = $qb->getQuery();
@@ -107,6 +110,7 @@ class AudiobookRepository extends ServiceEntityRepository
 
         return count($res) > 0 ? $res[0] : null;
     }
+
     /**
      * @return Audiobook[]
      */
@@ -117,9 +121,8 @@ class AudiobookRepository extends ServiceEntityRepository
             ->leftJoin('a.audiobookRatings', 'ar')
             ->where('a.active = true')
             ->groupBy('a')
-            ->orderBy('COUNT(ar)',"DESC")
-            ->setMaxResults(3)
-        ;
+            ->orderBy('COUNT(ar)', "DESC")
+            ->setMaxResults(3);
 
         $query = $qb->getQuery();
 

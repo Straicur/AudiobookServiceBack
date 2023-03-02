@@ -29,7 +29,6 @@ class ResponseTool
 
     public static function getBinaryFileResponse($fileDir, $delete = false): BinaryFileResponse
     {
-
         $response = new BinaryFileResponse($fileDir);
 
         $response->setContentDisposition(

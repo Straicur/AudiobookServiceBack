@@ -30,14 +30,6 @@ when@dev:
                 path: "%kernel.logs_dir%/%kernel.environment%/debug.log"
                 level: debug
                 max_files: 2
-#            symfony_mailer:
-#                type: symfony_mailer
-#                from_email: 'admin@asuri.pl'
-#                to_email: ['dawid.maliszewski@asuri.pl']
-#                subject: '[FlatApp-Backend] An Error Occurred! %%message%%'
-#                level: debug
-#                formatter: monolog.formatter.html
-#                content_type: text/html
             logging_requests:
                 type: rotating_file
                 path: "%kernel.logs_dir%/%kernel.environment%/request.log"

@@ -182,7 +182,6 @@ class AudiobookController extends AbstractController
         $handle = opendir($id->getFileName());
 
         while (false !== ($entry = readdir($handle))) {
-
             if ($entry != "." && $entry != "..") {
 
                 $file_parts = pathinfo($entry);
@@ -201,7 +200,7 @@ class AudiobookController extends AbstractController
             throw new DataNotFoundException(["audiobook.cover.cover.not.exist"]);
         }
 
-        return ResponseTool::getBinaryFileResponse($id->getFileName() . "/" . $img, true);
+        return ResponseTool::getBinaryFileResponse($id->getFileName() . "/" . $img);
     }
 
     /**
@@ -211,13 +210,14 @@ class AudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/audiobook/comment/get", name: "audiobookCommentGet", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Put(
+    #[OA\Post(
         description: "Endpoint is returning comments for given audiobook",
         requestBody: new OA\RequestBody(
             required: true,
@@ -235,12 +235,12 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookCommentGet(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        Request                            $request,
+        RequestServiceInterface            $requestService,
+        AuthorizedUserServiceInterface     $authorizedUserService,
+        LoggerInterface                    $endpointLogger,
+        AudiobookRepository                $audiobookRepository,
+        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
     ): Response
     {
@@ -250,7 +250,7 @@ class AudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey());
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey(),false);
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
@@ -267,7 +267,7 @@ class AudiobookController extends AbstractController
 
             foreach ($audiobookParentComments as $audiobookParentComment) {
 
-                $childComments = count($audiobookUserCommentRepository->findBy(["parent"=>$audiobookParentComment->getId()]));
+                $childComments = count($audiobookUserCommentRepository->findBy(["parent" => $audiobookParentComment->getId()]));
                 $audiobookParentUser = $audiobookParentComment->getUser();
                 $myComment = $audiobookParentUser === $user;
 
@@ -276,24 +276,23 @@ class AudiobookController extends AbstractController
                     "deleted" => false
                 ]);
 
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(),$audiobookParentUser->getUserInformation()->getFirstname());
+                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
 
                 $audiobookCommentModel = new AudiobookCommentGetModel(
-                    $userModel,$audiobookParentComment->getId(),
+                    $userModel, $audiobookParentComment->getId(),
                     $audiobookParentComment->getComment(),
                     $audiobookParentComment->getEdited(),
                     $childComments
-                    ,$myComment
+                    , $myComment
                 );
 
-                foreach ($commentLikes as $commentLike){
-                    if($commentLike->getLiked()){
+                foreach ($commentLikes as $commentLike) {
+                    if ($commentLike->getLiked()) {
                         $audiobookCommentModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
                             $commentLike->getId(),
                             $commentLike->getLiked()
                         ));
-                    }
-                    else{
+                    } else {
                         $audiobookCommentModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
                             $commentLike->getId(),
                             $commentLike->getLiked()
@@ -318,13 +317,14 @@ class AudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/audiobook/comment/get/detail", name: "audiobookCommentGetDetail", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Put(
+    #[OA\Post(
         description: "Endpoint is returning child comments for given comment",
         requestBody: new OA\RequestBody(
             required: true,
@@ -342,11 +342,11 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookCommentGetDetail(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        Request                            $request,
+        RequestServiceInterface            $requestService,
+        AuthorizedUserServiceInterface     $authorizedUserService,
+        LoggerInterface                    $endpointLogger,
+        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
     ): Response
     {
@@ -374,7 +374,7 @@ class AudiobookController extends AbstractController
                 $audiobookParentUser = $audiobookCommentKid->getUser();
                 $myComment = $audiobookParentUser === $user;
 
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(),$audiobookParentUser->getUserInformation()->getFirstname());
+                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
 
                 $commentLikes = $audiobookUserCommentLikeRepository->findBy([
                     "audiobookUserComment" => $audiobookCommentKid->getId(),
@@ -389,14 +389,13 @@ class AudiobookController extends AbstractController
                     $myComment
                 );
 
-                foreach ($commentLikes as $commentLike){
-                    if($commentLike->getLiked()){
+                foreach ($commentLikes as $commentLike) {
+                    if ($commentLike->getLiked()) {
                         $audiobookCommentGetDetailModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
                             $commentLike->getId(),
                             $commentLike->getLiked()
                         ));
-                    }
-                    else{
+                    } else {
                         $audiobookCommentGetDetailModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
                             $commentLike->getId(),
                             $commentLike->getLiked()
