@@ -46,6 +46,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => 3,
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -107,6 +108,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => "3",
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
 
         /// step 2
@@ -204,6 +206,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => "3",
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
 
         /// step 2
@@ -257,6 +260,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => "3",
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
 
         /// step 2

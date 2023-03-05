@@ -415,6 +415,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setParts($adminAudiobookEditQuery->getParts());
             $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
             $audiobook->setAge($adminAudiobookEditQuery->getAge());
+            $audiobook->setEncoded($adminAudiobookEditQuery->getEncoded());
 
             $audiobookRepository->add($audiobook);
 

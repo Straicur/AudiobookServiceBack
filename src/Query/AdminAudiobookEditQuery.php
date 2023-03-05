@@ -65,6 +65,11 @@ class AdminAudiobookEditQuery
     #[Assert\Type(type: "integer")]
     private int $age;
 
+    #[Assert\NotNull(message: "Encoded is null")]
+    #[Assert\NotBlank(message: "Encoded is empty")]
+    #[Assert\Type(type: "string")]
+    private string $encoded;
+
     /**
      * @return Uuid
      */
@@ -248,6 +253,22 @@ class AdminAudiobookEditQuery
     public function setAge(int $age): void
     {
         $this->age = $age;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncoded(): string
+    {
+        return $this->encoded;
+    }
+
+    /**
+     * @param string $encoded
+     */
+    public function setEncoded(string $encoded): void
+    {
+        $this->encoded = $encoded;
     }
 
 }
