@@ -158,7 +158,7 @@ class UserDeleteModel
      */
     public function setDateDeleted(\DateTime $dateDeleted): void
     {
-        $this->dateDeleted = $dateDeleted->getTimestamp();
+        $this->dateDeleted = $dateDeleted->getTimestamp() * 1000;
     }
 
 }

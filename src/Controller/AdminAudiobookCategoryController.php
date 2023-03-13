@@ -562,7 +562,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException(["adminCategory.detail.audiobookCategory.not.exist"]);
             }
 
-            $successModel = new AdminCategorySuccessModel($category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null);
+            $successModel = new AdminCategorySuccessModel($category->getId(),$category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null);
 
             return ResponseTool::getResponse($successModel);
 

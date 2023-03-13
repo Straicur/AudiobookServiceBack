@@ -2,14 +2,14 @@
 
 namespace App\Model;
 
-class AudiobookCommentGetModel
+class AudiobookCommentsModel
 {
     private AudiobookCommentUserModel $userModel;
     private string $id;
     private string $comment;
     private bool $edited;
-    private int $childComments;
     private bool $myComment;
+    private bool $deleted = false;
 
     /**
      * @var AudiobookCommentLikeModel[]
@@ -22,21 +22,44 @@ class AudiobookCommentGetModel
     private array $audiobookCommentUnlikeModel;
 
     /**
+     * @var AudiobookCommentsModel[]
+     */
+    private array $children = [];
+
+    /**
      * @param AudiobookCommentUserModel $userModel
      * @param string $id
      * @param string $comment
      * @param bool $edited
-     * @param int $childComments
      * @param bool $myComment
      */
-    public function __construct(AudiobookCommentUserModel $userModel, string $id, string $comment, bool $edited, int $childComments, bool $myComment)
+    public function __construct(AudiobookCommentUserModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
     {
         $this->userModel = $userModel;
         $this->id = $id;
         $this->comment = $comment;
         $this->edited = $edited;
-        $this->childComments = $childComments;
         $this->myComment = $myComment;
+    }
+    /**
+     * @return AudiobookCommentsModel[]
+     */
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param array $children
+     */
+    public function setChildren(array $children): void
+    {
+        $this->children = $children;
+    }
+
+    public function addChildren(AudiobookCommentsModel $children): void
+    {
+        $this->children[] = $children;
     }
 
     /**
@@ -104,22 +127,6 @@ class AudiobookCommentGetModel
     }
 
     /**
-     * @return int
-     */
-    public function getChildComments(): int
-    {
-        return $this->childComments;
-    }
-
-    /**
-     * @param int $childComments
-     */
-    public function setChildComments(int $childComments): void
-    {
-        $this->childComments = $childComments;
-    }
-
-    /**
      * @return bool
      */
     public function isMyComment(): bool
@@ -134,6 +141,7 @@ class AudiobookCommentGetModel
     {
         $this->myComment = $myComment;
     }
+
     /**
      * @return AudiobookCommentLikeModel[]
      */
@@ -174,5 +182,21 @@ class AudiobookCommentGetModel
     public function addAudiobookCommentUnlikeModel(AudiobookCommentlikeModel $audiobookCommentUnlikeModel): void
     {
         $this->audiobookCommentUnlikeModel[] = $audiobookCommentUnlikeModel;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     */
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 }

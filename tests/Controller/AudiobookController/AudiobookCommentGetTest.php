@@ -32,7 +32,7 @@ class AudiobookCommentGetTest extends AbstractWebTest
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
         $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user1);
         $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2);
-        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user2, $comment1);
+        $comment4 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment4", $audiobook1, $user2, $comment1);
 
         $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(true,$comment1,$user1);
         $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(false,$comment1,$user2);
@@ -60,14 +60,15 @@ class AudiobookCommentGetTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("audiobookCommentGetModels", $responseContent);
-        $this->assertCount(3, $responseContent["audiobookCommentGetModels"]);
-        $this->assertArrayHasKey("id", $responseContent["audiobookCommentGetModels"][0]);
-        $this->assertArrayHasKey("comment", $responseContent["audiobookCommentGetModels"][0]);
-        $this->assertArrayHasKey("edited", $responseContent["audiobookCommentGetModels"][0]);
-        $this->assertArrayHasKey("childComments", $responseContent["audiobookCommentGetModels"][0]);
-        $this->assertArrayHasKey("myComment", $responseContent["audiobookCommentGetModels"][0]);
-        $this->assertArrayHasKey("userModel", $responseContent["audiobookCommentGetModels"][0]);
+        $this->assertArrayHasKey("comments", $responseContent);
+        $this->assertCount(3, $responseContent["comments"]);
+        $this->assertArrayHasKey("id", $responseContent["comments"][0]);
+        $this->assertArrayHasKey("comment", $responseContent["comments"][0]);
+        $this->assertArrayHasKey("edited", $responseContent["comments"][0]);
+        $this->assertArrayHasKey("children", $responseContent["comments"][0]);
+        $this->assertCount(1, $responseContent["comments"][0]["children"]);
+        $this->assertArrayHasKey("myComment", $responseContent["comments"][0]);
+        $this->assertArrayHasKey("userModel", $responseContent["comments"][0]);
     }
 
     /**

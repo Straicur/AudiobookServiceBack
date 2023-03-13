@@ -6,25 +6,21 @@ use App\Annotation\AuthValidation;
 use App\Entity\Audiobook;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\AudiobookCommentGetDetailModel;
-use App\Model\AudiobookCommentGetDetailSuccessModel;
-use App\Model\AudiobookCommentGetModel;
-use App\Model\AudiobookCommentGetSuccessModel;
-use App\Model\AudiobookCommentLikeModel;
-use App\Model\AudiobookCommentUserModel;
+use App\Model\AudiobookCommentsSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Query\AudiobookCommentGetDetailQuery;
 use App\Query\AudiobookCommentGetQuery;
 use App\Query\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
+use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -208,9 +204,9 @@ class AudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -230,7 +226,7 @@ class AudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: AudiobookCommentGetSuccessModel::class)
+                content: new Model(type: AudiobookCommentsSuccessModel::class)
             )
         ]
     )]
@@ -239,9 +235,10 @@ class AudiobookController extends AbstractController
         RequestServiceInterface            $requestService,
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
-        AudiobookRepository                $audiobookRepository,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        AudiobookRepository                $audiobookRepository,
+        UserRepository                     $userRepository
     ): Response
     {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetQuery::class);
@@ -250,168 +247,36 @@ class AudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey(),false);
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey());
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["audiobook.comment.get.audiobook.not.exist"]);
             }
 
-            $audiobookParentComments = $audiobookUserCommentRepository->findBy([
-                "audiobook" => $audiobook->getId(),
-                "deleted" => false,
-                "parent" => null
-            ]);
+            $admin = $userRepository->userIsAdmin($user);
 
-            $successModel = new AudiobookCommentGetSuccessModel();
-
-            foreach ($audiobookParentComments as $audiobookParentComment) {
-
-                $childComments = count($audiobookUserCommentRepository->findBy(["parent" => $audiobookParentComment->getId()]));
-                $audiobookParentUser = $audiobookParentComment->getUser();
-                $myComment = $audiobookParentUser === $user;
-
-                $commentLikes = $audiobookUserCommentLikeRepository->findBy([
-                    "audiobookUserComment" => $audiobookParentComment->getId(),
+            if ($admin) {
+                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                    "parent" => null,
+                    "audiobook" => $audiobook->getId()
+                ]);
+            } else {
+                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                    "parent" => null,
+                    "audiobook" => $audiobook->getId(),
                     "deleted" => false
                 ]);
-
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
-
-                $audiobookCommentModel = new AudiobookCommentGetModel(
-                    $userModel, $audiobookParentComment->getId(),
-                    $audiobookParentComment->getComment(),
-                    $audiobookParentComment->getEdited(),
-                    $childComments
-                    , $myComment
-                );
-
-                foreach ($commentLikes as $commentLike) {
-                    if ($commentLike->getLiked()) {
-                        $audiobookCommentModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
-                    } else {
-                        $audiobookCommentModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
-                    }
-                }
-
-                $successModel->addAudiobookCommentGetModel($audiobookCommentModel);
             }
 
-            return ResponseTool::getResponse($successModel);
+            $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, $admin);
 
+            $successModel = new AudiobookCommentsSuccessModel($treeGenerator->generate());
+
+            return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("audiobook.comment.get.invalid.query");
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/audiobook/comment/get/detail", name: "audiobookCommentGetDetail", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Post(
-        description: "Endpoint is returning child comments for given comment",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AudiobookCommentGetDetailQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-                content: new Model(type: AudiobookCommentGetDetailSuccessModel::class)
-            )
-        ]
-    )]
-    public function audiobookCommentGetDetail(
-        Request                            $request,
-        RequestServiceInterface            $requestService,
-        AuthorizedUserServiceInterface     $authorizedUserService,
-        LoggerInterface                    $endpointLogger,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-    ): Response
-    {
-        $audiobookCommentGetDetailQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetDetailQuery::class);
-
-        if ($audiobookCommentGetDetailQuery instanceof AudiobookCommentGetDetailQuery) {
-
-            $user = $authorizedUserService->getAuthorizedUser();
-
-            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
-                "id" => $audiobookCommentGetDetailQuery->getAudiobookCommentId(),
-            ]);
-
-            if ($audiobookComment == null) {
-                $endpointLogger->error("Audiobook Comment dont exist");
-                throw new DataNotFoundException(["userAudiobook.comment.get.audiobook.comment.not.exist"]);
-            }
-
-            $audiobookCommentKids = $audiobookUserCommentRepository->getParentCommentKids($audiobookComment);
-
-            $successModel = new AudiobookCommentGetDetailSuccessModel();
-
-            foreach ($audiobookCommentKids as $audiobookCommentKid) {
-
-                $audiobookParentUser = $audiobookCommentKid->getUser();
-                $myComment = $audiobookParentUser === $user;
-
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
-
-                $commentLikes = $audiobookUserCommentLikeRepository->findBy([
-                    "audiobookUserComment" => $audiobookCommentKid->getId(),
-                    "deleted" => false
-                ]);
-
-                $audiobookCommentGetDetailModel = new AudiobookCommentGetDetailModel(
-                    $userModel,
-                    $audiobookCommentKid->getId(),
-                    $audiobookCommentKid->getComment(),
-                    $audiobookCommentKid->getEdited(),
-                    $myComment
-                );
-
-                foreach ($commentLikes as $commentLike) {
-                    if ($commentLike->getLiked()) {
-                        $audiobookCommentGetDetailModel->addAudiobookCommentModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
-                    } else {
-                        $audiobookCommentGetDetailModel->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
-                    }
-                }
-
-
-                $successModel->addAudiobookCommentGetDetailModel($audiobookCommentGetDetailModel);
-            }
-
-            return ResponseTool::getResponse($successModel);
-
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("audiobook.comment.get.details.invalid.query");
         }
     }
 }

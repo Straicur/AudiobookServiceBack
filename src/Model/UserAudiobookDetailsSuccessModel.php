@@ -45,7 +45,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->author = $author;
         $this->version = $version;
         $this->album = $album;
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
         $this->duration = $duration;
         $this->size = $size;
         $this->parts = $parts;
@@ -147,7 +147,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      */
     public function setYear(\DateTime $year): void
     {
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
     }
 
     /**

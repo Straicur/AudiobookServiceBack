@@ -36,16 +36,17 @@ class AdminAudiobookEditTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $audiobook1->getId(),
-            "title" => "ty",
-            "author" => "au",
-            "version" => "3",
-            "album" => "da",
+            "title" => "fsafsa",
+            "author" => "dsafeafas",
+            "version" => "3.0",
+            "album" => "Krlowa nieg",
             "year" => "27.11.2022",
-            "duration" => "30",
-            "size" => "30",
+            "duration" => "0",
+            "size" => "30.40",
             "parts" => 3,
-            "description" => "Desc",
+            "description" => "engiTunPGAP0",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2XD",
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
@@ -107,6 +108,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => "3",
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
 
         /// step 2
@@ -204,6 +206,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
             "parts" => "3",
             "description" => "Desc",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2",
         ];
 
         /// step 2
@@ -247,16 +250,17 @@ class AdminAudiobookEditTest extends AbstractWebTest
         /// step 2
         $content = [
             "audiobookId" => $category1->getId(),
-            "title" => "ty",
-            "author" => "au",
-            "version" => "3",
-            "album" => "da",
+            "title" => "fsafsa",
+            "author" => "dsafeafas",
+            "version" => "3.0",
+            "album" => "Krlowa nieg",
             "year" => "27.11.2022",
-            "duration" => "30",
-            "size" => "30",
-            "parts" => "3",
-            "description" => "Desc",
+            "duration" => "0",
+            "size" => "30.40",
+            "parts" => 3,
+            "description" => "engiTunPGAP0",
             "age" => AudiobookAgeRange::FROM7TO12->value,
+            "encoded" => "2XD",
         ];
 
         /// step 2

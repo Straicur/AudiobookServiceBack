@@ -415,6 +415,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setParts($adminAudiobookEditQuery->getParts());
             $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
             $audiobook->setAge($adminAudiobookEditQuery->getAge());
+            $audiobook->setEncoded($adminAudiobookEditQuery->getEncoded());
 
             $audiobookRepository->add($audiobook);
 
@@ -1024,7 +1025,7 @@ class AdminAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["adminAudiobook.change.comment.audiobook.not.exist"]);
+                throw new DataNotFoundException(["adminAudiobook.change.cover.audiobook.not.exist"]);
             }
 
             $img = "";
@@ -1061,7 +1062,7 @@ class AdminAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminAudiobook.change.comment.cover.query");
+            throw new InvalidJsonDataException("adminAudiobook.change.cover.cover.query");
         }
     }
 }

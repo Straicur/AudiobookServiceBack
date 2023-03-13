@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class  AdminAudiobookChangeCoverQuery
 {
-
     #[Assert\NotNull(message: "Type is null")]
     #[Assert\NotBlank(message: "Type is empty")]
     #[Assert\Type(type: "string")]

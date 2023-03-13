@@ -48,7 +48,7 @@ class AdminAudiobookDetailsModel
         $this->author = $author;
         $this->version = $version;
         $this->album = $album;
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
         $this->duration = $duration;
         $this->size = $size;
         $this->parts = $parts;
@@ -151,7 +151,7 @@ class AdminAudiobookDetailsModel
      */
     public function setYear(\DateTime $year): void
     {
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
     }
 
     /**

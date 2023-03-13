@@ -47,7 +47,7 @@ class AdminCategoryModel
         $this->children = $children;
     }
 
-    public function addChildren(AdminCategoryModel $children)
+    public function addChildren(AdminCategoryModel $children): void
     {
         $this->children[] = $children;
     }
