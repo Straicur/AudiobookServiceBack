@@ -33,7 +33,7 @@ class AdminCategoryAudiobookModel implements ModelInterface
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
         $this->duration = $duration;
         $this->size = $size;
         $this->parts = $parts;
@@ -102,7 +102,7 @@ class AdminCategoryAudiobookModel implements ModelInterface
      */
     public function setYear(\DateTime $year): void
     {
-        $this->year = $year->getTimestamp();
+        $this->year = $year->getTimestamp() * 1000;
     }
 
     /**

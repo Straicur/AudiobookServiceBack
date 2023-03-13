@@ -112,7 +112,7 @@ class NotificationModel implements ModelInterface
      */
     public function setDateAdd(?\DateTime $dateAdd): void
     {
-        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->dateAdd = $dateAdd->getTimestamp() * 1000;
     }
 
     /**

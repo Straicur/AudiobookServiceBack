@@ -17,7 +17,7 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     {
         $this->part = $part;
         $this->endedTime = $endedTime;
-        $this->watchingDate = $watchingDate->getTimestamp();
+        $this->watchingDate = $watchingDate->getTimestamp() * 1000;
     }
 
     /**
@@ -65,7 +65,7 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
      */
     public function setWatchingDate(\DateTime $watchingDate): void
     {
-        $this->watchingDate = $watchingDate->getTimestamp();
+        $this->watchingDate = $watchingDate->getTimestamp() * 1000;
     }
 
 

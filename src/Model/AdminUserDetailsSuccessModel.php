@@ -29,7 +29,7 @@ class AdminUserDetailsSuccessModel implements ModelInterface
     public function __construct(string $id, \DateTime $dateCreate, bool $active, bool $banned, string $email, string $phoneNumber, string $firstname, string $lastname)
     {
         $this->id = $id;
-        $this->dateCreate = $dateCreate->getTimestamp();
+        $this->dateCreate = $dateCreate->getTimestamp() * 1000;
         $this->active = $active;
         $this->banned = $banned;
         $this->email = $email;
@@ -67,7 +67,7 @@ class AdminUserDetailsSuccessModel implements ModelInterface
      */
     public function setDateCreate(\DateTime $dateCreate): void
     {
-        $this->dateCreate = $dateCreate->getTimestamp();
+        $this->dateCreate = $dateCreate->getTimestamp() * 1000;
     }
 
     /**
