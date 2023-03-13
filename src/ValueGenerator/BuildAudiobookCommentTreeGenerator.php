@@ -17,6 +17,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     private AudiobookUserCommentRepository $audiobookUserCommentRepository;
     private AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository;
     private User $user;
+    private bool $admin;
 
     /**
      * @param array $elements
@@ -28,13 +29,15 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
         array                              $elements,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        User                               $user
+        User                               $user,
+        bool                               $admin
     )
     {
         $this->elements = $elements;
         $this->audiobookUserCommentRepository = $audiobookUserCommentRepository;
         $this->audiobookUserCommentLikeRepository = $audiobookUserCommentLikeRepository;
         $this->user = $user;
+        $this->admin = $admin;
     }
 
     private function buildTree(
@@ -42,6 +45,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         User                               $user,
+        bool                               $admin,
         ?Uuid                              $parentId = null
     ): array
     {
@@ -51,9 +55,16 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
             if ($element->getParent() == $parentId || ($element->getParent() != null && $element->getParent()->getId() == $parentId)) {
 
-                $children = $audiobookUserCommentRepository->findBy([
-                    "parent" => $element->getId()
-                ]);
+                if ($admin) {
+                    $children = $audiobookUserCommentRepository->findBy([
+                        "parent" => $element->getId()
+                    ]);
+                } else {
+                    $children = $audiobookUserCommentRepository->findBy([
+                        "parent" => $element->getId(),
+                        "deleted" => false
+                    ]);
+                }
 
                 $audiobookParentUser = $element->getUser();
                 $myComment = $audiobookParentUser === $user;
@@ -73,6 +84,10 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     $myComment
                 );
 
+                if ($admin) {
+                    $child->setDeleted($element->getDeleted());
+                }
+
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
                         $child->addAudiobookCommentModel(new AudiobookCommentLikeModel(
@@ -89,7 +104,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 if (!empty($children)) {
 
-                    $children = $this->buildTree($children, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, $element->getId());
+                    $children = $this->buildTree($children, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, $admin, $element->getId());
 
                     foreach ($children as $parentChild) {
                         $child->addChildren($parentChild);
@@ -105,7 +120,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
     public function generate(): array
     {
-        return $this->buildTree($this->getElements(), $this->getAudiobookUserCommentRepository(), $this->getAudiobookUserCommentLikeRepository(), $this->getUser());
+        return $this->buildTree($this->getElements(), $this->getAudiobookUserCommentRepository(), $this->getAudiobookUserCommentLikeRepository(), $this->getUser(), $this->isAdmin());
     }
 
     /**
@@ -170,5 +185,21 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     public function setUser(User $user): void
     {
         $this->user = $user;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @param bool $admin
+     */
+    public function setAdmin(bool $admin): void
+    {
+        $this->admin = $admin;
     }
 }

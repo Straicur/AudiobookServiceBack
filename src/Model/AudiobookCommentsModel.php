@@ -9,6 +9,7 @@ class AudiobookCommentsModel
     private string $comment;
     private bool $edited;
     private bool $myComment;
+    private bool $deleted = false;
 
     /**
      * @var AudiobookCommentLikeModel[]
@@ -181,5 +182,21 @@ class AudiobookCommentsModel
     public function addAudiobookCommentUnlikeModel(AudiobookCommentlikeModel $audiobookCommentUnlikeModel): void
     {
         $this->audiobookCommentUnlikeModel[] = $audiobookCommentUnlikeModel;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     */
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 }

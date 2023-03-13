@@ -16,6 +16,7 @@ use App\Query\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
@@ -205,7 +206,9 @@ class AudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
+     * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/audiobook/comment/get", name: "audiobookCommentGet", methods: ["POST"])]
@@ -233,7 +236,9 @@ class AudiobookController extends AbstractController
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        AudiobookRepository                $audiobookRepository,
+        UserRepository                     $userRepository
     ): Response
     {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetQuery::class);
@@ -242,11 +247,29 @@ class AudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                "parent" => null
-            ]);
+            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey());
 
-            $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user);
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["audiobook.comment.get.audiobook.not.exist"]);
+            }
+
+            $admin = $userRepository->userIsAdmin($user);
+
+            if ($admin) {
+                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                    "parent" => null,
+                    "audiobook" => $audiobook->getId()
+                ]);
+            } else {
+                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                    "parent" => null,
+                    "audiobook" => $audiobook->getId(),
+                    "deleted" => false
+                ]);
+            }
+
+            $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, $admin);
 
             $successModel = new AudiobookCommentsSuccessModel($treeGenerator->generate());
 
