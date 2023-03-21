@@ -439,7 +439,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Delete(
         description: "Endpoint is deleting audiobook with his files",
         requestBody: new OA\RequestBody(
             required: true,
@@ -930,7 +930,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/comment/delete", name: "adminAudiobookCommentDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Put(
+    #[OA\Delete(
         description: "Endpoint is deleting given comment",
         requestBody: new OA\RequestBody(
             required: true,
@@ -991,7 +991,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/change/cover", name: "adminAudiobookChangeCover", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Put(
+    #[OA\Patch(
         description: "Endpoint is changing given cover",
         requestBody: new OA\RequestBody(
             required: true,

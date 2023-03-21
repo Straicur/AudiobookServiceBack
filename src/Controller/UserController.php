@@ -510,7 +510,7 @@ class UserController extends AbstractController
      */
     #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is changing user password",
         requestBody: new OA\RequestBody(
             required: true,
