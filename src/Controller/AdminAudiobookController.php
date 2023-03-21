@@ -1028,8 +1028,6 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException(["adminAudiobook.change.cover.audiobook.not.exist"]);
             }
 
-            $img = "";
-
             $handle = opendir($audiobook->getFileName());
 
             while (false !== ($entry = readdir($handle))) {
@@ -1040,29 +1038,24 @@ class AdminAudiobookController extends AbstractController
 
                     if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
 
-                        $img = $file_parts["basename"];
+                        $img = $audiobook->getFileName() . "/" . $file_parts["basename"];
 
-                        break;
+                        if (file_exists($img)) {
+                            unlink($img);
+                        }
+
                     }
                 }
             }
 
-            if ($img == "") {
-                $imgFile = fopen($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), "a");
-
-            } else {
-                $img = $audiobook->getFileName() . "/" . $img;
-                $imgFile = fopen($img, "w");
-            }
-
-            fwrite($imgFile, $adminAudiobookChangeCoverQuery->getBase64());
-            fclose($imgFile);
+            $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
+            file_put_contents($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
             return ResponseTool::getResponse();
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminAudiobook.change.cover.cover.query");
+            throw new InvalidJsonDataException("adminAudiobook.change.cover.query");
         }
     }
 }
