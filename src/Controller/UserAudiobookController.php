@@ -692,7 +692,7 @@ class UserAudiobookController extends AbstractController
      */
     #[Route("/api/user/audiobook/rating/get", name: "userAudiobookRatingGet", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Put(
+    #[OA\Post(
         description: "Endpoint is getting audiobook overall rating",
         requestBody: new OA\RequestBody(
             required: true,
@@ -851,7 +851,7 @@ class UserAudiobookController extends AbstractController
      */
     #[Route("/api/user/audiobook/comment/edit", name: "userAudiobookCommentEdit", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Put(
+    #[OA\Patch(
         description: "Endpoint is editing given comment",
         requestBody: new OA\RequestBody(
             required: true,
@@ -942,7 +942,7 @@ class UserAudiobookController extends AbstractController
      */
     #[Route("/api/user/audiobook/comment/like/add", name: "userAudiobookCommentLikeAdd", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Put(
+    #[OA\Patch(
         description: "Endpoint is adding/editing user audiobook comment like",
         requestBody: new OA\RequestBody(
             required: true,

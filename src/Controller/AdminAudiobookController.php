@@ -439,7 +439,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Delete(
         description: "Endpoint is deleting audiobook with his files",
         requestBody: new OA\RequestBody(
             required: true,
@@ -930,7 +930,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/comment/delete", name: "adminAudiobookCommentDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Put(
+    #[OA\Delete(
         description: "Endpoint is deleting given comment",
         requestBody: new OA\RequestBody(
             required: true,
@@ -991,7 +991,7 @@ class AdminAudiobookController extends AbstractController
      */
     #[Route("/api/admin/audiobook/change/cover", name: "adminAudiobookChangeCover", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Put(
+    #[OA\Patch(
         description: "Endpoint is changing given cover",
         requestBody: new OA\RequestBody(
             required: true,
@@ -1028,8 +1028,6 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException(["adminAudiobook.change.cover.audiobook.not.exist"]);
             }
 
-            $img = "";
-
             $handle = opendir($audiobook->getFileName());
 
             while (false !== ($entry = readdir($handle))) {
@@ -1040,29 +1038,24 @@ class AdminAudiobookController extends AbstractController
 
                     if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
 
-                        $img = $file_parts["basename"];
+                        $img = $audiobook->getFileName() . "/" . $file_parts["basename"];
 
-                        break;
+                        if (file_exists($img)) {
+                            unlink($img);
+                        }
+
                     }
                 }
             }
 
-            if ($img == "") {
-                $imgFile = fopen($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), "a");
-
-            } else {
-                $img = $audiobook->getFileName() . "/" . $img;
-                $imgFile = fopen($img, "w");
-            }
-
-            fwrite($imgFile, $adminAudiobookChangeCoverQuery->getBase64());
-            fclose($imgFile);
+            $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
+            file_put_contents($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
             return ResponseTool::getResponse();
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminAudiobook.change.cover.cover.query");
+            throw new InvalidJsonDataException("adminAudiobook.change.cover.query");
         }
     }
 }

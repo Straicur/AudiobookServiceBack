@@ -205,7 +205,7 @@ class RegisterController extends AbstractController
      * @throws DataNotFoundException
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
-    #[OA\Patch(
+    #[OA\Get(
         description: "Method used to confirm user registration",
         security: [],
         requestBody: new OA\RequestBody(),

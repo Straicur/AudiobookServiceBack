@@ -67,7 +67,7 @@ class AdminStatisticsController extends AbstractController
      */
     #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Patch(
+    #[OA\Get(
         description: "Endpoint is returning main statistic data",
         requestBody: new OA\RequestBody(),
         responses: [
@@ -120,7 +120,7 @@ class AdminStatisticsController extends AbstractController
      */
     #[Route("/api/admin/statistic/best/audiobooks", name: "adminStatisticBestAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Patch(
+    #[OA\Get(
         description: "Endpoint  is returning most liked audiobooks statistics",
         requestBody: new OA\RequestBody(),
         responses: [
