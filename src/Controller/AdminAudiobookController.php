@@ -262,7 +262,7 @@ class AdminAudiobookController extends AbstractController
                 if (array_key_exists("duration", $ID3JsonData)) {
                     $duration = $ID3JsonData["duration"];
                 } else {
-                    $duration = "1";
+                    $duration = 0;
                 }
 
                 if (array_key_exists("size", $ID3JsonData)) {
