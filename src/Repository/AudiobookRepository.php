@@ -50,17 +50,34 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $limit
      * @param int $page
+     * @param int $limit
+     * @param array $categories
+     * @param string $author
+     * @param string $title
+     * @param string $album
+     * @param int $duration
+     * @param int $age
+     * @param int $rating
+     * @param int $year
+     * @param int $parts
      * @return Audiobook[]
      */
-    public function getAudiobooksByPage(int $page, int $limit): array
+    public function getAudiobooksByPage(int $page, int $limit,array $categories,string $author,string $title,string $album,int $duration,int $age,int $rating,int $year,int $parts): array
     {
         $minResult = $page * $limit;
         $maxResult = $limit + $minResult;
 
-        $qb = $this->createQueryBuilder('a')
-            ->orderBy("a.dateAdd", "DESC")
+
+        $qb = $this->createQueryBuilder('a');
+
+        if (null != $categories) {
+            $qb->leftJoin('a.categories', 'c')
+                ->andWhere('c.id IN (:categories)')
+                ->setParameter('categories', $categories);
+        }
+
+            $qb->orderBy("a.dateAdd", "DESC")
             ->setFirstResult($minResult)
             ->setMaxResults($maxResult);
 
