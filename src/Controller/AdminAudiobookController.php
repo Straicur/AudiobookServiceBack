@@ -837,6 +837,7 @@ class AdminAudiobookController extends AbstractController
             $parts = null;
             $age = null;
             $rating = null;
+            $order = null;
             $year = null;
 
             if (array_key_exists('categories', $audiobookSearchData)) {
@@ -868,14 +869,16 @@ class AdminAudiobookController extends AbstractController
             if (array_key_exists('parts', $audiobookSearchData)) {
                 $parts = $audiobookSearchData['parts'];
             }
+            if (array_key_exists('order', $audiobookSearchData)) {
+                $order = $audiobookSearchData['order'];
+            }
             if (array_key_exists('year', $audiobookSearchData) && $audiobookSearchData['year'] != false) {
-                $year = $audiobookSearchData['year']->format('Y-m-d H:i:s');
+                $year = $audiobookSearchData['year'];
             }
 
             $successModel = new AdminAudiobooksSuccessModel();
-            //todo dodaj opcje sortowania że można dodać 4 (nowy enum podstawowe,najpopularniejsze, nowo dodane i najstarsze)
-            // I dokończ te szukanie
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(),$categories,$author,$title,$album,$duration,$age,$rating,$year,$parts);
+
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $rating, $year, $parts, $order);
 
             foreach ($audiobooks as $audiobook) {
                 $audiobookModel = new AdminCategoryAudiobookModel(

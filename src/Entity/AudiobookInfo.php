@@ -20,7 +20,7 @@ class AudiobookInfo
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: Audiobook::class)]
+    #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookInfos')]
     #[ORM\JoinColumn(nullable: false)]
     private Audiobook $audiobook;
 
