@@ -13,9 +13,9 @@ class MP3FileService implements MP3FileServiceInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getDuration(): string
+    public function getDuration(): int
     {
         $fd = fopen($this->fileName, "rb");
 
@@ -48,20 +48,7 @@ class MP3FileService implements MP3FileServiceInterface
                 fseek($fd, -9, SEEK_CUR);
             }
         }
-        return self::formatTime(round($duration));
-    }
-
-    /**
-     * @param $duration
-     * @return string
-     */
-    private static function formatTime($duration): string
-    {
-        $hours = floor($duration / 3600);
-        $minutes = floor(($duration - ($hours * 3600)) / 60);
-        $seconds = $duration - ($hours * 3600) - ($minutes * 60);
-
-        return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+        return round($duration);
     }
 
     /**

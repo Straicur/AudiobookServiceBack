@@ -11,24 +11,26 @@ class AdminCategoryAudiobookModel implements ModelInterface
     private string $title;
     private string $author;
     private int $year;
-    private string $duration;
+    private int $duration;
     private string $size;
     private int $parts;
     private int $age;
     private bool $active;
+    private float $avgRating;
 
     /**
      * @param string $id
      * @param string $title
      * @param string $author
      * @param \DateTime $year
-     * @param string $duration
+     * @param int $duration
      * @param string $size
      * @param int $parts
+     * @param float $avgRating
      * @param AudiobookAgeRange $age
      * @param bool $active
      */
-    public function __construct(string $id, string $title, string $author, \DateTime $year, string $duration, string $size, int $parts, AudiobookAgeRange $age, bool $active)
+    public function __construct(string $id, string $title, string $author, \DateTime $year, int $duration, string $size, int $parts,  float $avgRating, AudiobookAgeRange $age, bool $active)
     {
         $this->id = $id;
         $this->title = $title;
@@ -37,6 +39,7 @@ class AdminCategoryAudiobookModel implements ModelInterface
         $this->duration = $duration;
         $this->size = $size;
         $this->parts = $parts;
+        $this->avgRating = $avgRating;
         $this->age = $age->value;
         $this->active = $active;
     }
@@ -106,17 +109,17 @@ class AdminCategoryAudiobookModel implements ModelInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getDuration(): string
+    public function getDuration(): int
     {
         return $this->duration;
     }
 
     /**
-     * @param string $duration
+     * @param int $duration
      */
-    public function setDuration(string $duration): void
+    public function setDuration(int $duration): void
     {
         $this->duration = $duration;
     }
@@ -184,6 +187,22 @@ class AdminCategoryAudiobookModel implements ModelInterface
     public function setActive(bool $active): void
     {
         $this->active = $active;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAvgRating(): float
+    {
+        return $this->avgRating;
+    }
+
+    /**
+     * @param float $avgRating
+     */
+    public function setAvgRating(float $avgRating): void
+    {
+        $this->avgRating = $avgRating;
     }
 
 }

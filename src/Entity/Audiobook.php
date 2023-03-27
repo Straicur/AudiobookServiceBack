@@ -41,8 +41,8 @@ class Audiobook
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $encoded = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $duration;
+    #[ORM\Column(type: 'integer')]
+    private int $duration;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $size;
@@ -70,21 +70,25 @@ class Audiobook
 
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookUserComment::class)]
     private Collection $audiobookUserComments;
+    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookInfo::class)]
+    private Collection $audiobookInfos;
 
+    #[ORM\Column(type: 'float')]
+    private float $avgRating;
     /**
      * @param string $title
      * @param string $author
      * @param string $version
      * @param string $album
      * @param DateTime $year
-     * @param string $duration
+     * @param int $duration
      * @param string $size
      * @param int $parts
      * @param string $description
      * @param AudiobookAgeRange $age
      * @param string $fileName
      */
-    public function __construct(string $title, string $author, string $version, string $album, DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName)
+    public function __construct(string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName)
     {
         $this->title = $title;
         $this->author = $author;
@@ -102,6 +106,8 @@ class Audiobook
         $this->fileName = $fileName;
         $this->audiobookRatings = new ArrayCollection();
         $this->audiobookUserComments = new ArrayCollection();
+        $this->audiobookInfos = new ArrayCollection();
+        $this->avgRating = 0;
     }
 
     public function getId(): Uuid
@@ -205,12 +211,12 @@ class Audiobook
         return $this;
     }
 
-    public function getDuration(): string
+    public function getDuration(): int
     {
         return $this->duration;
     }
 
-    public function setDuration(string $duration): self
+    public function setDuration(int $duration): self
     {
         $this->duration = $duration;
 
@@ -363,6 +369,47 @@ class Audiobook
                 $audiobookUserComment->setAudiobook(null);
             }
         }
+
+        return $this;
+    }
+    /**
+     * @return Collection<int, AudiobookInfo>
+     */
+    public function getAudiobookInfos(): Collection
+    {
+        return $this->audiobookUserComments;
+    }
+
+    public function addAudiobookInfo(AudiobookInfo $audiobookInfo): self
+    {
+        if (!$this->audiobookInfos->contains($audiobookInfo)) {
+            $this->audiobookInfos[] = $audiobookInfo;
+            $audiobookInfo->setAudiobook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudiobookInfo(AudiobookInfo $audiobookInfo): self
+    {
+        if ($this->audiobookInfos->removeElement($audiobookInfo)) {
+            // set the owning side to null (unless already changed)
+            if ($audiobookInfo->getAudiobook() === $this) {
+                $audiobookInfo->setAudiobook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAvgRating(): float
+    {
+        return $this->avgRating;
+    }
+
+    public function setAvgRating(float $avgRating): self
+    {
+        $this->avgRating = $avgRating;
 
         return $this;
     }

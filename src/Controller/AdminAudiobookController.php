@@ -148,6 +148,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->getDescription(),
                 $audiobook->getAge(),
                 $audiobook->getActive(),
+                $audiobook->getAvgRating(),
                 $audiobookCategories
             );
 
@@ -262,7 +263,7 @@ class AdminAudiobookController extends AbstractController
                 if (array_key_exists("duration", $ID3JsonData)) {
                     $duration = $ID3JsonData["duration"];
                 } else {
-                    $duration = "1";
+                    $duration = 0;
                 }
 
                 if (array_key_exists("size", $ID3JsonData)) {
@@ -338,6 +339,7 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook->getDescription(),
                     $newAudiobook->getAge(),
                     $newAudiobook->getActive(),
+                    $newAudiobook->getAvgRating(),
                     $audiobookCategories
                 );
 
@@ -770,6 +772,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getDescription(),
                     $audiobook->getAge(),
                     $audiobook->getActive(),
+                    $audiobook->getAvgRating(),
                     $audiobookCategories
                 );
 
@@ -827,9 +830,58 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
 
+            $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
+
+            $categories = [];
+            $author = null;
+            $title = null;
+            $album = null;
+            $duration = null;
+            $parts = null;
+            $age = null;
+            $rating = null;
+            $order = null;
+            $year = null;
+
+            if (array_key_exists('categories', $audiobookSearchData)) {
+                if (!empty($audiobookSearchData["categories"])) {
+                    foreach ($audiobookSearchData["categories"] as $category) {
+                        $categories[] = Uuid::fromString($category)->toBinary();
+                    }
+                }
+            }
+
+            if (array_key_exists('author', $audiobookSearchData)) {
+                $author = ($audiobookSearchData['author'] && '' != $audiobookSearchData['author']) ? "%" . $audiobookSearchData['author'] . "%" : null;
+            }
+            if (array_key_exists('title', $audiobookSearchData)) {
+                $title = ($audiobookSearchData['title'] && '' != $audiobookSearchData['title']) ? "%" . $audiobookSearchData['title'] . "%" : null;
+            }
+            if (array_key_exists('album', $audiobookSearchData)) {
+                $album = ($audiobookSearchData['album'] && '' != $audiobookSearchData['album']) ? "%" . $audiobookSearchData['album'] . "%" : null;
+            }
+            if (array_key_exists('duration', $audiobookSearchData)) {
+                $duration = $audiobookSearchData['duration'];
+            }
+            if (array_key_exists('age', $audiobookSearchData)) {
+                $age = $audiobookSearchData['age'];
+            }
+            if (array_key_exists('rating', $audiobookSearchData)) {
+                $rating = $audiobookSearchData['rating'];
+            }
+            if (array_key_exists('parts', $audiobookSearchData)) {
+                $parts = $audiobookSearchData['parts'];
+            }
+            if (array_key_exists('order', $audiobookSearchData)) {
+                $order = $audiobookSearchData['order'];
+            }
+            if (array_key_exists('year', $audiobookSearchData) && $audiobookSearchData['year'] != false) {
+                $year = $audiobookSearchData['year'];
+            }
+
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit());
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $rating, $year, $parts, $order);
 
             foreach ($audiobooks as $audiobook) {
                 $audiobookModel = new AdminCategoryAudiobookModel(
@@ -840,6 +892,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getDuration(),
                     $audiobook->getSize(),
                     $audiobook->getParts(),
+                    $audiobook->getAvgRating(),
                     $audiobook->getAge(),
                     $audiobook->getActive()
                 );

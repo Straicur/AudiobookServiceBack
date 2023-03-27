@@ -195,7 +195,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $id3Data = [];
         $mp3Size = 0;
-        $mp3Duration = "";
+        $mp3Duration = 0;
         $parts = 0;
 
         if ($handle = opendir($folderDir)) {

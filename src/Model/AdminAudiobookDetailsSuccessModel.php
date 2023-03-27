@@ -13,12 +13,13 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     private string $version;
     private string $album;
     private int $year;
-    private string $duration;
+    private int $duration;
     private string $size;
     private int $parts;
     private string $description;
     private int $age;
     private bool $active;
+    private float $avgRating;
     private ?string $encoded;
 
     /**
@@ -33,15 +34,16 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param string $version
      * @param string $album
      * @param \DateTime $year
-     * @param string $duration
+     * @param int $duration
      * @param string $size
      * @param int $parts
      * @param string $description
      * @param AudiobookAgeRange $age
      * @param bool $active
+     * @param float $avgRating
      * @param array $categories
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories)
     {
         $this->id = $id;
         $this->title = $title;
@@ -55,6 +57,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
         $this->description = $description;
         $this->age = $age->value;
         $this->active = $active;
+        $this->avgRating = $avgRating;
         $this->categories = $categories;
     }
 
@@ -171,17 +174,17 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getDuration(): string
+    public function getDuration(): int
     {
         return $this->duration;
     }
 
     /**
-     * @param string $duration
+     * @param int $duration
      */
-    public function setDuration(string $duration): void
+    public function setDuration(int $duration): void
     {
         $this->duration = $duration;
     }
@@ -287,4 +290,21 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     {
         $this->categories[] = $category;
     }
+
+    /**
+     * @return float
+     */
+    public function getAvgRating(): float
+    {
+        return $this->avgRating;
+    }
+
+    /**
+     * @param float $avgRating
+     */
+    public function setAvgRating(float $avgRating): void
+    {
+        $this->avgRating = $avgRating;
+    }
+
 }

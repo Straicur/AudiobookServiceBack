@@ -299,7 +299,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $fileBase = fopen($base64OnePartFile, "r");
         $readData = fread($fileBase, filesize($base64OnePartFile,));
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
         $content2 = [
             "audiobookId" => $audiobook->getId(),

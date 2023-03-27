@@ -13,7 +13,7 @@ class AdminAudiobookDetailsModel
     private string $version;
     private string $album;
     private int $year;
-    private string $duration;
+    private int $duration;
     private string $size;
     private int $parts;
     private string $description;
@@ -33,7 +33,7 @@ class AdminAudiobookDetailsModel
      * @param string $version
      * @param string $album
      * @param \DateTime $year
-     * @param string $duration
+     * @param int $duration
      * @param string $size
      * @param int $parts
      * @param string $description
@@ -41,7 +41,7 @@ class AdminAudiobookDetailsModel
      * @param bool $active
      * @param array $categories
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
     {
         $this->id = $id;
         $this->title = $title;
@@ -171,17 +171,17 @@ class AdminAudiobookDetailsModel
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getDuration(): string
+    public function getDuration(): int
     {
         return $this->duration;
     }
 
     /**
-     * @param string $duration
+     * @param int $duration
      */
-    public function setDuration(string $duration): void
+    public function setDuration(int $duration): void
     {
         $this->duration = $duration;
     }
