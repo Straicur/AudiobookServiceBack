@@ -852,13 +852,13 @@ class AdminAudiobookController extends AbstractController
             }
 
             if (array_key_exists('author', $audiobookSearchData)) {
-                $author = ($audiobookSearchData['author'] && '' != $audiobookSearchData['author']) ? $audiobookSearchData['author'] : null;
+                $author = ($audiobookSearchData['author'] && '' != $audiobookSearchData['author']) ? "%" . $audiobookSearchData['author'] . "%" : null;
             }
             if (array_key_exists('title', $audiobookSearchData)) {
-                $title = ($audiobookSearchData['title'] && '' != $audiobookSearchData['title']) ? $audiobookSearchData['title'] : null;
+                $title = ($audiobookSearchData['title'] && '' != $audiobookSearchData['title']) ? "%" . $audiobookSearchData['title'] . "%" : null;
             }
             if (array_key_exists('album', $audiobookSearchData)) {
-                $album = ($audiobookSearchData['album'] && '' != $audiobookSearchData['album']) ? $audiobookSearchData['album'] : null;
+                $album = ($audiobookSearchData['album'] && '' != $audiobookSearchData['album']) ? "%" . $audiobookSearchData['album'] . "%" : null;
             }
             if (array_key_exists('duration', $audiobookSearchData)) {
                 $duration = $audiobookSearchData['duration'];
@@ -892,6 +892,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getDuration(),
                     $audiobook->getSize(),
                     $audiobook->getParts(),
+                    $audiobook->getAvgRating(),
                     $audiobook->getAge(),
                     $audiobook->getActive()
                 );

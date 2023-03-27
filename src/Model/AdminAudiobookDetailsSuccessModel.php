@@ -40,6 +40,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param string $description
      * @param AudiobookAgeRange $age
      * @param bool $active
+     * @param float $avgRating
      * @param array $categories
      */
     public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories)

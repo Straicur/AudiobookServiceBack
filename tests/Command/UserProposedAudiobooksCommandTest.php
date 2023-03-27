@@ -62,6 +62,7 @@ class UserProposedAudiobooksCommandTest extends AbstractKernelTestCase
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook14, 1, "dsa", new DateTime("Now"));
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook21, 1, "dsa", new DateTime("Now"));
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook22, 1, "dsa", new DateTime("Now"));
+
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook1);
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook3);
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook6);
@@ -81,6 +82,7 @@ class UserProposedAudiobooksCommandTest extends AbstractKernelTestCase
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook14, 1, "dsa", new DateTime("Now"));
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook21, 1, "dsa", new DateTime("Now"));
         $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook22, 1, "dsa", new DateTime("Now"));
+
         $this->databaseMockManager->testFunc_addMyList($user2, $audiobook3);
         $this->databaseMockManager->testFunc_addMyList($user2, $audiobook25);
         $this->databaseMockManager->testFunc_addMyList($user2, $audiobook23);

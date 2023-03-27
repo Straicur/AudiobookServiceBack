@@ -175,12 +175,12 @@ class AudiobookRepository extends ServiceEntityRepository
                 }
                 case AudiobookOrderSearch::TOP_RATED->value:
                 {
-                    $qb->orderBy("a.avgRating", "ASC");
+                    $qb->orderBy("a.avgRating", "DESC");
                     break;
                 }
                 case AudiobookOrderSearch::WORST_RATED->value:
                 {
-                    $qb->orderBy("a.avgRating", "DESC");
+                    $qb->orderBy("a.avgRating", "ASC");
                     break;
                 }
             }
