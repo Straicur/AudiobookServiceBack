@@ -148,6 +148,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->getDescription(),
                 $audiobook->getAge(),
                 $audiobook->getActive(),
+                $audiobook->getAvgRating(),
                 $audiobookCategories
             );
 
@@ -338,6 +339,7 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook->getDescription(),
                     $newAudiobook->getAge(),
                     $newAudiobook->getActive(),
+                    $newAudiobook->getAvgRating(),
                     $audiobookCategories
                 );
 
@@ -770,6 +772,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getDescription(),
                     $audiobook->getAge(),
                     $audiobook->getActive(),
+                    $audiobook->getAvgRating(),
                     $audiobookCategories
                 );
 

@@ -731,14 +731,7 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.exist"]);
             }
 
-            $goodRatings = count($ratingRepository->findBy([
-                "audiobook" => $audiobook->getId(),
-                "rating" => true
-            ]));
-
-            $audiobookRatings = count($audiobook->getAudiobookRatings());
-
-            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel(($goodRatings / $audiobookRatings) * 100));
+            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel($audiobook->getAvgRating()));
 
         } else {
             $endpointLogger->error("Invalid given Query");

@@ -126,7 +126,17 @@ class AudiobookRepository extends ServiceEntityRepository
                 ->setParameter('partsLow', $partsLow)
                 ->setParameter('partsHigh', $partsHigh);
         }
-        //todo jeszcze raiting do rozkminy wraz z tam ponirzszymi bo bez nich nie da się tak łatwo
+
+        if ($rating != null) {
+
+            $ratingLow = $rating - 1;
+            $ratingHigh = $rating + 1;
+
+            $qb->andWhere('((a.avgRating >= :ratingLow) AND (a.avgRating <= :ratingHigh))')
+                ->setParameter('ratingLow', $ratingLow)
+                ->setParameter('ratingHigh', $ratingHigh);
+        }
+
         if ($order != null) {
             switch ($order) {
                 case AudiobookOrderSearch::POPULAR->value:
@@ -165,32 +175,12 @@ class AudiobookRepository extends ServiceEntityRepository
                 }
                 case AudiobookOrderSearch::TOP_RATED->value:
                 {
-
-                    $qb2 = $qb;
-                    $qb2->select('COUNT(ar)')
-                        ->andWhere('ar.rating = true');
-
-                    $qb->select('a')
-                        ->leftJoin('a.audiobookRatings', 'ar')
-                        ->andWhere('a.active = true')
-                        ->andWhere('ar.rating = true')
-                        ->groupBy('a')
-                        ->orderBy('COUNT(ar) / ' . $qb2->getDQL(), "DESC");
-//                    (COUNT(ar) / $audiobookRatings)) * 100
+                    $qb->orderBy("a.avgRating", "ASC");
                     break;
                 }
                 case AudiobookOrderSearch::WORST_RATED->value:
                 {
-                    $qb2 = $qb;
-                    $qb2->select('COUNT(ar)')
-                        ->andWhere('ar.rating = true');
-
-                    $qb->select('a')
-                        ->leftJoin('a.audiobookRatings', 'ar')
-                        ->andWhere('a.active = true')
-                        ->andWhere('ar.rating = true')
-                        ->groupBy('a')
-                        ->orderBy('COUNT(ar) / ' . $qb2->getDQL(), "ASC");
+                    $qb->orderBy("a.avgRating", "DESC");
                     break;
                 }
             }

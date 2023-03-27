@@ -54,7 +54,7 @@ class AdminAudiobooksTest extends AbstractWebTest
                 "parts" => 1,
                 "age" => 5,
                 "rating" => 1,
-                "order" =>7,
+                "order" =>1,
                 "year" => "23.04.2023"
             ]
         ];

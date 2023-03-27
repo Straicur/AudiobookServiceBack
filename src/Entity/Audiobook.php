@@ -72,6 +72,9 @@ class Audiobook
     private Collection $audiobookUserComments;
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookInfo::class)]
     private Collection $audiobookInfos;
+
+    #[ORM\Column(type: 'float')]
+    private float $avgRating;
     /**
      * @param string $title
      * @param string $author
@@ -104,6 +107,7 @@ class Audiobook
         $this->audiobookRatings = new ArrayCollection();
         $this->audiobookUserComments = new ArrayCollection();
         $this->audiobookInfos = new ArrayCollection();
+        $this->avgRating = 0;
     }
 
     public function getId(): Uuid
@@ -394,6 +398,18 @@ class Audiobook
                 $audiobookInfo->setAudiobook(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAvgRating(): float
+    {
+        return $this->avgRating;
+    }
+
+    public function setAvgRating(float $avgRating): self
+    {
+        $this->avgRating = $avgRating;
 
         return $this;
     }
