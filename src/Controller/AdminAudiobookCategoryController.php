@@ -390,6 +390,7 @@ class AdminAudiobookCategoryController extends AbstractController
                         $audiobook->getDuration(),
                         $audiobook->getSize(),
                         $audiobook->getParts(),
+                        $audiobook->getAvgRating(),
                         $audiobook->getAge(),
                         $audiobook->getActive()
                     );

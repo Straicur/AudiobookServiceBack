@@ -83,9 +83,9 @@ class AdminAudiobooksTest extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
         $this->assertIsArray($responseContent);
-        print_r($responseContent);
+
         $this->assertArrayHasKey("audiobooks", $responseContent);
-        $this->assertCount(4, $responseContent["audiobooks"]);
+        $this->assertCount(5, $responseContent["audiobooks"]);
     }
 
     /**
