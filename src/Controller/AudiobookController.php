@@ -248,14 +248,17 @@ class AudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey());
+            $admin = $userRepository->userIsAdmin($user);
+            if ($admin) {
+                $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey(), false);
+            } else {
+                $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($audiobookCommentGetQuery->getAudiobookId(), $audiobookCommentGetQuery->getCategoryKey());
+            }
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["audiobook.comment.get.audiobook.not.exist"]);
             }
-
-            $admin = $userRepository->userIsAdmin($user);
 
             if ($admin) {
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
