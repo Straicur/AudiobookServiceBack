@@ -41,12 +41,10 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     }
 
     private function buildTree(
-        array                              $elements,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        User                               $user,
-        bool                               $admin,
-        ?Uuid                              $parentId = null
+        array $elements,
+        User  $user,
+        bool  $admin,
+        ?Uuid $parentId = null
     ): array
     {
         $branch = array();
@@ -56,11 +54,11 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
             if ($element->getParent() == $parentId || ($element->getParent() != null && $element->getParent()->getId() == $parentId)) {
 
                 if ($admin) {
-                    $children = $audiobookUserCommentRepository->findBy([
+                    $children = $this->audiobookUserCommentRepository->findBy([
                         "parent" => $element->getId()
                     ]);
                 } else {
-                    $children = $audiobookUserCommentRepository->findBy([
+                    $children = $this->audiobookUserCommentRepository->findBy([
                         "parent" => $element->getId(),
                         "deleted" => false
                     ]);
@@ -69,7 +67,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 $audiobookParentUser = $element->getUser();
                 $myComment = $audiobookParentUser === $user;
 
-                $commentLikes = $audiobookUserCommentLikeRepository->findBy([
+                $commentLikes = $this->audiobookUserCommentLikeRepository->findBy([
                     "audiobookUserComment" => $element->getId(),
                     "deleted" => false
                 ]);
@@ -104,7 +102,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 if (!empty($children)) {
 
-                    $children = $this->buildTree($children, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, $admin, $element->getId());
+                    $children = $this->buildTree($children, $user, $admin, $element->getId());
 
                     foreach ($children as $parentChild) {
                         $child->addChildren($parentChild);
@@ -120,7 +118,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
     public function generate(): array
     {
-        return $this->buildTree($this->getElements(), $this->getAudiobookUserCommentRepository(), $this->getAudiobookUserCommentLikeRepository(), $this->getUser(), $this->isAdmin());
+        return $this->buildTree($this->getElements(), $this->getUser(), $this->isAdmin());
     }
 
     /**
@@ -137,38 +135,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     private function setElements(array $elements): void
     {
         $this->elements = $elements;
-    }
-
-    /**
-     * @return AudiobookUserCommentRepository
-     */
-    public function getAudiobookUserCommentRepository(): AudiobookUserCommentRepository
-    {
-        return $this->audiobookUserCommentRepository;
-    }
-
-    /**
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     */
-    public function setAudiobookUserCommentRepository(AudiobookUserCommentRepository $audiobookUserCommentRepository): void
-    {
-        $this->audiobookUserCommentRepository = $audiobookUserCommentRepository;
-    }
-
-    /**
-     * @return AudiobookUserCommentLikeRepository
-     */
-    public function getAudiobookUserCommentLikeRepository(): AudiobookUserCommentLikeRepository
-    {
-        return $this->audiobookUserCommentLikeRepository;
-    }
-
-    /**
-     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-     */
-    public function setAudiobookUserCommentLikeRepository(AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository): void
-    {
-        $this->audiobookUserCommentLikeRepository = $audiobookUserCommentLikeRepository;
     }
 
     /**

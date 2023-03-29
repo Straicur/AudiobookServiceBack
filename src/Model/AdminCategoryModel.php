@@ -8,6 +8,7 @@ class AdminCategoryModel
     private string $name;
     private bool $active;
     private string $categoryKey;
+    private int $audiobooks;
     private ?string $parentCategoryKey;
 
     /**
@@ -20,14 +21,16 @@ class AdminCategoryModel
      * @param string $name
      * @param bool $active
      * @param string $categoryKey
+     * @param int $audiobooks
      * @param string|null $parentCategoryKey
      */
-    public function __construct(string $id, string $name, bool $active, string $categoryKey, ?string $parentCategoryKey = null)
+    public function __construct(string $id, string $name, bool $active, string $categoryKey, int $audiobooks, ?string $parentCategoryKey = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
         $this->categoryKey = $categoryKey;
+        $this->audiobooks = $audiobooks;
         $this->parentCategoryKey = $parentCategoryKey;
     }
 
@@ -130,6 +133,22 @@ class AdminCategoryModel
     public function setParentCategoryKey(?string $parentCategoryKey): void
     {
         $this->parentCategoryKey = $parentCategoryKey;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAudiobooks(): int
+    {
+        return $this->audiobooks;
+    }
+
+    /**
+     * @param int $audiobooks
+     */
+    public function setAudiobooks(int $audiobooks): void
+    {
+        $this->audiobooks = $audiobooks;
     }
 
 }

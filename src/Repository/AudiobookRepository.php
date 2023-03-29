@@ -211,6 +211,22 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param AudiobookCategory $category
+     * @return Audiobook[]
+     */
+    public function getCategoryAudiobooks(AudiobookCategory $category): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.categories', 'c')
+            ->where('c.id = :category')
+            ->setParameter('category', $category->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    /**
      * @param Uuid $audiobookId
      * @param string $categoryKey
      * @param bool $getActive

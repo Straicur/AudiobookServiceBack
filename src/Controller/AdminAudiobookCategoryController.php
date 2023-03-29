@@ -439,13 +439,14 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository
     ): Response
     {
         $categories = $audiobookCategoryRepository->findBy([
             "parent" => null
         ]);
 
-        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository);
+        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
 
         $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
 
@@ -563,7 +564,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException(["adminCategory.detail.audiobookCategory.not.exist"]);
             }
 
-            $successModel = new AdminCategorySuccessModel($category->getId(),$category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null);
+            $successModel = new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null);
 
             return ResponseTool::getResponse($successModel);
 
