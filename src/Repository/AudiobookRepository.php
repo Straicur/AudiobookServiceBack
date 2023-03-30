@@ -59,13 +59,12 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param string|null $album
      * @param int|null $duration
      * @param int|null $age
-     * @param int|null $rating
      * @param \DateTime|null $year
      * @param int|null $parts
      * @param int|null $order
-     * @return Audiobook[]
+     * @return Audiobook
      */
-    public function getAudiobooksByPage(int $page, int $limit, array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, int $rating = null, \DateTime $year = null, int $parts = null, int $order = null): array
+    public function getAudiobooksByPage(int $page, int $limit, array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, \DateTime $year = null, int $parts = null, int $order = null): array
     {
         $minResult = $page * $limit;
         $maxResult = $limit + $minResult;
@@ -125,16 +124,6 @@ class AudiobookRepository extends ServiceEntityRepository
             $qb->andWhere('((a.parts >= :partsLow) AND (a.parts <= :partsHigh))')
                 ->setParameter('partsLow', $partsLow)
                 ->setParameter('partsHigh', $partsHigh);
-        }
-
-        if ($rating != null) {
-
-            $ratingLow = $rating - 1;
-            $ratingHigh = $rating + 1;
-
-            $qb->andWhere('((a.avgRating >= :ratingLow) AND (a.avgRating <= :ratingHigh))')
-                ->setParameter('ratingLow', $ratingLow)
-                ->setParameter('ratingHigh', $ratingHigh);
         }
 
         if ($order != null) {
