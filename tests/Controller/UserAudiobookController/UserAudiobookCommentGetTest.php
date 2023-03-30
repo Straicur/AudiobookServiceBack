@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Tests\Controller\AudiobookController;
+namespace App\Tests\Controller\UserAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Tests\AbstractWebTest;
 
 /**
- * AudiobookCommentGetTest
+ * UserAudiobookCommentGetTest
  */
-class AudiobookCommentGetTest extends AbstractWebTest
+class UserAudiobookCommentGetTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
