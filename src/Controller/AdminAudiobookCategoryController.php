@@ -9,6 +9,7 @@ use App\Exception\InvalidJsonDataException;
 use App\Model\AdminCategoriesSuccessModel;
 use App\Model\AdminCategoryAudiobookModel;
 use App\Model\AdminCategoryAudiobooksSuccessModel;
+use App\Model\AdminCategoryModel;
 use App\Model\AdminCategorySuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
@@ -418,6 +419,50 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @return Response
+     */
+    #[Route("/api/admin/categories/tree", name: "adminCategoriesTree", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Get(
+        description: "Endpoint is returning all categories in system as a tree",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminCategoriesSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminCategoriesTree(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository
+    ): Response
+    {
+        $categories = $audiobookCategoryRepository->findBy([
+            "parent" => null
+        ]);
+
+        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+
+        $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
+
+        return ResponseTool::getResponse($successModel);
+
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
      * @return Response
      */
     #[Route("/api/admin/categories", name: "adminCategories", methods: ["GET"])]
@@ -439,19 +484,18 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository
     ): Response
     {
-        $categories = $audiobookCategoryRepository->findBy([
-            "parent" => null
-        ]);
+        $categories = $audiobookCategoryRepository->findAll();
 
-        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+        $successModel = new AdminCategoriesSuccessModel();
 
-        $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
+        foreach ($categories as $category) {
+            $newModel = new AdminCategoryModel($category->getId(), $category->getName(), $category->getActive(), $category->getCategoryKey());
+            $successModel->addCategory($newModel);
+        }
 
         return ResponseTool::getResponse($successModel);
-
     }
 
     /**

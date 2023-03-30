@@ -61,7 +61,6 @@ class AdminAudiobooksTest extends AbstractWebTest
                 "duration" => 1,
                 "parts" => 1,
                 "age" => 5,
-                "rating" => 1,
                 "order" => 8,
                 "year" => "23.04.2023"
             ]
@@ -85,7 +84,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("audiobooks", $responseContent);
-        $this->assertCount(5, $responseContent["audiobooks"]);
+        $this->assertCount(8, $responseContent["audiobooks"]);
     }
 
     /**

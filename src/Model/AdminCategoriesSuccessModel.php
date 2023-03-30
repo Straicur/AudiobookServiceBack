@@ -12,9 +12,11 @@ class AdminCategoriesSuccessModel implements ModelInterface
     /**
      * @param AdminCategoryModel[] $categories
      */
-    public function __construct(array $categories)
+    public function __construct(?array $categories = null)
     {
-        $this->categories = $categories;
+        if ($categories != null) {
+            $this->categories = $categories;
+        }
     }
 
     /**

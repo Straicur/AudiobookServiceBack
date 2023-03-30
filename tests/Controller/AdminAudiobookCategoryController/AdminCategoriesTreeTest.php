@@ -7,7 +7,7 @@ use App\Tests\AbstractWebTest;
 /**
  * AdminCategoriesTreeTest
  */
-class AdminCategoriesTest extends AbstractWebTest
+class AdminCategoriesTreeTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
@@ -16,7 +16,7 @@ class AdminCategoriesTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminCategoriesCorrect(): void
+    public function test_adminCategoriesTreeCorrect(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -30,7 +30,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories", server: [
+        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree", server: [
             "HTTP_authorization" => $token->getToken()
         ]);
 
@@ -45,7 +45,9 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("categories", $responseContent);
-        $this->assertCount(16, $responseContent["categories"]);
+        $this->assertCount(5, $responseContent["categories"]);
+
+        $this->assertCount(2, $responseContent["categories"][0]["children"]);
     }
 
     /**
@@ -55,7 +57,7 @@ class AdminCategoriesTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoriesPermission(): void
+    public function test_adminCategoriesTreePermission(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
@@ -68,7 +70,7 @@ class AdminCategoriesTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories", server: [
+        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree", server: [
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
@@ -93,7 +95,7 @@ class AdminCategoriesTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoriesLogOut(): void
+    public function test_adminCategoriesTreeLogOut(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -105,7 +107,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
 
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories");
+        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree");
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);
