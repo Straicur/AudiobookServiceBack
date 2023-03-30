@@ -843,7 +843,6 @@ class AdminAudiobookController extends AbstractController
             $duration = null;
             $parts = null;
             $age = null;
-            $rating = null;
             $order = null;
             $year = null;
 
@@ -870,9 +869,6 @@ class AdminAudiobookController extends AbstractController
             if (array_key_exists('age', $audiobookSearchData)) {
                 $age = $audiobookSearchData['age'];
             }
-            if (array_key_exists('rating', $audiobookSearchData)) {
-                $rating = $audiobookSearchData['rating'];
-            }
             if (array_key_exists('parts', $audiobookSearchData)) {
                 $parts = $audiobookSearchData['parts'];
             }
@@ -885,7 +881,7 @@ class AdminAudiobookController extends AbstractController
 
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $rating, $year, $parts, $order);
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
 
             foreach ($audiobooks as $audiobook) {
                 $audiobookModel = new AdminCategoryAudiobookModel(

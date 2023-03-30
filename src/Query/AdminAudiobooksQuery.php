@@ -62,12 +62,6 @@ class AdminAudiobooksQuery
                     new Assert\GreaterThan(0),
                     new Assert\LessThan(6)
                 ]),
-                'rating' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Rating is empty'),
-                    new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0),
-                    new Assert\LessThan(6)
-                ]),
                 'order' => new Assert\Optional([
                     new Assert\NotBlank(message: 'Order is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
@@ -95,7 +89,6 @@ class AdminAudiobooksQuery
         new OA\Property(property: 'duration', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'parts', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
-        new OA\Property(property: 'rating', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
     ], type: 'object')]
