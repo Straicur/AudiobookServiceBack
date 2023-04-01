@@ -897,14 +897,12 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getActive()
                 );
 
-                $successModel->setPage($adminAudiobooksQuery->getPage());
-                $successModel->setLimit($adminAudiobooksQuery->getLimit());
-
-                $allAudiobooks = $audiobookRepository->findAll();
-
-                $successModel->setMaxPage(count($allAudiobooks) / $adminAudiobooksQuery->getLimit());
                 $successModel->addAudiobook($audiobookModel);
             }
+
+            $successModel->setPage($adminAudiobooksQuery->getPage());
+            $successModel->setLimit($adminAudiobooksQuery->getLimit());
+            $successModel->setMaxPage(floor(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
