@@ -312,7 +312,7 @@ class AdminAudiobookController extends AbstractController
                     foreach ($categories as $category) {
 
                         $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            "categoryKey" => $category
+                            "id" => Uuid::fromString($category)
                         ]);
 
                         if ($audiobookCategory != null) {

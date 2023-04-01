@@ -462,7 +462,6 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
      * @return Response
      */
     #[Route("/api/admin/categories", name: "adminCategories", methods: ["GET"])]
