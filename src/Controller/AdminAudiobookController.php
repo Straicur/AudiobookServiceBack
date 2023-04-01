@@ -312,7 +312,7 @@ class AdminAudiobookController extends AbstractController
                     foreach ($categories as $category) {
 
                         $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            "categoryKey" => $category
+                            "id" => Uuid::fromString($category)
                         ]);
 
                         if ($audiobookCategory != null) {
@@ -881,30 +881,37 @@ class AdminAudiobookController extends AbstractController
 
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
 
-            foreach ($audiobooks as $audiobook) {
-                $audiobookModel = new AdminCategoryAudiobookModel(
-                    $audiobook->getId(),
-                    $audiobook->getTitle(),
-                    $audiobook->getAuthor(),
-                    $audiobook->getYear(),
-                    $audiobook->getDuration(),
-                    $audiobook->getSize(),
-                    $audiobook->getParts(),
-                    $audiobook->getAvgRating(),
-                    $audiobook->getAge(),
-                    $audiobook->getActive()
-                );
+            $minResult = $adminAudiobooksQuery->getPage() * $adminAudiobooksQuery->getLimit();
+            $maxResult = $adminAudiobooksQuery->getLimit() + $minResult;
 
-                $successModel->setPage($adminAudiobooksQuery->getPage());
-                $successModel->setLimit($adminAudiobooksQuery->getLimit());
+            foreach ($audiobooks as $index => $audiobook) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $audiobookModel = new AdminCategoryAudiobookModel(
+                        $audiobook->getId(),
+                        $audiobook->getTitle(),
+                        $audiobook->getAuthor(),
+                        $audiobook->getYear(),
+                        $audiobook->getDuration(),
+                        $audiobook->getSize(),
+                        $audiobook->getParts(),
+                        $audiobook->getAvgRating(),
+                        $audiobook->getAge(),
+                        $audiobook->getActive()
+                    );
+                    $successModel->addAudiobook($audiobookModel);
+                } else {
+                    break;
+                }
 
-                $allAudiobooks = $audiobookRepository->findAll();
-
-                $successModel->setMaxPage(count($allAudiobooks) / $adminAudiobooksQuery->getLimit());
-                $successModel->addAudiobook($audiobookModel);
             }
+
+            $successModel->setPage($adminAudiobooksQuery->getPage());
+            $successModel->setLimit($adminAudiobooksQuery->getLimit());
+            $successModel->setMaxPage(ceil(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {

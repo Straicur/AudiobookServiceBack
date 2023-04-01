@@ -51,8 +51,6 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $page
-     * @param int $limit
      * @param array|null $categories
      * @param string|null $author
      * @param string|null $title
@@ -62,15 +60,12 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param \DateTime|null $year
      * @param int|null $parts
      * @param int|null $order
-     * @return Audiobook
+     * @return Audiobook[]
      */
-    public function getAudiobooksByPage(int $page, int $limit, array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, \DateTime $year = null, int $parts = null, int $order = null): array
+    public function getAudiobooksByPage(array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, \DateTime $year = null, int $parts = null, int $order = null): array
     {
-        $minResult = $page * $limit;
-        $maxResult = $limit + $minResult;
 
-        $qb = $this->createQueryBuilder('a')
-           ;
+        $qb = $this->createQueryBuilder('a');
 
         if ($categories != null) {
             $qb->leftJoin('a.categories', 'c')
@@ -174,8 +169,6 @@ class AudiobookRepository extends ServiceEntityRepository
                 }
             }
         }
-        $qb->setFirstResult($minResult)
-            ->setMaxResults($maxResult);
 
         $query = $qb->getQuery();
 

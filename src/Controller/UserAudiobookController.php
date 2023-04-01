@@ -158,7 +158,7 @@ class UserAudiobookController extends AbstractController
             $successModel->setPage($userAudiobooksQuery->getPage());
             $successModel->setLimit($userAudiobooksQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($allCategories) / $userAudiobooksQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($allCategories) / $userAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {

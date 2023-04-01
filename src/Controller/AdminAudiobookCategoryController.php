@@ -404,7 +404,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $successModel->setPage($adminCategoryAudiobooksQuery->getPage());
             $successModel->setLimit($adminCategoryAudiobooksQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
@@ -462,7 +462,6 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
      * @return Response
      */
     #[Route("/api/admin/categories", name: "adminCategories", methods: ["GET"])]
