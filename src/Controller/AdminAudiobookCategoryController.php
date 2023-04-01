@@ -404,7 +404,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $successModel->setPage($adminCategoryAudiobooksQuery->getPage());
             $successModel->setLimit($adminCategoryAudiobooksQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {

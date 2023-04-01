@@ -911,7 +911,7 @@ class AdminAudiobookController extends AbstractController
 
             $successModel->setPage($adminAudiobooksQuery->getPage());
             $successModel->setLimit($adminAudiobooksQuery->getLimit());
-            $successModel->setMaxPage(floor(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {

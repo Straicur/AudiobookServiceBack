@@ -598,7 +598,7 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUsersQuery->getPage());
             $successModel->setLimit($adminUsersQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($allUsers) / $adminUsersQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($allUsers) / $adminUsersQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
@@ -851,7 +851,7 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUserDeleteListQuery->getPage());
             $successModel->setLimit($adminUserDeleteListQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
@@ -940,7 +940,7 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUserDeleteListQuery->getPage());
             $successModel->setLimit($adminUserDeleteListQuery->getLimit());
 
-            $successModel->setMaxPage(floor(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+            $successModel->setMaxPage(ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
