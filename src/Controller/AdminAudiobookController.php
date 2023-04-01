@@ -881,23 +881,32 @@ class AdminAudiobookController extends AbstractController
 
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($adminAudiobooksQuery->getPage(), $adminAudiobooksQuery->getLimit(), $categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
 
-            foreach ($audiobooks as $audiobook) {
-                $audiobookModel = new AdminCategoryAudiobookModel(
-                    $audiobook->getId(),
-                    $audiobook->getTitle(),
-                    $audiobook->getAuthor(),
-                    $audiobook->getYear(),
-                    $audiobook->getDuration(),
-                    $audiobook->getSize(),
-                    $audiobook->getParts(),
-                    $audiobook->getAvgRating(),
-                    $audiobook->getAge(),
-                    $audiobook->getActive()
-                );
+            $minResult = $adminAudiobooksQuery->getPage() * $adminAudiobooksQuery->getLimit();
+            $maxResult = $adminAudiobooksQuery->getLimit() + $minResult;
 
-                $successModel->addAudiobook($audiobookModel);
+            foreach ($audiobooks as $index=>$audiobook) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $audiobookModel = new AdminCategoryAudiobookModel(
+                        $audiobook->getId(),
+                        $audiobook->getTitle(),
+                        $audiobook->getAuthor(),
+                        $audiobook->getYear(),
+                        $audiobook->getDuration(),
+                        $audiobook->getSize(),
+                        $audiobook->getParts(),
+                        $audiobook->getAvgRating(),
+                        $audiobook->getAge(),
+                        $audiobook->getActive()
+                    );  $successModel->addAudiobook($audiobookModel);
+                }
+                else{
+                    break;
+                }
+
             }
 
             $successModel->setPage($adminAudiobooksQuery->getPage());

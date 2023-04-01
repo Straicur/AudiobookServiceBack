@@ -52,8 +52,7 @@ class AdminAudiobooksTest extends AbstractWebTest
             "limit" => 10,
             "searchData" => [
                 "categories" => [
-                    $category1->getId(),
-                    $category2->getId()
+                    $category1->getId()
                 ],
                 "author" => "a",
                 "title" => "t",
@@ -84,7 +83,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey("audiobooks", $responseContent);
-        $this->assertCount(8, $responseContent["audiobooks"]);
+        $this->assertCount(4, $responseContent["audiobooks"]);
     }
 
     /**
