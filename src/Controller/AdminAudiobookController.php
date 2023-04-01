@@ -886,7 +886,7 @@ class AdminAudiobookController extends AbstractController
             $minResult = $adminAudiobooksQuery->getPage() * $adminAudiobooksQuery->getLimit();
             $maxResult = $adminAudiobooksQuery->getLimit() + $minResult;
 
-            foreach ($audiobooks as $index=>$audiobook) {
+            foreach ($audiobooks as $index => $audiobook) {
                 if ($index < $minResult) {
                     continue;
                 } elseif ($index < $maxResult) {
@@ -901,9 +901,9 @@ class AdminAudiobookController extends AbstractController
                         $audiobook->getAvgRating(),
                         $audiobook->getAge(),
                         $audiobook->getActive()
-                    );  $successModel->addAudiobook($audiobookModel);
-                }
-                else{
+                    );
+                    $successModel->addAudiobook($audiobookModel);
+                } else {
                     break;
                 }
 
