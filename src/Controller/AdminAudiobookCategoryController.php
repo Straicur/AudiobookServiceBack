@@ -16,6 +16,7 @@ use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Query\AdminCategoryActiveQuery;
+use App\Query\AdminCategoryAddAudiobookQuery;
 use App\Query\AdminCategoryAddQuery;
 use App\Query\AdminCategoryAudiobooksQuery;
 use App\Query\AdminCategoryDetailQuery;
@@ -250,7 +251,76 @@ class AdminAudiobookCategoryController extends AbstractController
             throw new InvalidJsonDataException("adminCategory.remove.invalid.query");
         }
     }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/category/add/audiobook", name: "adminCategoryAddAudiobook", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Delete(
+        description: "Endpoint is adding audiobook to given category",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminCategoryAddAudiobookQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminCategoryAddAudiobook(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository
+    ): Response
+    {
+        $adminCategoryAddAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
 
+        if ($adminCategoryAddAudiobookQuery instanceof AdminCategoryAddAudiobookQuery) {
+
+            $category = $audiobookCategoryRepository->findOneBy([
+                "id" => $adminCategoryAddAudiobookQuery->getCategoryId()
+            ]);
+
+            if ($category == null) {
+                $endpointLogger->error("AudiobookCategory dont exist");
+                throw new DataNotFoundException(["adminCategory.add.audiobook.audiobookCategory.not.exist"]);
+            }
+
+            $audiobook = $audiobookRepository->findOneBy([
+                "id" => $adminCategoryAddAudiobookQuery->getAudiobookId()
+            ]);
+
+            if ($audiobook == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["adminCategory.add.audiobook.audiobook.not.exist"]);
+            }
+
+            $audiobook->addCategory($category);
+
+            $audiobookRepository->add($audiobook);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminCategory.add.audiobook.invalid.query");
+        }
+    }
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
