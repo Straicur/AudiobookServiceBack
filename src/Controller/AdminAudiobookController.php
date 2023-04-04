@@ -632,7 +632,7 @@ class AdminAudiobookController extends AbstractController
             if ($audiobookService->lastFile()) {
 
                 $audiobookService->combineFiles();
-                $folderDir = $audiobookService->unzip(true);
+                $folderDir = $audiobookService->unzip($audiobook->getFileName());
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 

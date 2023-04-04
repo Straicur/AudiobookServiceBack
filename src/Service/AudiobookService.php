@@ -140,11 +140,11 @@ class AudiobookService implements AudiobookServiceInterface
     }
 
     /**
-     * @param bool $reAdding
+     * @param string|null $reAdding
      * @return string
      * @throws AudiobookConfigServiceException
      */
-    public function unzip(bool $reAdding = false): string
+    public function unzip(string $reAdding = null): string
     {
         self::checkConfiguration();
 
@@ -161,6 +161,10 @@ class AudiobookService implements AudiobookServiceInterface
 
         unlink($file);
 
+        if ($reAdding != null && is_dir($reAdding)) {
+            self::removeFolder($reAdding);
+        }
+
         $amountOfSameFolders = 0;
 
         if ($handle = opendir($_ENV['MAIN_DIR'])) {
@@ -173,11 +177,7 @@ class AudiobookService implements AudiobookServiceInterface
             closedir($handle);
         }
 
-        $newName = $this->whole_zip_path . ($reAdding ? $amountOfSameFolders - 1 : $amountOfSameFolders);
-
-        if ($reAdding && is_dir($newName)) {
-            self::removeFolder($newName);
-        }
+        $newName = $this->whole_zip_path . $amountOfSameFolders;
 
         rename($_ENV['MAIN_DIR'] . "/" . $dir, $newName);
 

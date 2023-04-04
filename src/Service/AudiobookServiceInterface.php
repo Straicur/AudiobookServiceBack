@@ -15,7 +15,7 @@ interface AudiobookServiceInterface
 
     public function combineFiles(): void;
 
-    public function unzip(bool $reAdding = false): string;
+    public function unzip(string $reAdding = null): string;
 
     public function createAudiobookJsonData(string $folderDir): array;
 
