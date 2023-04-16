@@ -10,6 +10,7 @@ class UserModel
     private string $email;
     private string $firstname;
     private string $lastname;
+    private int $dateCreated;
 
     /**
      * @param string $id
@@ -18,8 +19,9 @@ class UserModel
      * @param string $email
      * @param string $firstname
      * @param string $lastname
+     * @param \DateTime $dateCreated
      */
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname)
+    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, \DateTime $dateCreated)
     {
         $this->id = $id;
         $this->active = $active;
@@ -27,6 +29,7 @@ class UserModel
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
+        $this->dateCreated = $dateCreated->getTimestamp() * 1000;
     }
 
     /**
@@ -123,6 +126,22 @@ class UserModel
     public function setLastname(string $lastname): void
     {
         $this->lastname = $lastname;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDateCreated(): int
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * @param \DateTime $dateCreated
+     */
+    public function setDateCreated(\DateTime $dateCreated): void
+    {
+        $this->dateCreated = $dateCreated->getTimestamp() * 1000;
     }
 
 }
