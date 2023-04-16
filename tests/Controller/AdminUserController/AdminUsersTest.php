@@ -30,6 +30,117 @@ class AdminUsersTest extends AbstractWebTest
         $content = [
             "page" => 0,
             "limit" => 10,
+            "searchData" => [
+                "email" => "test",
+                "phoneNumber" => "812",
+                "firstname" => "Us",
+                "lastname" => "Te",
+                "active" => true,
+                "banned" => false,
+                "order" => 1,
+            ]
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 3
+        $crawler = self::$webClient->request("POST", "/api/admin/users", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertArrayHasKey("users", $responseContent);
+        $this->assertArrayHasKey("page", $responseContent);
+        $this->assertArrayHasKey("limit", $responseContent);
+        $this->assertArrayHasKey("maxPage", $responseContent);
+        $this->assertCount(3, $responseContent["users"]);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response has returned correct data
+     * @return void
+     */
+    public function test_adminUsersSpecificSearchCorrect(): void
+    {
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user5 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test5@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+
+        /// step 2
+        $content = [
+            "page" => 0,
+            "limit" => 10,
+            "searchData" => [
+                "email" => "test4",
+                "phoneNumber" => "812",
+                "firstname" => "Us",
+                "lastname" => "Te",
+                "active" => true,
+                "banned" => false,
+                "order" => 1,
+            ]
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 3
+        $crawler = self::$webClient->request("POST", "/api/admin/users", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertArrayHasKey("users", $responseContent);
+        $this->assertArrayHasKey("page", $responseContent);
+        $this->assertArrayHasKey("limit", $responseContent);
+        $this->assertArrayHasKey("maxPage", $responseContent);
+        $this->assertCount(1, $responseContent["users"]);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response has returned correct data
+     * @return void
+     */
+    public function test_adminUsersNoFilterCorrect(): void
+    {
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user5 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test5@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+
+        /// step 2
+        $content = [
+            "page" => 0,
+            "limit" => 10,
+            "searchData" => []
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);

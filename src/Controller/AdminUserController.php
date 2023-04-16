@@ -573,10 +573,42 @@ class AdminUserController extends AbstractController
 
             $successModel = new AdminUsersSuccessModel();
 
+            $usersSearchData = $adminUsersQuery->getSearchData();
+
+            $email = null;
+            $phoneNumber = null;
+            $firstname = null;
+            $lastname = null;
+            $active = null;
+            $banned = null;
+            $order = null;
+
+            if (array_key_exists('email', $usersSearchData)) {
+                $email = ($usersSearchData['email'] && '' != $usersSearchData['email']) ? "%" . $usersSearchData['email'] . "%" : null;
+            }
+            if (array_key_exists('phoneNumber', $usersSearchData)) {
+                $phoneNumber = ($usersSearchData['phoneNumber'] && '' != $usersSearchData['phoneNumber']) ? "%" . $usersSearchData['phoneNumber'] . "%" : null;
+            }
+            if (array_key_exists('firstname', $usersSearchData)) {
+                $firstname = ($usersSearchData['firstname'] && '' != $usersSearchData['firstname']) ? "%" . $usersSearchData['firstname'] . "%" : null;
+            }
+            if (array_key_exists('lastname', $usersSearchData)) {
+                $lastname = ($usersSearchData['lastname'] && '' != $usersSearchData['lastname']) ? "%" . $usersSearchData['lastname'] . "%" : null;
+            }
+            if (array_key_exists('active', $usersSearchData)) {
+                $active = $usersSearchData['active'];
+            }
+            if (array_key_exists('banned', $usersSearchData)) {
+                $banned = $usersSearchData['banned'];
+            }
+            if (array_key_exists('order', $usersSearchData)) {
+                $order = $usersSearchData['order'];
+            }
+
             $minResult = $adminUsersQuery->getPage() * $adminUsersQuery->getLimit();
             $maxResult = $adminUsersQuery->getLimit() + $minResult;
 
-            $allUsers = $userRepository->findAll();
+            $allUsers = $userRepository->searchUsers($email, $phoneNumber, $firstname, $lastname, $active, $banned, $order);
 
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
