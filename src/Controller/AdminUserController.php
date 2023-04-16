@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
+use App\Entity\UserDelete;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
@@ -763,6 +764,7 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
+        UserDeleteRepository $userDeleteRepository,
         MailerInterface                $mailer
     ): Response
     {
@@ -784,6 +786,12 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
             }
 
+            $userDelete = new UserDelete($user);
+            $userDelete->setDeleted(true);
+            $userDelete->setDateDeleted(new \DateTime("Now"));
+
+            $userDeleteRepository->add($userDelete);
+
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
@@ -795,8 +803,6 @@ class AdminUserController extends AbstractController
                     ]);
                 $mailer->send($email);
             }
-
-            $userRepository->remove($user);
 
             return ResponseTool::getResponse();
         } else {
