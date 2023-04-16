@@ -166,7 +166,7 @@ class AudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         Audiobook                      $id
     ): Response
-    {
+    {   
         $img = "";
 
         $handle = opendir($id->getFileName());

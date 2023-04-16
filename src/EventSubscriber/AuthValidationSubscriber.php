@@ -94,8 +94,15 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                                     $this->requestLogger->info("Logged user action", $loggedUserData);
 
                                     $dateNow = new \DateTime("now");
-                                    $dateNow->modify("+1 day");
 
+                                    if($authToken->getUser()->isBanned()){
+                                        $authToken->setDateExpired($dateNow);
+                                        $this->authenticationTokenRepository->add($authToken);
+
+                                        throw new PermissionException();
+                                    }
+
+                                    $dateNow->modify("+1 day");
                                     $authToken->setDateExpired($dateNow);
 
                                     $this->authenticationTokenRepository->add($authToken);

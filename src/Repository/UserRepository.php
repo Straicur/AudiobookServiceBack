@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Audiobook;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Enums\UserOrderSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -155,6 +156,66 @@ class UserRepository extends ServiceEntityRepository
         $result = $query->execute();
 
         return count($result);
+    }
+
+    public function searchUsers(string $email = null, string $phoneNumber = null, string $firstname = null, string $lastname = null, bool $active = null, bool $banned = null, int $order = null): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.userInformation', 'ui');
+
+        if ($email != null) {
+            $qb->andWhere('ui.email LIKE :email')
+                ->setParameter('email', $email);
+        }
+        if ($phoneNumber != null) {
+            $qb->andWhere('ui.phoneNumber LIKE :phoneNumber')
+                ->setParameter('phoneNumber', $phoneNumber);
+        }
+        if ($firstname != null) {
+            $qb->andWhere('ui.firstname LIKE :firstname')
+                ->setParameter('firstname', $firstname);
+        }
+        if ($lastname != null) {
+            $qb->andWhere('ui.lastname LIKE :lastname')
+                ->setParameter('lastname', $lastname);
+        }
+        if ($active != null) {
+            $qb->andWhere('u.active = :active')
+                ->setParameter('active', $active);
+        }
+        if ($banned != null) {
+            $qb->andWhere('u.banned = :banned')
+                ->setParameter('banned', $banned);
+        }
+        if ($order != null) {
+            switch ($order) {
+                case UserOrderSearch::LATEST->value:
+                {
+                    $qb->orderBy("u.dateCreate", "DESC");
+                    break;
+                }
+                case UserOrderSearch::OLDEST->value:
+                {
+                    $qb->orderBy("u.dateCreate", "ASC");
+                    break;
+                }
+                case UserOrderSearch::ALPHABETICAL_ASC->value:
+                {
+                    $qb->orderBy("ui.email", "ASC");
+                    break;
+                }
+                case UserOrderSearch::ALPHABETICAL_DESC->value:
+                {
+                    $qb->orderBy("ui.email", "DESC");
+                    break;
+                }
+            }
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
     }
 //    /**
 //     * @return User[] Returns an array of User objects
