@@ -9,6 +9,7 @@ class UserModel
     private bool $banned;
     private string $email;
     private string $firstname;
+    private string $lastname;
 
     /**
      * @param string $id
@@ -16,14 +17,16 @@ class UserModel
      * @param bool $banned
      * @param string $email
      * @param string $firstname
+     * @param string $lastname
      */
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname)
+    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname)
     {
         $this->id = $id;
         $this->active = $active;
         $this->banned = $banned;
         $this->email = $email;
         $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -106,5 +109,20 @@ class UserModel
         $this->firstname = $firstname;
     }
 
+    /**
+     * @return string
+     */
+    public function getLastname(): string
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * @param string $lastname
+     */
+    public function setLastname(string $lastname): void
+    {
+        $this->lastname = $lastname;
+    }
 
 }

@@ -158,6 +158,16 @@ class UserRepository extends ServiceEntityRepository
         return count($result);
     }
 
+    /**
+     * @param string|null $email
+     * @param string|null $phoneNumber
+     * @param string|null $firstname
+     * @param string|null $lastname
+     * @param bool|null $active
+     * @param bool|null $banned
+     * @param int|null $order
+     * @return User[]
+     */
     public function searchUsers(string $email = null, string $phoneNumber = null, string $firstname = null, string $lastname = null, bool $active = null, bool $banned = null, int $order = null): array
     {
         $qb = $this->createQueryBuilder('u');

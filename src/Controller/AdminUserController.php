@@ -620,7 +620,8 @@ class AdminUserController extends AbstractController
                         $user->isActive(),
                         $user->isBanned(),
                         $user->getUserInformation()->getEmail(),
-                        $user->getUserInformation()->getFirstname()
+                        $user->getUserInformation()->getFirstname(),
+                        $user->getUserInformation()->getLastname()
                     ));
                 } else {
                     break;
