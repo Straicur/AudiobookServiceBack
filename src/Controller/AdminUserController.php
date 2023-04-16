@@ -268,6 +268,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param RoleRepository $roleRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -295,7 +296,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        RoleRepository                 $roleRepository
     ): Response
     {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
@@ -316,6 +318,11 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.activate.user.invalid.permission"]);
             }
 
+            $userRole = $roleRepository->findOneBy([
+                "name" => "User"
+            ]);
+
+            $user->addRole($userRole);
             $user->setActive(true);
 
             $userRepository->add($user);
@@ -734,6 +741,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
      * @return Response
      * @throws DataNotFoundException
@@ -764,7 +772,7 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserDeleteRepository $userDeleteRepository,
+        UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer
     ): Response
     {
