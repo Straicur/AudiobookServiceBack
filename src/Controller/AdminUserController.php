@@ -12,7 +12,6 @@ use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
-use App\Model\AdminUserDetailsSuccessModel;
 use App\Model\AdminUserNotificationsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
 use App\Model\DataNotFoundModel;
@@ -29,7 +28,6 @@ use App\Query\AdminUserDeleteAcceptQuery;
 use App\Query\AdminUserDeleteDeclineQuery;
 use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
-use App\Query\AdminUserDetailsQuery;
 use App\Query\AdminUserNotificationPatchQuery;
 use App\Query\AdminUserNotificationPutQuery;
 use App\Query\AdminUserNotificationsQuery;
@@ -632,6 +630,21 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getLastname(),
                         $user->getDateCreate()
                     ));
+
+
+                    foreach ($user->getRoles() as $role) {
+                        switch ($role->getName()) {
+                            case "Guest":
+                                $successModel->addRole(UserRoles::GUEST);
+                                break;
+                            case "User":
+                                $successModel->addRole(UserRoles::USER);
+                                break;
+                            case "Administrator":
+                                $successModel->addRole(UserRoles::ADMINISTRATOR);
+                                break;
+                        }
+                    }
                 } else {
                     break;
                 }
@@ -646,92 +659,6 @@ class AdminUserController extends AbstractController
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminUsers.invalid.query");
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/admin/user/details", name: "adminUserDetails", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is returning details of given user",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDetailsQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-                content: new Model(type: AdminUserDetailsSuccessModel::class)
-            )
-        ]
-    )]
-    public function adminUserDetails(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
-    ): Response
-    {
-        $adminUserDetailsQuery = $requestService->getRequestBodyContent($request, AdminUserDetailsQuery::class);
-
-        if ($adminUserDetailsQuery instanceof AdminUserDetailsQuery) {
-
-            $user = $userRepository->findOneBy([
-                "id" => $adminUserDetailsQuery->getUserId()
-            ]);
-
-            if ($user == null) {
-                $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.details.user.not.exist"]);
-            }
-
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.details.user.invalid.permission"]);
-            }
-            $successModel = new AdminUserDetailsSuccessModel(
-                $user->getId(),
-                $user->getDateCreate(),
-                $user->isActive(),
-                $user->isBanned(),
-                $user->getUserInformation()->getEmail(),
-                $user->getUserInformation()->getPhoneNumber(),
-                $user->getUserInformation()->getFirstname(),
-                $user->getUserInformation()->getLastname()
-            );
-
-            foreach ($user->getRoles() as $role) {
-                switch ($role->getName()) {
-                    case "Guest":
-                        $successModel->addRole(UserRoles::GUEST);
-                        break;
-                    case "User":
-                        $successModel->addRole(UserRoles::USER);
-                        break;
-                    case "Administrator":
-                        $successModel->addRole(UserRoles::ADMINISTRATOR);
-                        break;
-                }
-            }
-
-            return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.details.invalid.query");
         }
     }
 
