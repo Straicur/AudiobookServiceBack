@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Enums\UserRoles;
+
 class UserModel
 {
     private string $id;
@@ -12,6 +14,7 @@ class UserModel
     private string $lastname;
     private int $dateCreated;
 
+    private array $roles = [];
     /**
      * @param string $id
      * @param bool $active
@@ -143,5 +146,24 @@ class UserModel
     {
         $this->dateCreated = $dateCreated->getTimestamp() * 1000;
     }
+    /**
+     * @return string[]
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
 
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
+    public function addRole(UserRoles $role)
+    {
+        $this->roles[] = $role->value;
+    }
 }

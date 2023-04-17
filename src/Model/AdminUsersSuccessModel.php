@@ -16,7 +16,7 @@ class AdminUsersSuccessModel implements ModelInterface
     private int $limit;
 
     private int $maxPage;
-    private array $roles = [];
+
     /**
      * @return int
      */
@@ -85,24 +85,5 @@ class AdminUsersSuccessModel implements ModelInterface
     {
         $this->users[] = $user;
     }
-    /**
-     * @return string[]
-     */
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
 
-    /**
-     * @param array $roles
-     */
-    public function setRoles(array $roles): void
-    {
-        $this->roles = $roles;
-    }
-
-    public function addRole(UserRoles $role)
-    {
-        $this->roles[] = $role->value;
-    }
 }

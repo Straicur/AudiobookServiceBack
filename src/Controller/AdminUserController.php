@@ -665,7 +665,8 @@ class AdminUserController extends AbstractController
                     continue;
                 } elseif ($index < $maxResult) {
 
-                    $successModel->addUser(new UserModel(
+
+                    $userModel = new UserModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -673,22 +674,23 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getFirstname(),
                         $user->getUserInformation()->getLastname(),
                         $user->getDateCreate()
-                    ));
-
+                    );
 
                     foreach ($user->getRoles() as $role) {
                         switch ($role->getName()) {
-                            case "Guest":
-                                $successModel->addRole(UserRoles::GUEST);
+                            case UserRolesNames::GUEST->value:
+                                $userModel->addRole(UserRoles::GUEST);
                                 break;
-                            case "User":
-                                $successModel->addRole(UserRoles::USER);
+                            case UserRolesNames::USER->value:
+                                $userModel->addRole(UserRoles::USER);
                                 break;
-                            case "Administrator":
-                                $successModel->addRole(UserRoles::ADMINISTRATOR);
+                            case UserRolesNames::ADMINISTRATOR->value:
+                                $userModel->addRole(UserRoles::ADMINISTRATOR);
                                 break;
                         }
                     }
+
+                    $successModel->addUser($userModel);
                 } else {
                     break;
                 }
