@@ -49,6 +49,20 @@ class RoleRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return Role[]
+     */
+    public function getSystemRoles(): array
+    {
+        $qb = $this->createQueryBuilder('r');
+
+        $qb->where('r.name != :administrator')
+            ->setParameter('administrator', "Administrator");
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return Role[] Returns an array of Role objects
 //     */

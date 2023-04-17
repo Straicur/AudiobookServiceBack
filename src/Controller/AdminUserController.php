@@ -8,16 +8,19 @@ use App\Entity\UserDelete;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
 use App\Model\AdminUserNotificationsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
+use App\Model\AdminUserSystemRolesSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\SystemRoleModel;
 use App\Model\UserDeleteModel;
 use App\Model\UserModel;
 use App\Query\AdminUserActivateQuery;
@@ -82,6 +85,47 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminUser")]
 class AdminUserController extends AbstractController
 {
+    /**
+     * @param RoleRepository $roleRepository
+     * @return Response
+     */
+    #[Route("/api/admin/user/system/roles", name: "adminUserSystemRoles", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Get(
+        description: "Endpoint is returning roles in system",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserSystemRolesSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserSystemRoles(
+        RoleRepository $roleRepository
+    ): Response
+    {
+
+        $roles = $roleRepository->getSystemRoles();
+
+        $successModel = new AdminUserSystemRolesSuccessModel();
+
+        foreach ($roles as $role) {
+            switch ($role->getName()) {
+                case UserRolesNames::GUEST->value:
+                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::GUEST->value));
+                    break;
+                case UserRolesNames::USER->value:
+                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::USER->value));
+                    break;
+            }
+
+        }
+
+        return ResponseTool::getResponse($successModel);
+    }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
