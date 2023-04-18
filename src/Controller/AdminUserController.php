@@ -772,14 +772,14 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
             }
 
-            $userInDelete = $userDeleteRepository->userInList($user);
+            $userDelete = $userDeleteRepository->findOneBy([
+                "user"=>$user->getId()
+            ]);
 
-            if ($userInDelete) {
-                $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["adminUser.delete.user.exist"]);
+            if ($userDelete == null) {
+                $userDelete = new UserDelete($user);
             }
 
-            $userDelete = new UserDelete($user);
             $userDelete->setDeleted(true);
             $userDelete->setDateDeleted(new \DateTime("Now"));
 
