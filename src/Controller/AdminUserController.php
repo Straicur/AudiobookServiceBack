@@ -851,7 +851,9 @@ class AdminUserController extends AbstractController
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
             $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
 
-            $allDeleteUsers = $userDeleteRepository->findAll();
+            $allDeleteUsers = $userDeleteRepository->findBy([
+                "deleted"=>true
+            ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
 

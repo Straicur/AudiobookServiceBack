@@ -56,7 +56,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
         $this->assertArrayHasKey("page", $responseContent);
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(3, $responseContent["users"]);
+        $this->assertCount(1, $responseContent["users"]);
     }
 
     /**
