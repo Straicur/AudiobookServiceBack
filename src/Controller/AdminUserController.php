@@ -588,6 +588,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -769,6 +770,13 @@ class AdminUserController extends AbstractController
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
                 throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
+            }
+
+            $userInDelete = $userDeleteRepository->userInList($user);
+
+            if ($userInDelete) {
+                $endpointLogger->error("User in list");
+                throw new DataNotFoundException(["adminUser.delete.user.exist"]);
             }
 
             $userDelete = new UserDelete($user);
@@ -1036,6 +1044,8 @@ class AdminUserController extends AbstractController
 
             $userDelete->setDeleted(true);
             $userDelete->setDateDeleted(new \DateTime("Now"));
+
+            $userDeleteRepository->add($userDelete);
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())

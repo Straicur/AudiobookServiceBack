@@ -91,7 +91,7 @@ class UserDeleteRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('ud');
 
         $qb->where('ud.user = :user')
-            ->andWhere('((ud.deleted = true) OR ((ud.dateDeleted IS NULL) AND (ud.declined = false)))')
+            ->andWhere('((ud.deleted = true) OR ((ud.dateDeleted IS NOT NULL) AND (ud.declined = false)))')
             ->setParameter('user', $user->getId()->toBinary());
 
         $query = $qb->getQuery();
