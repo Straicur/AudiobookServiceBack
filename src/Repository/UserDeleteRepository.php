@@ -73,13 +73,30 @@ class UserDeleteRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('ud');
 
         $qb->leftJoin('ud.user', 'u')
-            ->where('ud.deleted = true')
-            ->andWhere('ud.dateDeleted IS NOT NULL')
+            ->where('ud.deleted = false')
+            ->andWhere('ud.dateDeleted IS NULL')
             ->andWhere('u.active = false');
 
         $query = $qb->getQuery();
 
         return $query->execute();
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function userInToDeleteList(User $user): bool
+    {
+        $qb = $this->createQueryBuilder('ud');
+
+        $qb->where('ud.user = :user')
+            ->andWhere('((ud.deleted = true) AND (ud.dateDeleted IS NOT NULL))')
+            ->setParameter('user', $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        return count($query->execute()) > 0;
     }
 //    /**
 //     * @return UserDelete[] Returns an array of UserDelete objects

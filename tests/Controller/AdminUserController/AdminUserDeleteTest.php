@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller\AdminUserController;
 
+use App\Entity\UserDelete;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
@@ -21,7 +23,9 @@ class AdminUserDeleteTest extends AbstractWebTest
     public function test_adminUserDeleteCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
+        $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
+        $this->assertInstanceOf(UserDeleteRepository::class, $userDeleteRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -43,11 +47,11 @@ class AdminUserDeleteTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
         /// step 5
-        $this->assertNull($userRepository->findOneBy([
+        $this->assertNotNull($userRepository->findOneBy([
             "id" => $id
         ]));
 
-        $this->assertCount(4, $userRepository->findAll());
+        $this->assertCount(1, $userDeleteRepository->findAll());
     }
 
     /**
@@ -90,7 +94,6 @@ class AdminUserDeleteTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
-
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad userId

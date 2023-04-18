@@ -163,7 +163,7 @@ class AdminUsersTest extends AbstractWebTest
         $this->assertArrayHasKey("page", $responseContent);
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(4, $responseContent["users"]);
+        $this->assertCount(8, $responseContent["users"]);
     }
 
     /**

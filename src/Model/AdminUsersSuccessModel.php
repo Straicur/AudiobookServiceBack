@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Enums\UserRoles;
+
 class AdminUsersSuccessModel implements ModelInterface
 {
     /**
@@ -83,4 +85,5 @@ class AdminUsersSuccessModel implements ModelInterface
     {
         $this->users[] = $user;
     }
+
 }

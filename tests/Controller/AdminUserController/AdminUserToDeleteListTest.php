@@ -27,8 +27,8 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User",], true, "zaq12wsx");
 
         $this->databaseMockManager->testFunc_addUserDelete($user1);
-        $this->databaseMockManager->testFunc_addUserDelete($user2, true, false, new \DateTime("Now"));
-        $this->databaseMockManager->testFunc_addUserDelete($user3, true, false, new \DateTime("Now"));
+        $this->databaseMockManager->testFunc_addUserDelete($user2);
+        $this->databaseMockManager->testFunc_addUserDelete($user3);
 
         /// step 2
         $content = [

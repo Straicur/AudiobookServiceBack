@@ -203,6 +203,7 @@ class RegisterController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
+     * @throws \Exception
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Get(

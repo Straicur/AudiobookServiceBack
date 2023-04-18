@@ -4,20 +4,23 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
+use App\Entity\UserDelete;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\AdminUserDeleteListSuccessModel;
-use App\Model\AdminUserDetailsSuccessModel;
 use App\Model\AdminUserNotificationsSuccessModel;
 use App\Model\AdminUsersSuccessModel;
+use App\Model\AdminUserSystemRolesSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\SystemRoleModel;
 use App\Model\UserDeleteModel;
 use App\Model\UserModel;
 use App\Query\AdminUserActivateQuery;
@@ -28,7 +31,6 @@ use App\Query\AdminUserDeleteAcceptQuery;
 use App\Query\AdminUserDeleteDeclineQuery;
 use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
-use App\Query\AdminUserDetailsQuery;
 use App\Query\AdminUserNotificationPatchQuery;
 use App\Query\AdminUserNotificationPutQuery;
 use App\Query\AdminUserNotificationsQuery;
@@ -83,6 +85,47 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: "AdminUser")]
 class AdminUserController extends AbstractController
 {
+    /**
+     * @param RoleRepository $roleRepository
+     * @return Response
+     */
+    #[Route("/api/admin/user/system/roles", name: "adminUserSystemRoles", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Get(
+        description: "Endpoint is returning roles in system",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminUserSystemRolesSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminUserSystemRoles(
+        RoleRepository $roleRepository
+    ): Response
+    {
+
+        $roles = $roleRepository->getSystemRoles();
+
+        $successModel = new AdminUserSystemRolesSuccessModel();
+
+        foreach ($roles as $role) {
+            switch ($role->getName()) {
+                case UserRolesNames::GUEST->value:
+                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::GUEST->value));
+                    break;
+                case UserRolesNames::USER->value:
+                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::USER->value));
+                    break;
+            }
+
+        }
+
+        return ResponseTool::getResponse($successModel);
+    }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -267,6 +310,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param RoleRepository $roleRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -294,7 +338,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        RoleRepository                 $roleRepository
     ): Response
     {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
@@ -315,6 +360,11 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.activate.user.invalid.permission"]);
             }
 
+            $userRole = $roleRepository->findOneBy([
+                "name" => "User"
+            ]);
+
+            $user->addRole($userRole);
             $user->setActive(true);
 
             $userRepository->add($user);
@@ -401,6 +451,7 @@ class AdminUserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
     #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -537,6 +588,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -564,7 +616,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        UserDeleteRepository $userDeleteRepository
     ): Response
     {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
@@ -612,16 +665,37 @@ class AdminUserController extends AbstractController
 
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
-                    continue;
+                    $maxResult=$maxResult+1;
                 } elseif ($index < $maxResult) {
 
-                    $successModel->addUser(new UserModel(
+                    $userDeleted = $userDeleteRepository->userInToDeleteList($user);
+
+                    $userModel = new UserModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
                         $user->getUserInformation()->getEmail(),
-                        $user->getUserInformation()->getFirstname()
-                    ));
+                        $user->getUserInformation()->getFirstname(),
+                        $user->getUserInformation()->getLastname(),
+                        $user->getDateCreate(),
+                        $userDeleted
+                    );
+
+                    foreach ($user->getRoles() as $role) {
+                        switch ($role->getName()) {
+                            case UserRolesNames::GUEST->value:
+                                $userModel->addRole(UserRoles::GUEST);
+                                break;
+                            case UserRolesNames::USER->value:
+                                $userModel->addRole(UserRoles::USER);
+                                break;
+                            case UserRolesNames::ADMINISTRATOR->value:
+                                $userModel->addRole(UserRoles::ADMINISTRATOR);
+                                break;
+                        }
+                    }
+
+                    $successModel->addUser($userModel);
                 } else {
                     break;
                 }
@@ -645,92 +719,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/admin/user/details", name: "adminUserDetails", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is returning details of given user",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDetailsQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-                content: new Model(type: AdminUserDetailsSuccessModel::class)
-            )
-        ]
-    )]
-    public function adminUserDetails(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
-    ): Response
-    {
-        $adminUserDetailsQuery = $requestService->getRequestBodyContent($request, AdminUserDetailsQuery::class);
-
-        if ($adminUserDetailsQuery instanceof AdminUserDetailsQuery) {
-
-            $user = $userRepository->findOneBy([
-                "id" => $adminUserDetailsQuery->getUserId()
-            ]);
-
-            if ($user == null) {
-                $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.details.user.not.exist"]);
-            }
-
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.details.user.invalid.permission"]);
-            }
-            $successModel = new AdminUserDetailsSuccessModel(
-                $user->getId(),
-                $user->getDateCreate(),
-                $user->isActive(),
-                $user->isBanned(),
-                $user->getUserInformation()->getEmail(),
-                $user->getUserInformation()->getPhoneNumber(),
-                $user->getUserInformation()->getFirstname(),
-                $user->getUserInformation()->getLastname()
-            );
-
-            foreach ($user->getRoles() as $role) {
-                switch ($role->getName()) {
-                    case "Guest":
-                        $successModel->addRole(UserRoles::GUEST);
-                        break;
-                    case "User":
-                        $successModel->addRole(UserRoles::USER);
-                        break;
-                    case "Administrator":
-                        $successModel->addRole(UserRoles::ADMINISTRATOR);
-                        break;
-                }
-            }
-
-            return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.details.invalid.query");
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
+     * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
      * @return Response
      * @throws DataNotFoundException
@@ -761,6 +750,7 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
+        UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer
     ): Response
     {
@@ -782,6 +772,19 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
             }
 
+            $userDelete = $userDeleteRepository->findOneBy([
+                "user"=>$user->getId()
+            ]);
+
+            if ($userDelete == null) {
+                $userDelete = new UserDelete($user);
+            }
+
+            $userDelete->setDeleted(true);
+            $userDelete->setDateDeleted(new \DateTime("Now"));
+
+            $userDeleteRepository->add($userDelete);
+
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
@@ -793,8 +796,6 @@ class AdminUserController extends AbstractController
                     ]);
                 $mailer->send($email);
             }
-
-            $userRepository->remove($user);
 
             return ResponseTool::getResponse();
         } else {
@@ -850,7 +851,9 @@ class AdminUserController extends AbstractController
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
             $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
 
-            $allDeleteUsers = $userDeleteRepository->findAll();
+            $allDeleteUsers = $userDeleteRepository->findBy([
+                "deleted"=>true
+            ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
 
@@ -1043,6 +1046,8 @@ class AdminUserController extends AbstractController
 
             $userDelete->setDeleted(true);
             $userDelete->setDateDeleted(new \DateTime("Now"));
+
+            $userDeleteRepository->add($userDelete);
 
             if ($_ENV["APP_ENV"] != "test") {
                 $email = (new TemplatedEmail())
