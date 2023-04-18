@@ -15,6 +15,8 @@ class UserModel
     private int $dateCreated;
 
     private array $roles = [];
+    private bool $deleted;
+
     /**
      * @param string $id
      * @param bool $active
@@ -24,7 +26,7 @@ class UserModel
      * @param string $lastname
      * @param \DateTime $dateCreated
      */
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, \DateTime $dateCreated)
+    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, \DateTime $dateCreated, bool $deleted)
     {
         $this->id = $id;
         $this->active = $active;
@@ -33,6 +35,7 @@ class UserModel
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->dateCreated = $dateCreated->getTimestamp() * 1000;
+        $this->deleted = $deleted;
     }
 
     /**
@@ -162,8 +165,25 @@ class UserModel
         $this->roles = $roles;
     }
 
-    public function addRole(UserRoles $role)
+    public function addRole(UserRoles $role): void
     {
         $this->roles[] = $role->value;
     }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     */
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
+    }
+
 }

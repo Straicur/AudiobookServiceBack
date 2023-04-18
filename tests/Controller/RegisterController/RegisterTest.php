@@ -31,7 +31,7 @@ class RegisterTest extends AbstractWebTest
         /// step 2
 
         $content = [
-            "email" => "mosinskidamian11@gmail.com",
+            "email" => "mosinskidamian17@gmail.com",
             "phoneNumber" => "786768564",
             "firstname" => "Damian",
             "lastname" => "Mos",
@@ -49,7 +49,7 @@ class RegisterTest extends AbstractWebTest
 
         /// step 5
         $userAfter = $userInformationRepository->findOneBy([
-            "email" => "mosinskidamian11@gmail.com"
+            "email" => "mosinskidamian17@gmail.com"
         ])->getUser();
 
         $this->assertNotNull($userAfter);

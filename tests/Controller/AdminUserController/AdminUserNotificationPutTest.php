@@ -65,7 +65,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
         /// step 5
-        $this->assertCount(4, $notificationRepository->findAll());
+        $this->assertCount(7, $notificationRepository->findAll());
 
     }
 
@@ -180,7 +180,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(201);
         /// step 5
-        $this->assertCount(4, $notificationRepository->findAll());
+        $this->assertCount(7, $notificationRepository->findAll());
 
     }
 

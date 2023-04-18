@@ -70,7 +70,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertArrayHasKey("lastWeekLogins", $responseContent);
         $this->assertArrayHasKey("lastWeekNotifications", $responseContent);
 
-        $this->assertSame($responseContent["users"],7);
+        $this->assertSame($responseContent["users"],11);
         $this->assertSame($responseContent["categories"],13);
         $this->assertSame($responseContent["audiobooks"],2);
         $this->assertSame($responseContent["lastWeekRegistered"],1);

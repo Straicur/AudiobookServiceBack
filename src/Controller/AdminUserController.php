@@ -451,6 +451,7 @@ class AdminUserController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws \Exception
      */
     #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -614,7 +615,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        UserDeleteRepository $userDeleteRepository
     ): Response
     {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
@@ -662,9 +664,10 @@ class AdminUserController extends AbstractController
 
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
-                    continue;
+                    $maxResult=$maxResult+1;
                 } elseif ($index < $maxResult) {
 
+                    $userDeleted = $userDeleteRepository->userInToDeleteList($user);
 
                     $userModel = new UserModel(
                         $user->getId(),
@@ -673,7 +676,8 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getEmail(),
                         $user->getUserInformation()->getFirstname(),
                         $user->getUserInformation()->getLastname(),
-                        $user->getDateCreate()
+                        $user->getDateCreate(),
+                        $userDeleted
                     );
 
                     foreach ($user->getRoles() as $role) {
