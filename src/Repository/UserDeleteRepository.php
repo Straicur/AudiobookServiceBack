@@ -74,7 +74,7 @@ class UserDeleteRepository extends ServiceEntityRepository
 
         $qb->leftJoin('ud.user', 'u')
             ->where('ud.deleted = false')
-            ->andWhere('ud.dateDeleted IS NOT NULL')
+            ->andWhere('ud.dateDeleted IS NULL')
             ->andWhere('u.active = false');
 
         $query = $qb->getQuery();
