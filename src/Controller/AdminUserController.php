@@ -31,6 +31,7 @@ use App\Query\AdminUserDeleteAcceptQuery;
 use App\Query\AdminUserDeleteDeclineQuery;
 use App\Query\AdminUserDeleteListQuery;
 use App\Query\AdminUserDeleteQuery;
+use App\Query\AdminUserNotificationDeleteQuery;
 use App\Query\AdminUserNotificationPatchQuery;
 use App\Query\AdminUserNotificationPutQuery;
 use App\Query\AdminUserNotificationsQuery;
@@ -1248,6 +1249,7 @@ class AdminUserController extends AbstractController
      * @param UserRepository $userRepository
      * @param RoleRepository $roleRepository
      * @param AudiobookRepository $audiobookRepository
+     * @param InstitutionRepository $institutionRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1548,6 +1550,66 @@ class AdminUserController extends AbstractController
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/admin/user/notification", name: "adminUserNotificationDelete", methods: ["DELETE"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Delete(
+        description: "Endpoint is deleting notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminUserNotificationDeleteQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminUserNotificationDelete(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+        $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
+
+        if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
+
+            $notification = $notificationRepository->findOneBy([
+                "id" => $adminUserNotificationDeleteQuery->getNotificationId()
+            ]);
+
+            if ($notification == null) {
+                $endpointLogger->error("Notification dont exist");
+                throw new DataNotFoundException(["adminUser.notification.delete.notification.dont.exist"]);
+            }
+
+            $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
+
+            $notificationRepository->add($notification);
+
+            return ResponseTool::getResponse();
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("adminUser.notification.delete.invalid.query");
         }
     }
 }

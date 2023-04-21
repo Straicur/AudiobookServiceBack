@@ -20,18 +20,22 @@ class NotificationModel implements ModelInterface
 
     private ?string $text;
 
+    private ?bool $delete;
+
     /**
      * @param string $id
      * @param NotificationType $notificationType
      * @param string|null $actionId
      * @param int|null $userType
+     * @param int|null $delete
      */
-    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType)
+    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType, ?int $delete)
     {
         $this->id = $id;
         $this->notificationType = $notificationType->value;
         $this->actionId = $actionId;
         $this->userType = $userType;
+        $this->delete = $delete;
     }
 
     /**
@@ -131,4 +135,19 @@ class NotificationModel implements ModelInterface
         $this->text = $text;
     }
 
+    /**
+     * @return bool|null
+     */
+    public function getDelete(): ?bool
+    {
+        return $this->delete;
+    }
+
+    /**
+     * @param bool|null $delete
+     */
+    public function setDelete(?bool $delete): void
+    {
+        $this->delete = $delete;
+    }
 }

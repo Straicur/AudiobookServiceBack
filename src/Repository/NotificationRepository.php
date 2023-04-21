@@ -78,6 +78,7 @@ class NotificationRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('n')
             ->leftJoin('n.users', 'u')
+            ->where('n.deleted = false')
             ->andWhere('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
             ->orderBy("n.dateAdd", "DESC")
@@ -99,6 +100,7 @@ class NotificationRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('n')
             ->leftJoin('n.users', 'u')
             ->where('n.id = :notification')
+            ->andWhere('n.deleted = false')
             ->andWhere('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('notification', $notification->toBinary());

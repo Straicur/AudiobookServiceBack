@@ -25,6 +25,7 @@ class Notification
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
 
+    //todo to jest do sprawdzenia czy działa
     #[ORM\Column(type: 'boolean')]
     private bool $readStatus;
 
@@ -37,11 +38,15 @@ class Notification
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $deleted;
+
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
         $this->readStatus = false;
         $this->users = new ArrayCollection();
+        $this->deleted = false;
     }
 
     public function getId(): Uuid
@@ -136,6 +141,18 @@ class Notification
     public function removeUser(User $user): self
     {
         $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
 
         return $this;
     }

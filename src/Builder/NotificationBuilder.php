@@ -105,7 +105,7 @@ class NotificationBuilder
      */
     public static function read(Notification $notification,): NotificationModel
     {
-        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null);
+        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null,null);
 
         $metaData = $notification->getMetaData();
 
@@ -124,6 +124,8 @@ class NotificationBuilder
         $notificationModel->setActionId($notification->getActionId());
 
         $notificationModel->setDateAdd($notification->getDateAdd());
+
+        $notificationModel->setDelete($notification->getDeleted());
 
         return $notificationModel;
     }
