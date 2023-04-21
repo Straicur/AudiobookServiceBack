@@ -58,9 +58,9 @@ class NotificationBuilder
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): NotificationBuilder
+    public function addUser(User $user): NotificationBuilder
     {
-        $this->notification->setUser($user);
+        $this->notification->addUser($user);
 
         return $this;
     }

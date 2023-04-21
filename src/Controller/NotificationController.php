@@ -97,28 +97,28 @@ class NotificationController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $allUserSystemNotifications = $notificationRepository->findBy(["user" => $user]);
-
-            $userSystemNotifications = $notificationRepository->findBy(
-                [
-                    "user" => $user
-                ],
-                [
-                    "dateAdd" => "DESC"
-                ],
-                $systemNotificationQuery->getLimit(), $systemNotificationQuery->getPage());
+            $userSystemNotifications = $notificationRepository->getUserNotifications($user);
 
             $systemNotifications = [];
 
-            foreach ($userSystemNotifications as $notification) {
-                $systemNotifications[] = NotificationBuilder::read($notification);
+            $minResult = $systemNotificationQuery->getPage() * $systemNotificationQuery->getLimit();
+            $maxResult = $systemNotificationQuery->getLimit() + $minResult;
+
+            foreach ($userSystemNotifications as $index => $notification) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $systemNotifications[] = NotificationBuilder::read($notification);
+                } else {
+                    break;
+                }
             }
 
             $systemNotificationSuccessModel = new NotificationsSuccessModel(
                 $systemNotifications,
                 $systemNotificationQuery->getPage(),
                 $systemNotificationQuery->getLimit(),
-                floor(floor(count($allUserSystemNotifications) / $systemNotificationQuery->getLimit()))
+                ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit())
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
@@ -171,10 +171,7 @@ class NotificationController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $systemNotification = $notificationRepository->findOneBy([
-                "id" => $systemNotificationQuery->getNotificationId(),
-                "user" => $user->getId()
-            ]);
+            $systemNotification = $notificationRepository->getUserNotification($systemNotificationQuery->getNotificationId(), $user);
 
             if ($systemNotification == null) {
                 $endpointLogger->error("notificationPatch.notification.not.exist");

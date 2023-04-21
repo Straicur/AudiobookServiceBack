@@ -175,7 +175,7 @@ class UserProposedAudiobooksCommand extends Command
                 $notification = $notificationBuilder
                     ->setType(NotificationType::USER_DELETE_DECLINE)
                     ->setAction($proposedAudiobooks->getId())
-                    ->setUser($user)
+                    ->addUser($user)
                     ->setUserAction(NotificationUserType::ADMIN)
                     ->build();
 

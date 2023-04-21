@@ -28,18 +28,9 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         $user5 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test5@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user3, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user4, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user5, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2,$user4], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user3,$user5], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2], NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         /// step 2
         $content = [
@@ -67,7 +58,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->assertArrayHasKey("page", $responseContent);
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(10, $responseContent["systemNotifications"]);
+        $this->assertCount(3, $responseContent["systemNotifications"]);
     }
 
     /**

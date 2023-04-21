@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Notification>
@@ -46,6 +48,7 @@ class NotificationRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+
     /**
      * @return int
      */
@@ -67,6 +70,45 @@ class NotificationRepository extends ServiceEntityRepository
         return count($result);
     }
 
+    /**
+     * @param User $user
+     * @return Notification[]
+     */
+    public function getUserNotifications(User $user): array
+    {
+        $qb = $this->createQueryBuilder('n')
+            ->leftJoin('n.users', 'u')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->orderBy("n.dateAdd", "DESC")
+        ;
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    /**
+     * @param Uuid $notification
+     * @param User $user
+     * @return ?Notification
+     */
+    public function getUserNotification(Uuid $notification, User $user): ?Notification
+    {
+
+        $qb = $this->createQueryBuilder('n')
+            ->leftJoin('n.users', 'u')
+            ->where('n.id = :notification')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('notification', $notification->toBinary());
+
+        $query = $qb->getQuery();
+
+        $res = $query->execute();
+
+        return count($res) > 0 ? $res[0] : null;
+    }
 //    /**
 //     * @return Notification[] Returns an array of Notification objects
 //     */

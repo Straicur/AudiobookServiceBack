@@ -52,7 +52,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook5);
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook6);
 
-        $not1 = $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $not1 = $this->databaseMockManager->testFunc_addNotifications([$user1], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         /// step 2
         $content = [
@@ -82,7 +82,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
 
         $this->assertSame($content["notificationType"], $not1After->getType()->value);
         $this->assertSame($content["actionId"]->toBinary(), $not1After->getActionId()->toBinary());
-        $this->assertSame($content["userId"]->toBinary(), $not1After->getUser()->getId()->toBinary());
 
         $metaData = $not1After->getMetaData();
 
@@ -153,7 +152,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
-        $not1 = $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $not1 = $this->databaseMockManager->testFunc_addNotifications([$user1], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2

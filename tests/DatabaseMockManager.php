@@ -46,8 +46,6 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -146,7 +144,7 @@ class DatabaseMockManager
 
         $authenticationToken = new AuthenticationToken($user, new AuthTokenGenerator($user));
 
-        if($dateEnd != null){
+        if ($dateEnd != null) {
             $authenticationToken->setDateExpired($dateEnd);
         }
 
@@ -188,7 +186,7 @@ class DatabaseMockManager
         ]);
     }
 
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false, float $rating =  null): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false, float $rating = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -305,26 +303,28 @@ class DatabaseMockManager
     }
 
     /**
-     * @throws OptimisticLockException
-     * @throws ORMException
+     * @param User[] $users
+     * @param NotificationType $notificationType
+     * @param Uuid $actionId
+     * @param NotificationUserType $userAction
+     * @return Notification
      * @throws NotificationException
      */
-    public function testFunc_addNotifications(User $user, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, \DateTime $dateAdd = null): Notification
+    public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction): Notification
     {
         $systemNotificationRepository = $this->getService(NotificationRepository::class);
 
         $newSystemNotification = new NotificationBuilder();
 
-        $newSystemNotification = $newSystemNotification
-            ->setUser($user)
-            ->setUserAction($userAction)
+        $newSystemNotification = $newSystemNotification->setUserAction($userAction)
             ->setAction($actionId)
-            ->setType($notificationType)
-            ->build();
+            ->setType($notificationType);
 
-        if($dateAdd != null){
-            $newSystemNotification->setDateAdd($dateAdd);
+        foreach ($users as $user) {
+            $newSystemNotification = $newSystemNotification->addUser($user);
         }
+
+        $newSystemNotification = $newSystemNotification->build();
 
         $systemNotificationRepository->add($newSystemNotification);
 
@@ -342,21 +342,21 @@ class DatabaseMockManager
         return $newAudiobookRating;
     }
 
-    public function testFunc_addAudiobookUserComment(string $comment, Audiobook $audiobook, User $user,?AudiobookUserComment $parent = null , bool $deleted = false, bool $edited = false): AudiobookUserComment
+    public function testFunc_addAudiobookUserComment(string $comment, Audiobook $audiobook, User $user, ?AudiobookUserComment $parent = null, bool $deleted = false, bool $edited = false): AudiobookUserComment
     {
         $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
         $newAudiobookUserComment = new AudiobookUserComment($comment, $audiobook, $user);
 
-        if($parent != null){
+        if ($parent != null) {
             $newAudiobookUserComment->setParent($parent);
         }
 
-        if($deleted){
+        if ($deleted) {
             $newAudiobookUserComment->setDeleted($deleted);
         }
 
-        if($edited){
+        if ($edited) {
             $newAudiobookUserComment->setEdited($edited);
         }
 
@@ -364,12 +364,14 @@ class DatabaseMockManager
 
         return $newAudiobookUserComment;
     }
-    public function testFunc_addAudiobookUserCommentLike(bool $liked, AudiobookUserComment $audiobookUserComment, User $user, bool $deleted = false):AudiobookUserCommentLike{
+
+    public function testFunc_addAudiobookUserCommentLike(bool $liked, AudiobookUserComment $audiobookUserComment, User $user, bool $deleted = false): AudiobookUserCommentLike
+    {
         $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
 
         $newAudiobookUserCommentLike = new AudiobookUserCommentLike($liked, $audiobookUserComment, $user);
 
-        if($deleted){
+        if ($deleted) {
             $newAudiobookUserCommentLike->setDeleted($deleted);
         }
 

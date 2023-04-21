@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enums\NotificationType;
 use App\Repository\NotificationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -20,10 +22,6 @@ class Notification
     #[ORM\Column(type: 'integer')]
     private ?int $type;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user;
-
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
 
@@ -36,10 +34,14 @@ class Notification
     #[ORM\Column(type: 'text')]
     private ?string $metaData;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
         $this->readStatus = false;
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -62,18 +64,6 @@ class Notification
     public function setType(NotificationType $type): self
     {
         $this->type = $type->value;
-
-        return $this;
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
 
         return $this;
     }
@@ -122,6 +112,30 @@ class Notification
     public function setMetaData(string $metaData): self
     {
         $this->metaData = $metaData;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        $this->users->removeElement($user);
 
         return $this;
     }
