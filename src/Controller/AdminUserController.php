@@ -1179,7 +1179,6 @@ class AdminUserController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
      * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws InvalidJsonDataException
@@ -1208,7 +1207,6 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
         NotificationRepository         $notificationRepository
     ): Response
     {
@@ -1216,14 +1214,41 @@ class AdminUserController extends AbstractController
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
 
-            $allUserSystemNotifications = $notificationRepository->findBy([], [
-                "dateAdd" => "DESC"
-            ], $adminUserNotificationsQuery->getLimit(), $adminUserNotificationsQuery->getPage());
+            $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
+
+            $text = null;
+            $type = null;
+            $deleted = null;
+            $order = null;
+
+            if (array_key_exists('text', $notificationSearchData)) {
+                $text = ($notificationSearchData['text'] && '' != $notificationSearchData['text']) ? "%" . $notificationSearchData['text'] . "%" : null;
+            }
+            if (array_key_exists('type', $notificationSearchData)) {
+                $type = $notificationSearchData['type'];
+            }
+            if (array_key_exists('deleted', $notificationSearchData)) {
+                $deleted = $notificationSearchData['deleted'];
+            }
+            if (array_key_exists('order', $notificationSearchData)) {
+                $order = $notificationSearchData['order'];
+            }
+
+            $allUserSystemNotifications = $notificationRepository->getSearchNotifications($text, $type, $deleted, $order);
 
             $systemNotifications = [];
 
-            foreach ($allUserSystemNotifications as $notification) {
-                $systemNotifications[] = NotificationBuilder::read($notification);
+            $minResult = $adminUserNotificationsQuery->getPage() * $adminUserNotificationsQuery->getLimit();
+            $maxResult = $adminUserNotificationsQuery->getLimit() + $minResult;
+
+            foreach ($allUserSystemNotifications as $index => $notification) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $systemNotifications[] = NotificationBuilder::read($notification);
+                } else {
+                    break;
+                }
             }
 
             $systemNotificationSuccessModel = new AdminUserNotificationsSuccessModel(
@@ -1282,7 +1307,7 @@ class AdminUserController extends AbstractController
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
         AudiobookRepository            $audiobookRepository,
-        InstitutionRepository $institutionRepository
+        InstitutionRepository          $institutionRepository
     ): Response
     {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);

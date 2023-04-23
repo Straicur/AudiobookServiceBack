@@ -307,10 +307,11 @@ class DatabaseMockManager
      * @param NotificationType $notificationType
      * @param Uuid $actionId
      * @param NotificationUserType $userAction
+     * @param string|null $text
      * @return Notification
      * @throws NotificationException
      */
-    public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction): Notification
+    public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, ?string $text = null, bool $deleted = false): Notification
     {
         $systemNotificationRepository = $this->getService(NotificationRepository::class);
 
@@ -324,7 +325,15 @@ class DatabaseMockManager
             $newSystemNotification = $newSystemNotification->addUser($user);
         }
 
+        if ($text != null) {
+            $newSystemNotification = $newSystemNotification->setText($text);
+        }
+
         $newSystemNotification = $newSystemNotification->build();
+
+        if ($deleted) {
+            $newSystemNotification = $newSystemNotification->setDeleted($deleted);
+        }
 
         $systemNotificationRepository->add($newSystemNotification);
 

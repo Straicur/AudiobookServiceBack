@@ -60,6 +60,62 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->assertArrayHasKey("maxPage", $responseContent);
         $this->assertCount(3, $responseContent["systemNotifications"]);
     }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response has returned correct data
+     * @return void
+     */
+    public function test_adminUserNotificationsSpecificSearchCorrect(): void
+    {
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user5 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test5@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+
+        $this->databaseMockManager->testFunc_addNotifications([$user1, $user2, $user4], NotificationType::NORMAL, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM, "t1");
+        $this->databaseMockManager->testFunc_addNotifications([$user1, $user3, $user5], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM, "t2");
+        $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM, "t3", true);
+        $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NORMAL, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM, "t4", true);
+
+        /// step 2
+        $content = [
+            "page" => 0,
+            "limit" => 10,
+            "searchData" => [
+                "text" => "t",
+                "type" => 1,
+                "deleted" => false,
+                "order" => 1
+            ]
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 3
+        $crawler = self::$webClient->request("POST", "/api/admin/user/notifications", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertArrayHasKey("systemNotifications", $responseContent);
+        $this->assertArrayHasKey("page", $responseContent);
+        $this->assertArrayHasKey("limit", $responseContent);
+        $this->assertArrayHasKey("maxPage", $responseContent);
+        $this->assertCount(1, $responseContent["systemNotifications"]);
+    }
 
     /**
      * step 1 - Preparing data

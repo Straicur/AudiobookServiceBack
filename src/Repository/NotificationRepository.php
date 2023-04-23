@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Notification;
 use App\Entity\User;
+use App\Enums\NotificationOrderSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Notification>
@@ -81,8 +81,7 @@ class NotificationRepository extends ServiceEntityRepository
             ->where('n.deleted = false')
             ->andWhere('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
-            ->orderBy("n.dateAdd", "DESC")
-        ;
+            ->orderBy("n.dateAdd", "DESC");
 
         $query = $qb->getQuery();
 
@@ -90,26 +89,46 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Uuid $notification
-     * @param User $user
-     * @return ?Notification
+     * @param string|null $text
+     * @param int|null $type
+     * @param bool|null $deleted
+     * @param int|null $order
+     * @return Notification[]
      */
-    public function getUserNotification(Uuid $notification, User $user): ?Notification
+    public function getSearchNotifications(?string $text = null, ?int $type = null, ?bool $deleted = null, int $order = null): array
     {
+        $qb = $this->createQueryBuilder('n');
 
-        $qb = $this->createQueryBuilder('n')
-            ->leftJoin('n.users', 'u')
-            ->where('n.id = :notification')
-            ->andWhere('n.deleted = false')
-            ->andWhere('u.id = :user')
-            ->setParameter('user', $user->getId()->toBinary())
-            ->setParameter('notification', $notification->toBinary());
+        if ($text != null) {
+            $qb->andWhere('n.metaData LIKE :text')
+                ->setParameter('text', $text);
+        }
+        if ($type != null) {
+            $qb->andWhere('n.type = :type')
+                ->setParameter('type', $type);
+        }
+        if (is_bool($deleted)) {
+            $qb->andWhere('n.deleted = :deleted')
+                ->setParameter('deleted', $deleted);
+        }
+        if ($order != null) {
+            switch ($order) {
+                case NotificationOrderSearch::LATEST->value:
+                {
+                    $qb->orderBy("n.dateAdd", "DESC");
+                    break;
+                }
+                case NotificationOrderSearch::OLDEST->value:
+                {
+                    $qb->orderBy("n.dateAdd", "ASC");
+                    break;
+                }
+            }
+        }
 
         $query = $qb->getQuery();
 
-        $res = $query->execute();
-
-        return count($res) > 0 ? $res[0] : null;
+        return $query->execute();
     }
 //    /**
 //     * @return Notification[] Returns an array of Notification objects
