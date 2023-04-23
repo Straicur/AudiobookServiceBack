@@ -25,10 +25,6 @@ class Notification
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
 
-    //todo to jest do sprawdzenia czy działa
-    #[ORM\Column(type: 'boolean')]
-    private bool $readStatus;
-
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $actionId;
 
@@ -44,7 +40,6 @@ class Notification
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
-        $this->readStatus = false;
         $this->users = new ArrayCollection();
         $this->deleted = false;
     }
@@ -81,18 +76,6 @@ class Notification
     public function setDateAdd(\DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
-
-        return $this;
-    }
-
-    public function getReadStatus(): bool
-    {
-        return $this->readStatus;
-    }
-
-    public function setReadStatus(bool $readStatus): self
-    {
-        $this->readStatus = $readStatus;
 
         return $this;
     }
