@@ -31,11 +31,6 @@ class AdminUserNotificationPatchQuery
     #[Assert\Uuid]
     private Uuid $actionId;
 
-    #[Assert\NotNull(message: "UserId is null")]
-    #[Assert\NotBlank(message: "UserId is blank")]
-    #[Assert\Uuid]
-    private Uuid $userId;
-
 
     protected array $additionalData = [];
 
@@ -86,23 +81,6 @@ class AdminUserNotificationPatchQuery
     public function setNotificationId(string $notificationId): void
     {
         $this->notificationId = Uuid::fromString($notificationId);;
-    }
-
-    /**
-     * @return Uuid
-     */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
-    public function getUserId(): Uuid
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @param string $userId
-     */
-    public function setUserId(string $userId): void
-    {
-        $this->userId = Uuid::fromString($userId);
     }
 
     /**

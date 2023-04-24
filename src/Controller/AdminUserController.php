@@ -187,14 +187,14 @@ class AdminUserController extends AbstractController
             switch ($adminUserRoleAddQuery->getRole()) {
                 case UserRoles::GUEST:
                     $guestRole = $roleRepository->findOneBy([
-                        "name" => "Guest"
+                        "name" => UserRolesNames::GUEST
                     ]);
                     $user->addRole($guestRole);
                     break;
 
                 case UserRoles::USER:
                     $userRole = $roleRepository->findOneBy([
-                        "name" => "User"
+                        "name" => UserRolesNames::USER
                     ]);
                     $user->addRole($userRole);
                     break;
@@ -276,14 +276,14 @@ class AdminUserController extends AbstractController
             switch ($adminUserRoleRemoveQuery->getRole()) {
                 case UserRoles::GUEST:
                     $guestRole = $roleRepository->findOneBy([
-                        "name" => "Guest"
+                        "name" => UserRolesNames::GUEST
                     ]);
                     $user->removeRole($guestRole);
                     break;
 
                 case UserRoles::USER:
                     $userRole = $roleRepository->findOneBy([
-                        "name" => "User"
+                        "name" => UserRolesNames::USER
                     ]);
                     $user->removeRole($userRole);
                     break;
@@ -363,7 +363,7 @@ class AdminUserController extends AbstractController
             }
 
             $userRole = $roleRepository->findOneBy([
-                "name" => "User"
+                "name" => UserRolesNames::USER
             ]);
 
             $user->addRole($userRole);
@@ -1320,7 +1320,7 @@ class AdminUserController extends AbstractController
                 case NotificationType::NORMAL:
 
                     $userRole = $roleRepository->findOneBy([
-                        "name" => "User"
+                        "name" => UserRolesNames::USER
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
@@ -1388,7 +1388,7 @@ class AdminUserController extends AbstractController
                     }
 
                     $userRole = $roleRepository->findOneBy([
-                        "name" => "User"
+                        "name" => UserRolesNames::USER
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
@@ -1500,6 +1500,7 @@ class AdminUserController extends AbstractController
      * @param UserRepository $userRepository
      * @param LoggerInterface $endpointLogger
      * @param NotificationRepository $notificationRepository
+     * @param RoleRepository $roleRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1529,7 +1530,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         UserRepository                 $userRepository,
         LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        RoleRepository                 $roleRepository
     ): Response
     {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
@@ -1545,21 +1547,22 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException(["adminUser.notification.patch.notification.dont.exist"]);
             }
 
-            $user = $userRepository->findOneBy([
-                "id" => $adminUserNotificationPatchQuery->getUserId()
-            ]);
-
-            if ($user == null) {
-                $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.notification.patch.user.dont.exist"]);
-            }
             $notificationBuilder = new NotificationBuilder($notification);
 
             $notificationBuilder
                 ->setType($adminUserNotificationPatchQuery->getNotificationType())
                 ->setAction($adminUserNotificationPatchQuery->getActionId())
-                ->addUser($user)
                 ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
+
+            $userRole = $roleRepository->findOneBy([
+                "name" => UserRolesNames::USER
+            ]);
+
+            $users = $userRepository->getUsersByRole($userRole);
+
+            foreach ($users as $user) {
+                $notificationBuilder->addUser($user);
+            }
 
             $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
 

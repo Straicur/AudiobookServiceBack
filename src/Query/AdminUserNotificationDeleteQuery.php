@@ -14,7 +14,6 @@ class AdminUserNotificationDeleteQuery
     private Uuid $notificationId;
 
     #[Assert\NotNull(message: "Delete is null")]
-    #[Assert\NotBlank(message: "Delete is empty")]
     #[Assert\Type(type: "boolean")]
     private bool $delete;
 
