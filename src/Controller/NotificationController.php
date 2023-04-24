@@ -4,14 +4,12 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
-use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\NotificationsSuccessModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Query\SystemNotificationPatchQuery;
 use App\Query\SystemNotificationQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
@@ -127,5 +125,4 @@ class NotificationController extends AbstractController
             throw new InvalidJsonDataException("notification.invalid.query");
         }
     }
-
 }

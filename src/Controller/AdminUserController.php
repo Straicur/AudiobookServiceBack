@@ -1588,9 +1588,9 @@ class AdminUserController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/user/notification", name: "adminUserNotificationDelete", methods: ["DELETE"])]
+    #[Route("/api/admin/user/notification/delete", name: "adminUserNotificationDelete", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Delete(
+    #[OA\Patch(
         description: "Endpoint is deleting notification",
         requestBody: new OA\RequestBody(
             required: true,

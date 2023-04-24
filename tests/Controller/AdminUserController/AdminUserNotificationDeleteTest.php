@@ -62,7 +62,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification/delete", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -100,7 +100,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification/delete", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -137,7 +137,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("DELETE", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification/delete", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -175,7 +175,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("DELETE", "/api/admin/user/notification", server: [
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification/delete", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -213,7 +213,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
             "delete" => true,
         ];
         /// step 2
-        $crawler = self::$webClient->request("DELETE", "/api/admin/user/notification", content: json_encode($content));
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/notification/delete", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);
