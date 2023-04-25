@@ -48,6 +48,9 @@ class User
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $editableDate;
 
+    #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->dateCreate = new \DateTime("now");
@@ -57,6 +60,7 @@ class User
         $this->roles = new ArrayCollection();
         $this->myList = null;
         $this->edited = false;
+        $this->notifications = new ArrayCollection();
     }
 
     /**
@@ -248,6 +252,33 @@ class User
     public function setEditableDate(\DateTime $editableDate): self
     {
         $this->editableDate = $editableDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): self
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications[] = $notification;
+            $notification->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): self
+    {
+        if ($this->notifications->removeElement($notification)) {
+            $notification->removeUser($this);
+        }
 
         return $this;
     }

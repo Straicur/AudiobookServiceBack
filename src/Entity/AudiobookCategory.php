@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AudiobookCategoryRepository;
 use App\ValueGenerator\ValueGeneratorInterface;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,6 +36,8 @@ class AudiobookCategory
     #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?AudiobookCategory $parent = null;
 
+    #[ORM\Column(type: 'datetime')]
+    private DateTime $dateAdd;
     /**
      * @param string $name
      * @param ValueGeneratorInterface $categoryKeyGenerator
@@ -45,6 +48,7 @@ class AudiobookCategory
         $this->active = false;
         $this->audiobooks = new ArrayCollection();
         $this->categoryKey = $categoryKeyGenerator->generate();
+        $this->dateAdd = new DateTime("Now");
     }
 
     public function getId(): Uuid
@@ -126,4 +130,21 @@ class AudiobookCategory
 
         return $this;
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getDateAdd(): DateTime
+    {
+        return $this->dateAdd;
+    }
+
+    /**
+     * @param DateTime $dateAdd
+     */
+    public function setDateAdd(DateTime $dateAdd): void
+    {
+        $this->dateAdd = $dateAdd;
+    }
+
 }

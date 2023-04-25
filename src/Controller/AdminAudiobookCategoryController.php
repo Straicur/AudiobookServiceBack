@@ -555,7 +555,7 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
     ): Response
     {
-        $categories = $audiobookCategoryRepository->findAll();
+        $categories = $audiobookCategoryRepository->findBy([],orderBy:["dateAdd"=>"ASC"]);
 
         $successModel = new AdminCategoriesSuccessModel();
 

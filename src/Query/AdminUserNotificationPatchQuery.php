@@ -19,22 +19,27 @@ class AdminUserNotificationPatchQuery
     #[Assert\NotNull(message: "NotificationType is null")]
     #[Assert\NotBlank(message: "NotificationType is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 6,
+    )]
     private int $notificationType;
 
     #[Assert\NotNull(message: "NotificationUserType is null")]
     #[Assert\NotBlank(message: "NotificationUserType is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 2,
+    )]
     private int $notificationUserType;
 
     #[Assert\NotNull(message: "ActionId is null")]
     #[Assert\NotBlank(message: "ActionId is blank")]
     #[Assert\Uuid]
     private Uuid $actionId;
-
-    #[Assert\NotNull(message: "UserId is null")]
-    #[Assert\NotBlank(message: "UserId is blank")]
-    #[Assert\Uuid]
-    private Uuid $userId;
 
 
     protected array $additionalData = [];
@@ -86,23 +91,6 @@ class AdminUserNotificationPatchQuery
     public function setNotificationId(string $notificationId): void
     {
         $this->notificationId = Uuid::fromString($notificationId);;
-    }
-
-    /**
-     * @return Uuid
-     */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
-    public function getUserId(): Uuid
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @param string $userId
-     */
-    public function setUserId(string $userId): void
-    {
-        $this->userId = Uuid::fromString($userId);
     }
 
     /**

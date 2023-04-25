@@ -33,10 +33,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_loginUser($user1);
         $this->databaseMockManager->testFunc_loginUser($user2);
 
-        $notification1 = $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $notification2 = $this->databaseMockManager->testFunc_addNotifications($user4, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $notification3 = $this->databaseMockManager->testFunc_addNotifications($user3, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM,(new \DateTime("now"))->modify("-9 day"));
-        $notification4 = $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM,(new \DateTime("now"))->modify("-5 day"));
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2,$user3,$user4], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -75,7 +72,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertSame($responseContent["audiobooks"],2);
         $this->assertSame($responseContent["lastWeekRegistered"],1);
         $this->assertSame($responseContent["lastWeekLogins"],3);
-        $this->assertSame($responseContent["lastWeekNotifications"],3);
+        $this->assertSame($responseContent["lastWeekNotifications"],1);
     }
     /**
      * step 1 - Preparing data
@@ -97,10 +94,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_loginUser($user1);
         $this->databaseMockManager->testFunc_loginUser($user2);
 
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user4, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user3, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM,(new \DateTime("now"))->modify("-9 day"));
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM,(new \DateTime("now"))->modify("-5 day"));
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2,$user3,$user4], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);

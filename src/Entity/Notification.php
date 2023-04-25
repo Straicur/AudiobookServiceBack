@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enums\NotificationType;
 use App\Repository\NotificationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -20,15 +22,8 @@ class Notification
     #[ORM\Column(type: 'integer')]
     private ?int $type;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user;
-
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $readStatus;
 
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $actionId;
@@ -36,10 +31,17 @@ class Notification
     #[ORM\Column(type: 'text')]
     private ?string $metaData;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
+    private Collection $users;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $deleted;
+
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
-        $this->readStatus = false;
+        $this->users = new ArrayCollection();
+        $this->deleted = false;
     }
 
     public function getId(): Uuid
@@ -66,18 +68,6 @@ class Notification
         return $this;
     }
 
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getDateAdd(): \DateTime
     {
         return $this->dateAdd;
@@ -86,18 +76,6 @@ class Notification
     public function setDateAdd(\DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
-
-        return $this;
-    }
-
-    public function getReadStatus(): bool
-    {
-        return $this->readStatus;
-    }
-
-    public function setReadStatus(bool $readStatus): self
-    {
-        $this->readStatus = $readStatus;
 
         return $this;
     }
@@ -122,6 +100,42 @@ class Notification
     public function setMetaData(string $metaData): self
     {
         $this->metaData = $metaData;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
 
         return $this;
     }

@@ -25,12 +25,9 @@ class NotificationsTest extends AbstractWebTest
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user2, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
-        $this->databaseMockManager->testFunc_addNotifications($user1, NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::ADMIN);
+        $this->databaseMockManager->testFunc_addNotifications([$user1,$user2], NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         /// step 2
         $content = [
@@ -58,7 +55,7 @@ class NotificationsTest extends AbstractWebTest
         $this->assertArrayHasKey("page", $responseContent);
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(4, $responseContent["systemNotifications"]);
+        $this->assertCount(3, $responseContent["systemNotifications"]);
     }
 
     /**
