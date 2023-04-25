@@ -19,11 +19,21 @@ class AdminUserNotificationPatchQuery
     #[Assert\NotNull(message: "NotificationType is null")]
     #[Assert\NotBlank(message: "NotificationType is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 6,
+    )]
     private int $notificationType;
 
     #[Assert\NotNull(message: "NotificationUserType is null")]
     #[Assert\NotBlank(message: "NotificationUserType is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 2,
+    )]
     private int $notificationUserType;
 
     #[Assert\NotNull(message: "ActionId is null")]

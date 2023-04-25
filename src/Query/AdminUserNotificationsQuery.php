@@ -32,7 +32,7 @@ class AdminUserNotificationsQuery
                     new Assert\NotBlank(message: 'Type is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(8)
+                    new Assert\LessThan(7)
                 ]),
                 'deleted' => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
