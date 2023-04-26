@@ -4,6 +4,7 @@ namespace App\Query;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Exception\InvalidJsonDataException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +23,7 @@ class AdminUserNotificationPatchQuery
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
-        max: 6,
+        max: 5,
     )]
     private int $notificationType;
 
@@ -112,6 +113,7 @@ class AdminUserNotificationPatchQuery
 
     /**
      * @return NotificationType
+     * @throws InvalidJsonDataException
      */
     public function getNotificationType(): NotificationType
     {
@@ -121,7 +123,7 @@ class AdminUserNotificationPatchQuery
             3 => NotificationType::PROPOSED,
             4 => NotificationType::NEW_CATEGORY,
             5 => NotificationType::NEW_AUDIOBOOK,
-            6 => NotificationType::USER_DELETE_DECLINE,
+            default => throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query")
         };
     }
 
@@ -135,12 +137,14 @@ class AdminUserNotificationPatchQuery
 
     /**
      * @return NotificationUserType
+     * @throws InvalidJsonDataException
      */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
             1 => NotificationUserType::ADMIN,
             2 => NotificationUserType::SYSTEM,
+            default => throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query")
         };
     }
 
