@@ -3,6 +3,7 @@
 namespace App\Query;
 
 use App\Enums\UserRoles;
+use App\Exception\InvalidJsonDataException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -39,6 +40,7 @@ class AdminUserRoleAddQuery
 
     /**
      * @return UserRoles
+     * @throws InvalidJsonDataException
      */
     public function getRole(): UserRoles
     {
@@ -46,6 +48,7 @@ class AdminUserRoleAddQuery
             1 => UserRoles::GUEST,
             2 => UserRoles::USER,
             3 => UserRoles::ADMINISTRATOR,
+            default => throw new InvalidJsonDataException("admin.user.roles.add.invalid.query")
         };
     }
 

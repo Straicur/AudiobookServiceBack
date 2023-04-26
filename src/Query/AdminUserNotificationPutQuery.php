@@ -4,6 +4,7 @@ namespace App\Query;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Exception\InvalidJsonDataException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -87,16 +88,16 @@ class AdminUserNotificationPutQuery
 
     /**
      * @return NotificationType
+     * @throws InvalidJsonDataException
      */
     public function getNotificationType(): NotificationType
     {
         return match ($this->notificationType) {
             1 => NotificationType::NORMAL,
             2 => NotificationType::ADMIN,
-            3 => NotificationType::PROPOSED,
             4 => NotificationType::NEW_CATEGORY,
             5 => NotificationType::NEW_AUDIOBOOK,
-            6 => NotificationType::USER_DELETE_DECLINE,
+            default => throw new InvalidJsonDataException("adminUser.notification.put.invalid.query"),
         };
     }
 
@@ -110,12 +111,14 @@ class AdminUserNotificationPutQuery
 
     /**
      * @return NotificationUserType
+     * @throws InvalidJsonDataException
      */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
             1 => NotificationUserType::ADMIN,
             2 => NotificationUserType::SYSTEM,
+            default => throw new InvalidJsonDataException("adminUser.notification.put.invalid.query"),
         };
     }
 

@@ -252,10 +252,9 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      * step 2 - Preparing JsonBodyContent
      * step 3 - Sending Request
      * step 4 - Checking response
-     * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPutUSER_DELETE_DECLINECorrect(): void
+    public function test_adminUserNotificationPutIncorrectCorrectNotificationType(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -282,12 +281,19 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
-
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
-        /// step 5
-        $this->assertCount(1, $notificationRepository->findAll());
+        $this->assertResponseStatusCodeSame(400);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
 
     }
 
@@ -517,56 +523,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey("error", $responseContent);
-    }
-
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminUserNotificationPutUSER_DELETE_DECLINEIncorrectUserId(): void
-    {
-        /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user1);
-
-        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
-
-        /// step 2
-        $content = [
-            "notificationType" => NotificationType::USER_DELETE_DECLINE->value,
-            "notificationUserType" => NotificationUserType::SYSTEM->value,
-            "additionalData" => [
-                "text" => "Nowy text",
-                "actionId" => $userDelete->getId(),
-                "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            ]
-        ];
-
-        /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", server: [
-            "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
-        /// step 4
-        $this->assertResponseStatusCodeSame(404);
-
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

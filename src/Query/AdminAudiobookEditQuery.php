@@ -3,6 +3,7 @@
 namespace App\Query;
 
 use App\Enums\AudiobookAgeRange;
+use App\Exception\InvalidJsonDataException;
 use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
@@ -235,6 +236,7 @@ class AdminAudiobookEditQuery
 
     /**
      * @return AudiobookAgeRange
+     * @throws InvalidJsonDataException
      */
     public function getAge(): AudiobookAgeRange
     {
@@ -244,6 +246,7 @@ class AdminAudiobookEditQuery
             3 => AudiobookAgeRange::FROM12TO16,
             4 => AudiobookAgeRange::FROM16TO18,
             5 => AudiobookAgeRange::ABOVE18,
+            default => throw new InvalidJsonDataException("admin.audiobook.edit.invalid.query")
         };
     }
 
