@@ -212,7 +212,7 @@ class AudiobookService implements AudiobookServiceInterface
 
                             $this->MP3FileService->configure($mp3Dir);
 
-                            $mp3Duration = $this->MP3FileService->getDuration();
+                            $mp3Duration = $mp3Duration + $this->MP3FileService->getDuration();
 
                             $mp3Size = $mp3Size + filesize($mp3Dir);
 
