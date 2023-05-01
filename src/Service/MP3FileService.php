@@ -3,6 +3,8 @@
 namespace App\Service;
 
 
+use DivisionByZeroError;
+
 class MP3FileService implements MP3FileServiceInterface
 {
     public string $fileName = "";
@@ -17,29 +19,30 @@ class MP3FileService implements MP3FileServiceInterface
      */
     public function getDuration(): int
     {
+
         $fd = fopen($this->fileName, "rb");
 
         $duration = 0;
         $block = fread($fd, 100);
         $offset = self::skipID3v2Tag($block);
-        fseek($fd, $offset, SEEK_SET);
+        fseek($fd, $offset);
+
         while (!feof($fd)) {
             $block = fread($fd, 10);
+
             if (strlen($block) < 10) {
                 break;
             } else if ($block[0] == "\xff" && (ord($block[1]) & 0xe0)) {
-//                try{
-
-                $info = self::parseFrameHeader(substr($block, 0, 4));
-
-//                }catch(Exception $e){
-//                    break;
-//                }
-                if (empty($info['Framesize'])) {
+                try {
+                    $info = self::parseFrameHeader(substr($block, 0, 4));
+                } catch (DivisionByZeroError $e) {
+                    break;
+                }
+                if (empty($info['FrameSize'])) {
                     return $duration;
                 }
 
-                fseek($fd, $info['Framesize'] - 10, SEEK_CUR);
+                fseek($fd, $info['FrameSize'] - 10, SEEK_CUR);
                 $duration += ($info['Samples'] / $info['Sampling Rate']);
 
             } else if (str_starts_with($block, 'TAG')) {
@@ -48,6 +51,7 @@ class MP3FileService implements MP3FileServiceInterface
                 fseek($fd, -9, SEEK_CUR);
             }
         }
+
         return round($duration);
     }
 
