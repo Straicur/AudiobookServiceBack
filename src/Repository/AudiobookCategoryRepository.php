@@ -89,8 +89,9 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('ac')
             ->leftJoin('ac.audiobooks', 'a')
-            ->select('COUNT(a) AS HIDDEN audiobooks', 'ac')
+            ->select('COUNT(a.id) AS HIDDEN audiobooks', 'ac')
             ->where('ac.active = true')
+            ->having("count(a.id) > 0")
             ->orderBy('audiobooks', "DESC")
             ->groupBy('ac');
 
