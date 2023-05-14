@@ -14,7 +14,6 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private string $album;
     private int $year;
     private string $duration;
-    private string $size;
     private int $parts;
     private string $description;
     private int $age;
@@ -24,6 +23,9 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      */
     private array $categories = [];
 
+    private bool $inList;
+    private int $comments;
+
     /**
      * @param string $id
      * @param string $title
@@ -32,13 +34,14 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param string $album
      * @param \DateTime $year
      * @param string $duration
-     * @param string $size
      * @param int $parts
      * @param string $description
      * @param AudiobookAgeRange $age
      * @param array $categories
+     * @param bool $inList
+     * @param int $comments
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, array $categories)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList,int $comments)
     {
         $this->id = $id;
         $this->title = $title;
@@ -47,11 +50,12 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->album = $album;
         $this->year = $year->getTimestamp() * 1000;
         $this->duration = $duration;
-        $this->size = $size;
         $this->parts = $parts;
         $this->description = $description;
         $this->age = $age->value;
         $this->categories = $categories;
+        $this->inList = $inList;
+        $this->comments = $comments;
     }
 
     /**
@@ -167,22 +171,6 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @return string
-     */
-    public function getSize(): string
-    {
-        return $this->size;
-    }
-
-    /**
-     * @param string $size
-     */
-    public function setSize(string $size): void
-    {
-        $this->size = $size;
-    }
-
-    /**
      * @return int
      */
     public function getParts(): int
@@ -247,8 +235,41 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->categories = $categories;
     }
 
-    public function addCategory(AdminAudiobookCategoryModel $category)
+    public function addCategory(AdminAudiobookCategoryModel $category): void
     {
         $this->categories[] = $category;
     }
+
+    /**
+     * @return bool
+     */
+    public function isInList(): bool
+    {
+        return $this->inList;
+    }
+
+    /**
+     * @param bool $inList
+     */
+    public function setInList(bool $inList): void
+    {
+        $this->inList = $inList;
+    }
+
+    /**
+     * @return int
+     */
+    public function getComments(): int
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param int $comments
+     */
+    public function setComments(int $comments): void
+    {
+        $this->comments = $comments;
+    }
+
 }

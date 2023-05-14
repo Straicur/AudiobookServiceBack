@@ -232,6 +232,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param MyListRepository $listRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -261,7 +262,9 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        MyListRepository               $listRepository,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository
     ): Response
     {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -288,6 +291,14 @@ class UserAudiobookController extends AbstractController
                 );
             }
 
+            $inList = $listRepository->getAudiobookINMyList($authorizedUserService->getAuthorizedUser(), $audiobook);
+
+            $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                "parent" => null,
+                "audiobook" => $audiobook->getId(),
+                "deleted" => false
+            ]);
+
             $successModel = new UserAudiobookDetailsSuccessModel(
                 $audiobook->getId(),
                 $audiobook->getTitle(),
@@ -296,11 +307,12 @@ class UserAudiobookController extends AbstractController
                 $audiobook->getAlbum(),
                 $audiobook->getYear(),
                 $audiobook->getDuration(),
-                $audiobook->getSize(),
                 $audiobook->getParts(),
                 $audiobook->getDescription(),
                 $audiobook->getAge(),
-                $audiobookCategories
+                $audiobookCategories,
+                $inList,
+                count($audiobookUserComments)
             );
 
             return ResponseTool::getResponse($successModel);
