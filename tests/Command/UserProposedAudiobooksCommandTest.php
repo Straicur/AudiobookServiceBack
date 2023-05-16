@@ -51,17 +51,17 @@ class UserProposedAudiobooksCommandTest extends AbstractKernelTestCase
         $audiobook24 = $this->databaseMockManager->testFunc_addAudiobook("t24", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d24", [$category1, $category2], null, (new \DateTime("Now"))->modify("- 1 month"), active: true);
         $audiobook25 = $this->databaseMockManager->testFunc_addAudiobook("t25", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d25", [$category2], active: true);
 
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook2, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook4, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook10, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook7, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook1, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook3, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook6, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook15, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook14, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook21, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook22, 1, "dsa", new DateTime("Now"));
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook2, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook4, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook10, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook7, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook1, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook3, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook6, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook15, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook14, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook21, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user1, $audiobook22, 1, "dsa");
 
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook1);
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook3);
@@ -71,17 +71,17 @@ class UserProposedAudiobooksCommandTest extends AbstractKernelTestCase
         $this->databaseMockManager->testFunc_addMyList($user1, $audiobook12);
 
 
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook2, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook4, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook10, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook7, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook1, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook3, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook6, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook15, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook14, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook21, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook22, 1, "dsa", new DateTime("Now"));
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook2, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook4, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook10, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook7, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook1, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook3, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook6, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook15, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook14, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook21, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook22, 1, "dsa");
 
         $this->databaseMockManager->testFunc_addMyList($user2, $audiobook3);
         $this->databaseMockManager->testFunc_addMyList($user2, $audiobook25);

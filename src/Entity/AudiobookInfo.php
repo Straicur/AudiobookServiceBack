@@ -44,16 +44,15 @@ class AudiobookInfo
      * @param Audiobook $audiobook
      * @param int $part
      * @param string $endedTime
-     * @param \DateTime $watchingDate
      * @param bool $watched
      */
-    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate, bool $watched)
+    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, bool $watched)
     {
         $this->user = $user;
         $this->audiobook = $audiobook;
         $this->part = $part;
         $this->endedTime = $endedTime;
-        $this->watchingDate = $watchingDate;
+        $this->watchingDate = new \DateTime('Now');
         $this->active = true;
         $this->watched = $watched;
     }

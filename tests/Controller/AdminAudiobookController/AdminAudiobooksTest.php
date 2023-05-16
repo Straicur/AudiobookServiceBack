@@ -40,11 +40,11 @@ class AdminAudiobooksTest extends AbstractWebTest
         $audiobook11 = $this->databaseMockManager->testFunc_addAudiobook("t11", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d11", [$category2], rating: 4);
         $audiobook12 = $this->databaseMockManager->testFunc_addAudiobook("t12", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d12", [$category2], null, (new \DateTime("Now"))->modify("- 1 year"), rating: 4);
 
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook2, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook3, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook10, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook7, 1, "dsa", new DateTime("Now"));
-        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, "dsa", new DateTime("Now"));
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook2, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook3, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook10, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook7, 1, "dsa");
+        $audiobookInfo = $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, "dsa");
 
         /// step 2
         $content = [

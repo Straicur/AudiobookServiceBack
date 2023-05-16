@@ -586,7 +586,7 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobookInfo != null) {
                 $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
-                $audiobookInfo->setWatchingDate($userAudiobookInfoAddQuery->getWatchingDate());
+                $audiobookInfo->setWatchingDate(new \DateTime('Now'));
                 $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
                 $audiobookInfo->setActive(true);
             } else {
@@ -595,7 +595,6 @@ class UserAudiobookController extends AbstractController
                     $audiobook,
                     $userAudiobookInfoAddQuery->getPart(),
                     $userAudiobookInfoAddQuery->getEndedTime(),
-                    $userAudiobookInfoAddQuery->getWatchingDate(),
                     $userAudiobookInfoAddQuery->getWatched()
                 );
             }

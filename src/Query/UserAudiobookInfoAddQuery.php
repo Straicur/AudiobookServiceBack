@@ -29,11 +29,6 @@ class UserAudiobookInfoAddQuery
     #[Assert\Type(type: "string")]
     private string $endedTime;
 
-    #[Assert\NotNull(message: "WatchingDate is null")]
-    #[Assert\NotBlank(message: "WatchingDate is empty")]
-    #[Assert\Type(type: "datetime")]
-    private DateTime $watchingDate;
-
     #[Assert\NotNull(message: "Watched is null")]
     #[Assert\Type(type: "boolean")]
     private bool $watched;
@@ -101,23 +96,6 @@ class UserAudiobookInfoAddQuery
     public function setEndedTime(string $endedTime): void
     {
         $this->endedTime = $endedTime;
-    }
-
-    /**
-     * @return DateTime
-     */
-    #[OA\Property(property: "watchingDate", example: "d.m.Y")]
-    public function getWatchingDate(): DateTime
-    {
-        return $this->watchingDate;
-    }
-
-    /**
-     * @param string $watchingDate
-     */
-    public function setWatchingDate(string $watchingDate): void
-    {
-        $this->watchingDate = DateTime::createFromFormat('d.m.Y', $watchingDate);
     }
 
     /**
