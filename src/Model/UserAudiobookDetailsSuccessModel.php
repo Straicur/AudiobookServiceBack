@@ -26,6 +26,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private bool $inList;
     private int $comments;
     private bool $canRate = false;
+    private bool $canComment = false;
 
     /**
      * @param string $id
@@ -42,7 +43,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param bool $inList
      * @param int $comments
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList,int $comments)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments)
     {
         $this->id = $id;
         $this->title = $title;
@@ -287,6 +288,22 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function setCanRate(bool $canRate): void
     {
         $this->canRate = $canRate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCanComment(): bool
+    {
+        return $this->canComment;
+    }
+
+    /**
+     * @param bool $canComment
+     */
+    public function setCanComment(bool $canComment): void
+    {
+        $this->canComment = $canComment;
     }
 
 }

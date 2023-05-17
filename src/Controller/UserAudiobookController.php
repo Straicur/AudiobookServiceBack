@@ -328,6 +328,10 @@ class UserAudiobookController extends AbstractController
                 $successModel->setCanRate(true);
             }
 
+            if (floor($audiobook->getParts() / 2) > $audiobookInfo) {
+                $successModel->setCanComment(true);
+            }
+
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
