@@ -27,8 +27,8 @@ class AudiobookInfo
     #[ORM\Column(type: 'integer')]
     private int $part;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $endedTime;
+    #[ORM\Column(type: 'integer')]
+    private int $endedTime;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $watchingDate;
@@ -98,12 +98,12 @@ class AudiobookInfo
         return $this;
     }
 
-    public function getEndedTime(): string
+    public function getEndedTime(): int
     {
         return $this->endedTime;
     }
 
-    public function setEndedTime(string $endedTime): self
+    public function setEndedTime(int $endedTime): self
     {
         $this->endedTime = $endedTime;
 

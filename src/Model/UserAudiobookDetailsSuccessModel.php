@@ -25,6 +25,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
 
     private bool $inList;
     private int $comments;
+    private bool $canRate = false;
 
     /**
      * @param string $id
@@ -270,6 +271,22 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function setComments(int $comments): void
     {
         $this->comments = $comments;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCanRate(): bool
+    {
+        return $this->canRate;
+    }
+
+    /**
+     * @param bool $canRate
+     */
+    public function setCanRate(bool $canRate): void
+    {
+        $this->canRate = $canRate;
     }
 
 }

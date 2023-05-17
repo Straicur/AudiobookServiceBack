@@ -264,7 +264,8 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         MyListRepository               $listRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookInfoRepository $audiobookInfoRepository
     ): Response
     {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -277,6 +278,8 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["userAudiobook.details.audiobook.not.exist"]);
             }
+
+            $user = $authorizedUserService->getAuthorizedUser();
 
             $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
@@ -291,7 +294,13 @@ class UserAudiobookController extends AbstractController
                 );
             }
 
-            $inList = $listRepository->getAudiobookINMyList($authorizedUserService->getAuthorizedUser(), $audiobook);
+            $inList = $listRepository->getAudiobookINMyList($user, $audiobook);
+
+            $audiobookInfo = $audiobookInfoRepository->findBy([
+                "audiobook" => $audiobook->getId(),
+                "watched" => true,
+                "user" => $user->getId()
+            ]);
 
             $audiobookUserComments = $audiobookUserCommentRepository->findBy([
                 "parent" => null,
@@ -314,6 +323,10 @@ class UserAudiobookController extends AbstractController
                 $inList,
                 count($audiobookUserComments)
             );
+
+            if ($audiobookInfo != null && count($audiobookInfo) >= $audiobook->getParts()) {
+                $successModel->setCanRate(true);
+            }
 
             return ResponseTool::getResponse($successModel);
         } else {
@@ -587,7 +600,9 @@ class UserAudiobookController extends AbstractController
             if ($audiobookInfo != null) {
                 $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
                 $audiobookInfo->setWatchingDate(new \DateTime('Now'));
-                $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
+                if(!$audiobookInfo->getWatched()){
+                    $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
+                }
                 $audiobookInfo->setActive(true);
             } else {
                 $audiobookInfo = new AudiobookInfo(

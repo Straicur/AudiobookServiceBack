@@ -26,8 +26,8 @@ class UserAudiobookInfoAddQuery
 
     #[Assert\NotNull(message: "EndedTime is null")]
     #[Assert\NotBlank(message: "EndedTime is empty")]
-    #[Assert\Type(type: "string")]
-    private string $endedTime;
+    #[Assert\Type(type: "integer")]
+    private int $endedTime;
 
     #[Assert\NotNull(message: "Watched is null")]
     #[Assert\Type(type: "boolean")]
@@ -83,17 +83,17 @@ class UserAudiobookInfoAddQuery
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getEndedTime(): string
+    public function getEndedTime(): int
     {
         return $this->endedTime;
     }
 
     /**
-     * @param string $endedTime
+     * @param int $endedTime
      */
-    public function setEndedTime(string $endedTime): void
+    public function setEndedTime(int $endedTime): void
     {
         $this->endedTime = $endedTime;
     }

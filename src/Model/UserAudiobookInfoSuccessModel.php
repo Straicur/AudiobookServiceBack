@@ -5,15 +5,15 @@ namespace App\Model;
 class UserAudiobookInfoSuccessModel implements ModelInterface
 {
     private int $part;
-    private string $endedTime;
+    private int $endedTime;
     private int $watchingDate;
 
     /**
      * @param int $part
-     * @param string $endedTime
+     * @param int $endedTime
      * @param \DateTime $watchingDate
      */
-    public function __construct(int $part, string $endedTime, \DateTime $watchingDate)
+    public function __construct(int $part, int $endedTime, \DateTime $watchingDate)
     {
         $this->part = $part;
         $this->endedTime = $endedTime;
@@ -37,17 +37,17 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getEndedTime(): string
+    public function getEndedTime(): int
     {
         return $this->endedTime;
     }
 
     /**
-     * @param string $endedTime
+     * @param int $endedTime
      */
-    public function setEndedTime(string $endedTime): void
+    public function setEndedTime(int $endedTime): void
     {
         $this->endedTime = $endedTime;
     }
