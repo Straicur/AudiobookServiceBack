@@ -9,17 +9,18 @@ class AudiobookCommentsModel
     private string $comment;
     private bool $edited;
     private bool $myComment;
-    private bool $deleted = false;
+    private ?bool $deleted = null;
+
+    private ?bool $liked = null;
+    /**
+     * @var AudiobookCommentLikeModel[]
+     */
+    private array $audiobookCommentLikeModel = [];
 
     /**
      * @var AudiobookCommentLikeModel[]
      */
-    private array $audiobookCommentLikeModel;
-
-    /**
-     * @var AudiobookCommentLikeModel[]
-     */
-    private array $audiobookCommentUnlikeModel;
+    private array $audiobookCommentUnlikeModel = [];
 
     /**
      * @var AudiobookCommentsModel[]
@@ -41,6 +42,7 @@ class AudiobookCommentsModel
         $this->edited = $edited;
         $this->myComment = $myComment;
     }
+
     /**
      * @return AudiobookCommentsModel[]
      */
@@ -187,7 +189,7 @@ class AudiobookCommentsModel
     /**
      * @return bool
      */
-    public function getDeleted(): bool
+    public function getDeleted(): ?bool
     {
         return $this->deleted;
     }
@@ -195,8 +197,25 @@ class AudiobookCommentsModel
     /**
      * @param bool $deleted
      */
-    public function setDeleted(bool $deleted): void
+    public function setDeleted(?bool $deleted): void
     {
         $this->deleted = $deleted;
     }
+
+    /**
+     * @return bool|null
+     */
+    public function getLiked(): ?bool
+    {
+        return $this->liked;
+    }
+
+    /**
+     * @param bool|null $liked
+     */
+    public function setLiked(?bool $liked): void
+    {
+        $this->liked = $liked;
+    }
+
 }

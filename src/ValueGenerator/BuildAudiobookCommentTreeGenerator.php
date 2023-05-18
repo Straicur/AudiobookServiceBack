@@ -24,6 +24,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @param User $user
+     * @param bool $admin
      */
     public function __construct(
         array                              $elements,
@@ -86,6 +87,9 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     $child->setDeleted($element->getDeleted());
                 }
 
+
+                $userLike = null;
+
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
                         $child->addAudiobookCommentModel(new AudiobookCommentLikeModel(
@@ -98,6 +102,13 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                             $commentLike->getLiked()
                         ));
                     }
+                    if ($commentLike->getUser()->getId() === $user->getId()) {
+                        $userLike = $commentLike->getLiked();
+                    }
+                }
+
+                if (!$admin) {
+                    $child->setLiked($userLike);
                 }
 
                 if (!empty($children)) {
