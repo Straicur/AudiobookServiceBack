@@ -265,7 +265,7 @@ class UserAudiobookController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         MyListRepository               $listRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookInfoRepository $audiobookInfoRepository
+        AudiobookInfoRepository        $audiobookInfoRepository
     ): Response
     {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -602,11 +602,16 @@ class UserAudiobookController extends AbstractController
             ]);
 
             if ($audiobookInfo != null) {
-                $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
+                if ($audiobookInfo->getEndedTime() < $userAudiobookInfoAddQuery->getEndedTime()) {
+                    $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
+                }
+
                 $audiobookInfo->setWatchingDate(new \DateTime('Now'));
-                if(!$audiobookInfo->getWatched()){
+
+                if (!$audiobookInfo->getWatched()) {
                     $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
                 }
+
                 $audiobookInfo->setActive(true);
             } else {
                 $audiobookInfo = new AudiobookInfo(
@@ -1010,8 +1015,7 @@ class UserAudiobookController extends AbstractController
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
                 "audiobookUserComment" => $comment->getId(),
-                "user" => $user->getId(),
-                "deleted" => false
+                "user" => $user->getId()
             ]);
 
             if ($commentLike == null) {
