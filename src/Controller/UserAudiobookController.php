@@ -1022,6 +1022,9 @@ class UserAudiobookController extends AbstractController
                 $commentLike = new AudiobookUserCommentLike($userAudiobookCommentLikeAddQuery->isLike(), $comment, $user);
             } else {
                 $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
+                if($commentLike->getDeleted()){
+                    $commentLike->setDeleted(!$commentLike->getDeleted());
+                }
             }
 
             $audiobookUserCommentLikeRepository->add($commentLike);
@@ -1039,6 +1042,7 @@ class UserAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @return Response
      * @throws DataNotFoundException
@@ -1046,7 +1050,7 @@ class UserAudiobookController extends AbstractController
      */
     #[Route("/api/user/audiobook/comment/like/delete", name: "userAudiobookCommentLikeDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Put(
+    #[OA\Delete(
         description: "Endpoint is adding/editing user audiobook comment like",
         requestBody: new OA\RequestBody(
             required: true,
@@ -1067,6 +1071,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface            $requestService,
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
     ): Response
     {
@@ -1076,8 +1081,17 @@ class UserAudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
+            $comment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $userAudiobookCommentLikeDeleteQuery->getCommentId()
+            ]);
+
+            if ($comment == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.comment.like.comment.not.exist"]);
+            }
+
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
-                "id" => $userAudiobookCommentLikeDeleteQuery->getCommentLikeId(),
+                "audiobookUserComment" => $comment->getId(),
                 "user" => $user->getId(),
                 "deleted" => false
             ]);

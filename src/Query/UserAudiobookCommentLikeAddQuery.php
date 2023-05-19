@@ -14,7 +14,6 @@ class UserAudiobookCommentLikeAddQuery
     private Uuid $commentId;
 
     #[Assert\NotNull(message: "Like is null")]
-    #[Assert\NotBlank(message: "Like is empty")]
     #[Assert\Type(type: "boolean")]
     private bool $like;
 

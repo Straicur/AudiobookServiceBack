@@ -45,7 +45,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "commentLikeId" => $commentLike->getId(),
+            "commentId" => $comment2->getId(),
         ];
         /// step 2
         $crawler = self::$webClient->request("DELETE", "/api/user/audiobook/comment/like/delete", server: [
@@ -94,7 +94,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "commentLikeId" => $commentLike->getId(),
+            "commentId" => $comment2->getId(),
         ];
 
         /// step 2
@@ -191,7 +191,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "commentLikeId" => $commentLike->getId(),
+            "commentId" => $comment2->getId(),
         ];
         /// step 2
         $crawler = self::$webClient->request("DELETE", "/api/user/audiobook/comment/like/delete", server: [
@@ -242,7 +242,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "commentLikeId" => $commentLike->getId(),
+            "commentId" => $comment2->getId(),
         ];
         /// step 2
         $crawler = self::$webClient->request("DELETE", "/api/user/audiobook/comment/like/delete", content: json_encode($content));

@@ -90,22 +90,22 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 $userLike = null;
 
+                $likes =0;
+                $unlikes=0;
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
-                        $child->addAudiobookCommentModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
+                        $likes=+1;
+
                     } else {
-                        $child->addAudiobookCommentUnlikeModel(new AudiobookCommentLikeModel(
-                            $commentLike->getId(),
-                            $commentLike->getLiked()
-                        ));
+                        $unlikes=+1;
                     }
                     if ($commentLike->getUser()->getId() === $user->getId()) {
                         $userLike = $commentLike->getLiked();
                     }
                 }
+
+                $child->setAudiobookCommentLike($likes);
+                $child->setAudiobookCommentUnlike($unlikes);
 
                 if (!$admin) {
                     $child->setLiked($userLike);
