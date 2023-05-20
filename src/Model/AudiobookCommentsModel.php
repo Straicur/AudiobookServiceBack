@@ -14,6 +14,8 @@ class AudiobookCommentsModel
     private int $audiobookCommentLike = 0;
     private int $audiobookCommentUnlike = 0;
 
+    private ?string $parentId = null;
+
     /**
      * @var AudiobookCommentsModel[]
      */
@@ -198,6 +200,22 @@ class AudiobookCommentsModel
     public function setLiked(?bool $liked): void
     {
         $this->liked = $liked;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParentId(): ?string
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * @param string|null $parentId
+     */
+    public function setParentId(?string $parentId): void
+    {
+        $this->parentId = $parentId;
     }
 
 }

@@ -83,6 +83,10 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     $myComment
                 );
 
+                if($parentId!= null){
+                    $child->setParentId($parentId);
+                }
+
                 if ($admin) {
                     $child->setDeleted($element->getDeleted());
                 }
@@ -92,6 +96,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 $likes =0;
                 $unlikes=0;
+
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
                         $likes=+1;
