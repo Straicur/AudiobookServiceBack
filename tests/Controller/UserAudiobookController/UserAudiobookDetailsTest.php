@@ -63,6 +63,8 @@ class UserAudiobookDetailsTest extends AbstractWebTest
         $this->assertCount(2, $responseContent["categories"]);
         $this->assertArrayHasKey("inList", $responseContent);
         $this->assertArrayHasKey("comments", $responseContent);
+        $this->assertArrayHasKey("canRate", $responseContent);
+        $this->assertArrayHasKey("canComment", $responseContent);
     }
 
     /**

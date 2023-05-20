@@ -9,17 +9,12 @@ class AudiobookCommentsModel
     private string $comment;
     private bool $edited;
     private bool $myComment;
-    private bool $deleted = false;
+    private ?bool $deleted = null;
+    private ?bool $liked = null;
+    private int $audiobookCommentLike = 0;
+    private int $audiobookCommentUnlike = 0;
 
-    /**
-     * @var AudiobookCommentLikeModel[]
-     */
-    private array $audiobookCommentLikeModel;
-
-    /**
-     * @var AudiobookCommentLikeModel[]
-     */
-    private array $audiobookCommentUnlikeModel;
+    private ?string $parentId = null;
 
     /**
      * @var AudiobookCommentsModel[]
@@ -41,6 +36,7 @@ class AudiobookCommentsModel
         $this->edited = $edited;
         $this->myComment = $myComment;
     }
+
     /**
      * @return AudiobookCommentsModel[]
      */
@@ -143,51 +139,41 @@ class AudiobookCommentsModel
     }
 
     /**
-     * @return AudiobookCommentLikeModel[]
+     * @return int
      */
-    public function getAudiobookCommentLikeModel(): array
+    public function getAudiobookCommentLike(): int
     {
-        return $this->audiobookCommentLikeModel;
+        return $this->audiobookCommentLike;
     }
 
     /**
-     * @param AudiobookCommentLikeModel[] $audiobookCommentLikeModel
+     * @param int $audiobookCommentLike
      */
-    public function setAudiobookCommentLikeModel(array $audiobookCommentLikeModel): void
+    public function setAudiobookCommentLike(int $audiobookCommentLike): void
     {
-        $this->audiobookCommentLikeModel = $audiobookCommentLikeModel;
-    }
-
-    public function addAudiobookCommentModel(AudiobookCommentLikeModel $audiobookCommentLikeModel): void
-    {
-        $this->audiobookCommentLikeModel[] = $audiobookCommentLikeModel;
+        $this->audiobookCommentLike = $audiobookCommentLike;
     }
 
     /**
-     * @return AudiobookCommentLikeModel[]
+     * @return int
      */
-    public function getAudiobookCommentUnlikeModel(): array
+    public function getAudiobookCommentUnlike(): int
     {
-        return $this->audiobookCommentUnlikeModel;
+        return $this->audiobookCommentUnlike;
     }
 
     /**
-     * @param AudiobookCommentlikeModel[] $audiobookCommentUnlikeModel
+     * @param int $audiobookCommentUnlike
      */
-    public function setAudiobookCommentUnlikeModel(array $audiobookCommentUnlikeModel): void
+    public function setAudiobookCommentUnlike(int $audiobookCommentUnlike): void
     {
-        $this->audiobookCommentUnlikeModel = $audiobookCommentUnlikeModel;
-    }
-
-    public function addAudiobookCommentUnlikeModel(AudiobookCommentlikeModel $audiobookCommentUnlikeModel): void
-    {
-        $this->audiobookCommentUnlikeModel[] = $audiobookCommentUnlikeModel;
+        $this->audiobookCommentUnlike = $audiobookCommentUnlike;
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function getDeleted(): bool
+    public function getDeleted(): ?bool
     {
         return $this->deleted;
     }
@@ -195,8 +181,41 @@ class AudiobookCommentsModel
     /**
      * @param bool $deleted
      */
-    public function setDeleted(bool $deleted): void
+    public function setDeleted(?bool $deleted): void
     {
         $this->deleted = $deleted;
     }
+
+    /**
+     * @return bool|null
+     */
+    public function getLiked(): ?bool
+    {
+        return $this->liked;
+    }
+
+    /**
+     * @param bool|null $liked
+     */
+    public function setLiked(?bool $liked): void
+    {
+        $this->liked = $liked;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParentId(): ?string
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * @param string|null $parentId
+     */
+    public function setParentId(?string $parentId): void
+    {
+        $this->parentId = $parentId;
+    }
+
 }

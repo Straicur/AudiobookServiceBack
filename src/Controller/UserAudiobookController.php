@@ -264,7 +264,8 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         MyListRepository               $listRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository
     ): Response
     {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -277,6 +278,8 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error("Audiobook dont exist");
                 throw new DataNotFoundException(["userAudiobook.details.audiobook.not.exist"]);
             }
+
+            $user = $authorizedUserService->getAuthorizedUser();
 
             $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
@@ -291,7 +294,13 @@ class UserAudiobookController extends AbstractController
                 );
             }
 
-            $inList = $listRepository->getAudiobookINMyList($authorizedUserService->getAuthorizedUser(), $audiobook);
+            $inList = $listRepository->getAudiobookINMyList($user, $audiobook);
+
+            $audiobookInfo = $audiobookInfoRepository->findBy([
+                "audiobook" => $audiobook->getId(),
+                "watched" => true,
+                "user" => $user->getId()
+            ]);
 
             $audiobookUserComments = $audiobookUserCommentRepository->findBy([
                 "parent" => null,
@@ -314,6 +323,14 @@ class UserAudiobookController extends AbstractController
                 $inList,
                 count($audiobookUserComments)
             );
+
+            if ($audiobookInfo != null && count($audiobookInfo) >= $audiobook->getParts()) {
+                $successModel->setCanRate(true);
+            }
+
+            if (floor($audiobook->getParts() / 2) > $audiobookInfo) {
+                $successModel->setCanComment(true);
+            }
 
             return ResponseTool::getResponse($successModel);
         } else {
@@ -585,9 +602,16 @@ class UserAudiobookController extends AbstractController
             ]);
 
             if ($audiobookInfo != null) {
-                $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
-                $audiobookInfo->setWatchingDate($userAudiobookInfoAddQuery->getWatchingDate());
-                $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
+                if ($audiobookInfo->getEndedTime() < $userAudiobookInfoAddQuery->getEndedTime()) {
+                    $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
+                }
+
+                $audiobookInfo->setWatchingDate(new \DateTime('Now'));
+
+                if (!$audiobookInfo->getWatched()) {
+                    $audiobookInfo->setWatched($userAudiobookInfoAddQuery->getWatched());
+                }
+
                 $audiobookInfo->setActive(true);
             } else {
                 $audiobookInfo = new AudiobookInfo(
@@ -595,7 +619,6 @@ class UserAudiobookController extends AbstractController
                     $audiobook,
                     $userAudiobookInfoAddQuery->getPart(),
                     $userAudiobookInfoAddQuery->getEndedTime(),
-                    $userAudiobookInfoAddQuery->getWatchingDate(),
                     $userAudiobookInfoAddQuery->getWatched()
                 );
             }
@@ -992,14 +1015,16 @@ class UserAudiobookController extends AbstractController
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
                 "audiobookUserComment" => $comment->getId(),
-                "user" => $user->getId(),
-                "deleted" => false
+                "user" => $user->getId()
             ]);
 
             if ($commentLike == null) {
                 $commentLike = new AudiobookUserCommentLike($userAudiobookCommentLikeAddQuery->isLike(), $comment, $user);
             } else {
                 $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
+                if($commentLike->getDeleted()){
+                    $commentLike->setDeleted(!$commentLike->getDeleted());
+                }
             }
 
             $audiobookUserCommentLikeRepository->add($commentLike);
@@ -1017,6 +1042,7 @@ class UserAudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @return Response
      * @throws DataNotFoundException
@@ -1024,7 +1050,7 @@ class UserAudiobookController extends AbstractController
      */
     #[Route("/api/user/audiobook/comment/like/delete", name: "userAudiobookCommentLikeDelete", methods: ["DELETE"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Put(
+    #[OA\Delete(
         description: "Endpoint is adding/editing user audiobook comment like",
         requestBody: new OA\RequestBody(
             required: true,
@@ -1045,6 +1071,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface            $requestService,
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
     ): Response
     {
@@ -1054,8 +1081,17 @@ class UserAudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
+            $comment = $audiobookUserCommentRepository->findOneBy([
+                "id" => $userAudiobookCommentLikeDeleteQuery->getCommentId()
+            ]);
+
+            if ($comment == null) {
+                $endpointLogger->error("Audiobook dont exist");
+                throw new DataNotFoundException(["userAudiobook.add.comment.like.comment.not.exist"]);
+            }
+
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
-                "id" => $userAudiobookCommentLikeDeleteQuery->getCommentLikeId(),
+                "audiobookUserComment" => $comment->getId(),
                 "user" => $user->getId(),
                 "deleted" => false
             ]);

@@ -27,8 +27,8 @@ class AudiobookInfo
     #[ORM\Column(type: 'integer')]
     private int $part;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $endedTime;
+    #[ORM\Column(type: 'integer')]
+    private int $endedTime;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $watchingDate;
@@ -44,16 +44,15 @@ class AudiobookInfo
      * @param Audiobook $audiobook
      * @param int $part
      * @param string $endedTime
-     * @param \DateTime $watchingDate
      * @param bool $watched
      */
-    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, \DateTime $watchingDate, bool $watched)
+    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, bool $watched)
     {
         $this->user = $user;
         $this->audiobook = $audiobook;
         $this->part = $part;
         $this->endedTime = $endedTime;
-        $this->watchingDate = $watchingDate;
+        $this->watchingDate = new \DateTime('Now');
         $this->active = true;
         $this->watched = $watched;
     }
@@ -99,12 +98,12 @@ class AudiobookInfo
         return $this;
     }
 
-    public function getEndedTime(): string
+    public function getEndedTime(): int
     {
         return $this->endedTime;
     }
 
-    public function setEndedTime(string $endedTime): self
+    public function setEndedTime(int $endedTime): self
     {
         $this->endedTime = $endedTime;
 
