@@ -233,6 +233,8 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @param MyListRepository $listRepository
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1023,7 +1025,7 @@ class UserAudiobookController extends AbstractController
             } else {
                 $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
                 if($commentLike->getDeleted()){
-                    $commentLike->setDeleted(!$commentLike->getDeleted());
+                    $commentLike->setDeleted($commentLike->getDeleted());
                 }
             }
 
