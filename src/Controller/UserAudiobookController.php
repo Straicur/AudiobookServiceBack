@@ -233,6 +233,8 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @param MyListRepository $listRepository
+     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
