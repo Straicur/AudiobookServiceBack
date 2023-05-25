@@ -3,7 +3,6 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
-use App\Model\AudiobookCommentLikeModel;
 use App\Model\AudiobookCommentsModel;
 use App\Model\AudiobookCommentUserModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
@@ -83,7 +82,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     $myComment
                 );
 
-                if($parentId!= null){
+                if ($parentId != null) {
                     $child->setParentId($parentId);
                 }
 
@@ -94,15 +93,15 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 $userLike = null;
 
-                $likes =0;
-                $unlikes=0;
+                $likes = 0;
+                $unlikes = 0;
 
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
-                        $likes=+1;
+                        $likes = +1;
 
                     } else {
-                        $unlikes=+1;
+                        $unlikes = +1;
                     }
                     if ($commentLike->getUser()->getId() === $user->getId()) {
                         $userLike = $commentLike->getLiked();
