@@ -1025,7 +1025,7 @@ class UserAudiobookController extends AbstractController
             } else {
                 $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
                 if($commentLike->getDeleted()){
-                    $commentLike->setDeleted($commentLike->getDeleted());
+                    $commentLike->setDeleted(!$commentLike->getDeleted());
                 }
             }
 
