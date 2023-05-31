@@ -250,6 +250,26 @@ class AudiobookRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * @param string $title
+     * @return Audiobook[]
+     */
+    public function searchAudiobooksByName(string $title): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->leftJoin('a.audiobookRatings', 'ar')
+            ->where('a.active = true')
+            ->andWhere('a.title LIKE :title')
+            ->setParameter('title', "%" . $title . "%")
+            ->groupBy('a')
+            ->orderBy('COUNT(ar)', "DESC");
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects
 //     */
