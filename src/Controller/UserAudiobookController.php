@@ -21,6 +21,7 @@ use App\Model\UserAudiobookDetailsSuccessModel;
 use App\Model\UserAudiobookInfoSuccessModel;
 use App\Model\UserAudiobookModel;
 use App\Model\UserAudiobookRatingGetSuccessModel;
+use App\Model\UserAudiobooksSearchSuccessModel;
 use App\Model\UserAudiobooksSuccessModel;
 use App\Model\UserCategoryModel;
 use App\Model\UserMyListAudiobooksSuccessModel;
@@ -37,6 +38,7 @@ use App\Query\UserAudiobookLikeQuery;
 use App\Query\UserAudiobookRatingAddQuery;
 use App\Query\UserAudiobookRatingGetQuery;
 use App\Query\UserAudiobooksQuery;
+use App\Query\UserAudiobooksSearchQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
@@ -164,6 +166,81 @@ class UserAudiobookController extends AbstractController
         } else {
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("userAudiobooks.invalid.query");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param AudiobookRepository $audiobookRepository
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/audiobooks/search", name: "userAudiobooksSearch", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is returning list of audiobooks by title",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobooksSearchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserAudiobooksSearchSuccessModel::class)
+            )
+        ]
+    )]
+    public function userAudiobooksSearch(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        AudiobookRepository            $audiobookRepository
+    ): Response
+    {
+        $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
+
+        if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
+
+            $minResult = $userAudiobooksSearchQuery->getPage() * $userAudiobooksSearchQuery->getLimit();
+            $maxResult = $userAudiobooksSearchQuery->getLimit() + $minResult;
+
+            $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle());
+
+            $successModel = new UserAudiobooksSearchSuccessModel();
+
+            foreach ($allAudiobooks as $index => $audiobook) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($index < $maxResult) {
+                    $successModel->addAudiobook(new UserAudiobookModel(
+                        $audiobook->getId(),
+                        $audiobook->getTitle(),
+                        $audiobook->getAuthor(),
+                        $audiobook->getParts(),
+                        $audiobook->getAge()
+                    ));
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($userAudiobooksSearchQuery->getPage());
+            $successModel->setLimit($userAudiobooksSearchQuery->getLimit());
+
+            $successModel->setMaxPage(ceil(count($allAudiobooks) / $userAudiobooksSearchQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            throw new InvalidJsonDataException("userAudiobooksSearch.invalid.query");
         }
     }
 
@@ -1024,7 +1101,7 @@ class UserAudiobookController extends AbstractController
                 $commentLike = new AudiobookUserCommentLike($userAudiobookCommentLikeAddQuery->isLike(), $comment, $user);
             } else {
                 $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
-                if($commentLike->getDeleted()){
+                if ($commentLike->getDeleted()) {
                     $commentLike->setDeleted(!$commentLike->getDeleted());
                 }
             }
@@ -1073,7 +1150,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface            $requestService,
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
     ): Response
     {
