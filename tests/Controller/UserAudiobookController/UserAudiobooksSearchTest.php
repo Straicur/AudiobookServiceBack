@@ -33,8 +33,8 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("dt3", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2], active: true);
         $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook("b4", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d4", [$category1, $category2], active: true);
         $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook("t5", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d5", [$category2], active: true);
-        $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook("n6", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d6", [$category5]);
-        $audiobook7 = $this->databaseMockManager->testFunc_addAudiobook("m7", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d7", [$category1, $category4], active: true);
+        $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook("n6", "trhrthr", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d6", [$category5]);
+        $audiobook7 = $this->databaseMockManager->testFunc_addAudiobook("m7", "trtr", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d7", [$category1, $category4], active: true);
         $audiobook8 = $this->databaseMockManager->testFunc_addAudiobook("j8", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d8", [$category4]);
         $audiobook9 = $this->databaseMockManager->testFunc_addAudiobook("aaat9", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d9", [$category4], active: true);
 
@@ -65,7 +65,7 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
         $this->assertArrayHasKey("audiobooks", $responseContent);
-        $this->assertCount(4, $responseContent["audiobooks"]);
+        $this->assertCount(5, $responseContent["audiobooks"]);
     }
 
     /**

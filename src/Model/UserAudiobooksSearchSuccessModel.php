@@ -5,7 +5,7 @@ namespace App\Model;
 class UserAudiobooksSearchSuccessModel implements ModelInterface
 {
     /**
-     * @var UserAudiobookModel[]
+     * @var UserAudiobookDetailModel[]
      */
     private array $audiobooks = [];
 
@@ -16,7 +16,7 @@ class UserAudiobooksSearchSuccessModel implements ModelInterface
     private int $maxPage;
 
     /**
-     * @return UserAudiobookModel[]
+     * @return UserAudiobookDetailModel[]
      */
     public function getAudiobooks(): array
     {
@@ -31,7 +31,7 @@ class UserAudiobooksSearchSuccessModel implements ModelInterface
         $this->audiobooks = $audiobooks;
     }
 
-    public function addAudiobook(UserAudiobookModel $audiobook): void
+    public function addAudiobook(UserAudiobookDetailModel $audiobook): void
     {
         $this->audiobooks[] = $audiobook;
     }

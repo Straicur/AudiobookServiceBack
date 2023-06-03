@@ -220,13 +220,23 @@ class UserAudiobookController extends AbstractController
                 if ($index < $minResult) {
                     continue;
                 } elseif ($index < $maxResult) {
-                    $successModel->addAudiobook(new UserAudiobookModel(
+
+                    $audiobookModel = new UserAudiobookDetailModel(
                         $audiobook->getId(),
                         $audiobook->getTitle(),
                         $audiobook->getAuthor(),
                         $audiobook->getParts(),
                         $audiobook->getAge()
-                    ));
+                    );
+
+                    foreach ($audiobook->getCategories() as $category) {
+                        $audiobookModel->addCategory(new UserAudiobookCategoryModel(
+                            $category->getName(),
+                            $category->getCategoryKey()
+                        ));
+                    }
+
+                    $successModel->addAudiobook($audiobookModel);
                 } else {
                     break;
                 }

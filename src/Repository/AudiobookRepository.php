@@ -261,7 +261,7 @@ class AudiobookRepository extends ServiceEntityRepository
             ->select('a')
             ->leftJoin('a.audiobookRatings', 'ar')
             ->where('a.active = true')
-            ->andWhere('a.title LIKE :title')
+            ->andWhere('((a.title LIKE :title) OR (a.author LIKE :title))')
             ->setParameter('title', "%" . $title . "%")
             ->groupBy('a')
             ->orderBy('COUNT(ar)', "DESC");
