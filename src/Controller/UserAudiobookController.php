@@ -209,33 +209,30 @@ class UserAudiobookController extends AbstractController
 
         if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
 
-            $minResult = $userAudiobooksSearchQuery->getPage() * $userAudiobooksSearchQuery->getLimit();
-            $maxResult = $userAudiobooksSearchQuery->getLimit() + $minResult;
-
             $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle());
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
-            foreach ($allAudiobooks as $index => $audiobook) {
-                if ($index < $minResult) {
-                    continue;
-                } elseif ($index < $maxResult) {
-                    $successModel->addAudiobook(new UserAudiobookModel(
-                        $audiobook->getId(),
-                        $audiobook->getTitle(),
-                        $audiobook->getAuthor(),
-                        $audiobook->getParts(),
-                        $audiobook->getAge()
+            foreach ($allAudiobooks as $audiobook) {
+
+                $audiobookModel = new UserAudiobookDetailModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getParts(),
+                    $audiobook->getAge()
+                );
+
+                foreach ($audiobook->getCategories() as $category) {
+                    $audiobookModel->addCategory(new UserAudiobookCategoryModel(
+                        $category->getName(),
+                        $category->getCategoryKey()
                     ));
-                } else {
-                    break;
                 }
+
+                $successModel->addAudiobook($audiobookModel);
+
             }
-
-            $successModel->setPage($userAudiobooksSearchQuery->getPage());
-            $successModel->setLimit($userAudiobooksSearchQuery->getLimit());
-
-            $successModel->setMaxPage(ceil(count($allAudiobooks) / $userAudiobooksSearchQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
