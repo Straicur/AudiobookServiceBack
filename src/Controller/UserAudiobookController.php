@@ -209,43 +209,30 @@ class UserAudiobookController extends AbstractController
 
         if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
 
-            $minResult = $userAudiobooksSearchQuery->getPage() * $userAudiobooksSearchQuery->getLimit();
-            $maxResult = $userAudiobooksSearchQuery->getLimit() + $minResult;
-
             $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle());
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
-            foreach ($allAudiobooks as $index => $audiobook) {
-                if ($index < $minResult) {
-                    continue;
-                } elseif ($index < $maxResult) {
+            foreach ($allAudiobooks as $audiobook) {
 
-                    $audiobookModel = new UserAudiobookDetailModel(
-                        $audiobook->getId(),
-                        $audiobook->getTitle(),
-                        $audiobook->getAuthor(),
-                        $audiobook->getParts(),
-                        $audiobook->getAge()
-                    );
+                $audiobookModel = new UserAudiobookDetailModel(
+                    $audiobook->getId(),
+                    $audiobook->getTitle(),
+                    $audiobook->getAuthor(),
+                    $audiobook->getParts(),
+                    $audiobook->getAge()
+                );
 
-                    foreach ($audiobook->getCategories() as $category) {
-                        $audiobookModel->addCategory(new UserAudiobookCategoryModel(
-                            $category->getName(),
-                            $category->getCategoryKey()
-                        ));
-                    }
-
-                    $successModel->addAudiobook($audiobookModel);
-                } else {
-                    break;
+                foreach ($audiobook->getCategories() as $category) {
+                    $audiobookModel->addCategory(new UserAudiobookCategoryModel(
+                        $category->getName(),
+                        $category->getCategoryKey()
+                    ));
                 }
+
+                $successModel->addAudiobook($audiobookModel);
+
             }
-
-            $successModel->setPage($userAudiobooksSearchQuery->getPage());
-            $successModel->setLimit($userAudiobooksSearchQuery->getLimit());
-
-            $successModel->setMaxPage(ceil(count($allAudiobooks) / $userAudiobooksSearchQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         } else {
