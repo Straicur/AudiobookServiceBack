@@ -10,6 +10,7 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\UserSettingsGetSuccessModel;
 use App\Query\UserResetPasswordConfirmQuery;
 use App\Query\UserResetPasswordQuery;
 use App\Query\UserSettingsChangeQuery;
@@ -414,6 +415,40 @@ class UserController extends AbstractController
             $endpointLogger->error("Invalid given Query");
             throw new InvalidJsonDataException("userSettings.change.invalid.query");
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @return Response
+     */
+    #[Route("/api/user/settings", name: "userSettingsGet", methods: ["GET"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Patch(
+        description: "Endpoint is returning logged user informations",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserSettingsGetSuccessModel::class)
+            )
+        ]
+    )]
+    public function userSettingsGet(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+    ): Response
+    {
+        $user = $authorizedUserService->getAuthorizedUser();
+
+        $userInformation = $user->getUserInformation();
+
+        return ResponseTool::getResponse(new UserSettingsGetSuccessModel($userInformation->getPhoneNumber(), $userInformation->getFirstname(), $userInformation->getLastname()));
     }
 
     /**

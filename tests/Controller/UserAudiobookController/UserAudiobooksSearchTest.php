@@ -17,7 +17,7 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobooksCorrect(): void
+    public function test_userAudiobooksSearchCorrect(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -41,8 +41,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            "page" => 0,
-            "limit" => 10,
             "title" => "t"
         ];
 
@@ -61,9 +59,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("page", $responseContent);
-        $this->assertArrayHasKey("limit", $responseContent);
-        $this->assertArrayHasKey("maxPage", $responseContent);
         $this->assertArrayHasKey("audiobooks", $responseContent);
         $this->assertCount(5, $responseContent["audiobooks"]);
     }
@@ -75,7 +70,7 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobooksEmptyRequestData(): void
+    public function test_userAudiobooksSearchEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -121,7 +116,7 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobooksPermission(): void
+    public function test_userAudiobooksSearchPermission(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
@@ -137,8 +132,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         $content = [
-            "page" => 0,
-            "limit" => 10,
             "title" => "t"
         ];
 
@@ -168,7 +161,7 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobooksLogOut(): void
+    public function test_userAudiobooksSearchLogOut(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -183,8 +176,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
         $content = [
-            "page" => 0,
-            "limit" => 10,
             "title" => "t"
         ];
 

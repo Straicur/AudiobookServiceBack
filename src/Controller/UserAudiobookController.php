@@ -584,7 +584,6 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
