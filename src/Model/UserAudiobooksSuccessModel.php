@@ -31,7 +31,7 @@ class UserAudiobooksSuccessModel implements ModelInterface
         $this->categories = $categories;
     }
 
-    public function addCategory(UserCategoryModel $category)
+    public function addCategory(UserCategoryModel $category): void
     {
         $this->categories[] = $category;
     }
