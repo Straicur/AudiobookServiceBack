@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\UserDelete;
+use App\Entity\UserEdit;
+use App\Enums\UserEditType;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
@@ -18,6 +20,7 @@ use App\Query\UserSettingsEmailQuery;
 use App\Query\UserSettingsPasswordQuery;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserDeleteRepository;
+use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -135,6 +138,7 @@ class UserController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
      * @param MailerInterface $mailer
+     * @param UserEditRepository $editRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -166,6 +170,7 @@ class UserController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
+        UserEditRepository             $editRepository
     ): Response
     {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
@@ -192,8 +197,20 @@ class UserController extends AbstractController
                 throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
             }
 
+            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
+
+            if ($userEdit != null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+            }
+
             $user->setEdited(true);
-            $user->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+            $user->setEditableDate(new \DateTime('Now'));
+
+            $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL->value);
+            $newEditedUser->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+
+            $editRepository->add($newEditedUser);
 
             $userRepository->add($user);
 
@@ -206,7 +223,7 @@ class UserController extends AbstractController
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "id" => $user->getId()->__toString(),
-                        "userEmail" => $user->getUserInformation()->getEmail(),
+                        "userEmail" => $userSettingsEmailQuery->getNewEmail(),
                         "url" => "http://127.0.0.1:8000"
                     ]);
                 $mailer->send($email);
@@ -225,6 +242,7 @@ class UserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
+     * @param UserEditRepository $editRepository
      * @return Response
      * @throws DataNotFoundException
      */
@@ -246,7 +264,8 @@ class UserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        UserEditRepository             $editRepository
     ): Response
     {
         $userEmail = $request->get('email');
@@ -256,7 +275,14 @@ class UserController extends AbstractController
             "id" => $userId
         ]);
 
-        if ($user == null || !$user->getEdited() || ($user->getEditableDate() != null && ((new \DateTime("Now")) > $user->getEditableDate()))) {
+        if ($user == null) {
+            $endpointLogger->error("User dont exist");
+            throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+        }
+
+        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
+
+        if ($userEdit == null) {
             $endpointLogger->error("User dont exist");
             throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
         }
@@ -270,7 +296,9 @@ class UserController extends AbstractController
             throw new DataNotFoundException(["userSettings.email.change.newEmail.exist"]);
         }
 
-        $user->setEdited(false);
+        $userEdit->setEdited(true);
+
+        $editRepository->add($userEdit);
 
         $userRepository->add($user);
 
@@ -448,7 +476,12 @@ class UserController extends AbstractController
 
         $userInformation = $user->getUserInformation();
 
-        return ResponseTool::getResponse(new UserSettingsGetSuccessModel($userInformation->getPhoneNumber(), $userInformation->getFirstname(), $userInformation->getLastname()));
+        $successModel = new UserSettingsGetSuccessModel($userInformation->getEmail(), $userInformation->getPhoneNumber(), $userInformation->getFirstname(), $userInformation->getLastname(), $user->getEdited());
+
+        if ($user->getEditableDate() != null) {
+            $successModel->setEditableDate($user->getEditableDate());
+        }
+        return ResponseTool::getResponse($successModel);
     }
 
     /**
@@ -459,6 +492,7 @@ class UserController extends AbstractController
      * @param MailerInterface $mailer
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
+     * @param UserEditRepository $editRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -489,7 +523,8 @@ class UserController extends AbstractController
         LoggerInterface                $endpointLogger,
         MailerInterface                $mailer,
         UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        UserEditRepository             $editRepository
     ): Response
     {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
@@ -507,7 +542,14 @@ class UserController extends AbstractController
 
             $user = $userInformation->getUser();
             $user->setEdited(true);
-            $user->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+            $user->setEditableDate(new \DateTime('Now'));
+
+            $editRepository->changeResetPasswordEdits($user);
+
+            $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD->value);
+            $newEditedUser->setEditableDate((new \DateTime('Now'))->modify("+10 hour"));
+
+            $editRepository->add($newEditedUser);
 
             $userRepository->add($user);
 
@@ -539,6 +581,7 @@ class UserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserPasswordRepository $userPasswordRepository
+     * @param UserEditRepository $editRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -567,7 +610,8 @@ class UserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository
+        UserPasswordRepository         $userPasswordRepository,
+        UserEditRepository             $editRepository
     ): Response
     {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
@@ -578,12 +622,21 @@ class UserController extends AbstractController
                 "id" => $userResetPasswordConfirmQuery->getUserId()
             ]);
 
-            if ($user == null || !$user->getEdited() || ($user->getEditableDate() != null && ((new \DateTime("Now")) > $user->getEditableDate()))) {
+            if ($user == null) {
                 $endpointLogger->error("User dont exist");
                 throw new DataNotFoundException(["userReset.password.confirm.user.dont.exist"]);
             }
 
-            $user->setEdited(false);
+            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD->value);
+
+            if ($userEdit == null) {
+                $endpointLogger->error("User dont exist");
+                throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+            }
+
+            $userEdit->setEdited(true);
+
+            $editRepository->add($userEdit);
 
             $userRepository->add($user);
 

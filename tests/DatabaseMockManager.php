@@ -17,6 +17,7 @@ use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserDelete;
+use App\Entity\UserEdit;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
@@ -38,6 +39,7 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
+use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
@@ -387,5 +389,20 @@ class DatabaseMockManager
         $audiobookUserCommentLikeRepository->add($newAudiobookUserCommentLike);
 
         return $newAudiobookUserCommentLike;
+    }
+
+    public function testFunc_addUserEdit(User $user, bool $edited, int $type, ?\DateTime $editableDate = null): UserEdit
+    {
+        $userEditRepository = $this->getService(UserEditRepository::class);
+
+        $newUserEdit = new UserEdit($user, $edited, $type);
+
+        if ($editableDate != null) {
+            $newUserEdit->setEditableDate($editableDate);
+        }
+
+        $userEditRepository->add($newUserEdit);
+
+        return $newUserEdit;
     }
 }

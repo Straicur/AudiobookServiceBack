@@ -45,6 +45,11 @@ class UserSettingsGetTest extends AbstractWebTest
         $this->assertSame($user->getUserInformation()->getFirstname(),$responseContent["firstname"]);
         $this->assertArrayHasKey("lastname",$responseContent);
         $this->assertSame($user->getUserInformation()->getLastname(),$responseContent["lastname"]);
+        $this->assertArrayHasKey("email",$responseContent);
+        $this->assertSame($user->getUserInformation()->getEmail(),$responseContent["email"]);
+        $this->assertArrayHasKey("edited",$responseContent);
+        $this->assertSame($user->getEdited(),$responseContent["edited"]);
+        $this->assertArrayHasKey("editableDate",$responseContent);
     }
 
     /**

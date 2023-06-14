@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller\UserController;
 
+use App\Enums\UserEditType;
+use App\Repository\UserEditRepository;
 use App\Repository\UserPasswordRepository;
 use App\Tests\AbstractWebTest;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -22,10 +24,14 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     public function test_userResetPasswordConfirmCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
+        $userEditRepository = $this->getService(UserEditRepository::class);
 
+        $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserPasswordRepository::class, $userPasswordRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -52,7 +58,15 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         $userAfter = $password->getUser();
         $this->assertSame($newPassword, $password->getPassword());
-        $this->assertSame($userAfter->getEdited(), false);
+        $this->assertTrue($userAfter->getEdited());
+
+        $editAfter = $userEditRepository->findOneBy([
+            "id" => $userEdit->getId()
+        ]);
+
+        $this->assertNotNull($editAfter);
+
+        $this->assertTrue($editAfter->getEdited());
     }
 
     /**
@@ -67,6 +81,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
@@ -109,6 +125,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", editableDate: (new \DateTime("Now"))->modify("-1 month"));
 
+        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -149,6 +166,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("-1 month"));
+
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("-1 day"));
 
         $passwordGenerator = new PasswordHashGenerator("zaq12WSX");
 
