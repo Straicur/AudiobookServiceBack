@@ -206,7 +206,7 @@ class UserController extends AbstractController
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "id" => $user->getId()->__toString(),
-                        "userEmail" => $user->getUserInformation()->getEmail(),
+                        "userEmail" => $userSettingsEmailQuery->getNewEmail(),
                         "url" => "http://127.0.0.1:8000"
                     ]);
                 $mailer->send($email);
