@@ -448,7 +448,7 @@ class UserController extends AbstractController
 
         $userInformation = $user->getUserInformation();
 
-        return ResponseTool::getResponse(new UserSettingsGetSuccessModel($userInformation->getPhoneNumber(), $userInformation->getFirstname(), $userInformation->getLastname()));
+        return ResponseTool::getResponse(new UserSettingsGetSuccessModel($userInformation->getEmail(), $userInformation->getPhoneNumber(), $userInformation->getFirstname(), $userInformation->getLastname(), $user->getEdited(), $user->getEditableDate() != null ? $user->getEditableDate()->getTimestamp() : null));
     }
 
     /**
