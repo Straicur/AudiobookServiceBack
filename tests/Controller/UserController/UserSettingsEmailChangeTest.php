@@ -2,11 +2,13 @@
 
 namespace App\Tests\Controller\UserController;
 
+use App\Enums\UserEditType;
+use App\Repository\UserEditRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**
- * UserSettingsEmailChangeTest
+ * UserSettingsEmailChangeChangeTest
  */
 class UserSettingsEmailChangeTest extends AbstractWebTest
 {
@@ -17,13 +19,17 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      * step 4 - Checking response if all data has changed
      * @return void
      */
-    public function test_userSettingsEmailCorrect(): void
+    public function test_userSettingsEmailChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
+        $userEditRepository = $this->getService(UserEditRepository::class);
 
+        $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("+1 day"));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -38,7 +44,15 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         ]);
         /// step 4
         $this->assertSame($userAfter->getUserInformation()->getEmail(), "test2@cos.pl");
-        $this->assertFalse($userAfter->getEdited());
+        $this->assertTrue($userAfter->getEdited());
+
+        $editAfter = $userEditRepository->findOneBy([
+            "id" => $userEdit->getId()
+        ]);
+
+        $this->assertNotNull($editAfter);
+
+        $this->assertTrue($editAfter->getEdited());
     }
 
     /**
@@ -48,10 +62,12 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEditableDate(): void
+    public function test_userSettingsEmailChangeIncorrectEditableDate(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("-1 month"));
+
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("-1 day"));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -79,10 +95,12 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEditFlag(): void
+    public function test_userSettingsEmailChangeIncorrectEditFlag(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", editableDate: (new \DateTime("Now"))->modify("-1 month"));
+
+        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("-1 day"));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -110,7 +128,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectUserId(): void
+    public function test_userSettingsEmailChangeIncorrectUserId(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
@@ -141,7 +159,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEmail(): void
+    public function test_userSettingsEmailChangeIncorrectEmail(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
@@ -174,7 +192,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailEmptyRequestData(): void
+    public function test_userSettingsEmailChangeEmptyRequestData(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));

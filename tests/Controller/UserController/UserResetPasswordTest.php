@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller\UserController;
 
+use App\Enums\UserEditType;
+use App\Repository\UserEditRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
@@ -21,10 +23,14 @@ class UserResetPasswordTest extends AbstractWebTest
     public function test_userResetPasswordCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
+        $userEditRepository = $this->getService(UserEditRepository::class);
 
+        $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
 
         /// step 2
         $content = [
@@ -45,6 +51,11 @@ class UserResetPasswordTest extends AbstractWebTest
 
         $this->assertSame($userAfter->getEdited(), true);
         $this->assertNotNull($userAfter->getEditableDate());
+
+        $this->assertCount(3, $userEditRepository->findAll());
+        $this->assertCount(1, $userEditRepository->findBy([
+            "edited" => false
+        ]));
     }
 
     /**
