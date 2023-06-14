@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class UserSettingsGetSuccessModel implements \App\Model\ModelInterface
+class UserSettingsGetSuccessModel implements ModelInterface
 {
     private string $email;
     private string $phoneNumber;
@@ -17,16 +17,14 @@ class UserSettingsGetSuccessModel implements \App\Model\ModelInterface
      * @param string $firstname
      * @param string $lastname
      * @param bool $edited
-     * @param int|null $editableDate
      */
-    public function __construct(string $email, string $phoneNumber, string $firstname, string $lastname, bool $edited, ?int $editableDate = null)
+    public function __construct(string $email, string $phoneNumber, string $firstname, string $lastname, bool $edited)
     {
         $this->email = $email;
         $this->phoneNumber = $phoneNumber;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->edited = $edited;
-        $this->editableDate = $editableDate;
     }
 
     /**
@@ -118,11 +116,11 @@ class UserSettingsGetSuccessModel implements \App\Model\ModelInterface
     }
 
     /**
-     * @param int $editableDate
+     * @param \DateTime $editableDate
      */
-    public function setEditableDate(int $editableDate): void
+    public function setEditableDate(\DateTime $editableDate): void
     {
-        $this->editableDate = $editableDate;
+        $this->editableDate = $editableDate->getTimestamp() * 1000;
     }
 
 }
