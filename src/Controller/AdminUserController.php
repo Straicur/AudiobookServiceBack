@@ -1256,7 +1256,7 @@ class AdminUserController extends AbstractController
                 $systemNotifications,
                 $adminUserNotificationsQuery->getPage(),
                 $adminUserNotificationsQuery->getLimit(),
-                floor(floor(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()))
+                ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit())
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
