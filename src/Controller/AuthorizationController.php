@@ -20,6 +20,7 @@ use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -97,7 +98,8 @@ class AuthorizationController extends AbstractController
         LoggerInterface               $endpointLogger,
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
-        AuthenticationTokenRepository $authenticationTokenRepository
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        TranslateService $translateService
     ): Response
     {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
@@ -157,6 +159,8 @@ class AuthorizationController extends AbstractController
             }
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
+
+//            $translateService->getTranslation($request,"");
 
             return ResponseTool::getResponse($responseModel);
         } else {
