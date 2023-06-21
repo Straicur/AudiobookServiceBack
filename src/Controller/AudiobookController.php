@@ -14,6 +14,7 @@ use App\Query\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -55,6 +56,7 @@ class AudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -82,7 +84,8 @@ class AudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository
+        AudiobookRepository            $audiobookRepository,
+        TranslateService               $translateService
     ): Response
     {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
@@ -95,7 +98,8 @@ class AudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["audiobook.part.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $allParts = [];
@@ -128,13 +132,15 @@ class AudiobookController extends AbstractController
 
             if ($dir == "") {
                 $endpointLogger->error("Parts dont exist");
-                throw new DataNotFoundException(["audiobook.part.parts.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookPartDontExists")]);
             }
 
             return ResponseTool::getBinaryFileResponse($dir);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("audiobook.part.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -164,9 +170,10 @@ class AudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        Audiobook                      $id
+        Audiobook                      $id,
+        TranslateService               $translateService
     ): Response
-    {   
+    {
         $img = "";
 
         $handle = opendir($id->getFileName());
@@ -187,7 +194,8 @@ class AudiobookController extends AbstractController
 
         if ($img == "") {
             $endpointLogger->error("Cover dont exist");
-            throw new DataNotFoundException(["audiobook.cover.cover.not.exist"]);
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("AudiobookCoverDontExists")]);
         }
 
         return ResponseTool::getBinaryFileResponse($id->getFileName() . "/" . $img);

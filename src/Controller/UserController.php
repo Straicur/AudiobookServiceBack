@@ -26,6 +26,7 @@ use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -71,6 +72,7 @@ class UserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserPasswordRepository $userPasswordRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -98,7 +100,8 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserPasswordRepository         $userPasswordRepository
+        UserPasswordRepository         $userPasswordRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
@@ -114,7 +117,8 @@ class UserController extends AbstractController
 
             if ($passwordGenerator->generate() != $userPassword->getPassword()) {
                 $endpointLogger->error("Password dont exist");
-                throw new DataNotFoundException(["userSettings.password.password.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserPasswordDontExists")]);
             }
 
             $newPasswordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getNewPassword());
@@ -126,7 +130,8 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userSettings.password.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -139,6 +144,7 @@ class UserController extends AbstractController
      * @param UserRepository $userRepository
      * @param MailerInterface $mailer
      * @param UserEditRepository $editRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -170,7 +176,8 @@ class UserController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
-        UserEditRepository             $editRepository
+        UserEditRepository             $editRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
@@ -185,7 +192,8 @@ class UserController extends AbstractController
 
             if ($userOldEmail == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["userSettings.email.oldEmail.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
             }
 
             $userNewEmail = $userInformationRepository->findOneBy([
@@ -194,14 +202,16 @@ class UserController extends AbstractController
 
             if ($userNewEmail != null) {
                 $endpointLogger->error("User exist");
-                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
             }
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
             if ($userEdit != null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             $user->setEdited(true);
@@ -231,7 +241,8 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userSettings.email.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -265,7 +276,8 @@ class UserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
-        UserEditRepository             $editRepository
+        UserEditRepository             $editRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userEmail = $request->get('email');
@@ -277,14 +289,16 @@ class UserController extends AbstractController
 
         if ($user == null) {
             $endpointLogger->error("User dont exist");
-            throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
         }
 
         $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
         if ($userEdit == null) {
             $endpointLogger->error("User dont exist");
-            throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
         }
 
         $userNewEmail = $userInformationRepository->findOneBy([
@@ -293,7 +307,8 @@ class UserController extends AbstractController
 
         if ($userNewEmail != null) {
             $endpointLogger->error("User exist");
-            throw new DataNotFoundException(["userSettings.email.change.newEmail.exist"]);
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
         }
 
         $userEdit->setEdited(true);
@@ -349,7 +364,8 @@ class UserController extends AbstractController
         UserDeleteRepository           $userDeleteRepository,
         AuthenticationTokenRepository  $authenticationTokenRepository,
         UserRepository                 $userRepository,
-        MailerInterface                $mailer
+        MailerInterface                $mailer,
+        TranslateService              $translateService
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
@@ -358,7 +374,8 @@ class UserController extends AbstractController
 
         if ($userInDelete) {
             $endpointLogger->error("User in list");
-            throw new DataNotFoundException(["userSettings.delete.exist"]);
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("UserDeleteExists")]);
         }
 
         $user->setActive(false);
@@ -396,6 +413,7 @@ class UserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -422,7 +440,8 @@ class UserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository
+        UserInformationRepository      $userInformationRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
@@ -441,7 +460,8 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userSettings.change.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -493,10 +513,11 @@ class UserController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
      * @param UserEditRepository $editRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
+     * @throws TransportExceptionInterface'
      */
     #[Route("/api/user/reset/password", name: "userResetPassword", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: false, roles: [])]
@@ -524,7 +545,8 @@ class UserController extends AbstractController
         MailerInterface                $mailer,
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
-        UserEditRepository             $editRepository
+        UserEditRepository             $editRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
@@ -537,7 +559,8 @@ class UserController extends AbstractController
 
             if ($userInformation == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["userSettings.email.newEmail.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
             }
 
             $user = $userInformation->getUser();
@@ -570,7 +593,8 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userSettings.email.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -582,6 +606,7 @@ class UserController extends AbstractController
      * @param UserRepository $userRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param UserEditRepository $editRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -611,7 +636,8 @@ class UserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserPasswordRepository         $userPasswordRepository,
-        UserEditRepository             $editRepository
+        UserEditRepository             $editRepository,
+        TranslateService              $translateService
     ): Response
     {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
@@ -624,14 +650,16 @@ class UserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["userReset.password.confirm.user.dont.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
             }
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD->value);
 
             if ($userEdit == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["userSettings.email.change.user.dont.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
             }
 
             $userEdit->setEdited(true);
@@ -653,7 +681,8 @@ class UserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userReset.password.confirm.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 }

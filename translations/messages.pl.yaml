@@ -1,1 +1,26 @@
 InvalidJson: Złe podane dane
+EmailDontExists: Email nie istnieje
+UserBanned: Twoje konto jest zbanowane
+ActivateAccount: Aktywuj konto
+NotActivePassword: Nie można znaleźć aktywnego konta
+ParentCategoryDontExists: Ojciec kategorii nie isnieje
+CategoryDontExists: Categoria nie istnieje
+AudiobookDontExists: Audiobook nie istnieje
+AudiobookCommentDontExists: Komentarz audiobooka nie istnieje
+AudiobookParentCommentDontExists: Komentarz główny audiobooka nie istnieje
+UserDontExists: Użytkownik nie istnieje
+UserDeleteDontExists: Użytkownik nie znajduje się na liście do usunięcia
+UserDeleteExists: Użytkownik znajduje się na liście do usunięcia
+UserDeleted: Użytkownik usunięty
+NotificationDontExists: Powiadomienie nie istnieje
+AudiobookPartDontExists: Audiobook nie posiada aktywnych części
+AudiobookCoverDontExists: Zdjęcie Audiobook nie istnieje
+EmailExists: Email istnieje w systemie
+ToMuchUsers: Za dużo użytkowników w systemie
+WrongCode: Zły kod
+ActiveOrBanned: Użytkownik nie jest aktywowany lub jest zbanowany
+AudiobookInfoDontExists: Ostatnie informacje użytkownika nie istnieją
+AudiobookNotWatched: Audiobook musi zostać osłuchany żeby ocenić
+AudiobookNotListened: Audiobook nie został odsłuchany
+AudiobookCommentLikeDontExists: Komentarz nie został polubiony
+UserPasswordDontExists: Hasło użytkownika nie istnieje

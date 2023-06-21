@@ -488,7 +488,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKemptyActionId(): void
+    public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKEmptyActionId(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);

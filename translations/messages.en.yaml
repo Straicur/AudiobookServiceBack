@@ -1,1 +1,26 @@
 InvalidJson: Wrong given data
+EmailDontExists: Email dont exists
+UserBanned: Account is banned
+ActivateAccount: Activate your account
+NotActivePassword: Cant find active password
+ParentCategoryDontExists: Parent category dont exists
+CategoryDontExists: Category dont exists
+AudiobookDontExists: Audiobook dont exists
+AudiobookCommentDontExists: Audiobook comment dont exists
+AudiobookParentCommentDontExists: Audiobook parent comment dont exists
+UserDontExists: User dont exists
+UserDeleteDontExists: User not in delete list
+UserDeleteExists: User on delete list
+UserDeleted: User deleted
+NotificationDontExists: Notification dont exists
+AudiobookPartDontExists: Audiobook have no available parts
+AudiobookCoverDontExists: Audiobook cover dont exists
+EmailExists: Email exists in system
+ToMuchUsers: To much users in system
+WrongCode: Wrong code
+ActiveOrBanned: User is not activated or is banned
+AudiobookInfoDontExists: Audiobook info dont exists
+AudiobookNotWatched: Audiobook must be listened to rate
+AudiobookNotListened: Audiobook is not listened
+AudiobookCommentLikeDontExists: Comment was not liked
+UserPasswordDontExists: User password dont exists
