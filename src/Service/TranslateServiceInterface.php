@@ -10,5 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface TranslateServiceInterface
 {
-    public function getTranslation(Request $request, string $message): string;
+    public function setPreferredLanguage(Request $request): void;
+    public function getTranslation(string $message): string;
 }

@@ -9,15 +9,24 @@ class TranslateService implements TranslateServiceInterface
 {
     private TranslatorInterface $translator;
 
+    private ?string $preferredLanguage = null;
+
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
-    public function getTranslation(Request $request, string $message): string
+    public function setPreferredLanguage(Request $request): void
     {
-        $preferredLanguage = $request->getPreferredLanguage();
+        $this->preferredLanguage = $request->getPreferredLanguage();
+    }
 
-        return $this->translator->trans($message, locale: $preferredLanguage);
+    public function getTranslation(string $message): string
+    {
+        if ($this->preferredLanguage == null) {
+            $this->preferredLanguage = $this->translator->getLocale();
+        }
+
+        return $this->translator->trans($message, locale: $this->preferredLanguage);
     }
 }

@@ -113,7 +113,6 @@ class AdminUserNotificationPatchQuery
 
     /**
      * @return NotificationType
-     * @throws InvalidJsonDataException
      */
     public function getNotificationType(): NotificationType
     {
@@ -122,8 +121,7 @@ class AdminUserNotificationPatchQuery
             2 => NotificationType::ADMIN,
             3 => NotificationType::PROPOSED,
             4 => NotificationType::NEW_CATEGORY,
-            5 => NotificationType::NEW_AUDIOBOOK,
-            default => throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query")
+            5 => NotificationType::NEW_AUDIOBOOK
         };
     }
 
@@ -137,14 +135,12 @@ class AdminUserNotificationPatchQuery
 
     /**
      * @return NotificationUserType
-     * @throws InvalidJsonDataException
      */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
             1 => NotificationUserType::ADMIN,
-            2 => NotificationUserType::SYSTEM,
-            default => throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query")
+            2 => NotificationUserType::SYSTEM
         };
     }
 

@@ -160,12 +160,12 @@ class AuthorizationController extends AbstractController
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
 
-//            $translateService->getTranslation($request,"");
+            $translateService->setPreferredLanguage($request);
 
             return ResponseTool::getResponse($responseModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("auth.login.invalid.query");
+            throw new InvalidJsonDataException($translateService);
         }
     }
 

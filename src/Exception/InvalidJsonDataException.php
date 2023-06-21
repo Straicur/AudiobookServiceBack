@@ -3,6 +3,7 @@
 namespace App\Exception;
 
 use App\Model\JsonDataInvalidModel;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -13,22 +14,22 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  */
 class InvalidJsonDataException extends \Exception implements ResponseExceptionInterface
 {
-    private string $className;
+    protected $message;
 
     private ?ConstraintViolationListInterface $validationErrors;
 
     private ?array $errors;
 
     /**
-     * @param string $className
+     * @param TranslateService $translateService
      * @param ConstraintViolationListInterface|null $validationErrors
      * @param string[]|null $errors
      */
-    public function __construct(string $className, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)
+    public function __construct(TranslateService $translateService, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)
     {
         parent::__construct("Bad request");
 
-        $this->className = $className;
+        $this->message = $translateService->getTranslation("InvalidJson");
         $this->validationErrors = $validationErrors;
         $this->errors = $errors;
     }
@@ -49,6 +50,6 @@ class InvalidJsonDataException extends \Exception implements ResponseExceptionIn
             }
         }
 
-        return ResponseTool::getResponse(new JsonDataInvalidModel($this->className, $validationErrors), 400);
+        return ResponseTool::getResponse(new JsonDataInvalidModel($this->message, $validationErrors), 400);
     }
 }
