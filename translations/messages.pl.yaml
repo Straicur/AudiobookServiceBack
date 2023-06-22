@@ -24,3 +24,22 @@ AudiobookNotWatched: Audiobook musi zostać osłuchany żeby ocenić
 AudiobookNotListened: Audiobook nie został odsłuchany
 AudiobookCommentLikeDontExists: Komentarz nie został polubiony
 UserPasswordDontExists: Hasło użytkownika nie istnieje
+Hello: Witaj
+ActivateAccountRegister: Aktywuj konto aby korzystać z serwisu
+ActivateLink: Link aktywacyjny
+ClickToActivate: Kliknij aby aktywować
+AccountIsDeleted: Konto zostało usunięte
+AskSupport: W razie pytań proszę kierować je do naszego supportu
+ThanksForUsingService: Dziękujemy za korzystanie z naszego serwisu
+AccountDeleteDecline: Twoja prośba o usunięcie konta została odrzucona
+DetailService: Szczegóły dostępne w naszym supporcie
+AccountDeleteProcessed: Twoja prośba o usunięcie konta jest przetwarzana przez administratora
+StayPatient: Prosimy o cierpliwość, w razie zmian zostanie wysłany kolejny email
+MailChange: Otrzymaliśmy prośbę o zmianie maila twojego konta na podany
+ClickToChange: Kliknij aby zmienić
+PasswordReset: Otrzymaliśmy prośbę resetu hasła twojego konta
+YouCanGoBack: Teraz możesz wrócić do strony główniej:)
+Login: Zaloguj
+SuccessfulActivation: Udana aktywacja konta
+SuccessfulEmailChange: Udana zmiana emaila
+Cheers: Dziękujemy

@@ -1,6 +1,8 @@
 <div>
-    <p>Witaj {{ userName }},</p>
-    <p>Otrzymaliśmy prośbę o zmianie maila twojego konta na podany: {{ userEmail }}</p>
-    <p>Link: <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>Kliknij aby zmienić</a></p>
+    <p>{% trans %}Hello{% endtrans %} {{ userName }},</p>
+    <p>{% trans %}MailChange{% endtrans %}: {{ userEmail }}</p>
+    <p>Link:
+        <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>{% trans %}ClickToChange{% endtrans %}</a>
+    </p>
 </div>
 

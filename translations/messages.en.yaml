@@ -24,3 +24,22 @@ AudiobookNotWatched: Audiobook must be listened to rate
 AudiobookNotListened: Audiobook is not listened
 AudiobookCommentLikeDontExists: Comment was not liked
 UserPasswordDontExists: User password dont exists
+Hello: Hello
+ActivateAccountRegister: Activate your account to use service
+ActivateLink: Activation link
+ClickToActivate: Click to activate
+AccountIsDeleted: Account has been deleted
+AskSupport: If you have any questions, please direct them to our support
+ThanksForUsingService: Thank you for using our website
+AccountDeleteDecline: Your request to delete your account has been declined
+DetailService: Details available in our support
+AccountDeleteProcessed: Your account deletion request is being processed by the administrator
+StayPatient: Please be patient, another email will be sent in case of changes
+MailChange: We have received a request to change your account email to the following
+ClickToChange: Click to change
+PasswordReset: We have received a request to reset your account password
+YouCanGoBack: Now you can go back to main page :)
+Login: Login
+SuccessfulActivation: Successful account activation
+SuccessfulEmailChange: Successfully changed email
+Cheers: Cheers

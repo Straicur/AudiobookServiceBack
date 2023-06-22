@@ -1,14 +1,16 @@
 <link href="{{ asset('css/main.css') }}" rel="stylesheet"/>
-<div class ="main">
+<div class="main">
     <div class="modal">
         <div class="modal-content">
-            <h1 class="title">Successfully changed email !</h1>
+            <h1 class="title">{% trans %}SuccessfulEmailChange{% endtrans %}.</h1>
             <p class="text">
-                Now you can go back to page :)
+                {% trans %}YouCanGoBack{% endtrans %}
             </p>
-            <a href="{{ url }}/login"><button class="button">Login</button></a>
+            <a href="{{ url }}/login">
+                <button class="button">{% trans %}Login{% endtrans %}</button>
+            </a>
             <p class="text">
-                Cheers!
+                {% trans %}Cheers{% endtrans %}Cheers!
             </p>
         </div>
     </div>

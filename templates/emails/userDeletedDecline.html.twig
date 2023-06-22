@@ -1,3 +1,5 @@
-<p>Witaj {{ userName }}</p>
-<p>Twoja prośba o usunięcie konta została odrzucona</p>
-<p>Sczegóły dostępne w naszym supporcie </p>
+<div>
+    <p>{% trans %}Hello{% endtrans %} {{ userName }}</p>
+    <p>{% trans %}AccountDeleteDecline{% endtrans %}.</p>
+    <p>{% trans %}DetailService{% endtrans %}. </p>
+</div>
