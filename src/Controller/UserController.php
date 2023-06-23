@@ -234,7 +234,8 @@ class UserController extends AbstractController
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "id" => $user->getId()->__toString(),
                         "userEmail" => $userSettingsEmailQuery->getNewEmail(),
-                        "url" => "http://127.0.0.1:8000"
+                        "url" => "http://127.0.0.1:8000",
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -400,6 +401,7 @@ class UserController extends AbstractController
                 ->htmlTemplate('emails/userDeleteProcessing.html.twig')
                 ->context([
                     "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                    "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                 ]);
             $mailer->send($email);
         }
@@ -585,7 +587,8 @@ class UserController extends AbstractController
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "id" => $user->getId()->__toString(),
-                        "url" => $_ENV["FRONTEND_URL"]
+                        "url" => $_ENV["FRONTEND_URL"],
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }

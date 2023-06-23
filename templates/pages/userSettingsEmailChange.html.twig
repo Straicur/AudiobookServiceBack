@@ -2,15 +2,15 @@
 <div class="main">
     <div class="modal">
         <div class="modal-content">
-            <h1 class="title">{% trans %}SuccessfulEmailChange{% endtrans %}.</h1>
+            <h1 class="title">{{ 'SuccessfulEmailChange' | force_translate( lang ) }}.</h1>
             <p class="text">
-                {% trans %}YouCanGoBack{% endtrans %}
+                {{ 'YouCanGoBack' | force_translate( lang ) }}
             </p>
             <a href="{{ url }}/login">
-                <button class="button">{% trans %}Login{% endtrans %}</button>
+                <button class="button">{{ 'Login' | force_translate( lang ) }}</button>
             </a>
             <p class="text">
-                {% trans %}Cheers{% endtrans %}Cheers!
+                {{ 'Cheers' | force_translate( lang ) }}
             </p>
         </div>
     </div>

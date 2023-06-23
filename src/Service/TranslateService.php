@@ -21,10 +21,15 @@ class TranslateService implements TranslateServiceInterface
         $this->preferredLanguage = $request->getPreferredLanguage();
     }
 
+    public function getLocate(): string
+    {
+        return $this->translator->getLocale();
+    }
+
     public function getTranslation(string $message): string
     {
         if ($this->preferredLanguage == null) {
-            $this->preferredLanguage = $this->translator->getLocale();
+            $this->preferredLanguage = self::getLocate();
         }
 
         return $this->translator->trans($message, locale: $this->preferredLanguage);

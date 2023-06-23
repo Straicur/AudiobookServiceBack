@@ -106,7 +106,7 @@ class RegisterController extends AbstractController
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
         InstitutionRepository        $institutionRepository,
         UserPasswordRepository       $userPasswordRepository,
-        TranslateService              $translateService
+        TranslateService             $translateService
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
@@ -185,7 +185,8 @@ class RegisterController extends AbstractController
                         "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $newUser->getUserInformation()->getEmail(),
-                        "url" => "http://127.0.0.1:8000"
+                        "url" => "http://127.0.0.1:8000",
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -231,7 +232,7 @@ class RegisterController extends AbstractController
         RoleRepository            $roleRepository,
         UserRepository            $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService              $translateService
+        TranslateService          $translateService
     ): Response
     {
         $userEmail = $request->get('email');
@@ -324,7 +325,7 @@ class RegisterController extends AbstractController
         MailerInterface           $mailer,
         RegisterCodeRepository    $registerCodeRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService              $translateService
+        TranslateService          $translateService
     ): Response
     {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
@@ -367,7 +368,8 @@ class RegisterController extends AbstractController
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $user->getUserInformation()->getEmail(),
-                        "url" => "http://127.0.0.1:8000"
+                        "url" => "http://127.0.0.1:8000",
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }

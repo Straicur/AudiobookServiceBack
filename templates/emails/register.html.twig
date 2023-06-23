@@ -1,8 +1,8 @@
 <div>
-    <p>{% trans %}Hello{% endtrans %} {{ userName }},</p>
-    <p>{% trans %}ActivateAccountRegister{% endtrans %}.</p>
-    <p>{% trans %}ActivateLink{% endtrans %}: <a
-                href='{{ url }}/api/register/{{ userEmail }}/{{ code }}'>{% trans %}ClickToActivate{% endtrans %}</a>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }},</p>
+    <p>{{ 'ActivateAccountRegister' | force_translate( lang ) }}.</p>
+    <p>{{ 'ActivateLink' | force_translate( lang ) }}: <a
+                href='{{ url }}/api/register/{{ userEmail }}/{{ code }}'>{{ 'ClickToActivate' | force_translate( lang ) }}</a>
     </p>
 </div>
 

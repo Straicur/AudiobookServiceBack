@@ -832,7 +832,8 @@ class AdminUserController extends AbstractController
                     ->subject('Konto usunięte')
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -1107,7 +1108,8 @@ class AdminUserController extends AbstractController
                     ->subject('Konto usunięte')
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -1205,7 +1207,8 @@ class AdminUserController extends AbstractController
                     ->subject('Usunięcie odrzucone')
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }

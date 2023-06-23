@@ -1,5 +1,5 @@
 <div>
-    <p>{% trans %}Hello{% endtrans %} {{ userName }}</p>
-    <p>{% trans %}AccountDeleteProcessed{% endtrans %}.</p>
-    <p>{% trans %}StayPatient{% endtrans %}.</p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }}</p>
+    <p>{{ 'AccountDeleteProcessed' | force_translate( lang ) }}.</p>
+    <p>{{ 'StayPatient' | force_translate( lang ) }}.</p>
 </div>

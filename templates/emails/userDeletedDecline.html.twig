@@ -1,5 +1,5 @@
 <div>
-    <p>{% trans %}Hello{% endtrans %} {{ userName }}</p>
-    <p>{% trans %}AccountDeleteDecline{% endtrans %}.</p>
-    <p>{% trans %}DetailService{% endtrans %}. </p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }}</p>
+    <p>{{ 'AccountDeleteDecline' | force_translate( lang ) }}.</p>
+    <p>{{ 'DetailService' | force_translate( lang ) }}. </p>
 </div>

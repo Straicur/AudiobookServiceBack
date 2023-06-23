@@ -1,7 +1,7 @@
 <div>
-    <p>{% trans %}Hello{% endtrans %} {{ userName }},</p>
-    <p>{% trans %}AccountIsDeleted{% endtrans %}.</p>
-    <p>{% trans %}AskSupport{% endtrans %}.</p>
-    <p>{% trans %}ThanksForUsingService{% endtrans %}</p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }},</p>
+    <p>{{ 'AccountIsDeleted' | force_translate( lang ) }}.</p>
+    <p>{{ 'AskSupport' | force_translate( lang ) }}.</p>
+    <p>{{ 'ThanksForUsingService' | force_translate( lang ) }}</p>
 </div>
 

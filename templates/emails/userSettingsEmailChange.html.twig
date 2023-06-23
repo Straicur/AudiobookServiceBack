@@ -1,8 +1,8 @@
 <div>
-    <p>{% trans %}Hello{% endtrans %} {{ userName }},</p>
-    <p>{% trans %}MailChange{% endtrans %}: {{ userEmail }}</p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }},</p>
+    <p>{{ 'MailChange' | force_translate( lang ) }} : {{ userEmail }}</p>
     <p>Link:
-        <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>{% trans %}ClickToChange{% endtrans %}</a>
+        <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>{{ 'ClickToChange' | force_translate( lang ) }}</a>
     </p>
 </div>
 
