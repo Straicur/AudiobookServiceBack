@@ -699,9 +699,10 @@ class AdminUserController extends AbstractController
             $allUsers = $userRepository->searchUsers($email, $phoneNumber, $firstname, $lastname, $active, $banned, $order);
 
             foreach ($allUsers as $index => $user) {
-                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
-                    $maxResult = $maxResult + 1;
+                if ($index < $minResult) {
                     continue;
+                } elseif ($userRepository->userIsAdmin($user)) {
+                    $maxResult = $maxResult + 1;
                 } elseif ($index < $maxResult) {
 
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
@@ -724,9 +725,6 @@ class AdminUserController extends AbstractController
                                 break;
                             case UserRolesNames::USER->value:
                                 $userModel->addRole(UserRoles::USER);
-                                break;
-                            case UserRolesNames::ADMINISTRATOR->value:
-                                $userModel->addRole(UserRoles::ADMINISTRATOR);
                                 break;
                         }
                     }
