@@ -701,6 +701,7 @@ class AdminUserController extends AbstractController
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
                     $maxResult = $maxResult + 1;
+                    continue;
                 } elseif ($index < $maxResult) {
 
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);

@@ -234,7 +234,7 @@ class UserController extends AbstractController
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "id" => $user->getId()->__toString(),
                         "userEmail" => $userSettingsEmailQuery->getNewEmail(),
-                        "url" => "http://127.0.0.1:8000",
+                        "url" => $_ENV["BACKEND_URL"],
                         "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
@@ -327,7 +327,8 @@ class UserController extends AbstractController
         return $this->render(
             'pages/userSettingsEmailChange.html.twig',
             [
-                "url" => $_ENV["FRONTEND_URL"]
+                "url" => $_ENV["FRONTEND_URL"],
+                "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
             ]
         );
     }

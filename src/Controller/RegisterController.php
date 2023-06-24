@@ -185,7 +185,7 @@ class RegisterController extends AbstractController
                         "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $newUser->getUserInformation()->getEmail(),
-                        "url" => "http://127.0.0.1:8000",
+                        "url" => $_ENV["BACKEND_URL"],
                         "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
@@ -280,7 +280,8 @@ class RegisterController extends AbstractController
         return $this->render(
             'pages/registered.html.twig',
             [
-                "url" => $_ENV["FRONTEND_URL"]
+                "url" => $_ENV["FRONTEND_URL"],
+                "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
             ]
         );
     }
@@ -368,7 +369,7 @@ class RegisterController extends AbstractController
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         "code" => $registerCodeGenerator->getBeforeGenerate(),
                         "userEmail" => $user->getUserInformation()->getEmail(),
-                        "url" => "http://127.0.0.1:8000",
+                        "url" => $_ENV["BACKEND_URL"],
                         "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
