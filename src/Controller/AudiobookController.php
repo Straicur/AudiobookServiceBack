@@ -104,17 +104,21 @@ class AudiobookController extends AbstractController
 
             $allParts = [];
 
-            $handle = opendir($audiobook->getFileName());
+            try {
+                $handle = opendir($audiobook->getFileName());
+            } catch (\Exception $e) {
+                $handle = false;
+            }
 
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
+            if ($handle) {
+                while (false !== ($entry = readdir($handle))) {
+                    if ($entry != "." && $entry != "..") {
 
-                    $file_parts = pathinfo($entry);
+                        $file_parts = pathinfo($entry);
 
-                    if ($file_parts['extension'] == "mp3") {
-
-                        $allParts[] = $file_parts['basename'];
-
+                        if ($file_parts['extension'] == "mp3") {
+                            $allParts[] = $file_parts['basename'];
+                        }
                     }
                 }
             }
@@ -176,18 +180,24 @@ class AudiobookController extends AbstractController
     {
         $img = "";
 
-        $handle = opendir($id->getFileName());
+        try {
+            $handle = opendir($id->getFileName());
+        } catch (\Exception $e) {
+            $handle = false;
+        }
 
-        while (false !== ($entry = readdir($handle))) {
-            if ($entry != "." && $entry != "..") {
+        if ($handle = opendir($id->getFileName())) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
 
-                $file_parts = pathinfo($entry);
+                    $file_parts = pathinfo($entry);
 
-                if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+                    if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
 
-                    $img = $file_parts["basename"];
+                        $img = $file_parts["basename"];
 
-                    break;
+                        break;
+                    }
                 }
             }
         }

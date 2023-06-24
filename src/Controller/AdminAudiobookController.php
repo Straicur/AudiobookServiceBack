@@ -574,6 +574,12 @@ class AdminAudiobookController extends AbstractController
 
             $dir = opendir($audiobook->getFileName() . "/");
 
+            if (!$dir) {
+                $endpointLogger->error("Audiobook Folder dont Exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+            }
+
             while ($file = readdir($dir)) {
                 if (is_file($audiobook->getFileName() . "/" . $file)) {
                     $zip->addFile($audiobook->getFileName() . "/" . $file, basename($audiobook->getFileName() . "/" . $file));
@@ -1127,6 +1133,12 @@ class AdminAudiobookController extends AbstractController
             }
 
             $handle = opendir($audiobook->getFileName());
+
+            if (!$handle) {
+                $endpointLogger->error("Audiobook Folder dont exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+            }
 
             while (false !== ($entry = readdir($handle))) {
 

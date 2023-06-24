@@ -20,7 +20,7 @@ class AudiobookUserComment
     private string $comment;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookUserComments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Audiobook $audiobook;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
