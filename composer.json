@@ -15,6 +15,7 @@
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.11",
     "guzzlehttp/psr7": "^1",
+    "james-heinrich/getid3": "^1.9",
     "monolog/monolog": "^2.5",
     "nelmio/api-doc-bundle": "^4.8",
     "nelmio/cors-bundle": "^2.2",

@@ -14,7 +14,7 @@ UserDeleteExists: Użytkownik znajduje się na liście do usunięcia
 UserDeleted: Użytkownik usunięty
 NotificationDontExists: Powiadomienie nie istnieje
 AudiobookPartDontExists: Audiobook nie posiada aktywnych części
-AudiobookCoverDontExists: Zdjęcie Audiobook nie istnieje
+AudiobookCoverDontExists: Zdjęcie Audiobooka nie istnieje
 EmailExists: Email istnieje w systemie
 ToMuchUsers: Za dużo użytkowników w systemie
 WrongCode: Zły kod

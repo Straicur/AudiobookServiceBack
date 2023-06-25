@@ -231,27 +231,54 @@ class AdminAudiobookController extends AbstractController
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
-                if (array_key_exists("version", $ID3JsonData)) {
-                    $version = $ID3JsonData["version"];
+                if (array_key_exists("id3v2", $ID3JsonData["tags"])) {
+                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v2"];
+                } else if (array_key_exists("id3v1", $ID3JsonData)) {
+                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v1"];
+                } else {
+                    $ID3JsonFileData = $ID3JsonData;
+                }
+
+                if (array_key_exists("version", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["version"]) > 0) {
+                        $version = $ID3JsonFileData["version"][0];
+                    } else {
+                        $version = $ID3JsonFileData["version"];
+                    }
                 } else {
                     $version = "1";
                 }
 
-                if (array_key_exists("album", $ID3JsonData)) {
-                    $album = $ID3JsonData["album"];
+                if (array_key_exists("album", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["album"]) > 0) {
+                        $album = $ID3JsonFileData["album"][0];
+                    } else {
+                        $album = $ID3JsonFileData["album"];
+                    }
                 } else {
                     $album = "album";
                 }
 
-                if (array_key_exists("author", $ID3JsonData)) {
-                    $author = $ID3JsonData["author"];
+                if (array_key_exists("artist", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["artist"]) > 0) {
+                        $author = $ID3JsonFileData["artist"][0];
+                    } else {
+                        $author = $ID3JsonFileData["artist"];
+                    }
                 } else {
                     $author = "author";
                 }
 
-                if (array_key_exists("year", $ID3JsonData)) {
-                    if (DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"])) {
-                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"]);
+                if (array_key_exists("year", $ID3JsonFileData)) {
+
+                    if (count($ID3JsonFileData["year"]) > 0) {
+                        $year = $ID3JsonFileData["year"][0];
+                    } else {
+                        $year = $ID3JsonFileData["year"];
+                    }
+
+                    if (DateTime::createFromFormat('d.m.Y', $year)) {
+                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonFileData["year"]);
                     } else {
                         $year = new \DateTime("Now");
                     }
@@ -259,14 +286,22 @@ class AdminAudiobookController extends AbstractController
                     $year = new \DateTime("Now");
                 }
 
-                if (array_key_exists("encoded", $ID3JsonData)) {
-                    $encoded = $ID3JsonData["encoded"];
+                if (array_key_exists("encoded", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["encoded"]) > 0) {
+                        $encoded = $ID3JsonFileData["encoded"][0];
+                    } else {
+                        $encoded = $ID3JsonFileData["encoded"];
+                    }
                 } else {
                     $encoded = "";
                 }
 
-                if (array_key_exists("comments", $ID3JsonData)) {
-                    $description = $ID3JsonData["comments"];
+                if (array_key_exists("comment", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["comment"]) > 0) {
+                        $description = $ID3JsonFileData["comment"][0];
+                    } else {
+                        $description = $ID3JsonFileData["comment"];
+                    }
                 } else {
                     $description = "desc";
                 }
@@ -665,27 +700,54 @@ class AdminAudiobookController extends AbstractController
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
-                if (array_key_exists("version", $ID3JsonData)) {
-                    $version = $ID3JsonData["version"];
+                if (array_key_exists("id3v2", $ID3JsonData["tags"])) {
+                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v2"];
+                } else if (array_key_exists("id3v1", $ID3JsonData)) {
+                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v1"];
+                } else {
+                    $ID3JsonFileData = $ID3JsonData;
+                }
+
+                if (array_key_exists("version", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["version"]) > 0) {
+                        $version = $ID3JsonFileData["version"][0];
+                    } else {
+                        $version = $ID3JsonFileData["version"];
+                    }
                 } else {
                     $version = "1";
                 }
 
-                if (array_key_exists("album", $ID3JsonData)) {
-                    $album = $ID3JsonData["album"];
+                if (array_key_exists("album", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["album"]) > 0) {
+                        $album = $ID3JsonFileData["album"][0];
+                    } else {
+                        $album = $ID3JsonFileData["album"];
+                    }
                 } else {
                     $album = "album";
                 }
 
-                if (array_key_exists("author", $ID3JsonData)) {
-                    $author = $ID3JsonData["author"];
+                if (array_key_exists("artist", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["artist"]) > 0) {
+                        $author = $ID3JsonFileData["artist"][0];
+                    } else {
+                        $author = $ID3JsonFileData["artist"];
+                    }
                 } else {
                     $author = "author";
                 }
 
-                if (array_key_exists("year", $ID3JsonData)) {
-                    if (DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"])) {
-                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonData["year"]);
+                if (array_key_exists("year", $ID3JsonFileData)) {
+
+                    if (count($ID3JsonFileData["year"]) > 0) {
+                        $year = $ID3JsonFileData["year"][0];
+                    } else {
+                        $year = $ID3JsonFileData["year"];
+                    }
+
+                    if (DateTime::createFromFormat('d.m.Y', $year)) {
+                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonFileData["year"]);
                     } else {
                         $year = new \DateTime("Now");
                     }
@@ -693,14 +755,22 @@ class AdminAudiobookController extends AbstractController
                     $year = new \DateTime("Now");
                 }
 
-                if (array_key_exists("encoded", $ID3JsonData)) {
-                    $encoded = $ID3JsonData["encoded"];
+                if (array_key_exists("encoded", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["encoded"]) > 0) {
+                        $encoded = $ID3JsonFileData["encoded"][0];
+                    } else {
+                        $encoded = $ID3JsonFileData["encoded"];
+                    }
                 } else {
                     $encoded = "";
                 }
 
-                if (array_key_exists("comments", $ID3JsonData)) {
-                    $description = $ID3JsonData["comments"];
+                if (array_key_exists("comment", $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData["comment"]) > 0) {
+                        $description = $ID3JsonFileData["comment"][0];
+                    } else {
+                        $description = $ID3JsonFileData["comment"];
+                    }
                 } else {
                     $description = "desc";
                 }
