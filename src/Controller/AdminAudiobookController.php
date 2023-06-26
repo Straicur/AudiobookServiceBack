@@ -270,15 +270,14 @@ class AdminAudiobookController extends AbstractController
                 }
 
                 if (array_key_exists("year", $ID3JsonFileData)) {
-
                     if (count($ID3JsonFileData["year"]) > 0) {
-                        $year = $ID3JsonFileData["year"][0];
+                        $year = "01.01." . $ID3JsonFileData["year"][0];
                     } else {
-                        $year = $ID3JsonFileData["year"];
+                        $year = "01.01." . $ID3JsonFileData["year"];
                     }
 
                     if (DateTime::createFromFormat('d.m.Y', $year)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonFileData["year"]);
+                        $year = DateTime::createFromFormat('d.m.Y', $year);
                     } else {
                         $year = new \DateTime("Now");
                     }
@@ -339,7 +338,7 @@ class AdminAudiobookController extends AbstractController
                     $author = $additionalData["author"];
                 }
 
-                $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::FROM3TO7, $folderDir);
+                $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::ABOVE18, $folderDir);
 
                 if ($encoded != "") {
                     $newAudiobook->setEncoded($encoded);
@@ -818,7 +817,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->setSize($size);
                 $audiobook->setParts($parts);
                 $audiobook->setDescription($description);
-                $audiobook->setAge(AudiobookAgeRange::FROM3TO7);
+                $audiobook->setAge(AudiobookAgeRange::ABOVE18);
                 $audiobook->setFileName($folderDir);
 
 
