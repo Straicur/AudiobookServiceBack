@@ -738,15 +738,14 @@ class AdminAudiobookController extends AbstractController
                 }
 
                 if (array_key_exists("year", $ID3JsonFileData)) {
-
                     if (count($ID3JsonFileData["year"]) > 0) {
-                        $year = $ID3JsonFileData["year"][0];
+                        $year = "01.01." . $ID3JsonFileData["year"][0];
                     } else {
-                        $year = $ID3JsonFileData["year"];
+                        $year = "01.01." . $ID3JsonFileData["year"];
                     }
 
                     if (DateTime::createFromFormat('d.m.Y', $year)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $ID3JsonFileData["year"]);
+                        $year = DateTime::createFromFormat('d.m.Y', $year);
                     } else {
                         $year = new \DateTime("Now");
                     }
