@@ -48,6 +48,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -91,6 +92,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -119,7 +121,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
@@ -165,7 +168,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobooks.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -175,6 +179,7 @@ class UserAudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -202,7 +207,8 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository
+        AudiobookRepository            $audiobookRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
@@ -237,7 +243,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobooksSearch.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -309,6 +316,7 @@ class UserAudiobookController extends AbstractController
      * @param MyListRepository $listRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -341,7 +349,8 @@ class UserAudiobookController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         MyListRepository               $listRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository
+        AudiobookInfoRepository        $audiobookInfoRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -352,7 +361,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.details.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $user = $authorizedUserService->getAuthorizedUser();
@@ -411,7 +421,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.details.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -422,6 +433,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -451,7 +463,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository
+        AudiobookInfoRepository        $audiobookInfoRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
@@ -464,7 +477,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.info.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
@@ -475,7 +489,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobookInfo == null) {
                 $endpointLogger->error("AudiobookInfo dont exist");
-                throw new DataNotFoundException(["userAudiobook.info.audiobookInfo.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookInfoDontExists")]);
             }
 
             $successModel = new UserAudiobookInfoSuccessModel(
@@ -487,7 +502,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.info.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -498,6 +514,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param MyListRepository $myListRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -526,7 +543,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        MyListRepository               $myListRepository
+        MyListRepository               $myListRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
@@ -539,7 +557,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.like.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $myList = $user->getMyList();
@@ -555,7 +574,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.like.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -624,6 +644,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -652,7 +673,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository
+        AudiobookInfoRepository        $audiobookInfoRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
@@ -665,7 +687,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.info.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
@@ -703,7 +726,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.add.info.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -715,6 +739,7 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
      * @param AudiobookRatingRepository $ratingRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -744,7 +769,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
-        AudiobookRatingRepository      $ratingRepository
+        AudiobookRatingRepository      $ratingRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
@@ -757,7 +783,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $rating = $ratingRepository->findOneBy([
@@ -776,7 +803,8 @@ class UserAudiobookController extends AbstractController
 
                 if (count($audiobookInfo) < $audiobook->getParts()) {
                     $endpointLogger->error("Audiobook dont exist");
-                    throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.watched"]);
+                    $translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$translateService->getTranslation("AudiobookNotWatched")]);
                 }
 
                 $rating = new AudiobookRating($audiobook, $userAudiobookRatingAddQuery->isRating(), $user);
@@ -788,7 +816,8 @@ class UserAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.add.rating.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -798,7 +827,7 @@ class UserAudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookRatingRepository $ratingRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -828,27 +857,27 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookRatingRepository      $ratingRepository
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 
         if ($userAudiobookRatingGetQuery instanceof UserAudiobookRatingGetQuery) {
 
-            $user = $authorizedUserService->getAuthorizedUser();
-
             $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingGetQuery->getAudiobookId(), $userAudiobookRatingGetQuery->getCategoryKey());
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.rating.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel($audiobook->getAvgRating()));
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.add.rating.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -860,6 +889,7 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -889,7 +919,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository
+        AudiobookInfoRepository        $audiobookInfoRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
@@ -902,7 +933,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $watchedParts = $audiobookInfoRepository->findBy([
@@ -913,7 +945,8 @@ class UserAudiobookController extends AbstractController
 
             if (floor($audiobook->getParts() / 2) > $watchedParts) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.comment.audiobook.not.watched"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookNotListened")]);
             }
 
             $audiobookComment = new AudiobookUserComment($userAudiobookCommentAddQuery->getComment(), $audiobook, $user);
@@ -928,7 +961,8 @@ class UserAudiobookController extends AbstractController
 
                 if ($audiobookParentComment == null || $audiobookParentComment->getParent() != null) {
                     $endpointLogger->error("Audiobook Parent Comment dont exist");
-                    throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.parent.comment.not.exist"]);
+                    $translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$translateService->getTranslation("AudiobookParentCommentDontExists")]);
                 }
 
                 $audiobookComment->setParent($audiobookParentComment);
@@ -940,7 +974,8 @@ class UserAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.add.comment.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -951,6 +986,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -979,7 +1015,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        TranslateService               $translateService
     ): Response
     {
         $userAudiobookCommentEditQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentEditQuery::class);
@@ -992,7 +1029,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
             $audiobookComment = $audiobookUserCommentRepository->findOneBy([
@@ -1002,7 +1040,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobookComment == null) {
                 $endpointLogger->error("Audiobook Comment dont exist");
-                throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.comment.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentDontExists")]);
             }
 
             $audiobookComment->setDeleted($userAudiobookCommentEditQuery->isDeleted());
@@ -1019,7 +1058,8 @@ class UserAudiobookController extends AbstractController
 
                 if ($audiobookParentComment == null) {
                     $endpointLogger->error("Audiobook Parent Comment dont exist");
-                    throw new DataNotFoundException(["userAudiobook.edit.comment.audiobook.parent.comment.not.exist"]);
+                    $translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$translateService->getTranslation("AudiobookParentCommentDontExists")]);
                 }
 
                 $audiobookComment->setParent($audiobookParentComment);
@@ -1031,7 +1071,8 @@ class UserAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.edit.comment.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1042,6 +1083,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1070,7 +1112,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface     $authorizedUserService,
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository
+        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
+        TranslateService                   $translateService
     ): Response
     {
         $userAudiobookCommentLikeAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeAddQuery::class);
@@ -1085,7 +1128,8 @@ class UserAudiobookController extends AbstractController
 
             if ($comment == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.comment.like.comment.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentDontExists")]);
             }
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
@@ -1108,7 +1152,8 @@ class UserAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.add.comment.like.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1119,6 +1164,7 @@ class UserAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1148,6 +1194,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        TranslateService                   $translateService
     ): Response
     {
         $userAudiobookCommentLikeDeleteQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeDeleteQuery::class);
@@ -1162,7 +1209,8 @@ class UserAudiobookController extends AbstractController
 
             if ($comment == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.add.comment.like.comment.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentDontExists")]);
             }
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
@@ -1172,8 +1220,9 @@ class UserAudiobookController extends AbstractController
             ]);
 
             if ($commentLike == null) {
-                $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["userAudiobook.delete.comment.like.comment.like.not.exist"]);
+                $endpointLogger->error("Comment like dont exist");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentLikeDontExists")]);
             }
 
             $commentLike->setDeleted(true);
@@ -1184,7 +1233,8 @@ class UserAudiobookController extends AbstractController
 
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("userAudiobook.delete.comment.like.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1196,6 +1246,7 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @param AudiobookRepository $audiobookRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1226,7 +1277,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookRepository                $audiobookRepository
+        AudiobookRepository                $audiobookRepository,
+        TranslateService                   $translateService
     ): Response
     {
         $userAudiobookCommentGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentGetQuery::class);
@@ -1240,7 +1292,8 @@ class UserAudiobookController extends AbstractController
 
             if ($audiobook == null) {
                 $endpointLogger->error("Audiobook dont exist");
-                throw new DataNotFoundException(["audiobook.comment.get.audiobook.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentDontExists")]);
             }
 
             $audiobookUserComments = $audiobookUserCommentRepository->findBy([
@@ -1256,7 +1309,8 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("audiobook.comment.get.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 }

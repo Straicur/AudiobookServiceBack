@@ -162,7 +162,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
     /**
      * @throws NonUniqueResultException
      */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         $request = $event->getRequest();
         $response = $event->getResponse();

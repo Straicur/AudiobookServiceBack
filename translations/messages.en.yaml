@@ -1,0 +1,45 @@
+InvalidJson: Wrong given data
+EmailDontExists: Email dont exists
+UserBanned: Account is banned
+ActivateAccount: Activate your account
+NotActivePassword: Cant find active password
+ParentCategoryDontExists: Parent category dont exists
+CategoryDontExists: Category dont exists
+AudiobookDontExists: Audiobook dont exists
+AudiobookCommentDontExists: Audiobook comment dont exists
+AudiobookParentCommentDontExists: Audiobook parent comment dont exists
+UserDontExists: User dont exists
+UserDeleteDontExists: User not in delete list
+UserDeleteExists: User on delete list
+UserDeleted: User deleted
+NotificationDontExists: Notification dont exists
+AudiobookPartDontExists: Audiobook have no available parts
+AudiobookCoverDontExists: Audiobook cover dont exists
+EmailExists: Email exists in system
+ToMuchUsers: To much users in system
+WrongCode: Wrong code
+ActiveOrBanned: User is not activated or is banned
+AudiobookInfoDontExists: Audiobook info dont exists
+AudiobookNotWatched: Audiobook must be listened to rate
+AudiobookNotListened: Audiobook is not listened
+AudiobookCommentLikeDontExists: Comment was not liked
+UserPasswordDontExists: User password dont exists
+Hello: Hello
+ActivateAccountRegister: Activate your account to use service
+ActivateLink: Activation link
+ClickToActivate: Click to activate
+AccountIsDeleted: Account has been deleted
+AskSupport: If you have any questions, please direct them to our support
+ThanksForUsingService: Thank you for using our website
+AccountDeleteDecline: Your request to delete your account has been declined
+DetailService: Details available in our support
+AccountDeleteProcessed: Your account deletion request is being processed by the administrator
+StayPatient: Please be patient, another email will be sent in case of changes
+MailChange: We have received a request to change your account email to the following
+ClickToChange: Click to change
+PasswordReset: We have received a request to reset your account password
+YouCanGoBack: Now you can go back to main page :)
+Login: Login
+SuccessfulActivation: Successful account activation
+SuccessfulEmailChange: Successfully changed email
+Cheers: Cheers

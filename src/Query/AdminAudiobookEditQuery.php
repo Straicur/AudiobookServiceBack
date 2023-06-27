@@ -64,6 +64,11 @@ class AdminAudiobookEditQuery
     #[Assert\NotNull(message: "Age is null")]
     #[Assert\NotBlank(message: "Age is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 5,
+    )]
     private int $age;
 
     #[Assert\NotNull(message: "Encoded is null")]
@@ -236,7 +241,6 @@ class AdminAudiobookEditQuery
 
     /**
      * @return AudiobookAgeRange
-     * @throws InvalidJsonDataException
      */
     public function getAge(): AudiobookAgeRange
     {
@@ -245,8 +249,7 @@ class AdminAudiobookEditQuery
             2 => AudiobookAgeRange::FROM7TO12,
             3 => AudiobookAgeRange::FROM12TO16,
             4 => AudiobookAgeRange::FROM16TO18,
-            5 => AudiobookAgeRange::ABOVE18,
-            default => throw new InvalidJsonDataException("admin.audiobook.edit.invalid.query")
+            5 => AudiobookAgeRange::ABOVE18
         };
     }
 

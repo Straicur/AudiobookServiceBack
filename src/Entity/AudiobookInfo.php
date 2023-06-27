@@ -21,7 +21,7 @@ class AudiobookInfo
     private User $user;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookInfos')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Audiobook $audiobook;
 
     #[ORM\Column(type: 'integer')]

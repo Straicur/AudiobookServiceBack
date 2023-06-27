@@ -1,14 +1,16 @@
 <link href="{{ asset('css/main.css') }}" rel="stylesheet"/>
-<div class ="main">
+<div class="main">
     <div class="modal">
         <div class="modal-content">
-            <h1 class="title">Successful activation !</h1>
+            <h1 class="title">{{ 'SuccessfulActivation' | force_translate( lang ) }}</h1>
             <p class="text">
-                Now you can go back to page :)
+                {{ 'YouCanGoBack' | force_translate( lang ) }}
             </p>
-            <a href="{{ url }}/login"><button class="button">Login</button></a>
+            <a href="{{ url }}/login">
+                <button class="button">{{ 'Login' | force_translate( lang ) }}</button>
+            </a>
             <p class="text">
-                Cheers!
+                {{ 'Cheers' | force_translate( lang ) }}
             </p>
         </div>
     </div>

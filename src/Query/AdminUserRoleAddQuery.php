@@ -19,6 +19,11 @@ class AdminUserRoleAddQuery
     #[Assert\NotNull(message: "Role is null")]
     #[Assert\NotBlank(message: "Role is empty")]
     #[Assert\Type(type: "integer")]
+    #[Assert\Range(
+        notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
+        min: 1,
+        max: 3,
+    )]
     private int $role;
 
     /**
@@ -40,7 +45,6 @@ class AdminUserRoleAddQuery
 
     /**
      * @return UserRoles
-     * @throws InvalidJsonDataException
      */
     public function getRole(): UserRoles
     {
@@ -48,7 +52,6 @@ class AdminUserRoleAddQuery
             1 => UserRoles::GUEST,
             2 => UserRoles::USER,
             3 => UserRoles::ADMINISTRATOR,
-            default => throw new InvalidJsonDataException("admin.user.roles.add.invalid.query")
         };
     }
 

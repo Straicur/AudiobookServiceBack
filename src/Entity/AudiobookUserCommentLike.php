@@ -26,7 +26,7 @@ class AudiobookUserCommentLike
     private bool $deleted;
 
     #[ORM\ManyToOne(targetEntity: AudiobookUserComment::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private AudiobookUserComment $audiobookUserComment;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

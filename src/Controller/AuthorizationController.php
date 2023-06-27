@@ -20,6 +20,7 @@ use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -66,10 +67,12 @@ class AuthorizationController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws PermissionException
+     * @throws \Exception
      */
     #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
     #[OA\Post(
@@ -97,7 +100,8 @@ class AuthorizationController extends AbstractController
         LoggerInterface               $endpointLogger,
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
-        AuthenticationTokenRepository $authenticationTokenRepository
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        TranslateService              $translateService
     ): Response
     {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
@@ -111,15 +115,18 @@ class AuthorizationController extends AbstractController
             ]);
 
             if ($userInformationEntity == null) {
-                throw new DataNotFoundException(["user.credentials"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
             }
 
             if ($userInformationEntity->getUser()->isBanned()) {
-                throw new DataNotFoundException(["user.banned"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserBanned")]);
             }
 
             if (!$userInformationEntity->getUser()->isActive()) {
-                throw new DataNotFoundException(["user.not.active"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("ActivateAccount")]);
             }
 
             $roles = $userInformationEntity->getUser()->getRoles();
@@ -132,15 +139,17 @@ class AuthorizationController extends AbstractController
             }
 
             if (!$isUser) {
-                throw new PermissionException("user.credentials");
+                throw new PermissionException();
             }
+
             $passwordEntity = $userPasswordRepository->findOneBy([
                 "user" => $userInformationEntity->getUser(),
                 "password" => $passwordHashGenerator->generate()
             ]);
 
             if ($passwordEntity == null) {
-                throw new DataNotFoundException(["user.credentials"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("NotActivePassword")]);
             }
 
             $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
@@ -158,10 +167,14 @@ class AuthorizationController extends AbstractController
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
 
+
             return ResponseTool::getResponse($responseModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("auth.login.invalid.query");
+
+            $translateService->setPreferredLanguage($request);
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -198,10 +211,12 @@ class AuthorizationController extends AbstractController
 
         $authToken = $authenticationTokenRepository->findActiveToken($authorizationHeaderField);
 
-        $authToken->setDateExpired(new \DateTime('NOW'));
-        $authenticationTokenRepository->add($authToken);
+        if ($authToken != null) {
+            $authToken->setDateExpired(new \DateTime('NOW'));
+            $authenticationTokenRepository->add($authToken);
+        }
 
-        $usersLogger->info("LOGIN", [$user->getId()->__toString()]);
+        $usersLogger->info("LOGOUT", [$user->getId()->__toString()]);
 
         return ResponseTool::getResponse();
     }

@@ -1,3 +1,5 @@
-<p>Witaj {{ userName }}</p>
-<p>Twoja prośba o usunięcie konta jest przetwarzana przez adminitratora</p>
-<p>Prosimy o cierpliwość, w razie zmian zostanie wysłany kolejny email</p>
+<div>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }}</p>
+    <p>{{ 'AccountDeleteProcessed' | force_translate( lang ) }}.</p>
+    <p>{{ 'StayPatient' | force_translate( lang ) }}.</p>
+</div>

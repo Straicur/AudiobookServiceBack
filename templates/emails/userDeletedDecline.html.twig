@@ -1,3 +1,5 @@
-<p>Witaj {{ userName }}</p>
-<p>Twoja prośba o usunięcie konta została odrzucona</p>
-<p>Sczegóły dostępne w naszym supporcie </p>
+<div>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }}</p>
+    <p>{{ 'AccountDeleteDecline' | force_translate( lang ) }}.</p>
+    <p>{{ 'DetailService' | force_translate( lang ) }}. </p>
+</div>

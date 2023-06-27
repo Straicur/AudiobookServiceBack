@@ -1,6 +1,8 @@
 <div>
-    <p>Witaj {{ userName }},</p>
-    <p>Otrzymaliśmy prośbę o zmianie maila twojego konta na podany: {{ userEmail }}</p>
-    <p>Link: <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>Kliknij aby zmienić</a></p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }},</p>
+    <p>{{ 'MailChange' | force_translate( lang ) }} : {{ userEmail }}</p>
+    <p>Link:
+        <a href='{{ url }}/api/user/settings/email/change/{{ userEmail }}/{{ id }}'>{{ 'ClickToChange' | force_translate( lang ) }}</a>
+    </p>
 </div>
 

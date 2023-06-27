@@ -13,10 +13,12 @@ class RequestService implements RequestServiceInterface
     private ValidatorInterface $validator;
 
     private SerializerInterface $serializer;
+    private TranslateService $translateService;
 
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator, TranslateService $translateService)
     {
         $this->validator = $validator;
+        $this->translateService = $translateService;
         $this->serializer = new JsonSerializer();
     }
 
@@ -30,18 +32,21 @@ class RequestService implements RequestServiceInterface
         try {
             $query = $this->serializer->deserialize($bodyContent, $className);
         } catch (\Exception $e) {
-            throw new InvalidJsonDataException($className, null, [$e->getMessage()]);
+            $this->translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($this->translateService, null, [$e->getMessage()]);
         }
 
         if ($query instanceof $className) {
             $validationErrors = $this->validator->validate($query);
             if ($validationErrors->count() > 0) {
-                throw new InvalidJsonDataException($className, $validationErrors);
+                $this->translateService->setPreferredLanguage($request);
+                throw new InvalidJsonDataException($this->translateService, $validationErrors);
             }
 
             return $query;
         } else {
-            throw new InvalidJsonDataException($className);
+            $this->translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($this->translateService);
         }
     }
 }

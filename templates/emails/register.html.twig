@@ -1,6 +1,8 @@
 <div>
-    <p>Witaj {{ userName }},</p>
-    <p>Aktywuj konto aby korzstać z serwisu.</p>
-    <p>Link aktywacyjny: <a href='{{ url }}/api/register/{{ userEmail }}/{{ code }}'>Kliknij aby aktywować</a></p>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ userName }},</p>
+    <p>{{ 'ActivateAccountRegister' | force_translate( lang ) }}.</p>
+    <p>{{ 'ActivateLink' | force_translate( lang ) }}: <a
+                href='{{ url }}/api/register/{{ userEmail }}/{{ code }}'>{{ 'ClickToActivate' | force_translate( lang ) }}</a>
+    </p>
 </div>
 

@@ -14,19 +14,16 @@ use ZipArchive;
 
 class AudiobookService implements AudiobookServiceInterface
 {
-    private MP3FileService $MP3FileService;
     private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
     private AdminAudiobookAddQuery|AdminAudiobookReAddingQuery|null $query = null;
     private string $whole_dir_path = "";
     private string $whole_zip_path = "";
 
     /**
-     * @param MP3FileService $MP3FileService
      * @param AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService
      */
-    public function __construct(MP3FileService $MP3FileService, AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService)
+    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService)
     {
-        $this->MP3FileService = $MP3FileService;
         $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
     }
 
@@ -210,13 +207,12 @@ class AudiobookService implements AudiobookServiceInterface
 
                             $mp3Dir = $folderDir . "/" . $mp3file;
 
-                            $this->MP3FileService->configure($mp3Dir);
-
-                            $mp3Duration = $mp3Duration + $this->MP3FileService->getDuration();
-
                             $mp3Size = $mp3Size + filesize($mp3Dir);
 
-                            $id3TrackData = $this->audiobooksID3TagsReaderService->getTagsInfo($mp3Dir);
+                            $this->audiobooksID3TagsReaderService->setFileName($mp3Dir);
+                            $id3TrackData = $this->audiobooksID3TagsReaderService->getTagsInfo();
+
+                            $mp3Duration = $mp3Duration + intval($id3TrackData["playtime_seconds"]);
 
                             if (empty($id3Data)) {
                                 foreach ($id3TrackData as $key => $index) {
@@ -247,7 +243,7 @@ class AudiobookService implements AudiobookServiceInterface
         $id3Data['parts'] = $parts;
         $id3Data['title'] = $this->query->getFileName();
 
-        return ($id3Data);
+        return $id3Data;
     }
 
     /**

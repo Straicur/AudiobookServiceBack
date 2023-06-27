@@ -67,7 +67,6 @@ class Audiobook
 
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookRating::class)]
     private Collection $audiobookRatings;
-
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookUserComment::class)]
     private Collection $audiobookUserComments;
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookInfo::class)]
@@ -75,6 +74,7 @@ class Audiobook
 
     #[ORM\Column(type: 'float')]
     private float $avgRating;
+
     /**
      * @param string $title
      * @param string $author
@@ -372,6 +372,7 @@ class Audiobook
 
         return $this;
     }
+
     /**
      * @return Collection<int, AudiobookInfo>
      */

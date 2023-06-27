@@ -49,6 +49,7 @@ use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -136,6 +137,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param RoleRepository $roleRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -164,7 +166,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository
+        RoleRepository                 $roleRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
@@ -177,12 +180,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.role.add.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.role.add.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             switch ($adminUserRoleAddQuery->getRole()) {
@@ -214,7 +219,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.role.add.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -225,6 +231,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param RoleRepository $roleRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -253,7 +260,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository
+        RoleRepository                 $roleRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
@@ -266,12 +274,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.role.remove.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.role.remove.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             switch ($adminUserRoleRemoveQuery->getRole()) {
@@ -303,7 +313,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.role.remove.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -314,6 +325,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param RoleRepository $roleRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -342,7 +354,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository
+        RoleRepository                 $roleRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
@@ -355,12 +368,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.activate.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.activate.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             $userRole = $roleRepository->findOneBy([
@@ -375,7 +390,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.activate.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -385,6 +401,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -412,7 +429,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository
+        UserRepository                 $userRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
@@ -425,12 +443,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.ban.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.ban.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             $user->setBanned($adminUserBanQuery->isBanned());
@@ -440,7 +460,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.ban.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -451,10 +472,10 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserPasswordRepository $userPasswordRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws \Exception
      */
     #[Route("/api/admin/user/change/password", name: "adminUserChangePassword", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -480,7 +501,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository
+        UserPasswordRepository         $userPasswordRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
@@ -493,12 +515,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.change.password.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.change.password.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
             $userPassword = $userPasswordRepository->findOneBy([
                 "user" => $user->getId()
@@ -513,7 +537,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.change.password.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -524,6 +549,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -552,7 +578,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserInformationRepository      $userInformationRepository
+        UserInformationRepository      $userInformationRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
@@ -565,12 +592,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.change.phone.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.change.phone.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
             $userInfo = $user->getUserInformation();
 
@@ -581,7 +610,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.change.phone.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -592,6 +622,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -620,7 +651,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository
+        UserDeleteRepository           $userDeleteRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
@@ -667,7 +699,9 @@ class AdminUserController extends AbstractController
             $allUsers = $userRepository->searchUsers($email, $phoneNumber, $firstname, $lastname, $active, $banned, $order);
 
             foreach ($allUsers as $index => $user) {
-                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                if ($index < $minResult) {
+                    continue;
+                } elseif ($userRepository->userIsAdmin($user)) {
                     $maxResult = $maxResult + 1;
                 } elseif ($index < $maxResult) {
 
@@ -692,9 +726,6 @@ class AdminUserController extends AbstractController
                             case UserRolesNames::USER->value:
                                 $userModel->addRole(UserRoles::USER);
                                 break;
-                            case UserRolesNames::ADMINISTRATOR->value:
-                                $userModel->addRole(UserRoles::ADMINISTRATOR);
-                                break;
                         }
                     }
 
@@ -712,7 +743,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUsers.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -724,6 +756,7 @@ class AdminUserController extends AbstractController
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -754,7 +787,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer
+        MailerInterface                $mailer,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
@@ -767,12 +801,14 @@ class AdminUserController extends AbstractController
 
             if ($user == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.delete.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             if ($userRepository->userIsAdmin($user)) {
                 $endpointLogger->error("User is admin");
-                throw new DataNotFoundException(["adminUser.delete.user.invalid.permission"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
 
             $userDelete = $userDeleteRepository->findOneBy([
@@ -795,7 +831,8 @@ class AdminUserController extends AbstractController
                     ->subject('Konto usunięte')
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -803,7 +840,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.delete.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -814,6 +852,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -842,7 +881,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository
+        UserDeleteRepository           $userDeleteRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
@@ -894,7 +934,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.delete.list.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -905,6 +946,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserRepository $userRepository
      * @param UserDeleteRepository $userDeleteRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -933,7 +975,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository
+        UserDeleteRepository           $userDeleteRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
@@ -983,7 +1026,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse($successModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.to.delete.list.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -994,6 +1038,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1023,7 +1068,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer
+        MailerInterface                $mailer,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
@@ -1036,7 +1082,8 @@ class AdminUserController extends AbstractController
 
             if ($userDelete == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.delete.accept.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDeleteDontExists")]);
             }
             $user = $userDelete->getUser();
 
@@ -1044,7 +1091,8 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["adminUser.delete.accept.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDeleted")]);
             }
 
             $userDelete->setDeleted(true);
@@ -1059,7 +1107,8 @@ class AdminUserController extends AbstractController
                     ->subject('Konto usunięte')
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -1067,7 +1116,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.delete.accept.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1080,6 +1130,7 @@ class AdminUserController extends AbstractController
      * @param UserDeleteRepository $userDeleteRepository
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1112,7 +1163,8 @@ class AdminUserController extends AbstractController
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
@@ -1125,7 +1177,8 @@ class AdminUserController extends AbstractController
 
             if ($userDelete == null) {
                 $endpointLogger->error("User dont exist");
-                throw new DataNotFoundException(["adminUser.delete.decline.user.not.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDeleteDontExists")]);
             }
 
             $user = $userDelete->getUser();
@@ -1134,7 +1187,8 @@ class AdminUserController extends AbstractController
 
             if ($userInDelete) {
                 $endpointLogger->error("User in list");
-                throw new DataNotFoundException(["adminUser.delete.decline.user.not.in.list.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserDeleted")]);
             }
 
             $userDelete->setDeclined(true);
@@ -1152,7 +1206,8 @@ class AdminUserController extends AbstractController
                     ->subject('Usunięcie odrzucone')
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')
                     ->context([
-                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname()
+                        "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        "lang" => $request->getPreferredLanguage() != null ? $request->getPreferredLanguage() : $translateService->getLocate()
                     ]);
                 $mailer->send($email);
             }
@@ -1171,7 +1226,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.delete.decline.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1181,6 +1237,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param NotificationRepository $notificationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
      */
@@ -1208,7 +1265,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
@@ -1262,7 +1320,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.notifications.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1277,6 +1336,7 @@ class AdminUserController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param InstitutionRepository $institutionRepository
      * @param AudiobookCategoryRepository $categoryRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1310,7 +1370,8 @@ class AdminUserController extends AbstractController
         RoleRepository                 $roleRepository,
         AudiobookRepository            $audiobookRepository,
         InstitutionRepository          $institutionRepository,
-        AudiobookCategoryRepository    $categoryRepository
+        AudiobookCategoryRepository    $categoryRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
@@ -1353,7 +1414,8 @@ class AdminUserController extends AbstractController
                 case NotificationType::ADMIN:
                     if (!array_key_exists("userId", $additionalData)) {
                         $endpointLogger->error("Invalid given Query no userId");
-                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                        $translateService->setPreferredLanguage($request);
+                        throw new InvalidJsonDataException($translateService);
                     }
 
                     $user = $userRepository->findOneBy([
@@ -1362,7 +1424,8 @@ class AdminUserController extends AbstractController
 
                     if ($user == null) {
                         $endpointLogger->error("User dont exist");
-                        throw new DataNotFoundException(["adminUser.notification.put.user.dont.exist"]);
+                        $translateService->setPreferredLanguage($request);
+                        throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
                     }
 
                     $notificationBuilder = new NotificationBuilder();
@@ -1385,7 +1448,8 @@ class AdminUserController extends AbstractController
                 case NotificationType::NEW_CATEGORY:
                     if (!array_key_exists("actionId", $additionalData)) {
                         $endpointLogger->error("Invalid given Query no actionId");
-                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                        $translateService->setPreferredLanguage($request);
+                        throw new InvalidJsonDataException($translateService);
                     }
 
                     $userRole = $roleRepository->findOneBy([
@@ -1401,7 +1465,8 @@ class AdminUserController extends AbstractController
 
                     if ($category == null) {
                         $endpointLogger->error("Category dont exist");
-                        throw new DataNotFoundException(["adminUser.notification.put.category.dont.exist"]);
+                        $translateService->setPreferredLanguage($request);
+                        throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
                     }
 
                     $notificationBuilder
@@ -1424,7 +1489,8 @@ class AdminUserController extends AbstractController
                 case NotificationType::NEW_AUDIOBOOK:
                     if (!array_key_exists("actionId", $additionalData)) {
                         $endpointLogger->error("Invalid given Query no actionId");
-                        throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+                        $translateService->setPreferredLanguage($request);
+                        throw new InvalidJsonDataException($translateService);
                     }
 
                     $audiobook = $audiobookRepository->findOneBy([
@@ -1433,7 +1499,8 @@ class AdminUserController extends AbstractController
 
                     if ($audiobook == null) {
                         $endpointLogger->error("Audiobook dont exist");
-                        throw new DataNotFoundException(["adminUser.notification.put.audiobook.dont.exist"]);
+                        $translateService->setPreferredLanguage($request);
+                        throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
                     }
 
                     $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
@@ -1461,7 +1528,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse(null, 201);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.notification.put.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
 
     }
@@ -1474,6 +1542,7 @@ class AdminUserController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param NotificationRepository $notificationRepository
      * @param RoleRepository $roleRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1504,7 +1573,8 @@ class AdminUserController extends AbstractController
         UserRepository                 $userRepository,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
-        RoleRepository                 $roleRepository
+        RoleRepository                 $roleRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
@@ -1517,7 +1587,8 @@ class AdminUserController extends AbstractController
 
             if ($notification == null) {
                 $endpointLogger->error("Notification dont exist");
-                throw new DataNotFoundException(["adminUser.notification.patch.notification.dont.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
             }
 
             $notificationBuilder = new NotificationBuilder($notification);
@@ -1550,7 +1621,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.notification.patch.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 
@@ -1560,6 +1632,7 @@ class AdminUserController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param NotificationRepository $notificationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -1587,7 +1660,8 @@ class AdminUserController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TranslateService               $translateService
     ): Response
     {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
@@ -1600,7 +1674,8 @@ class AdminUserController extends AbstractController
 
             if ($notification == null) {
                 $endpointLogger->error("Notification dont exist");
-                throw new DataNotFoundException(["adminUser.notification.delete.notification.dont.exist"]);
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
             }
 
             $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
@@ -1610,7 +1685,8 @@ class AdminUserController extends AbstractController
             return ResponseTool::getResponse();
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("adminUser.notification.delete.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 }

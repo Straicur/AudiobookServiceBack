@@ -17,7 +17,7 @@ class AudiobookRating
     private $id;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookRatings')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Audiobook $audiobook;
 
     #[ORM\Column(type: 'boolean')]

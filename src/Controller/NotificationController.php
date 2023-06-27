@@ -15,6 +15,7 @@ use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -57,8 +58,8 @@ class NotificationController extends AbstractController
      * @param NotificationRepository $notificationRepository
      * @param UserRepository $userRepository
      * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
      * @return Response
-     *
      * @throws InvalidJsonDataException
      */
     #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
@@ -86,7 +87,8 @@ class NotificationController extends AbstractController
         RequestServiceInterface        $requestServiceInterface,
         NotificationRepository         $notificationRepository,
         UserRepository                 $userRepository,
-        LoggerInterface                $endpointLogger
+        LoggerInterface                $endpointLogger,
+        TranslateService              $translateService
     ): Response
     {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
@@ -122,7 +124,8 @@ class NotificationController extends AbstractController
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         } else {
             $endpointLogger->error("Invalid given Query");
-            throw new InvalidJsonDataException("notification.invalid.query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
         }
     }
 }

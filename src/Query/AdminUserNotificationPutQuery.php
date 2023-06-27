@@ -18,7 +18,7 @@ class AdminUserNotificationPutQuery
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
-        max: 6,
+        max: 5,
     )]
     private int $notificationType;
 
@@ -88,7 +88,6 @@ class AdminUserNotificationPutQuery
 
     /**
      * @return NotificationType
-     * @throws InvalidJsonDataException
      */
     public function getNotificationType(): NotificationType
     {
@@ -97,7 +96,6 @@ class AdminUserNotificationPutQuery
             2 => NotificationType::ADMIN,
             4 => NotificationType::NEW_CATEGORY,
             5 => NotificationType::NEW_AUDIOBOOK,
-            default => throw new InvalidJsonDataException("adminUser.notification.put.invalid.query"),
         };
     }
 
@@ -111,14 +109,12 @@ class AdminUserNotificationPutQuery
 
     /**
      * @return NotificationUserType
-     * @throws InvalidJsonDataException
      */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
             1 => NotificationUserType::ADMIN,
-            2 => NotificationUserType::SYSTEM,
-            default => throw new InvalidJsonDataException("adminUser.notification.put.invalid.query"),
+            2 => NotificationUserType::SYSTEM
         };
     }
 
