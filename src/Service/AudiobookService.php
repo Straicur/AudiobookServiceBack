@@ -19,13 +19,16 @@ class AudiobookService implements AudiobookServiceInterface
     private AdminAudiobookAddQuery|AdminAudiobookReAddingQuery|null $query = null;
     private string $whole_dir_path = "";
     private string $whole_zip_path = "";
+    private TranslateService $translateService;
 
     /**
      * @param AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService
+     * @param TranslateService $translateService
      */
-    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService)
+    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService, TranslateService $translateService)
     {
         $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
+        $this->translateService = $translateService;
     }
 
     public function configure(AdminAudiobookAddQuery|AdminAudiobookReAddingQuery $query): void
@@ -49,9 +52,9 @@ class AudiobookService implements AudiobookServiceInterface
 
         self::checkOrCreateAudiobookFolder($fsObject);
 
-        if($size >= $_ENV['INSTITUTION_VOLUMEN']){
+        if ($size >= $_ENV['INSTITUTION_VOLUMEN']) {
             self::removeFolder($this->whole_dir_path);
-            throw new DataNotFoundException([""]);
+            throw new DataNotFoundException([$this->translateService->getTranslation("SystemVolumen")]);
         }
 
         $file = $this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart();
@@ -87,10 +90,11 @@ class AudiobookService implements AudiobookServiceInterface
     /**
      * @throws DataNotFoundException
      */
-    private function checkSystemStorage(string $dir):int{
+    private function checkSystemStorage(string $dir): int
+    {
         $size = 0;
 
-        foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
+        foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
             $size += is_file($each) ? filesize($each) : self::checkSystemStorage($each);
         }
 
@@ -175,7 +179,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
 
-        if(!$extracted){
+        if (!$extracted) {
             self::removeFolder($file);
         }
 
