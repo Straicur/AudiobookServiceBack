@@ -4,6 +4,7 @@ namespace App\Service;
 
 
 use App\Exception\AudiobookConfigServiceException;
+use App\Exception\DataNotFoundException;
 use App\Query\AdminAudiobookAddQuery;
 use App\Query\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
@@ -36,16 +37,22 @@ class AudiobookService implements AudiobookServiceInterface
 
     /**
      * @return void
-     * @throws AudiobookConfigServiceException
+     * @throws AudiobookConfigServiceException|DataNotFoundException
      */
     public function checkAndAddFile(): void
     {
-
         self::checkConfiguration();
 
         $fsObject = new Filesystem();
 
+        $size = self::checkSystemStorage($_ENV['MAIN_DIR']);
+
         self::checkOrCreateAudiobookFolder($fsObject);
+
+        if($size >= $_ENV['INSTITUTION_VOLUMEN']){
+            self::removeFolder($this->whole_dir_path);
+            throw new DataNotFoundException([""]);
+        }
 
         $file = $this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart();
 
@@ -75,6 +82,19 @@ class AudiobookService implements AudiobookServiceInterface
         $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart(), "w");
         fwrite($base64File, $this->query->getBase64());
         fclose($base64File);
+    }
+
+    /**
+     * @throws DataNotFoundException
+     */
+    private function checkSystemStorage(string $dir):int{
+        $size = 0;
+
+        foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
+            $size += is_file($each) ? filesize($each) : self::checkSystemStorage($each);
+        }
+
+        return $size;
     }
 
     /**
@@ -153,7 +173,12 @@ class AudiobookService implements AudiobookServiceInterface
 
         $dir = trim($zip->getNameIndex(0), '/');
 
-        $zip->extractTo($_ENV['MAIN_DIR']);
+        $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
+
+        if(!$extracted){
+            self::removeFolder($file);
+        }
+
         $zip->close();
 
         unlink($file);
