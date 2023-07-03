@@ -185,6 +185,7 @@ class AdminAudiobookController extends AbstractController
      * @return Response
      * @throws AudiobookConfigServiceException
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/admin/audiobook/add", name: "adminAudiobookAdd", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
