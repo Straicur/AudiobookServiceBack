@@ -86,9 +86,8 @@ class NotificationController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestServiceInterface,
         NotificationRepository         $notificationRepository,
-        UserRepository                 $userRepository,
         LoggerInterface                $endpointLogger,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
