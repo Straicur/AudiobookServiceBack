@@ -6,7 +6,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SystemNotificationPatchQuery
+class SystemNotificationActivateQuery
 {
     #[Assert\NotNull(message: "NotificationId is null")]
     #[Assert\NotBlank(message: "NotificationId is blank")]

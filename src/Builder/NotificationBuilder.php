@@ -3,6 +3,7 @@
 namespace App\Builder;
 
 use App\Entity\Notification;
+use App\Entity\NotificationCheck;
 use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
@@ -101,11 +102,12 @@ class NotificationBuilder
 
     /**
      * @param Notification $notification
+     * @param NotificationCheck|null $notificationCheck
      * @return NotificationModel
      */
-    public static function read(Notification $notification,): NotificationModel
+    public static function read(Notification $notification, ?NotificationCheck $notificationCheck = null): NotificationModel
     {
-        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null,null);
+        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null, null,);
 
         $metaData = $notification->getMetaData();
 
@@ -119,6 +121,10 @@ class NotificationBuilder
             if ($metaData["text"] != "") {
                 $notificationModel->setText($metaData["text"]);
             }
+        }
+
+        if ($notificationCheck != null) {
+            $notificationModel->setActive($notificationCheck);
         }
 
         $notificationModel->setActionId($notification->getActionId());

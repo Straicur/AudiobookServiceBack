@@ -4,15 +4,18 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
+use App\Entity\NotificationCheck;
+use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\NotificationsSuccessModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\SystemNotificationActivateQuery;
 use App\Query\SystemNotificationQuery;
+use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
-use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -56,7 +59,6 @@ class NotificationController extends AbstractController
      * @param Request $request
      * @param RequestServiceInterface $requestServiceInterface
      * @param NotificationRepository $notificationRepository
-     * @param UserRepository $userRepository
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
      * @return Response
@@ -87,7 +89,8 @@ class NotificationController extends AbstractController
         RequestServiceInterface        $requestServiceInterface,
         NotificationRepository         $notificationRepository,
         LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationCheckRepository    $checkRepository
     ): Response
     {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
@@ -107,7 +110,13 @@ class NotificationController extends AbstractController
                 if ($index < $minResult) {
                     continue;
                 } elseif ($index < $maxResult) {
-                    $systemNotifications[] = NotificationBuilder::read($notification);
+
+                    $notificationCheck = $checkRepository->findOneBy([
+                        "user" => $user->getId(),
+                        "notification" => $notification->getId()
+                    ]);
+
+                    $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
                 } else {
                     break;
                 }
@@ -121,6 +130,78 @@ class NotificationController extends AbstractController
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
+            $translateService->setPreferredLanguage($request);
+            throw new InvalidJsonDataException($translateService);
+        }
+    }
+
+    /**
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param Request $request
+     * @param RequestServiceInterface $requestServiceInterface
+     * @param NotificationRepository $notificationRepository
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @param NotificationCheckRepository $checkRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Method get is activating given notification so user can see if he read this notification",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: SystemNotificationActivateQuery::class),
+                type: "object"
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function notificationActivate(
+        AuthorizedUserServiceInterface $authorizedUserService,
+        Request                        $request,
+        RequestServiceInterface        $requestServiceInterface,
+        NotificationRepository         $notificationRepository,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService,
+        NotificationCheckRepository    $checkRepository
+    ): Response
+    {
+        $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);
+
+        if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
+
+            $notification = $notificationRepository->findOneBy([
+                "id" => $systemNotificationActivateQuery->getNotificationId()
+            ]);
+
+            if ($notification == null) {
+                throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
+            }
+
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $notificationCheck = $checkRepository->findOneBy([
+                "user" => $user->getId(),
+                "notification" => $notification->getId()
+            ]);
+
+            if (!$notificationCheck) {
+                $notificationCheck = new NotificationCheck($user, $notification);
+                $checkRepository->add($notificationCheck);
+            }
+
+            return ResponseTool::getResponse(null,201);
         } else {
             $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
