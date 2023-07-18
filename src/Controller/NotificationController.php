@@ -88,6 +88,7 @@ class NotificationController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestServiceInterface,
         NotificationRepository         $notificationRepository,
+        NotificationCheckRepository    $notificationCheckRepository,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
         NotificationCheckRepository    $checkRepository
@@ -126,7 +127,8 @@ class NotificationController extends AbstractController
                 $systemNotifications,
                 $systemNotificationQuery->getPage(),
                 $systemNotificationQuery->getLimit(),
-                ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit())
+                ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
+                $notificationCheckRepository->getUserActiveNotifications($user)
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
@@ -201,7 +203,7 @@ class NotificationController extends AbstractController
                 $checkRepository->add($notificationCheck);
             }
 
-            return ResponseTool::getResponse(null,201);
+            return ResponseTool::getResponse(null, 201);
         } else {
             $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
