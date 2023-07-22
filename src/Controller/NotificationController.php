@@ -88,7 +88,6 @@ class NotificationController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestServiceInterface,
         NotificationRepository         $notificationRepository,
-        NotificationCheckRepository    $notificationCheckRepository,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
         NotificationCheckRepository    $checkRepository
@@ -128,7 +127,7 @@ class NotificationController extends AbstractController
                 $systemNotificationQuery->getPage(),
                 $systemNotificationQuery->getLimit(),
                 ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
-                $notificationCheckRepository->getUserActiveNotifications($user)
+                $notificationRepository->getUserActiveNotifications($user)
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);

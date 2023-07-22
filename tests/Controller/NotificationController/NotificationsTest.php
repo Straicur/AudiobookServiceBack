@@ -60,7 +60,7 @@ class NotificationsTest extends AbstractWebTest
         $this->assertArrayHasKey("limit", $responseContent);
         $this->assertArrayHasKey("maxPage", $responseContent);
         $this->assertArrayHasKey("newNotifications", $responseContent);
-        $this->assertSame(1, $responseContent["newNotifications"]);
+        $this->assertSame(2, $responseContent["newNotifications"]);
         $this->assertCount(3, $responseContent["systemNotifications"]);
         $this->assertNotNull($responseContent["systemNotifications"][0]["active"]);
     }

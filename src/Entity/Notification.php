@@ -37,11 +37,15 @@ class Notification
     #[ORM\Column(type: 'boolean')]
     private bool $deleted;
 
+    #[ORM\OneToMany(mappedBy: 'notification', targetEntity: NotificationCheck::class)]
+    private Collection $notificationChecks;
+
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
         $this->users = new ArrayCollection();
         $this->deleted = false;
+        $this->notificationChecks = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -139,4 +143,21 @@ class Notification
 
         return $this;
     }
+
+    /**
+     * @return Collection
+     */
+    public function getNotificationChecks(): Collection
+    {
+        return $this->notificationChecks;
+    }
+
+    /**
+     * @param Collection $notificationChecks
+     */
+    public function setNotificationChecks(Collection $notificationChecks): void
+    {
+        $this->notificationChecks = $notificationChecks;
+    }
+
 }

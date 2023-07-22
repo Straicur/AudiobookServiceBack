@@ -89,6 +89,27 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param User $user
+     * @return int
+     */
+    public function getUserActiveNotifications(User $user): int
+    {
+        $qb = $this->createQueryBuilder('n')
+            ->leftJoin('n.users', 'u')
+            ->leftJoin('n.notificationChecks','nc')
+            ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
+            ->where('n.deleted = false')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->having("count(nc.id) = 0")
+            ->orderBy('notifications', "DESC")
+            ->groupBy('n');
+
+        $query = $qb->getQuery();
+
+        return count($query->execute());
+    }
+    /**
      * @param string|null $text
      * @param int|null $type
      * @param bool|null $deleted
