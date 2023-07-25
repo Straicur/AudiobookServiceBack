@@ -166,7 +166,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "notificationUserType" => NotificationUserType::ADMIN->value,
             "additionalData" => [
                 "text" => "Nowy text",
-                "actionId" => $category5->getId(),
+                "categoryKey" => $category5->getCategoryKey(),
                 "userId" => $user1->getId(),
             ]
         ];
@@ -395,7 +395,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationPutIncorrectNEW_CATEGORYemptyActionId(): void
+    public function test_adminUserNotificationPutIncorrectNEW_CATEGORYemptyCategoryKey(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);

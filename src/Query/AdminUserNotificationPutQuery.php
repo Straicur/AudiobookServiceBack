@@ -4,7 +4,6 @@ namespace App\Query;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Exception\InvalidJsonDataException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -43,6 +42,11 @@ class AdminUserNotificationPutQuery
                     new Assert\NotNull(),
                     new Assert\Type("string")
                 ]),
+                'categoryKey' => new Assert\Optional([
+                    new Assert\NotBlank(message: "CategoryKey is empty"),
+                    new Assert\NotNull(),
+                    new Assert\Type("string")
+                ]),
                 'actionId' => new Assert\Optional([
                     new Assert\NotBlank(message: "ActionId is empty"),
                     new Assert\NotNull(),
@@ -62,6 +66,7 @@ class AdminUserNotificationPutQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "text", type: "string", example: "desc", nullable: true),
+        new OA\Property(property: "categoryKey", type: "string", example: "CategoryKey", nullable: true),
         new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true),
         new OA\Property(property: "userId", type: "string", example: "UUID", nullable: true),
     ], type: "object")]
