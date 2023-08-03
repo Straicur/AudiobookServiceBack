@@ -4,13 +4,13 @@ namespace App\Tests\Controller\NotificationController;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Exception\NotificationException;
+use App\Repository\NotificationCheckRepository;
 use App\Tests\AbstractWebTest;
 
 /**
- * NotificationsTest
+ * NotificationActivateTest
  */
-class NotificationsTest extends AbstractWebTest
+class NotificationActivateTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
@@ -19,10 +19,12 @@ class NotificationsTest extends AbstractWebTest
      * step 4 - Checking response
      * step 5 - Checking response has returned correct data
      * @return void
-     * @throws NotificationException
      */
-    public function test_notificationsCorrect(): void
+    public function test_notificationActivateCorrect(): void
     {
+        $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
+
+        $this->assertInstanceOf(NotificationCheckRepository::class, $notificationCheckRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
@@ -35,34 +37,64 @@ class NotificationsTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "page" => 0,
-            "limit" => 10,
+            "notificationId" => $notification1->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
+        $crawler = self::$webClient->request("PUT", "/api/notification/activate", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseStatusCodeSame(201);
 
-        $response = self::$webClient->getResponse();
+        $this->assertCount(1, $notificationCheckRepository->findAll());
+    }
 
-        $responseContent = json_decode($response->getContent(), true);
-        /// step 5
-        $this->assertIsArray($responseContent);
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response has returned correct data
+     * @return void
+     */
+    public function test_notificationActivateCorrectAdd(): void
+    {
+        $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
 
-        $this->assertArrayHasKey("systemNotifications", $responseContent);
-        $this->assertArrayHasKey("page", $responseContent);
-        $this->assertArrayHasKey("limit", $responseContent);
-        $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertArrayHasKey("newNotifications", $responseContent);
-        $this->assertSame(2, $responseContent["newNotifications"]);
-        $this->assertCount(3, $responseContent["systemNotifications"]);
-        $this->assertNotNull($responseContent["systemNotifications"][0]["active"]);
+        $this->assertInstanceOf(NotificationCheckRepository::class, $notificationCheckRepository);
+        /// step 1
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+        $notification2 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::ADMIN);
+        $notification3 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::USER_DELETE_DECLINE, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+
+        $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification1);
+
+        /// step 2
+        $content = [
+            "notificationId" => $notification1->getId()
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 3
+        $crawler = self::$webClient->request("PUT", "/api/notification/activate", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(201);
+        $this->assertNotNull($notificationCheckRepository->findOneBy([
+            "user" => $user1->getId(),
+            "notification" => $notification1->getId()
+        ]));
     }
 
     /**
@@ -72,7 +104,7 @@ class NotificationsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_notificationsEmptyRequestData(): void
+    public function test_notificationActivateEmptyRequestData(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
@@ -83,7 +115,7 @@ class NotificationsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
+        $crawler = self::$webClient->request("PUT", "/api/notification/activate", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -109,21 +141,23 @@ class NotificationsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_notificationsPermission(): void
+    public function test_notificationActivatePermission(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+
+
         /// step 2
         $content = [
-            "page" => 0,
-            "limit" => 10,
+            "notificationId" => $notification1->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
+        $crawler = self::$webClient->request("PUT", "/api/notification/activate", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -149,20 +183,21 @@ class NotificationsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_notificationsLogOut(): void
+    public function test_notificationActivateLogOut(): void
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
+
         /// step 2
         $content = [
-            "page" => 0,
-            "limit" => 10,
+            "notificationId" => $notification1->getId()
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", content: json_encode($content));
+        $crawler = self::$webClient->request("PUT", "/api/notification/activate", content: json_encode($content));
 
         /// step 3
         $this->assertResponseStatusCodeSame(401);

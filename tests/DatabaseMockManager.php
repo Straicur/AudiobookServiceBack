@@ -13,6 +13,7 @@ use App\Entity\AuthenticationToken;
 use App\Entity\Institution;
 use App\Entity\MyList;
 use App\Entity\Notification;
+use App\Entity\NotificationCheck;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\User;
@@ -34,6 +35,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
+use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
@@ -310,6 +312,7 @@ class DatabaseMockManager
      * @param Uuid $actionId
      * @param NotificationUserType $userAction
      * @param string|null $text
+     * @param bool $deleted
      * @return Notification
      * @throws NotificationException
      */
@@ -340,6 +343,22 @@ class DatabaseMockManager
         $systemNotificationRepository->add($newSystemNotification);
 
         return $newSystemNotification;
+    }
+
+    /**
+     * @param User $user
+     * @param Notification $notification
+     * @return NotificationCheck
+     */
+    public function testFunc_addNotificationCheck(User $user, Notification $notification): NotificationCheck
+    {
+        $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
+
+        $newNotificationCheck = new NotificationCheck($user, $notification);
+
+        $notificationCheckRepository->add($newNotificationCheck);
+
+        return $newNotificationCheck;
     }
 
     public function testFunc_addAudiobookRating(Audiobook $audiobook, bool $rating, User $user): AudiobookRating

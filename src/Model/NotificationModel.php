@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Entity\NotificationCheck;
 use App\Enums\NotificationType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
@@ -22,14 +23,16 @@ class NotificationModel implements ModelInterface
 
     private ?bool $delete;
 
+    private ?int $active;
+
     /**
      * @param string $id
      * @param NotificationType $notificationType
      * @param string|null $actionId
      * @param int|null $userType
-     * @param int|null $delete
+     * @param bool|null $delete
      */
-    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType, ?int $delete)
+    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType, ?bool $delete)
     {
         $this->id = $id;
         $this->notificationType = $notificationType->value;
@@ -150,4 +153,21 @@ class NotificationModel implements ModelInterface
     {
         $this->delete = $delete;
     }
+
+    /**
+     * @return int
+     */
+    public function isActive(): int
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param NotificationCheck $active
+     */
+    public function setActive(NotificationCheck $active): void
+    {
+        $this->active = $active->getDateWatched()->getTimestamp();
+    }
+
 }
