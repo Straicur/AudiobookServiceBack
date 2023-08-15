@@ -53,7 +53,12 @@ class AdminUserNotificationPatchQuery
                     new Assert\NotBlank(message: "Text is empty"),
                     new Assert\NotNull(),
                     new Assert\Type(type: "string")
-                ])
+                ]),
+                'categoryKey' => new Assert\Optional([
+                    new Assert\NotBlank(message: "CategoryKey is empty"),
+                    new Assert\NotNull(),
+                    new Assert\Type("string")
+                ]),
             ]
         ]));
     }
@@ -63,6 +68,7 @@ class AdminUserNotificationPatchQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "text", type: "string", example: "desc", nullable: true),
+        new OA\Property(property: "categoryKey", type: "string", example: "CategoryKey", nullable: true),
     ], type: "object")]
     public function setAdditionalData(array $additionalData): void
     {

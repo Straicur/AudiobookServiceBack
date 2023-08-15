@@ -89,6 +89,17 @@ class NotificationBuilder
     }
 
     /**
+     * @param string $text
+     * @return $this
+     */
+    public function setCategoryKey(string $text): NotificationBuilder
+    {
+        $this->metaData["categoryKey"] = $text;
+
+        return $this;
+    }
+
+    /**
      * @throws NotificationException
      */
     public function build(): Notification
@@ -107,7 +118,7 @@ class NotificationBuilder
      */
     public static function read(Notification $notification, ?NotificationCheck $notificationCheck = null): NotificationModel
     {
-        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null, null,);
+        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null, null);
 
         $metaData = $notification->getMetaData();
 
@@ -120,6 +131,12 @@ class NotificationBuilder
         if (array_key_exists("text", $metaData)) {
             if ($metaData["text"] != "") {
                 $notificationModel->setText($metaData["text"]);
+            }
+        }
+
+        if (array_key_exists("categoryKey", $metaData)) {
+            if ($metaData["categoryKey"] != "") {
+                $notificationModel->setCategoryKey($metaData["categoryKey"]);
             }
         }
 
@@ -161,7 +178,7 @@ class NotificationBuilder
             throw $exception;
         }
 
-        if ($checkAction && $this->notification->getActionId() == null) {
+        if ($checkAction && ($this->notification->getActionId() == null && $this->notification->getType() != NotificationType::NEW_CATEGORY)) {
             throw $exception;
         }
     }

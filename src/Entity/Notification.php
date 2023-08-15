@@ -25,8 +25,8 @@ class Notification
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
 
-    #[ORM\Column(type: 'uuid')]
-    private ?Uuid $actionId;
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $actionId = null;
 
     #[ORM\Column(type: 'text')]
     private ?string $metaData;
@@ -84,7 +84,7 @@ class Notification
         return $this;
     }
 
-    public function getActionId(): Uuid
+    public function getActionId(): ?Uuid
     {
         return $this->actionId;
     }

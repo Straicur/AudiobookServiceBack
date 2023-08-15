@@ -1446,8 +1446,8 @@ class AdminUserController extends AbstractController
 
                     break;
                 case NotificationType::NEW_CATEGORY:
-                    if (!array_key_exists("actionId", $additionalData)) {
-                        $endpointLogger->error("Invalid given Query no actionId");
+                    if (!array_key_exists("categoryKey", $additionalData)) {
+                        $endpointLogger->error("Invalid given Query no categoryKey");
                         $translateService->setPreferredLanguage($request);
                         throw new InvalidJsonDataException($translateService);
                     }
@@ -1460,7 +1460,7 @@ class AdminUserController extends AbstractController
                     $notificationBuilder = new NotificationBuilder();
 
                     $category = $categoryRepository->findOneBy([
-                        "id" => $additionalData["actionId"]
+                        "categoryKey" => $additionalData["categoryKey"]
                     ]);
 
                     if ($category == null) {
@@ -1472,7 +1472,7 @@ class AdminUserController extends AbstractController
                     $notificationBuilder
                         ->setType($adminUserNotificationPutQuery->getNotificationType())
                         ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->setAction($category->getId());
+                        ->setCategoryKey($category->getCategoryKey());
 
                     if (array_key_exists("text", $additionalData)) {
                         $notificationBuilder->setText($additionalData["text"]);
@@ -1595,7 +1595,6 @@ class AdminUserController extends AbstractController
 
             $notificationBuilder
                 ->setType($adminUserNotificationPatchQuery->getNotificationType())
-                ->setAction($adminUserNotificationPatchQuery->getActionId())
                 ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
 
             $userRole = $roleRepository->findOneBy([
@@ -1612,6 +1611,11 @@ class AdminUserController extends AbstractController
 
             if (array_key_exists("text", $additionalData)) {
                 $notificationBuilder->setText($additionalData["text"]);
+            }
+            if (array_key_exists("categoryKey", $additionalData)) {
+                $notificationBuilder->setCategoryKey($additionalData["categoryKey"]);
+            } else {
+                $notificationBuilder->setAction($adminUserNotificationPatchQuery->getActionId());
             }
 
             $notification = $notificationBuilder->build();

@@ -61,6 +61,7 @@ class NotificationController extends AbstractController
      * @param NotificationRepository $notificationRepository
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
+     * @param NotificationCheckRepository $checkRepository
      * @return Response
      * @throws InvalidJsonDataException
      */

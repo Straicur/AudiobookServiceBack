@@ -21,6 +21,7 @@ class NotificationModel implements ModelInterface
 
     private ?string $text;
 
+    private ?string $categoryKey;
     private ?bool $delete;
 
     private ?int $active;
@@ -168,6 +169,22 @@ class NotificationModel implements ModelInterface
     public function setActive(NotificationCheck $active): void
     {
         $this->active = $active->getDateWatched()->getTimestamp();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategoryKey(): ?string
+    {
+        return $this->categoryKey;
+    }
+
+    /**
+     * @param string|null $categoryKey
+     */
+    public function setCategoryKey(?string $categoryKey): void
+    {
+        $this->categoryKey = $categoryKey;
     }
 
 }
