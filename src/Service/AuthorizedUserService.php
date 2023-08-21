@@ -20,7 +20,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
         self::$authenticationTokenRepository = $authenticationTokenRepository;
     }
 
-    public static function setAuthorizedUser(User $user)
+    public static function setAuthorizedUser(User $user): void
     {
         self::$authorizedUser = $user;
     }

@@ -207,7 +207,6 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
      * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
@@ -237,7 +236,6 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
     ): Response
     {
@@ -713,7 +711,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-            $successModel = new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null,$category->getParent() != null ? $category->getParent()->getId() : null);
+            $successModel = new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent()?->getName(), $category->getParent()?->getId());
 
             return ResponseTool::getResponse($successModel);
 
