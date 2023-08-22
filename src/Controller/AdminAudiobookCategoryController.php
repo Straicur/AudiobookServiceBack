@@ -25,6 +25,7 @@ use App\Query\AdminCategoryRemoveAudiobookQuery;
 use App\Query\AdminCategoryRemoveQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -236,7 +237,8 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminCategoryRemoveQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
@@ -252,6 +254,8 @@ class AdminAudiobookCategoryController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
+
+//            $notificationRepository->deleteNotificationsForActionId($category->getId());
 
             $audiobookCategoryRepository->remove($category);
 

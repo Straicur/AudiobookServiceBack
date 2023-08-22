@@ -32,6 +32,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
+use App\Repository\NotificationRepository;
 use App\Service\AudiobookService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -516,7 +517,8 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookService               $audiobookService,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
@@ -532,6 +534,8 @@ class AdminAudiobookController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
+
+//            $notificationRepository->deleteNotificationsForActionId($audiobook->getId());
 
             $audiobookRepository->remove($audiobook);
 

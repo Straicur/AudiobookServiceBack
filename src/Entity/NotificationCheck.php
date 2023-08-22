@@ -21,7 +21,7 @@ class NotificationCheck
     private User $user;
 
     #[ORM\ManyToOne(targetEntity: Notification::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private Notification $notification;
 
     #[ORM\Column(type: 'datetime')]

@@ -3,8 +3,11 @@
 namespace App\Tests\Controller\AdminAudiobookCategoryController;
 
 use App\Enums\AudiobookAgeRange;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -24,11 +27,15 @@ class AdminCategoryRemoveTest extends AbstractWebTest
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
         $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
 
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -38,6 +45,11 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $category6 = $this->databaseMockManager->testFunc_addAudiobookCategory("6");
 
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
+
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_CATEGORY, $category2->getId(), NotificationUserType::SYSTEM);
+        $notification2 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_AUDIOBOOK, $audiobook->getId(), NotificationUserType::SYSTEM);
+
+        $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification2);
 
         /// step 2
         $content = [
@@ -52,6 +64,10 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         /// step 4
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
+
+        $this->assertNull($notificationRepository->findOneBy([
+            "id" => $notification1->getId()
+        ]));
 
         $this->assertCount(13, $audiobookCategoryRepository->findAll());
 

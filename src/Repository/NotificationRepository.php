@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enums\NotificationOrderSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Notification>
@@ -96,7 +97,7 @@ class NotificationRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('n')
             ->leftJoin('n.users', 'u')
-            ->leftJoin('n.notificationChecks','nc')
+            ->leftJoin('n.notificationChecks', 'nc')
             ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
             ->where('n.deleted = false')
             ->andWhere('u.id = :user')
@@ -109,6 +110,7 @@ class NotificationRepository extends ServiceEntityRepository
 
         return count($query->execute());
     }
+
     /**
      * @param string|null $text
      * @param int|null $type
@@ -150,6 +152,16 @@ class NotificationRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
 
         return $query->execute();
+    }
+
+    public function deleteNotificationsForActionId(Uuid $actionId): void
+    {
+//        $qb = $this->createQueryBuilder('n')
+//            ->delete()
+//            ->where('n.actionId = :actionId')
+//            ->setParameter("actionId", $actionId->toBinary());
+//        print_r($qb->getQuery()->getSQL());
+//        $qb->getQuery()->execute();
     }
 //    /**
 //     * @return Notification[] Returns an array of Notification objects

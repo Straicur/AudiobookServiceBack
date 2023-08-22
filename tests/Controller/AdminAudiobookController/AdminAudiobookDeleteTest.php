@@ -2,7 +2,10 @@
 
 namespace App\Tests\Controller\AdminAudiobookController;
 
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Service\AudiobookService;
 use App\Tests\AbstractWebTest;
 
@@ -24,16 +27,20 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
     public function test_adminAudiobookDeleteCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
 
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
         $fileBase = fopen(self::base64OnePartFile, "r");
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $readData = fread($fileBase, filesize(self::base64OnePartFile));
 
         /// step 2
         $content = [
@@ -67,6 +74,11 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfter);
 
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_CATEGORY, $audiobookAfter->getId(), NotificationUserType::SYSTEM);
+        $notification2 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_AUDIOBOOK, $audiobookAfter->getId(), NotificationUserType::SYSTEM);
+
+        $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification2);
+
         $content = [
             "audiobookId" => $audiobookAfter->getId(),
         ];
@@ -81,6 +93,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         /// step 4
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
+
+        $this->assertNull($notificationRepository->findOneBy([
+            "id" => $notification1->getId()
+        ]));
 
         $audiobookAfter = $audiobookRepository->findAll();
 
