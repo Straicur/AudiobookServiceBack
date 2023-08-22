@@ -144,7 +144,9 @@ class NotificationBuilder
             $notificationModel->setActive($notificationCheck);
         }
 
-        $notificationModel->setActionId($notification->getActionId());
+        if ($notification->getType() != NotificationType::NEW_CATEGORY) {
+            $notificationModel->setActionId($notification->getActionId());
+        }
 
         $notificationModel->setDateAdd($notification->getDateAdd());
 
@@ -160,17 +162,17 @@ class NotificationBuilder
     {
         $exception = new NotificationException(Notification::class);
         $keys = [];
-        $checkAction = false;
 
         switch ($this->notification->getType()) {
             case NotificationType::NORMAL:
             case NotificationType::ADMIN:
             case NotificationType::PROPOSED:
-            case NotificationType::NEW_CATEGORY:
             case NotificationType::NEW_AUDIOBOOK:
             case NotificationType::USER_DELETE_DECLINE:
                 $keys = ["user"];
-                $checkAction = true;
+                break;
+            case NotificationType::NEW_CATEGORY:
+                $keys = ["categoryKey", "user"];
                 break;
         }
 
@@ -178,9 +180,6 @@ class NotificationBuilder
             throw $exception;
         }
 
-        if ($checkAction && ($this->notification->getActionId() == null && $this->notification->getType() != NotificationType::NEW_CATEGORY)) {
-            throw $exception;
-        }
     }
 
     /**

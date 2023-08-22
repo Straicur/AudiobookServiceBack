@@ -277,7 +277,7 @@ class AdminAudiobookCategoryController extends AbstractController
      */
     #[Route("/api/admin/category/add/audiobook", name: "adminCategoryAddAudiobook", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Delete(
+    #[OA\Patch(
         description: "Endpoint is adding audiobook to given category",
         requestBody: new OA\RequestBody(
             required: true,
