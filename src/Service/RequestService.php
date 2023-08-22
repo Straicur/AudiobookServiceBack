@@ -10,9 +10,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestService implements RequestServiceInterface
 {
-    private ValidatorInterface $validator;
+    private readonly ValidatorInterface $validator;
 
-    private SerializerInterface $serializer;
+    private readonly SerializerInterface $serializer;
     private TranslateService $translateService;
 
     public function __construct(ValidatorInterface $validator, TranslateService $translateService)
