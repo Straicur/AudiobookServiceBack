@@ -32,7 +32,7 @@ class AudiobookCategory
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $categoryKey;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?AudiobookCategory $parent = null;
 

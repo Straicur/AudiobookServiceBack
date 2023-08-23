@@ -255,7 +255,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-//            $notificationRepository->deleteNotificationsForActionId($category->getId());
+            $notificationRepository->deleteNotificationsForActionId($category->getId());
 
             $audiobookCategoryRepository->remove($category);
 

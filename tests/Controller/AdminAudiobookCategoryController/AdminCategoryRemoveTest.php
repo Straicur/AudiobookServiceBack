@@ -46,10 +46,10 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
 
-        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_CATEGORY, $category2->getId(), NotificationUserType::SYSTEM);
+        $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_CATEGORY, $category2->getId(), NotificationUserType::SYSTEM, categoryKey: $category2->getCategoryKey());
         $notification2 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_AUDIOBOOK, $audiobook->getId(), NotificationUserType::SYSTEM);
 
-        $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification2);
+        $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification1);
 
         /// step 2
         $content = [
@@ -69,7 +69,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
             "id" => $notification1->getId()
         ]));
 
-        $this->assertCount(13, $audiobookCategoryRepository->findAll());
+        $this->assertCount(12, $audiobookCategoryRepository->findAll());
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "id" => $audiobook->getId()

@@ -535,7 +535,7 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
-//            $notificationRepository->deleteNotificationsForActionId($audiobook->getId());
+            $notificationRepository->deleteNotificationsForActionId($audiobook->getId());
 
             $audiobookRepository->remove($audiobook);
 
