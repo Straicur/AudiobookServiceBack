@@ -65,9 +65,14 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $this->assertNull($notificationRepository->findOneBy([
+        $notAfter = $notificationRepository->findOneBy([
             "id" => $notification1->getId()
-        ]));
+        ]);
+
+        print_r($notAfter->getActionId());
+        $this->assertNotNull($notAfter);
+//        $this->assertNotNull($notAfter->getDateDeleted());
+        $this->assertTrue($notAfter->getDeleted());
 
         $this->assertCount(12, $audiobookCategoryRepository->findAll());
 

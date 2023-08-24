@@ -154,14 +154,27 @@ class NotificationRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function deleteNotificationsForActionId(Uuid $actionId): void
+    /**
+     * @param Uuid $actionId
+     * @return void
+     */
+    public function deleteNotificationsByActionId(Uuid $actionId): void
     {
         $qb = $this->createQueryBuilder('n')
-            ->delete()
-            ->where('n.actionId = :actionId')
-            ->setParameter("actionId", $actionId->toBinary());
+            ->update()
+            ->set("n.deleted", true)
+//            ->set("n.dateDeleted", ":dateDeleted")
+//            ->where('n.actionId = :actionId')
+            ->where('n.deleted = false')
+//            ->setParameter("deleted", true)
+//            ->setParameter("dateDeleted", new \DateTime('Now'))
+//            ->setParameter("actionId", $actionId->toBinary())
+        ;
+
 //        print_r($qb->getQuery()->getSQL());
-        $qb->getQuery()->execute();
+
+         $qb->getQuery()->execute();
+         $this->getEntityManager()->flush();
     }
 //    /**
 //     * @return Notification[] Returns an array of Notification objects

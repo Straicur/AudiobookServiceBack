@@ -40,6 +40,9 @@ class Notification
     #[ORM\OneToMany(mappedBy: 'notification', targetEntity: NotificationCheck::class)]
     private Collection $notificationChecks;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $dateDeleted;
+
     public function __construct()
     {
         $this->dateAdd = new \DateTime('now');
@@ -158,6 +161,18 @@ class Notification
     public function setNotificationChecks(Collection $notificationChecks): void
     {
         $this->notificationChecks = $notificationChecks;
+    }
+
+    public function getDateDeleted(): ?\DateTime
+    {
+        return $this->dateDeleted;
+    }
+
+    public function setDateDeleted(\DateTime $dateDeleted): self
+    {
+        $this->dateDeleted = $dateDeleted;
+
+        return $this;
     }
 
 }

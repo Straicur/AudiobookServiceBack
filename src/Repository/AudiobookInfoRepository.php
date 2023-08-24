@@ -80,15 +80,14 @@ class AudiobookInfoRepository extends ServiceEntityRepository
 
         $qb->update()
             ->set("ai.active", ":status")
-            ->andWhere('ai.user = :user')
+            ->where('ai.user = :user')
             ->andWhere('ai.audiobook = :audiobook')
             ->andWhere('ai.active = true')
             ->setParameter("status", false)
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('audiobook', $audiobook->getId()->toBinary());
 
-        $query = $qb->getQuery();
-        $query->execute();
+        $qb->getQuery()->execute();
     }
 //    /**
 //     * @return AudiobookInfo[] Returns an array of AudiobookInfo objects
