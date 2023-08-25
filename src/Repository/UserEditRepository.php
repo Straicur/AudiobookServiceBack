@@ -96,7 +96,9 @@ class UserEditRepository extends ServiceEntityRepository
             ->setParameter('edited', true)
             ->setParameter('user', $user->getId()->toBinary());
 
-        $qb->getQuery()->execute();
+        $query = $qb->getQuery();
+
+        $query->execute();
     }
 //    /**
 //     * @return UserEdit[] Returns an array of UserEdit objects

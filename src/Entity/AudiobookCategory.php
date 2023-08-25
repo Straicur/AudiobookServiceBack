@@ -32,12 +32,13 @@ class AudiobookCategory
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $categoryKey;
 
-    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(onDelete: "CASCADE")]
+    #[ORM\ManyToOne(targetEntity: AudiobookCategory::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?AudiobookCategory $parent = null;
 
     #[ORM\Column(type: 'datetime')]
     private DateTime $dateAdd;
+
     /**
      * @param string $name
      * @param ValueGeneratorInterface $categoryKeyGenerator

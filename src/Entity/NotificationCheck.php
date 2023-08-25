@@ -20,8 +20,8 @@ class NotificationCheck
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: Notification::class, inversedBy: 'notificationChecks')]
-    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ORM\ManyToOne(targetEntity: Notification::class)]
+    #[ORM\JoinColumn(nullable: false)]
     private Notification $notification;
 
     #[ORM\Column(type: 'datetime')]

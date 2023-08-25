@@ -209,6 +209,7 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @param TranslateService $translateService
+     * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -255,34 +256,9 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-            $nots = $notificationRepository->findAll();
-            print_r("Test1");
-            foreach ($nots as $not){
-
-                if($not->getDeleted())
-                {
-                    print_r("Jest");
-                }
-                else{
-                    print_r("Nie");
-                }
-            }
-            print_r("|||||");
-            $notificationRepository->deleteNotificationsByActionId($category->getId());
-            $nots = $notificationRepository->findAll();
-            print_r("Test2");
-            foreach ($nots as $not){
-
-                if($not->getDeleted())
-                {
-                    print_r("Jest");
-                }
-                else{
-                    print_r("Nie");
-                }
-            }
-            print_r("|||||");
-            $audiobookCategoryRepository->remove($category);
+            $notificationRepository->updateDeleteNotificationsByAction($category->getId());
+            $audiobookCategoryRepository->removeCategoryAndChildren($category);
+//            $audiobookCategoryRepository->remove($category);
 
             return ResponseTool::getResponse();
         } else {
