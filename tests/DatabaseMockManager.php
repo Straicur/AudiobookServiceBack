@@ -313,6 +313,7 @@ class DatabaseMockManager
      * @param NotificationUserType $userAction
      * @param string|null $text
      * @param bool $deleted
+     * @param string|null $categoryKey
      * @return Notification
      * @throws NotificationException
      */

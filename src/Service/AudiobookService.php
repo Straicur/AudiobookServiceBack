@@ -8,6 +8,7 @@ use App\Exception\DataNotFoundException;
 use App\Query\AdminAudiobookAddQuery;
 use App\Query\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
+use PHPUnit\Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -281,20 +282,27 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function removeFolder(string $dir): bool
     {
-        $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
+        $it = null;
 
-        $files = new RecursiveIteratorIterator($it,
-            RecursiveIteratorIterator::CHILD_FIRST);
+        try {
+            $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
+        } catch (\UnexpectedValueException) {
+        }
 
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
+        if ($it) {
+            $files = new RecursiveIteratorIterator($it,
+                RecursiveIteratorIterator::CHILD_FIRST);
+
+            foreach ($files as $file) {
+                if ($file->isDir()) {
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
             }
         }
 
-        return rmdir($dir);
+        return !is_dir($dir) || rmdir($dir);
     }
 
     /**
