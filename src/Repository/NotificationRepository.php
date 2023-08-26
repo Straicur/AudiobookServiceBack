@@ -163,9 +163,11 @@ class NotificationRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('n')
             ->update()
             ->set("n.deleted", "true")
+            ->set("n.dateDeleted", ":dateDeleted")
             ->where('n.actionId = :actionId')
             ->andWhere("n.deleted = :deletedStatus")
             ->setParameter("deletedStatus", false)
+            ->setParameter("dateDeleted", new \DateTime('Now'))
             ->setParameter("actionId", $actionId->toBinary());
 
         $qb->getQuery()->execute();

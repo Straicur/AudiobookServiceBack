@@ -153,6 +153,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ]);
         $this->assertNotNull($not2After);
         $this->assertTrue($not2After->getDeleted());
+        $this->assertNotNull($not2After->getDateDeleted());
     }
     /**
      * step 1 - Preparing data

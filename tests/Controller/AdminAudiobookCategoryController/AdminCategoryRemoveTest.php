@@ -115,12 +115,14 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         ]);
         $this->assertNotNull($not1After);
         $this->assertTrue($not1After->getDeleted());
+        $this->assertNotNull($not1After->getDateDeleted());
 
         $not2After = $notificationRepository->findOneBy([
             "id" => $notification2->getId()
         ]);
         $this->assertNotNull($not2After);
         $this->assertFalse($not2After->getDeleted());
+
 
         $this->assertCount(13, $audiobookCategoryRepository->findAll());
 
