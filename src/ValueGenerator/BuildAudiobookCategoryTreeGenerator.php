@@ -11,8 +11,8 @@ use Symfony\Component\Uid\Uuid;
 class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
     private array $elements;
-    private AudiobookCategoryRepository $categoryRepository;
-    private AudiobookRepository $audiobookRepository;
+    private readonly AudiobookCategoryRepository $categoryRepository;
+    private readonly AudiobookRepository $audiobookRepository;
 
     /**
      * @param array $elements

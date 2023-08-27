@@ -48,6 +48,22 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
         }
     }
 
+    public function removeCategoryAndChildren(AudiobookCategory $category): void
+    {
+        $childCategories = $this->createQueryBuilder('ac')
+            ->where('ac.parent = :category')
+            ->setParameter('category', $category->getId()->toBinary())
+            ->getQuery()
+            ->execute();
+
+        foreach ($childCategories as $childCategory) {
+            $this->removeCategoryAndChildren($childCategory);
+        }
+
+        $this->_em->remove($category);
+        $this->_em->flush();
+    }
+
     /**
      * @param Audiobook $audiobook
      * @return AudiobookCategory[]

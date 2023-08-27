@@ -10,7 +10,7 @@ use App\Entity\User;
  */
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
-    private User $userEntity;
+    private readonly User $userEntity;
 
     /**
      * @param User $userEntity

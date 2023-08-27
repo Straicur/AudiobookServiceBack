@@ -106,7 +106,7 @@ class AudiobookController extends AbstractController
 
             try {
                 $handle = opendir($audiobook->getFileName());
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $handle = false;
             }
 
@@ -154,6 +154,7 @@ class AudiobookController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param Audiobook $id
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      */
@@ -182,11 +183,11 @@ class AudiobookController extends AbstractController
 
         try {
             $handle = opendir($id->getFileName());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $handle = false;
         }
 
-        if ($handle = opendir($id->getFileName())) {
+        if ($handle) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
 

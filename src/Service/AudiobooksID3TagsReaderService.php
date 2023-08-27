@@ -5,7 +5,7 @@ namespace App\Service;
 class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceInterface
 {
     public string $fileName = "";
-    public \getID3 $ID3;
+    public readonly \getID3 $ID3;
 
     public function __construct()
     {

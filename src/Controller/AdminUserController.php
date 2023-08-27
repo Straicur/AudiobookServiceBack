@@ -1472,6 +1472,7 @@ class AdminUserController extends AbstractController
                     $notificationBuilder
                         ->setType($adminUserNotificationPutQuery->getNotificationType())
                         ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
+                        ->setAction($category->getId())
                         ->setCategoryKey($category->getCategoryKey());
 
                     if (array_key_exists("text", $additionalData)) {

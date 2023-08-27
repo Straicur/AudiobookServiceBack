@@ -25,6 +25,7 @@ use App\Query\AdminCategoryRemoveAudiobookQuery;
 use App\Query\AdminCategoryRemoveQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -207,8 +208,8 @@ class AdminAudiobookCategoryController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
      * @param TranslateService $translateService
+     * @param NotificationRepository $notificationRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -237,8 +238,8 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminCategoryRemoveQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
@@ -255,7 +256,9 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-            $audiobookCategoryRepository->remove($category);
+            $notificationRepository->updateDeleteNotificationsByAction($category->getId());
+            $audiobookCategoryRepository->removeCategoryAndChildren($category);
+//            $audiobookCategoryRepository->remove($category);
 
             return ResponseTool::getResponse();
         } else {
@@ -279,7 +282,7 @@ class AdminAudiobookCategoryController extends AbstractController
      */
     #[Route("/api/admin/category/add/audiobook", name: "adminCategoryAddAudiobook", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Delete(
+    #[OA\Patch(
         description: "Endpoint is adding audiobook to given category",
         requestBody: new OA\RequestBody(
             required: true,
@@ -713,7 +716,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-            $successModel = new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent() != null ? $category->getParent()->getName() : null,$category->getParent() != null ? $category->getParent()->getId() : null);
+            $successModel = new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent()?->getName(), $category->getParent()?->getId());
 
             return ResponseTool::getResponse($successModel);
 
