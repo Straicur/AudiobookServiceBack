@@ -224,7 +224,12 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookService->configure($adminAudiobookAddQuery);
             $audiobookService->checkAndAddFile();
-
+            //todo ogólnie to jest to tak po kolei do zrobienia
+            // 1 - Przygotuj rar plik tak jak tamte zipy
+            // 2 - Przechwytuję te typy i sprawdzam enumem czy są. Jeśli są to dalej idę
+            // 3 - Stwórz funkcję która odpowiednio to rozpakuje i zrobi to samo co z zipem.
+            // Tu też musze poprawić to dopisywanie typu. Może zrób to w funkcji Configure
+            // 4 - Przetestuj czy działa dobrze
             if ($audiobookService->lastFile()) {
 
                 $audiobookService->combineFiles();
