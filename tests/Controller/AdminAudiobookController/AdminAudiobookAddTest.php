@@ -45,6 +45,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
+            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
@@ -118,6 +119,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readFirstData,
             "part" => 1,
+            "archiveType" => "zip",
             "parts" => 2,
             "additionalData" => [
                 "categories" => [
@@ -171,6 +173,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
+            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => []
         ];
@@ -355,6 +358,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
+            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
@@ -407,6 +411,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
+            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => [
                 "categories" => [

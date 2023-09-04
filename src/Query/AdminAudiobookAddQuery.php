@@ -2,6 +2,7 @@
 
 namespace App\Query;
 
+use App\Enums\AudiobookArchiveType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -22,6 +23,11 @@ class  AdminAudiobookAddQuery
     #[Assert\NotBlank(message: "Base64 is empty")]
     #[Assert\Type(type: "string")]
     private string $base64;
+
+    #[Assert\NotNull(message: "ArchiveType is null")]
+    #[Assert\NotBlank(message: "ArchiveType is empty")]
+    #[Assert\Type(type: "string")]
+    private string $archiveType;
 
     #[Assert\NotNull(message: "Part is null")]
     #[Assert\NotBlank(message: "Part is empty")]
@@ -160,6 +166,19 @@ class  AdminAudiobookAddQuery
     public function setParts(int $parts): void
     {
         $this->parts = $parts;
+    }
+
+    public function getArchiveType(): AudiobookArchiveType
+    {
+        return match ($this->archiveType) {
+            "zip" => AudiobookArchiveType::ZIP,
+            "rar" => AudiobookArchiveType::RAR,
+        };
+    }
+
+    public function setArchiveType(string $archiveType): void
+    {
+        $this->archiveType = $archiveType;
     }
 
 }
