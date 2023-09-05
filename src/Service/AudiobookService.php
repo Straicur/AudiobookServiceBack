@@ -3,12 +3,13 @@
 namespace App\Service;
 
 
+use App\Enums\AudiobookArchiveType;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\AdminAudiobookAddQuery;
 use App\Query\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
-use PHPUnit\Exception;
+use RarArchive;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -20,6 +21,7 @@ class AudiobookService implements AudiobookServiceInterface
     private AdminAudiobookAddQuery|AdminAudiobookReAddingQuery|null $query = null;
     private string $whole_dir_path = "";
     private string $whole_zip_path = "";
+    private AudiobookArchiveType|null $archiveType = null;
     private TranslateService $translateService;
 
     /**
@@ -37,6 +39,7 @@ class AudiobookService implements AudiobookServiceInterface
         $this->query = $query;
         $this->whole_dir_path = $_ENV['MAIN_DIR'] . "/" . $this->query->getHashName();
         $this->whole_zip_path = $_ENV['MAIN_DIR'] . "/" . $this->query->getFileName();
+        $this->archiveType = $this->query->getArchiveType();
     }
 
     /**
@@ -131,7 +134,7 @@ class AudiobookService implements AudiobookServiceInterface
     {
         self::checkConfiguration();
 
-        $zipFile = fopen($this->whole_zip_path . ".zip", "a");
+        $zipFile = fopen($this->whole_zip_path . "." . $this->archiveType->value, "a");
 
         $zipFiles = array_diff(scandir($this->whole_dir_path), array('.', '..'));
         $result = [];
@@ -162,16 +165,43 @@ class AudiobookService implements AudiobookServiceInterface
     }
 
     /**
-     * @param string|null $reAdding
+     * @param string $file
      * @return string
-     * @throws AudiobookConfigServiceException
      */
-    public function unzip(string $reAdding = null): string
+    public function unzipRAR(string $file): string
     {
-        self::checkConfiguration();
+        $rar = RarArchive::open($file);
 
-        $file = $this->whole_zip_path . ".zip";
+//        if ($rar === false) {
+//            throw new Exception("Failed to open RAR archive");
+//        }
 
+        $entries = $rar->getEntries();
+
+//        if (empty($entries)) {
+//            throw new Exception("No entries found in the RAR archive");
+//        }
+
+        $firstEntry = $entries[0];
+
+        $dir = rtrim($firstEntry->getName(), '/');
+
+        $extracted = $firstEntry->extract($_ENV['MAIN_DIR']);
+
+        if (!$extracted) {
+            self::removeFolder($file);
+        }
+
+        $rar->close();
+
+        return $dir;
+    }
+    /**
+     * @param string $file
+     * @return string
+     */
+    public function unzipWINRAR(string $file): string
+    {
         $zip = new ZipArchive;
 
         $zip->open($file);
@@ -185,6 +215,25 @@ class AudiobookService implements AudiobookServiceInterface
         }
 
         $zip->close();
+
+        return $dir;
+    }
+
+    /**
+     * @param string|null $reAdding
+     * @return string
+     * @throws AudiobookConfigServiceException
+     */
+    public function unzip(string $reAdding = null): string
+    {
+        self::checkConfiguration();
+
+        $file = $this->whole_zip_path . "." . $this->archiveType->value;
+
+        $dir = match ($this->archiveType) {
+            AudiobookArchiveType::ZIP => self::unzipWINRAR($file),
+            AudiobookArchiveType::RAR => self::unzipRAR($file),
+        };
 
         unlink($file);
 
