@@ -43,7 +43,6 @@ class AdminAudiobookZipTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
-            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
@@ -117,7 +116,6 @@ class AdminAudiobookZipTest extends AbstractWebTest
             "fileName" => "Base",
             "base64" => $readData,
             "part" => 1,
-            "archiveType" => "zip",
             "parts" => 1,
             "additionalData" => [
                 "categories" => [
