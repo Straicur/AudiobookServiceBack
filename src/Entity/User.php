@@ -27,6 +27,9 @@ class User
     #[ORM\Column(type: 'boolean')]
     private bool $banned;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $bannedTo = null;
+
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist'])]
     private ?UserInformation $userInformation;
 
@@ -279,6 +282,18 @@ class User
         if ($this->notifications->removeElement($notification)) {
             $notification->removeUser($this);
         }
+
+        return $this;
+    }
+
+    public function getBannedTo(): ?\DateTime
+    {
+        return $this->bannedTo;
+    }
+
+    public function setBannedTo(\DateTime $bannedTo): self
+    {
+        $this->bannedTo = $bannedTo;
 
         return $this;
     }

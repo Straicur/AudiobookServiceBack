@@ -6,6 +6,7 @@ use App\Entity\Audiobook;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Enums\UserOrderSearch;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -200,26 +201,22 @@ class UserRepository extends ServiceEntityRepository
         }
         if ($order != null) {
             switch ($order) {
-                case UserOrderSearch::LATEST->value:
-                {
-                    $qb->orderBy("u.dateCreate", "DESC");
-                    break;
-                }
-                case UserOrderSearch::OLDEST->value:
-                {
-                    $qb->orderBy("u.dateCreate", "ASC");
-                    break;
-                }
-                case UserOrderSearch::ALPHABETICAL_ASC->value:
-                {
-                    $qb->orderBy("ui.email", "ASC");
-                    break;
-                }
-                case UserOrderSearch::ALPHABETICAL_DESC->value:
-                {
-                    $qb->orderBy("ui.email", "DESC");
-                    break;
-                }
+                case UserOrderSearch::LATEST->value: {
+                        $qb->orderBy("u.dateCreate", "DESC");
+                        break;
+                    }
+                case UserOrderSearch::OLDEST->value: {
+                        $qb->orderBy("u.dateCreate", "ASC");
+                        break;
+                    }
+                case UserOrderSearch::ALPHABETICAL_ASC->value: {
+                        $qb->orderBy("ui.email", "ASC");
+                        break;
+                    }
+                case UserOrderSearch::ALPHABETICAL_DESC->value: {
+                        $qb->orderBy("ui.email", "DESC");
+                        break;
+                    }
             }
         }
 
@@ -227,28 +224,48 @@ class UserRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+
+    /**
+     * @return void
+     */
+    public function bannedUsers(): void
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $today = new DateTime('Now');
+
+        $qb->update()
+            ->set("u.banned", "false")
+            ->where('u.banned = true')
+            ->andWhere('u.bannedTo < :date')
+            ->setParameter('date', $today);
+
+        $qb->getQuery()->execute();
+    }
+
+    //    /**
+    //     * @return User[] Returns an array of User objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('u.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?User
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
