@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\ReportType;
 use App\Repository\ReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -38,14 +39,21 @@ class Report
         return $this->id;
     }
 
-    public function getType(): int
+    public function getType(): ReportType
     {
-        return $this->type;
+        return match ($this->type) {
+            1 => ReportType::COMMENT,
+            2 => ReportType::AUDIOBOOK_PROBLEM,
+            3 => ReportType::CATEGORY_PROBLEM,
+            4 => ReportType::SYSTEM_PROBLEM,
+            5 => ReportType::USER_PROBLEM,
+            6 => ReportType::SETTINGS_PROBLEM,
+        };
     }
 
-    public function setType(int $type): self
+    public function setType(ReportType $type): self
     {
-        $this->type = $type;
+        $this->type = $type->value;
 
         return $this;
     }
