@@ -181,5 +181,40 @@ class ReportController extends AbstractController
     {
 
     }
+     /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/report/admin/list", name: "apiReportAdminList", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is used to get report list",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobooksQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function apiReportAdminList(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService
+    ): Response
+    {
+
+    }
     
 }
