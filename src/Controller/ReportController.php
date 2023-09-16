@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Annotation\AuthValidation;
+use App\Service\AuthorizedUserServiceInterface;
+use App\Service\RequestServiceInterface;
 use App\Exception\DataNotFoundException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
@@ -52,11 +55,10 @@ class ReportController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @return Response
      * @throws DataNotFoundException
-     * @throws \Exception
      */
     #[Route("/api/report", name: "apiReport", methods: ["GET"])]
     #[OA\Get(
-        description: "Method used to ",
+        description: "Method used to report for not loged users",
         security: [],
         requestBody: new OA\RequestBody(),
         responses: [
@@ -74,4 +76,110 @@ class ReportController extends AbstractController
     ): Response
     {
     }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/report/user", name: "apiReportUser", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is used for users to reporting",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobooksQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function apiReportUser(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService
+    ): Response
+    {
+
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/report/admin/accept", name: "apiReportAdminAccept", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is used to appect report",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobooksQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function apiReportAdminAccept(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService
+    ): Response
+    {
+
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/report/admin/reject", name: "apiReportAdminReject", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is used to reject report",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserAudiobooksQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: UserAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function apiReportAdminReject(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService
+    ): Response
+    {
+
+    }
+    
 }
