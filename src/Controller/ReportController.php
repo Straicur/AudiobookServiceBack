@@ -9,6 +9,7 @@ use App\Exception\DataNotFoundException;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
+use App\Model\PermissionNotGrantedModel;
 use App\Service\TranslateService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -89,15 +90,15 @@ class ReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksQuery::class),
-                type: "object"
+                // ref: new Model(type: UserAudiobooksQuery::class),
+                // type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: UserAudiobooksSuccessModel::class)
+                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -124,15 +125,15 @@ class ReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksQuery::class),
-                type: "object"
+                // ref: new Model(type: UserAudiobooksQuery::class),
+                // type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: UserAudiobooksSuccessModel::class)
+                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -159,15 +160,15 @@ class ReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksQuery::class),
-                type: "object"
+                // ref: new Model(type: UserAudiobooksQuery::class),
+                // type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: UserAudiobooksSuccessModel::class)
+                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -194,15 +195,15 @@ class ReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksQuery::class),
-                type: "object"
+                // ref: new Model(type: UserAudiobooksQuery::class),
+                // type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type: UserAudiobooksSuccessModel::class)
+                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
