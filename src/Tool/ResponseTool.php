@@ -14,22 +14,21 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ResponseTool
 {
-    private static array $headersNoContent = [
-        "Content-Type" => "application/json"
-    ];
-
-    private static array $headersWithContent = [
-        "Content-Type" => "application/json",
-        "Content-Length" => 1
-    ];
-
     public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response
     {
+        $headers = [
+            "Content-Type" => "application/json"
+        ];
+
         $serializeService = new JsonSerializer();
 
         $serializedObject = $responseModel != null ? $serializeService->serialize($responseModel) : null;
 
-        return new Response($serializedObject, $httpCode, $serializedObject ? self::$headersWithContent : self::$headersNoContent);
+        if($serializedObject){
+            $headers['Content-Length'] = strlen($serializedObject);
+        }
+        
+        return new Response($serializedObject, $httpCode, $headers);
     }
 
     public static function getBinaryFileResponse($fileDir, $delete = false): BinaryFileResponse
