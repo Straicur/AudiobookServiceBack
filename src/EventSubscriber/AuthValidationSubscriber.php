@@ -32,11 +32,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $requestLogger;
 
-    private SerializerInterface $jsonSerializer;
-
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
-        SerializerInterface           $jsonSerializer,
         LoggerInterface               $responseLogger,
         LoggerInterface               $requestLogger,
     )
@@ -44,7 +41,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->responseLogger = $responseLogger;
         $this->requestLogger = $requestLogger;
-        $this->jsonSerializer = $jsonSerializer;
     }
 
     /**

@@ -25,10 +25,10 @@ class AuthenticationToken
     private string $token;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateCreate;
+    private \DateTime $dateCreate;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateExpired;
+    private \DateTime $dateExpired;
 
     /**
      * @param User $user
@@ -39,8 +39,7 @@ class AuthenticationToken
         $this->user = $user;
         $this->token = $tokenGenerator->generate();
         $this->dateCreate = new \DateTime("now");
-        $this->dateExpired = clone $this->dateCreate;
-        $this->dateExpired->modify("+4 hour");
+        $this->dateExpired = (new \DateTime("now"))->modify("+4 hour");
     }
 
     public function getId(): Uuid
@@ -48,19 +47,19 @@ class AuthenticationToken
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string
     {
         return $this->token;
     }
@@ -72,24 +71,24 @@ class AuthenticationToken
         return $this;
     }
 
-    public function getDateCreate(): ?\DateTimeInterface
+    public function getDateCreate(): \DateTime
     {
         return $this->dateCreate;
     }
 
-    public function setDateCreate(\DateTimeInterface $dateCreate): self
+    public function setDateCreate(\DateTime $dateCreate): self
     {
         $this->dateCreate = $dateCreate;
 
         return $this;
     }
 
-    public function getDateExpired(): ?\DateTimeInterface
+    public function getDateExpired(): \DateTime
     {
         return $this->dateExpired;
     }
 
-    public function setDateExpired(\DateTimeInterface $dateExpired): self
+    public function setDateExpired(\DateTime $dateExpired): self
     {
         $this->dateExpired = $dateExpired;
 

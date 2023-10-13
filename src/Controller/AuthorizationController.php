@@ -161,7 +161,7 @@ class AuthorizationController extends AbstractController
 
             $rolesModel = new AuthorizationRolesModel();
 
-            foreach ($userInformationEntity->getUser()->getRoles() as $role) {
+            foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
             }
 
