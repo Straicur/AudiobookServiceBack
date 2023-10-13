@@ -173,7 +173,6 @@ class AuthorizationController extends AbstractController
             $endpointLogger->error("Invalid given Query");
 
             $translateService->setPreferredLanguage($request);
-            $translateService->setPreferredLanguage($request);
             throw new InvalidJsonDataException($translateService);
         }
     }

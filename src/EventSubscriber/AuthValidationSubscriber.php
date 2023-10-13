@@ -102,7 +102,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                                         throw new PermissionException();
                                     }
 
-                                    $dateNow->modify("+1 day");
+                                    $dateNow->modify("+1 minute");
                                     $authToken->setDateExpired($dateNow);
 
                                     $this->authenticationTokenRepository->add($authToken);

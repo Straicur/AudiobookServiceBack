@@ -40,7 +40,7 @@ class AuthenticationToken
         $this->token = $tokenGenerator->generate();
         $this->dateCreate = new \DateTime("now");
         $this->dateExpired = clone $this->dateCreate;
-        $this->dateExpired->modify("+1 day");
+        $this->dateExpired->modify("+4 hour");
     }
 
     public function getId(): Uuid
