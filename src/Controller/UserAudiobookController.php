@@ -316,6 +316,7 @@ class UserAudiobookController extends AbstractController
      * @param MyListRepository $listRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param AudiobookRatingRepository $audiobookRatingRepository
      * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
@@ -350,6 +351,7 @@ class UserAudiobookController extends AbstractController
         MyListRepository               $listRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
+        AudiobookRatingRepository      $audiobookRatingRepository,
         TranslateService               $translateService
     ): Response
     {
@@ -407,7 +409,11 @@ class UserAudiobookController extends AbstractController
                 $audiobook->getAge(),
                 $audiobookCategories,
                 $inList,
-                count($audiobookUserComments)
+                count($audiobookUserComments),
+                $audiobook->getAvgRating(),
+                count($audiobookRatingRepository->findBy([
+                    "audiobook" => $audiobook->getId()
+                ]))
             );
 
             if ($audiobookInfo != null && count($audiobookInfo) >= $audiobook->getParts()) {
