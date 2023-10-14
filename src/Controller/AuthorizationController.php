@@ -161,7 +161,7 @@ class AuthorizationController extends AbstractController
 
             $rolesModel = new AuthorizationRolesModel();
 
-            foreach ($userInformationEntity->getUser()->getRoles() as $role) {
+            foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
             }
 
@@ -172,7 +172,6 @@ class AuthorizationController extends AbstractController
         } else {
             $endpointLogger->error("Invalid given Query");
 
-            $translateService->setPreferredLanguage($request);
             $translateService->setPreferredLanguage($request);
             throw new InvalidJsonDataException($translateService);
         }
