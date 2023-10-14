@@ -17,6 +17,8 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private int $parts;
     private string $description;
     private int $age;
+    private float $avgRating;
+    private int $ratingAmount;
 
     /**
      * @var AdminAudiobookCategoryModel[]
@@ -42,8 +44,10 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param array $categories
      * @param bool $inList
      * @param int $comments
+     * @param float $avgRating
+     * @param int ratingAmount
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments, float $avgRating, int $ratingAmount)
     {
         $this->id = $id;
         $this->title = $title;
@@ -58,6 +62,8 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->categories = $categories;
         $this->inList = $inList;
         $this->comments = $comments;
+        $this->avgRating = $avgRating;
+        $this->ratingAmount = $ratingAmount;
     }
 
     /**
@@ -304,6 +310,38 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function setCanComment(bool $canComment): void
     {
         $this->canComment = $canComment;
+    }
+
+    /**
+     * @param bool $avgRating
+     */
+    public function setAvgRating(bool $avgRating): void
+    {
+        $this->avgRating = $avgRating;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAvgRating(): float
+    {
+        return $this->avgRating;
+    }
+
+    /**
+     * @param bool $ratingAmount
+     */
+    public function setRatingAmount(bool $ratingAmount): void
+    {
+        $this->ratingAmount = $ratingAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRatingAmount(): int
+    {
+        return $this->ratingAmount;
     }
 
 }

@@ -32,11 +32,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $requestLogger;
 
-    private SerializerInterface $jsonSerializer;
-
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
-        SerializerInterface           $jsonSerializer,
         LoggerInterface               $responseLogger,
         LoggerInterface               $requestLogger,
     )
@@ -44,7 +41,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->responseLogger = $responseLogger;
         $this->requestLogger = $requestLogger;
-        $this->jsonSerializer = $jsonSerializer;
     }
 
     /**
@@ -93,17 +89,16 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                                     $this->requestLogger->info("Logged user action", $loggedUserData);
 
-                                    $dateNow = new \DateTime("now");
-
                                     if($authToken->getUser()->isBanned()){
-                                        $authToken->setDateExpired($dateNow);
+                                        $authToken->setDateExpired(new \DateTime("now"));
                                         $this->authenticationTokenRepository->add($authToken);
 
                                         throw new PermissionException();
                                     }
 
-                                    $dateNow->modify("+1 day");
-                                    $authToken->setDateExpired($dateNow);
+                                    $dateNew = clone $authToken->getDateExpired();
+                                    $dateNew->modify("+2 second");
+                                    $authToken->setDateExpired($dateNew);
 
                                     $this->authenticationTokenRepository->add($authToken);
 

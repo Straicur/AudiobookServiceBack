@@ -62,7 +62,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
         $this->assertArrayHasKey("active", $responseContent);
         $this->assertArrayHasKey("categories", $responseContent);
         $this->assertCount(2, $responseContent["categories"]);
-
+        $this->assertArrayHasKey("ratingAmount", $responseContent);
     }
 
     /**

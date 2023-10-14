@@ -20,6 +20,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     private int $age;
     private bool $active;
     private float $avgRating;
+    private int $ratingAmount;
     private ?string $encoded;
 
     /**
@@ -41,9 +42,10 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param AudiobookAgeRange $age
      * @param bool $active
      * @param float $avgRating
-     * @param array $categories
+     * @param array $ratingAmount
+     * @param float $avgRating
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories, int $ratingAmount)
     {
         $this->id = $id;
         $this->title = $title;
@@ -58,6 +60,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
         $this->age = $age->value;
         $this->active = $active;
         $this->avgRating = $avgRating;
+        $this->ratingAmount = $ratingAmount;
         $this->categories = $categories;
     }
 
@@ -305,6 +308,22 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     public function setAvgRating(float $avgRating): void
     {
         $this->avgRating = $avgRating;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRatingAmount(): int
+    {
+        return $this->ratingAmount;
+    }
+
+    /**
+     * @param int $ratingAmount
+     */
+    public function setRatingAmount(int $ratingAmount): void
+    {
+        $this->ratingAmount = $ratingAmount;
     }
 
 }

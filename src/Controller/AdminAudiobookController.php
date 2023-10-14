@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\Audiobook;
+use App\Entity\AudiobookRating;
 use App\Enums\AudiobookAgeRange;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
@@ -29,6 +30,7 @@ use App\Query\AdminAudiobooksQuery;
 use App\Query\AdminAudiobookZipQuery;
 use App\Query\AudiobookCommentGetQuery;
 use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
@@ -83,6 +85,7 @@ class AdminAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRatingRepository $audiobookRatingRepository
      * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
@@ -114,9 +117,9 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRatingRepository      $audiobookRatingRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
@@ -158,7 +161,10 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->getAge(),
                 $audiobook->getActive(),
                 $audiobook->getAvgRating(),
-                $audiobookCategories
+                $audiobookCategories,
+                count($audiobookRatingRepository->findBy([
+                    "audiobook" => $audiobook->getId()
+                ]))
             );
 
             if ($audiobook->getEncoded() != null) {
@@ -171,7 +177,6 @@ class AdminAudiobookController extends AbstractController
             $translateService->setPreferredLanguage($request);
             throw new InvalidJsonDataException($translateService);
         }
-
     }
 
     /**
@@ -182,6 +187,7 @@ class AdminAudiobookController extends AbstractController
      * @param AudiobookService $audiobookService
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @param AudiobookRepository $audiobookRepository
+     * @param AudiobookRatingRepository $audiobookRatingRepository
      * @param TranslateService $translateService
      * @return Response
      * @throws AudiobookConfigServiceException
@@ -215,9 +221,9 @@ class AdminAudiobookController extends AbstractController
         AudiobookService               $audiobookService,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
+        AudiobookRatingRepository      $audiobookRatingRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
         if ($adminAudiobookAddQuery instanceof AdminAudiobookAddQuery) {
@@ -387,7 +393,10 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook->getAge(),
                     $newAudiobook->getActive(),
                     $newAudiobook->getAvgRating(),
-                    $audiobookCategories
+                    $audiobookCategories,
+                    count($audiobookRatingRepository->findBy([
+                        "audiobook" => $newAudiobook->getId()
+                    ]))
                 );
 
                 if ($newAudiobook->getEncoded() != null) {
@@ -398,7 +407,6 @@ class AdminAudiobookController extends AbstractController
             } else {
                 return ResponseTool::getResponse();
             }
-
         } else {
             $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
@@ -442,8 +450,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
 
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
@@ -519,8 +526,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
         NotificationRepository         $notificationRepository
-    ): Response
-    {
+    ): Response {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
@@ -586,8 +592,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
@@ -644,6 +649,7 @@ class AdminAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookService $audiobookService
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRatingRepository $audiobookRatingRepository,
      * @param TranslateService $translateService
      * @return Response
      * @throws AudiobookConfigServiceException
@@ -677,9 +683,9 @@ class AdminAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookService               $audiobookService,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRatingRepository      $audiobookRatingRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
@@ -880,7 +886,10 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getAge(),
                     $audiobook->getActive(),
                     $audiobook->getAvgRating(),
-                    $audiobookCategories
+                    $audiobookCategories,
+                    count($audiobookRatingRepository->findBy([
+                        "audiobook" => $audiobook->getId()
+                    ]))
                 );
 
                 if ($audiobook->getEncoded() != null) {
@@ -934,8 +943,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
@@ -1012,7 +1020,6 @@ class AdminAudiobookController extends AbstractController
                 } else {
                     break;
                 }
-
             }
 
             $successModel->setPage($adminAudiobooksQuery->getPage());
@@ -1063,8 +1070,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
 
         if ($adminAudiobookActiveQuery instanceof AdminAudiobookActiveQuery) {
@@ -1125,8 +1131,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
 
         if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
@@ -1146,7 +1151,6 @@ class AdminAudiobookController extends AbstractController
             $audiobookUserCommentRepository->add($audiobookComment);
 
             return ResponseTool::getResponse();
-
         } else {
             $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
@@ -1190,8 +1194,7 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
 
         if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
@@ -1227,7 +1230,6 @@ class AdminAudiobookController extends AbstractController
                         if (file_exists($img)) {
                             unlink($img);
                         }
-
                     }
                 }
             }
@@ -1236,7 +1238,6 @@ class AdminAudiobookController extends AbstractController
             file_put_contents($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
             return ResponseTool::getResponse();
-
         } else {
             $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
@@ -1285,8 +1286,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookRepository                $audiobookRepository,
         TranslateService                   $translateService
-    ): Response
-    {
+    ): Response {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetQuery::class);
 
         if ($audiobookCommentGetQuery instanceof AudiobookCommentGetQuery) {
