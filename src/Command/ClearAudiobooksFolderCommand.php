@@ -35,9 +35,9 @@ class ClearAudiobooksFolderCommand extends Command
 
         $filesystem = new Filesystem();
 
-        $zipFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
+        $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
 
-        foreach ($zipFiles as $file) {
+        foreach ($audiobookFiles as $file) {
             $filesystem->remove($_ENV['MAIN_DIR'] . "/" . $file);
         }
 
