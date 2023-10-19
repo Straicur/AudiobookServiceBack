@@ -10,7 +10,10 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Model\AudiobookCoversSuccessModel;
+use App\Model\AudiobookCoverModel;
 use App\Query\AudiobookPartQuery;
+use App\Query\AudiobookCoversQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -23,6 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * AudiobookController
@@ -86,8 +90,7 @@ class AudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
+    ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
@@ -158,57 +161,73 @@ class AudiobookController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      */
-    #[Route("/api/audiobook/cover/{id}", name: "audiobookCover", methods: ["GET"])]
+    #[Route("/api/audiobook/covers", name: "audiobookCovers", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Get(
-        description: "Endpoint is returning cover ov given audiobook",
-        requestBody: new OA\RequestBody(),
+    #[OA\Post(
+        description: "Endpoint is returning covers paths for given audiobooks",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AudiobookCoversQuery::class),
+                type: "object"
+            ),
+        ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
+                content: new Model(type: AudiobookCoversSuccessModel::class)
             )
         ]
     )]
-    public function audiobookCover(
+    public function audiobookCovers(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        Audiobook                      $id,
+        AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response
-    {
-        $img = "";
+    ): Response {
 
-        try {
-            $handle = opendir($id->getFileName());
-        } catch (\Exception) {
-            $handle = false;
-        }
+        $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
-        if ($handle) {
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
+        if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
 
-                    $file_parts = pathinfo($entry);
-
-                    if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
-
-                        $img = $file_parts["basename"];
-
-                        break;
+            $successModel = new AudiobookCoversSuccessModel();
+            foreach ($audiobookCoversQuery->getAudiobooks() as $audiobookId) {
+                $audiobook=null;
+                if (Uuid::isValid($audiobookId))
+                    $audiobook = $audiobookRepository->findOneBy([
+                        "id" => $audiobookId
+                    ]);
+   
+                $imgUrl = "";
+                if ($audiobook) {
+                    $handle = opendir($audiobook->getFileName());
+                    $img = "";
+                    if ($handle) {
+                        while (false !== ($entry = readdir($handle))) {
+                            if ($entry != "." && $entry != "..") {
+                                $file_parts = pathinfo($entry);
+                                if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+                                    $img = $file_parts["basename"];
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    if ($img != "") {
+                        $imgUrl = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img;
+                    }
+                    $successModel->addAudiobookCoversModel(new AudiobookCoverModel($audiobook->getId(), $imgUrl));
                 }
             }
-        }
 
-        if ($img == "") {
-            $endpointLogger->error("Cover dont exist");
+            return ResponseTool::getResponse($successModel);
+        } else {
+            $endpointLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
-            throw new DataNotFoundException([$translateService->getTranslation("AudiobookCoverDontExists")]);
+            throw new InvalidJsonDataException($translateService);
         }
-
-        return ResponseTool::getBinaryFileResponse($id->getFileName() . "/" . $img);
     }
 }
