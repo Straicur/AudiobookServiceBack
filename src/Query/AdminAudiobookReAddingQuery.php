@@ -125,7 +125,7 @@ class AdminAudiobookReAddingQuery
      */
     public function getFileName(): string
     {
-        return $this->fileName;
+        return trim($this->fileName);
     }
 
     /**
