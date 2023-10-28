@@ -103,7 +103,7 @@ class  AdminAudiobookAddQuery
      */
     public function getFileName(): string
     {
-        return trim($this->fileName);
+        return $this->fileName;
     }
 
     /**
@@ -111,7 +111,7 @@ class  AdminAudiobookAddQuery
      */
     public function setFileName(string $fileName): void
     {
-        $this->fileName = $fileName;
+        $this->fileName = preg_replace('/\s+/', '_', $fileName);
     }
 
     /**
