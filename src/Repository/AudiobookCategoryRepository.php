@@ -107,6 +107,7 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
             ->leftJoin('ac.audiobooks', 'a')
             ->select('COUNT(a.id) AS HIDDEN audiobooks', 'ac')
             ->where('ac.active = true')
+            ->andWhere('a.active = true')
             ->having("count(a.id) > 0")
             ->orderBy('audiobooks', "DESC")
             ->groupBy('ac');
