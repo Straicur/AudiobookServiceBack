@@ -40,7 +40,6 @@ class UserProposedAudiobooksCommand extends Command
     private AudiobookRepository $audiobookRepository;
     private NotificationRepository $notificationRepository;
 
-
     public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository, NotificationRepository $notificationRepository)
     {
         $this->roleRepository = $roleRepository;

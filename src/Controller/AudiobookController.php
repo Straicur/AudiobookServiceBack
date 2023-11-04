@@ -3,17 +3,16 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Entity\Audiobook;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\AudiobookCoverModel;
+use App\Model\AudiobookCoversSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Model\AudiobookCoversSuccessModel;
-use App\Model\AudiobookCoverModel;
-use App\Query\AudiobookPartQuery;
 use App\Query\AudiobookCoversQuery;
+use App\Query\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -90,7 +89,8 @@ class AudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response {
+    ): Response
+    {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
@@ -156,10 +156,10 @@ class AudiobookController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
-     * @param Audiobook $id
+     * @param AudiobookRepository $audiobookRepository
      * @param TranslateService $translateService
      * @return Response
-     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/audiobook/covers", name: "audiobookCovers", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
@@ -187,20 +187,21 @@ class AudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService
-    ): Response {
+    ): Response
+    {
 
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
-
             $successModel = new AudiobookCoversSuccessModel();
+
             foreach ($audiobookCoversQuery->getAudiobooks() as $audiobookId) {
-                $audiobook=null;
+                $audiobook = null;
                 if (Uuid::isValid($audiobookId))
                     $audiobook = $audiobookRepository->findOneBy([
                         "id" => $audiobookId
                     ]);
-   
+
                 $imgUrl = "";
                 if ($audiobook) {
                     $handle = opendir($audiobook->getFileName());

@@ -97,7 +97,53 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request with bad data
+     * step 3 - Checking response if length is correct
+     *
+     * @return void
+     */
+    public function test_audiobookCoverIncorrectData(): void
+    {
+        $base64OnePartFile = str_replace("AudiobookController", '', __DIR__)."AdminAudiobookController/onePartFile.txt";
 
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest","User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $fileBase = fopen($base64OnePartFile, "r");
+        $readData = fread($fileBase, filesize($base64OnePartFile,));
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
+
+        $content2 = [
+            "audiobook" => ["321",1],
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("POST", "/api/audiobook/covers", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content2));
+        /// step 3
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertCount(0,$responseContent);
+    }
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad permission
