@@ -217,7 +217,7 @@ class AdminAudiobookController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
+        LoggerInterface                $usersLogger,
         AudiobookService               $audiobookService,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
@@ -227,14 +227,11 @@ class AdminAudiobookController extends AbstractController
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
         if ($adminAudiobookAddQuery instanceof AdminAudiobookAddQuery) {
-
             $audiobookService->configure($adminAudiobookAddQuery);
             $audiobookService->checkAndAddFile();
 
             if ($audiobookService->lastFile()) {
-
                 $audiobookService->combineFiles();
-
                 $folderDir = $audiobookService->unzip();
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
@@ -408,7 +405,7 @@ class AdminAudiobookController extends AbstractController
                 return ResponseTool::getResponse();
             }
         } else {
-            $endpointLogger->error("Invalid given Query");
+            $usersLogger->error("Invalid given Query");
             $translateService->setPreferredLanguage($request);
             throw new InvalidJsonDataException($translateService);
         }
