@@ -44,7 +44,7 @@ use App\Tool\ResponseTool;
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: "Report")]
-class ReportController extends AbstractController
+class AdminReportController extends AbstractController
 {
 
 /**
@@ -58,27 +58,7 @@ class ReportController extends AbstractController
      * @return Response
      * @throws DataNotFoundException
      */
-    #[Route("/api/report", name: "apiReport", methods: ["GET"])]
-    #[OA\Get(
-        description: "Method used to report for not loged users",
-        security: [],
-        requestBody: new OA\RequestBody(),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-            ),
-        ]
-    )]
-    public function report(
-        Request                   $request,
-        LoggerInterface           $usersLogger,
-        LoggerInterface           $endpointLogger,
-        TranslateService          $translateService
-    ): Response
-    {
-        return ResponseTool::getResponse();
-    }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService

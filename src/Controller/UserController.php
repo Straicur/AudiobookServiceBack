@@ -689,4 +689,25 @@ class UserController extends AbstractController
             throw new InvalidJsonDataException($translateService);
         }
     }
+    #[Route("/api/report", name: "apiReport", methods: ["GET"])]
+    #[OA\Get(
+        description: "Method used to report for not loged users",
+        security: [],
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            ),
+        ]
+    )]
+    public function report(
+        Request                   $request,
+        LoggerInterface           $usersLogger,
+        LoggerInterface           $endpointLogger,
+        TranslateService          $translateService
+    ): Response
+    {
+        return ResponseTool::getResponse();
+    }
 }
