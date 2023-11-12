@@ -26,6 +26,9 @@ class Report
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $actionId;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $ip;
+
     /**
      * @param int $type
      */
@@ -81,4 +84,15 @@ class Report
 
         return $this;
     }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(?string $ip): void
+    {
+        $this->ip = $ip;
+    }
+
 }

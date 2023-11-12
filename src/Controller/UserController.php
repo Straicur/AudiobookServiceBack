@@ -13,6 +13,8 @@ use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
 use App\Model\UserSettingsGetSuccessModel;
+use App\Query\NotAuthorizedUserReportQuery;
+use App\Query\UserReportQuery;
 use App\Query\UserResetPasswordConfirmQuery;
 use App\Query\UserResetPasswordQuery;
 use App\Query\UserSettingsChangeQuery;
@@ -101,7 +103,7 @@ class UserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserPasswordRepository         $userPasswordRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
@@ -177,7 +179,7 @@ class UserController extends AbstractController
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
         UserEditRepository             $editRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
@@ -278,7 +280,7 @@ class UserController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         UserEditRepository             $editRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userEmail = $request->get('email');
@@ -367,7 +369,7 @@ class UserController extends AbstractController
         AuthenticationTokenRepository  $authenticationTokenRepository,
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
@@ -444,7 +446,7 @@ class UserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserInformationRepository      $userInformationRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
@@ -549,7 +551,7 @@ class UserController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         UserEditRepository             $editRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
@@ -641,7 +643,7 @@ class UserController extends AbstractController
         UserRepository                 $userRepository,
         UserPasswordRepository         $userPasswordRepository,
         UserEditRepository             $editRepository,
-        TranslateService              $translateService
+        TranslateService               $translateService
     ): Response
     {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
@@ -689,11 +691,25 @@ class UserController extends AbstractController
             throw new InvalidJsonDataException($translateService);
         }
     }
-    #[Route("/api/report", name: "apiReport", methods: ["GET"])]
-    #[OA\Get(
+
+    /**
+     * @param Request $request
+     * @param LoggerInterface $usersLogger
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @return Response
+     */
+    #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
+    #[OA\Put(
         description: "Method used to report for not loged users",
         security: [],
-        requestBody: new OA\RequestBody(),
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: NotAuthorizedUserReportQuery::class),
+                type: "object"
+            ),
+        ),
         responses: [
             new OA\Response(
                 response: 200,
@@ -702,12 +718,51 @@ class UserController extends AbstractController
         ]
     )]
     public function report(
-        Request                   $request,
-        LoggerInterface           $usersLogger,
-        LoggerInterface           $endpointLogger,
-        TranslateService          $translateService
+        Request          $request,
+        LoggerInterface  $usersLogger,
+        LoggerInterface  $endpointLogger,
+        TranslateService $translateService
     ): Response
     {
+        //TODO tu dostaje dodatkowo ip i sprawdzam czy dziś już wysłał minimum 3 zgłoszenia
+        // Jeśli tak to nie dodaje nic
         return ResponseTool::getResponse();
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @return Response
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Post(
+        description: "Endpoint is used for users to report bad behavior",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserReportQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+            // content: new Model(type: UserAudiobooksSuccessModel::class)
+            )
+        ]
+    )]
+    public function apiReportUser(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService
+    ): Response
+    {
+        //TODO tu muszę też sprawdzić czy nie robi już za dużo tego samego typu zgłoszeń(max 2)
+        return ResponseTool::getResponse(httpCode: 201);
     }
 }

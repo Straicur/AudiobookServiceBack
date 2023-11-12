@@ -3,14 +3,18 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Service\AuthorizedUserServiceInterface;
-use App\Service\RequestServiceInterface;
-use App\Exception\DataNotFoundException;
+use App\Model\AdminReportListSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
+use App\Query\AdminReportAcceptQuery;
+use App\Query\AdminReportListQuery;
+use App\Query\AdminReportRejectQuery;
+use App\Service\AuthorizedUserServiceInterface;
+use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
+use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -18,7 +22,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Tool\ResponseTool;
 
 /**
  * ReportController
@@ -46,76 +49,29 @@ use App\Tool\ResponseTool;
 #[OA\Tag(name: "Report")]
 class AdminReportController extends AbstractController
 {
-
-/**
+    /**
      * @param Request $request
-     * @param LoggerInterface $usersLogger
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param RoleRepository $roleRepository
-     * @param UserRepository $userRepository
-     * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
      * @return Response
-     * @throws DataNotFoundException
      */
-
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/report/user", name: "apiReportUser", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
-        description: "Endpoint is used for users to reporting",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                // ref: new Model(type: UserAudiobooksQuery::class),
-                // type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-                // content: new Model(type: UserAudiobooksSuccessModel::class)
-            )
-        ]
-    )]
-    public function apiReportUser(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
-    ): Response
-    {
-        return ResponseTool::getResponse();
-    }
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/report/admin/accept", name: "apiReportAdminAccept", methods: ["PATCH"])]
+    #[Route("/api/report/admin/accept", name: "apiAdminReportAccept", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
-        description: "Endpoint is used to appect report",
+    #[OA\Patch(
+        description: "Endpoint is used to accept report",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                // ref: new Model(type: UserAudiobooksQuery::class),
-                // type: "object"
+                ref: new Model(type: AdminReportAcceptQuery::class),
+                type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -129,28 +85,30 @@ class AdminReportController extends AbstractController
     {
         return ResponseTool::getResponse();
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
      * @return Response
-     * @throws InvalidJsonDataException
      */
-    #[Route("/api/report/admin/reject", name: "apiReportAdminReject", methods: ["PATCH"])]
+    #[Route("/api/report/admin/reject", name: "apiAdminReportReject", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Post(
         description: "Endpoint is used to reject report",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                // ref: new Model(type: UserAudiobooksQuery::class),
-                // type: "object"
+                ref: new Model(type: AdminReportRejectQuery::class),
+                type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]
@@ -164,11 +122,14 @@ class AdminReportController extends AbstractController
     {
         return ResponseTool::getResponse();
     }
-     /**
+
+    /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
      * @return Response
-     * @throws InvalidJsonDataException
      */
     #[Route("/api/report/admin/list", name: "apiReportAdminList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -177,15 +138,15 @@ class AdminReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                // ref: new Model(type: UserAudiobooksQuery::class),
-                // type: "object"
+                ref: new Model(type: AdminReportListQuery::class),
+                type: "object"
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: "Success",
-                // content: new Model(type: UserAudiobooksSuccessModel::class)
+                content: new Model(type: AdminReportListSuccessModel::class)
             )
         ]
     )]
@@ -199,5 +160,5 @@ class AdminReportController extends AbstractController
     {
         return ResponseTool::getResponse();
     }
-    
+
 }
