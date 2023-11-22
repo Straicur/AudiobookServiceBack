@@ -14,7 +14,7 @@ use App\Model\PermissionNotGrantedModel;
 use App\Model\User\AuthorizationRoleModel;
 use App\Model\User\AuthorizationRolesModel;
 use App\Model\User\AuthorizationSuccessModel;
-use App\Query\AuthorizeQuery;
+use App\Query\User\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;

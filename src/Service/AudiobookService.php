@@ -5,8 +5,8 @@ namespace App\Service;
 
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
-use App\Query\AdminAudiobookAddQuery;
-use App\Query\AdminAudiobookReAddingQuery;
+use App\Query\Admin\AdminAudiobookAddQuery;
+use App\Query\Admin\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
 use Psr\Log\LoggerInterface;
 use RecursiveDirectoryIterator;
