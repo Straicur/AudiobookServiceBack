@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Model\AdminAudiobookCategoryModel;
-use App\Model\AdminAudiobookDetailsModel;
-use App\Model\AdminStatisticBestAudiobooksSuccessModel;
-use App\Model\AdminStatisticMainSuccessModel;
+use App\Model\Admin\AdminAudiobookCategoryModel;
+use App\Model\Admin\AdminAudiobookDetailsModel;
+use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
+use App\Model\Admin\AdminStatisticMainSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;

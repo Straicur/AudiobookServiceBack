@@ -3,8 +3,8 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
-use App\Model\AudiobookCommentsModel;
-use App\Model\AudiobookCommentUserModel;
+use App\Model\User\AudiobookCommentsModel;
+use App\Model\User\AudiobookCommentUserModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use Symfony\Component\Uid\Uuid;

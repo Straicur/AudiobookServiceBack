@@ -12,7 +12,7 @@ use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;
 use App\Model\PermissionNotGrantedModel;
-use App\Model\UserSettingsGetSuccessModel;
+use App\Model\User\UserSettingsGetSuccessModel;
 use App\Query\NotAuthorizedUserReportQuery;
 use App\Query\UserReportQuery;
 use App\Query\UserResetPasswordConfirmQuery;

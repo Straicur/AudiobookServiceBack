@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Model\AdminReportListSuccessModel;
+use App\Model\Admin\AdminReportListSuccessModel;
 use App\Model\DataNotFoundModel;
 use App\Model\JsonDataInvalidModel;
 use App\Model\NotAuthorizeModel;

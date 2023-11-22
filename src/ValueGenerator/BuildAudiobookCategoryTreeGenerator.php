@@ -2,7 +2,7 @@
 
 namespace App\ValueGenerator;
 
-use App\Model\AdminCategoryModel;
+use App\Model\Admin\AdminCategoryModel;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use Symfony\Component\Uid\Uuid;
