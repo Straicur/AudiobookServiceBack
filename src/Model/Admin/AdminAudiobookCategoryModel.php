@@ -2,7 +2,7 @@
 
 namespace App\Model\Admin;
 
-use App\Model\ModelInterface;
+use App\Model\Error\ModelInterface;
 
 class AdminAudiobookCategoryModel implements ModelInterface
 {

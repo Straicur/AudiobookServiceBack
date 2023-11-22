@@ -3,7 +3,7 @@
 namespace App\Model\Admin;
 
 use App\Enums\AudiobookAgeRange;
-use App\Model\ModelInterface;
+use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 
 class AdminCategoryAudiobookModel implements ModelInterface

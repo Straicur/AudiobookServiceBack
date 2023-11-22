@@ -2,7 +2,7 @@
 
 namespace App\Tool;
 
-use App\Model\ModelInterface;
+use App\Model\Error\ModelInterface;
 use App\Serializer\JsonSerializer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;

@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\DataNotFoundModel;
+use App\Model\Error\DataNotFoundModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 

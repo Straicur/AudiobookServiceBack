@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\AudiobookConfigServiceModel;
+use App\Model\Error\AudiobookConfigServiceModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 

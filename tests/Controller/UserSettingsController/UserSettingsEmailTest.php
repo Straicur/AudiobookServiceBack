@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\UserController;
+namespace App\Tests\Controller\UserSettingsController;
 
 use App\Enums\UserEditType;
 use App\Repository\UserEditRepository;

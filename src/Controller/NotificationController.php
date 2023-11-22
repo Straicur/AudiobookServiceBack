@@ -7,10 +7,10 @@ use App\Builder\NotificationBuilder;
 use App\Entity\NotificationCheck;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
 use App\Model\User\NotificationsSuccessModel;
 use App\Query\User\SystemNotificationActivateQuery;
 use App\Query\User\SystemNotificationQuery;
@@ -66,7 +66,7 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
         description: "Method get all notifications from the system for logged user",
         requestBody: new OA\RequestBody(
@@ -152,7 +152,7 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
         description: "Method get is activating given notification so user can see if he read this notification",
         requestBody: new OA\RequestBody(

@@ -10,8 +10,8 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
 use App\Query\User\RegisterConfirmSendQuery;
 use App\Query\User\RegisterQuery;
 use App\Repository\InstitutionRepository;
@@ -208,9 +208,9 @@ class RegisterController extends AbstractController
      * @param RoleRepository $roleRepository
      * @param UserRepository $userRepository
      * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
-     * @throws \Exception
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Get(

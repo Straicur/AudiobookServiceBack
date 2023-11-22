@@ -2,7 +2,7 @@
 
 namespace App\Model\Admin;
 
-use App\Model\ModelInterface;
+use App\Model\Error\ModelInterface;
 use App\Model\User\NotificationModel;
 
 class AdminUserNotificationsSuccessModel implements ModelInterface

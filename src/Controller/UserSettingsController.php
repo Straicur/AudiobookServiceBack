@@ -8,13 +8,11 @@ use App\Entity\UserEdit;
 use App\Enums\UserEditType;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
 use App\Model\User\UserSettingsGetSuccessModel;
-use App\Query\User\NotAuthorizedUserReportQuery;
-use App\Query\User\UserReportQuery;
 use App\Query\User\UserResetPasswordConfirmQuery;
 use App\Query\User\UserResetPasswordQuery;
 use App\Query\User\UserSettingsChangeQuery;
@@ -66,7 +64,7 @@ use Symfony\Component\Routing\Annotation\Route;
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: "User")]
-class UserController extends AbstractController
+class UserSettingsController extends AbstractController
 {
     /**
      * @param Request $request
@@ -257,6 +255,7 @@ class UserController extends AbstractController
      * @param UserInformationRepository $userInformationRepository
      * @param UserRepository $userRepository
      * @param UserEditRepository $editRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      */
@@ -692,77 +691,5 @@ class UserController extends AbstractController
         }
     }
 
-    /**
-     * @param Request $request
-     * @param LoggerInterface $usersLogger
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @return Response
-     */
-    #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
-    #[OA\Put(
-        description: "Method used to report for not loged users",
-        security: [],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: NotAuthorizedUserReportQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "Success",
-            ),
-        ]
-    )]
-    public function report(
-        Request          $request,
-        LoggerInterface  $usersLogger,
-        LoggerInterface  $endpointLogger,
-        TranslateService $translateService
-    ): Response
-    {
-        //TODO tu dostaje dodatkowo ip i sprawdzam czy dziś już wysłał minimum 3 zgłoszenia
-        // Jeśli tak to nie dodaje nic
-        return ResponseTool::getResponse();
-    }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
-    #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
-        description: "Endpoint is used for users to report bad behavior",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserReportQuery::class),
-                type: "object"
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: "Success",
-            // content: new Model(type: UserAudiobooksSuccessModel::class)
-            )
-        ]
-    )]
-    public function apiReportUser(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
-    ): Response
-    {
-        //TODO tu muszę też sprawdzić czy nie robi już za dużo tego samego typu zgłoszeń(max 2)
-        return ResponseTool::getResponse(httpCode: 201);
-    }
 }

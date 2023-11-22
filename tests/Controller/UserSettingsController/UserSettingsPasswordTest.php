@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\UserController;
+namespace App\Tests\Controller\UserSettingsController;
 
 use App\Repository\UserPasswordRepository;
 use App\Tests\AbstractWebTest;

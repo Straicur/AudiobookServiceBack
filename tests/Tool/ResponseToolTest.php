@@ -2,7 +2,7 @@
 
 namespace App\Tests\Tool;
 
-use App\Model\NotAuthorizeModel;
+use App\Model\Error\NotAuthorizeModel;
 use App\Tool\ResponseTool;
 use PHPUnit\Framework\TestCase;
 

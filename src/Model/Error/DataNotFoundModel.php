@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Error;
 
-class ServiceUnavailableModel implements ModelInterface
+/**
+ * DataNotFoundModel
+ *
+ */
+class DataNotFoundModel implements ModelInterface
 {
-    private string $error = "Current service is unavailable";
+    private string $error = "Data not found";
 
     private array $data;
 
     /**
-     * @param array $data
+     * @param string[] $data
      */
     public function __construct(array $data = [])
     {
@@ -41,7 +45,7 @@ class ServiceUnavailableModel implements ModelInterface
     }
 
     /**
-     * @param array $data
+     * @param string[] $data
      */
     public function setData(array $data): void
     {

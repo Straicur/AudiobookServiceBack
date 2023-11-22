@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Error;
 
-/**
- * PermissionNotGrantedModel
- */
-class PermissionNotGrantedModel implements ModelInterface
+class AudiobookConfigServiceModel implements ModelInterface
 {
-    private string $error = "Permission not granted";
+    private string $error = "Service not configured";
 
-    private string $description = "Authorized user don't have permission to do this";
+    private string $description = "You need to configurate this service first ";
 
     public function __construct()
     {

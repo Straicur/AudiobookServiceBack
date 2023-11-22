@@ -2,7 +2,7 @@
 
 namespace App\Model\User;
 
-use App\Model\ModelInterface;
+use App\Model\Error\ModelInterface;
 
 class UserAudiobookRatingGetSuccessModel implements ModelInterface
 {
