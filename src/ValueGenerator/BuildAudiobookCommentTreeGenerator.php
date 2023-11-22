@@ -3,8 +3,8 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
-use App\Model\User\AudiobookCommentsModel;
-use App\Model\User\AudiobookCommentUserModel;
+use App\Model\Common\AudiobookCommentsModel;
+use App\Model\User\UserAudiobookCommentModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use Symfony\Component\Uid\Uuid;
@@ -72,7 +72,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     "deleted" => false
                 ]);
 
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
+                $userModel = new UserAudiobookCommentModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
 
                 $child = new AudiobookCommentsModel(
                     $userModel,

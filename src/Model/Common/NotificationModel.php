@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\User;
+namespace App\Model\Common;
 
 use App\Entity\NotificationCheck;
 use App\Enums\NotificationType;

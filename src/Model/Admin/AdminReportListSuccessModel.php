@@ -7,7 +7,7 @@ use App\Model\Error\ModelInterface;
 class AdminReportListSuccessModel implements ModelInterface
 {
     /**
-     * @var ReportModel[]
+     * @var AdminReportModel[]
      */
     private array $reports = [];
 
@@ -18,7 +18,7 @@ class AdminReportListSuccessModel implements ModelInterface
     private int $maxPage;
 
     /**
-     * @return ReportModel[]
+     * @return AdminReportModel[]
      */
     public function getReports(): array
     {
@@ -26,14 +26,14 @@ class AdminReportListSuccessModel implements ModelInterface
     }
 
     /**
-     * @param ReportModel[] $reports
+     * @param AdminReportModel[] $reports
      */
     public function setReports(array $reports): void
     {
         $this->reports = $reports;
     }
 
-    public function addReport(ReportModel $report): void
+    public function addReport(AdminReportModel $report): void
     {
         $this->reports[] = $report;
     }

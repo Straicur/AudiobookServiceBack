@@ -16,7 +16,7 @@ use App\Model\Admin\AdminUserDeleteListSuccessModel;
 use App\Model\Admin\AdminUserNotificationsSuccessModel;
 use App\Model\Admin\AdminUsersSuccessModel;
 use App\Model\Admin\AdminUserSystemRolesSuccessModel;
-use App\Model\Admin\SystemRoleModel;
+use App\Model\Admin\AdminSystemRoleModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -118,10 +118,10 @@ class AdminUserController extends AbstractController
         foreach ($roles as $role) {
             switch ($role->getName()) {
                 case UserRolesNames::GUEST->value:
-                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::GUEST->value));
+                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::GUEST->value));
                     break;
                 case UserRolesNames::USER->value:
-                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::USER->value));
+                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::USER->value));
                     break;
             }
 

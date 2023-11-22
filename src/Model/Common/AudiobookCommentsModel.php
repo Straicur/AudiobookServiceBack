@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Model\User;
+namespace App\Model\Common;
+
+use App\Model\User\UserAudiobookCommentModel;
 
 class AudiobookCommentsModel
 {
-    private AudiobookCommentUserModel $userModel;
+    private UserAudiobookCommentModel $userModel;
     private string $id;
     private string $comment;
     private bool $edited;
@@ -22,13 +24,13 @@ class AudiobookCommentsModel
     private array $children = [];
 
     /**
-     * @param AudiobookCommentUserModel $userModel
+     * @param UserAudiobookCommentModel $userModel
      * @param string $id
      * @param string $comment
      * @param bool $edited
      * @param bool $myComment
      */
-    public function __construct(AudiobookCommentUserModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
+    public function __construct(UserAudiobookCommentModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
     {
         $this->userModel = $userModel;
         $this->id = $id;
@@ -59,17 +61,17 @@ class AudiobookCommentsModel
     }
 
     /**
-     * @return AudiobookCommentUserModel
+     * @return UserAudiobookCommentModel
      */
-    public function getUserModel(): AudiobookCommentUserModel
+    public function getUserModel(): UserAudiobookCommentModel
     {
         return $this->userModel;
     }
 
     /**
-     * @param AudiobookCommentUserModel $userModel
+     * @param UserAudiobookCommentModel $userModel
      */
-    public function setUserModel(AudiobookCommentUserModel $userModel): void
+    public function setUserModel(UserAudiobookCommentModel $userModel): void
     {
         $this->userModel = $userModel;
     }

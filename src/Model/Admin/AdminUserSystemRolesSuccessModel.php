@@ -10,7 +10,7 @@ class AdminUserSystemRolesSuccessModel implements ModelInterface
     private array $roles = [];
 
     /**
-     * @return SystemRoleModel[]
+     * @return AdminSystemRoleModel[]
      */
     public function getRoles(): array
     {
@@ -25,7 +25,7 @@ class AdminUserSystemRolesSuccessModel implements ModelInterface
         $this->roles = $roles;
     }
 
-    public function addRole(SystemRoleModel $role)
+    public function addRole(AdminSystemRoleModel $role)
     {
         $this->roles[] = $role;
     }

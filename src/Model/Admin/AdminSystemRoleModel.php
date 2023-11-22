@@ -2,7 +2,7 @@
 
 namespace App\Model\Admin;
 
-class SystemRoleModel
+class AdminSystemRoleModel
 {
     private string $name;
     private int $type;

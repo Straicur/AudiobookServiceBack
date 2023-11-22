@@ -2,8 +2,8 @@
 
 namespace App\Model\Admin;
 
+use App\Model\Common\NotificationModel;
 use App\Model\Error\ModelInterface;
-use App\Model\User\NotificationModel;
 
 class AdminUserNotificationsSuccessModel implements ModelInterface
 {

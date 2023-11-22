@@ -5,7 +5,7 @@ namespace App\Model\Admin;
 use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 
-class ReportModel implements ModelInterface
+class AdminReportModel implements ModelInterface
 {
     private string $id;
     private int $type;

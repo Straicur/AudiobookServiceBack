@@ -2,7 +2,7 @@
 
 namespace App\Model\User;
 
-class AudiobookCommentUserModel
+class UserAudiobookCommentModel
 {
     private string $email;
     private string $name;
