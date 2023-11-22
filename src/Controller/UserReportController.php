@@ -8,7 +8,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
-use App\Query\User\NotAuthorizedUserReportQuery;
+use App\Query\User\UserNotAuthorizedUserReportQuery;
 use App\Query\User\UserReportQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -62,7 +62,7 @@ class UserReportController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: NotAuthorizedUserReportQuery::class),
+                ref: new Model(type: UserNotAuthorizedUserReportQuery::class),
                 type: "object"
             ),
         ),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Query\User;
+namespace App\Query\Common;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

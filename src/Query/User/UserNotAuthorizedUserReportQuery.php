@@ -7,7 +7,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class NotAuthorizedUserReportQuery
+class UserNotAuthorizedUserReportQuery
 {
     #[Assert\NotNull(message: "Page is null")]
     #[Assert\NotBlank(message: "Page is empty")]

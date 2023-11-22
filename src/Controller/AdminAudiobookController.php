@@ -27,7 +27,7 @@ use App\Query\Admin\AdminAudiobookEditQuery;
 use App\Query\Admin\AdminAudiobookReAddingQuery;
 use App\Query\Admin\AdminAudiobooksQuery;
 use App\Query\Admin\AdminAudiobookZipQuery;
-use App\Query\Admin\AudiobookCommentGetQuery;
+use App\Query\Admin\AdminAudiobookCommentGetQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
@@ -1261,7 +1261,7 @@ class AdminAudiobookController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: AudiobookCommentGetQuery::class),
+                ref: new Model(type: AdminAudiobookCommentGetQuery::class),
                 type: "object"
             ),
         ),
@@ -1283,9 +1283,9 @@ class AdminAudiobookController extends AbstractController
         AudiobookRepository                $audiobookRepository,
         TranslateService                   $translateService
     ): Response {
-        $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AudiobookCommentGetQuery::class);
+        $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);
 
-        if ($audiobookCommentGetQuery instanceof AudiobookCommentGetQuery) {
+        if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {
 
             $user = $authorizedUserService->getAuthorizedUser();
 

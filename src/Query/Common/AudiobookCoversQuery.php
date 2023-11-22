@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Query\User;
+namespace App\Query\Common;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;

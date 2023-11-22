@@ -1,22 +1,17 @@
 <?php
 
-namespace App\Query\User;
+namespace App\Query\Admin;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AudiobookPartQuery
+class AdminAudiobookCommentGetQuery
 {
     #[Assert\NotNull(message: "AudiobookId is null")]
     #[Assert\NotBlank(message: "AudiobookId is blank")]
     #[Assert\Uuid]
     private Uuid $audiobookId;
-
-    #[Assert\NotNull(message: "Part is null")]
-    #[Assert\NotBlank(message: "Part is empty")]
-    #[Assert\Type(type: "integer")]
-    private int $part;
 
     /**
      * @return Uuid
@@ -34,21 +29,4 @@ class AudiobookPartQuery
     {
         $this->audiobookId = Uuid::fromString($audiobookId);;
     }
-
-    /**
-     * @return int
-     */
-    public function getPart(): int
-    {
-        return $this->part;
-    }
-
-    /**
-     * @param int $part
-     */
-    public function setPart(int $part): void
-    {
-        $this->part = $part;
-    }
-
 }
