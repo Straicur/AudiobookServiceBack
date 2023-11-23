@@ -3,6 +3,7 @@
 namespace App\Model\Admin;
 
 use App\Enums\AudiobookAgeRange;
+use App\Model\Common\AudiobookDetailCategoryModel;
 use OpenApi\Attributes as OA;
 
 class AdminAudiobookDetailsModel
@@ -22,7 +23,7 @@ class AdminAudiobookDetailsModel
     private ?string $encoded;
 
     /**
-     * @var AdminAudiobookCategoryModel[]
+     * @var AudiobookDetailCategoryModel[]
      */
     private array $categories = [];
 
@@ -39,7 +40,7 @@ class AdminAudiobookDetailsModel
      * @param string $description
      * @param AudiobookAgeRange $age
      * @param bool $active
-     * @param array $categories
+     * @param AudiobookDetailCategoryModel[] $categories
      */
     public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
     {
@@ -268,7 +269,7 @@ class AdminAudiobookDetailsModel
     }
 
     /**
-     * @return AdminAudiobookCategoryModel[]
+     * @return AudiobookDetailCategoryModel[]
      */
     public function getCategories(): array
     {
@@ -283,7 +284,7 @@ class AdminAudiobookDetailsModel
         $this->categories = $categories;
     }
 
-    public function addCategory(AdminAudiobookCategoryModel $category)
+    public function addCategory(AudiobookDetailCategoryModel $category)
     {
         $this->categories[] = $category;
     }

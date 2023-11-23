@@ -4,7 +4,7 @@ namespace App\Model\Common;
 
 use App\Model\Error\ModelInterface;
 
-class AudiobookCoverModel implements ModelInterface
+class AudiobookCoverModel
 {
     private string $id;
     private string $url;

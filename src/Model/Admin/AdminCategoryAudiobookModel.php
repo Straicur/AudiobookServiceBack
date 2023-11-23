@@ -3,10 +3,9 @@
 namespace App\Model\Admin;
 
 use App\Enums\AudiobookAgeRange;
-use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 
-class AdminCategoryAudiobookModel implements ModelInterface
+class AdminCategoryAudiobookModel
 {
     private string $id;
     private string $title;
@@ -31,7 +30,7 @@ class AdminCategoryAudiobookModel implements ModelInterface
      * @param AudiobookAgeRange $age
      * @param bool $active
      */
-    public function __construct(string $id, string $title, string $author, \DateTime $year, int $duration, string $size, int $parts,  float $avgRating, AudiobookAgeRange $age, bool $active)
+    public function __construct(string $id, string $title, string $author, \DateTime $year, int $duration, string $size, int $parts, float $avgRating, AudiobookAgeRange $age, bool $active)
     {
         $this->id = $id;
         $this->title = $title;

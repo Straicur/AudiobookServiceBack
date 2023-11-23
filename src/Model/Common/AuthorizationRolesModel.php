@@ -4,7 +4,7 @@ namespace App\Model\Common;
 
 use App\Model\Error\ModelInterface;
 
-class AuthorizationRolesModel implements ModelInterface
+class AuthorizationRolesModel
 {
     /**
      * @var AuthorizationRoleModel[]

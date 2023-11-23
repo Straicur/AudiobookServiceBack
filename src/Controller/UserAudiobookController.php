@@ -9,8 +9,8 @@ use App\Entity\AudiobookUserComment;
 use App\Entity\AudiobookUserCommentLike;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\Admin\AdminAudiobookCategoryModel;
 use App\Model\Common\AudiobookCommentsSuccessModel;
+use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -374,7 +374,7 @@ class UserAudiobookController extends AbstractController
             $audiobookCategories = [];
 
             foreach ($categories as $category) {
-                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                $audiobookCategories[] = new AudiobookDetailCategoryModel(
                     $category->getId(),
                     $category->getName(),
                     $category->getActive(),

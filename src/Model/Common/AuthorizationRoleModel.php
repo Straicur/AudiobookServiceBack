@@ -4,7 +4,7 @@ namespace App\Model\Common;
 
 use App\Model\Error\ModelInterface;
 
-class AuthorizationRoleModel implements ModelInterface
+class AuthorizationRoleModel
 {
     private string $name;
 

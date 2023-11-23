@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\User;
+namespace App\Model\Common;
 
-class UserAudiobookCommentModel
+class AudiobookCommentModel
 {
     private string $email;
     private string $name;

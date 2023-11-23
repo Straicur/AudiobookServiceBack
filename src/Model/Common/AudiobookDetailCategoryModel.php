@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Model\User;
+namespace App\Model\Common;
 
 use App\Model\Error\ModelInterface;
 
-class UserAudiobookDetailCategoryModel implements ModelInterface
+class AudiobookDetailCategoryModel
 {
     private string $id;
     private string $name;

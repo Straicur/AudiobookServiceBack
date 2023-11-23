@@ -2,9 +2,7 @@
 
 namespace App\Model\User;
 
-use App\Model\Error\ModelInterface;
-
-class UserAudiobookCategoryModel implements ModelInterface
+class UserAudiobookCategoryModel
 {
     private string $name;
     private string $categoryKey;

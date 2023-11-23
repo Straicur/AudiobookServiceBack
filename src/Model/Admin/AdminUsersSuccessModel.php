@@ -3,12 +3,11 @@
 namespace App\Model\Admin;
 
 use App\Model\Error\ModelInterface;
-use App\Model\User\UserModel;
 
 class AdminUsersSuccessModel implements ModelInterface
 {
     /**
-     * @var UserModel[]
+     * @var AdminUserModel[]
      */
     private array $users = [];
 
@@ -67,7 +66,7 @@ class AdminUsersSuccessModel implements ModelInterface
     }
 
     /**
-     * @return UserModel[]
+     * @return AdminUserModel[]
      */
     public function getUsers(): array
     {
@@ -75,14 +74,14 @@ class AdminUsersSuccessModel implements ModelInterface
     }
 
     /**
-     * @param UserModel[] $users
+     * @param AdminUserModel[] $users
      */
     public function setUsers(array $users): void
     {
         $this->users = $users;
     }
 
-    public function addUser(UserModel $user)
+    public function addUser(AdminUserModel $user)
     {
         $this->users[] = $user;
     }

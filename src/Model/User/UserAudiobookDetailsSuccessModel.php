@@ -3,6 +3,7 @@
 namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
+use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 
@@ -22,7 +23,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private int $ratingAmount;
 
     /**
-     * @var UserAudiobookDetailCategoryModel[]
+     * @var AudiobookDetailCategoryModel[]
      */
     private array $categories = [];
 
@@ -42,11 +43,11 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param int $parts
      * @param string $description
      * @param AudiobookAgeRange $age
-     * @param array $categories
+     * @param AudiobookDetailCategoryModel[] $categories
      * @param bool $inList
      * @param int $comments
      * @param float $avgRating
-     * @param int ratingAmount
+     * @param int $ratingAmount
      */
     public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments, float $avgRating, int $ratingAmount)
     {
@@ -229,7 +230,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @return UserAudiobookDetailCategoryModel[]
+     * @return AudiobookDetailCategoryModel[]
      */
     public function getCategories(): array
     {
@@ -244,7 +245,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->categories = $categories;
     }
 
-    public function addCategory(UserAudiobookDetailCategoryModel $category): void
+    public function addCategory(AudiobookDetailCategoryModel $category): void
     {
         $this->categories[] = $category;
     }

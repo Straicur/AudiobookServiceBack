@@ -2,10 +2,9 @@
 
 namespace App\Model\Admin;
 
-use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 
-class AdminReportModel implements ModelInterface
+class AdminReportModel
 {
     private string $id;
     private int $type;

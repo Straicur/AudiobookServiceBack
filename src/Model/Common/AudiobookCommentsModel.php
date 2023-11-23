@@ -2,11 +2,9 @@
 
 namespace App\Model\Common;
 
-use App\Model\User\UserAudiobookCommentModel;
-
 class AudiobookCommentsModel
 {
-    private UserAudiobookCommentModel $userModel;
+    private AudiobookCommentModel $userModel;
     private string $id;
     private string $comment;
     private bool $edited;
@@ -24,13 +22,13 @@ class AudiobookCommentsModel
     private array $children = [];
 
     /**
-     * @param UserAudiobookCommentModel $userModel
+     * @param AudiobookCommentModel $userModel
      * @param string $id
      * @param string $comment
      * @param bool $edited
      * @param bool $myComment
      */
-    public function __construct(UserAudiobookCommentModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
+    public function __construct(AudiobookCommentModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
     {
         $this->userModel = $userModel;
         $this->id = $id;
@@ -61,17 +59,17 @@ class AudiobookCommentsModel
     }
 
     /**
-     * @return UserAudiobookCommentModel
+     * @return AudiobookCommentModel
      */
-    public function getUserModel(): UserAudiobookCommentModel
+    public function getUserModel(): AudiobookCommentModel
     {
         return $this->userModel;
     }
 
     /**
-     * @param UserAudiobookCommentModel $userModel
+     * @param AudiobookCommentModel $userModel
      */
-    public function setUserModel(UserAudiobookCommentModel $userModel): void
+    public function setUserModel(AudiobookCommentModel $userModel): void
     {
         $this->userModel = $userModel;
     }

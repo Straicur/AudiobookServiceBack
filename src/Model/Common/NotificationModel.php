@@ -8,7 +8,7 @@ use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 
-class NotificationModel implements ModelInterface
+class NotificationModel
 {
     private string $id;
 

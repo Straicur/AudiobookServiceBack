@@ -12,17 +12,17 @@ use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
+use App\Model\Admin\AdminSystemRoleModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
+use App\Model\Admin\AdminUserModel;
 use App\Model\Admin\AdminUserNotificationsSuccessModel;
 use App\Model\Admin\AdminUsersSuccessModel;
 use App\Model\Admin\AdminUserSystemRolesSuccessModel;
-use App\Model\Admin\AdminSystemRoleModel;
+use App\Model\Admin\AdminUserDeleteModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
-use App\Model\User\UserDeleteModel;
-use App\Model\User\UserModel;
 use App\Query\Admin\AdminUserActivateQuery;
 use App\Query\Admin\AdminUserBanQuery;
 use App\Query\Admin\AdminUserChangePasswordQuery;
@@ -707,7 +707,7 @@ class AdminUserController extends AbstractController
 
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
 
-                    $userModel = new UserModel(
+                    $userModel = new AdminUserModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -905,7 +905,7 @@ class AdminUserController extends AbstractController
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
                     continue;
                 } elseif ($index < $maxResult) {
-                    $userDeleteModel = new UserDeleteModel(
+                    $userDeleteModel = new AdminUserDeleteModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -997,7 +997,7 @@ class AdminUserController extends AbstractController
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
                     continue;
                 } elseif ($index < $maxResult) {
-                    $userDeleteModel = new UserDeleteModel(
+                    $userDeleteModel = new AdminUserDeleteModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),

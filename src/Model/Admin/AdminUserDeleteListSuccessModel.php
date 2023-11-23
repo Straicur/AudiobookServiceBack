@@ -3,12 +3,11 @@
 namespace App\Model\Admin;
 
 use App\Model\Error\ModelInterface;
-use App\Model\User\UserDeleteModel;
 
 class AdminUserDeleteListSuccessModel implements ModelInterface
 {
     /**
-     * @var UserDeleteModel[]
+     * @var AdminUserDeleteModel[]
      */
     private array $users = [];
 
@@ -67,7 +66,7 @@ class AdminUserDeleteListSuccessModel implements ModelInterface
     }
 
     /**
-     * @return UserDeleteModel[]
+     * @return AdminUserDeleteModel[]
      */
     public function getUsers(): array
     {
@@ -75,14 +74,14 @@ class AdminUserDeleteListSuccessModel implements ModelInterface
     }
 
     /**
-     * @param UserDeleteModel[] $users
+     * @param AdminUserDeleteModel[] $users
      */
     public function setUsers(array $users): void
     {
         $this->users = $users;
     }
 
-    public function addUser(UserDeleteModel $user)
+    public function addUser(AdminUserDeleteModel $user)
     {
         $this->users[] = $user;
     }
