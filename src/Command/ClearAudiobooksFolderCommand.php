@@ -34,13 +34,13 @@ class ClearAudiobooksFolderCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $filesystem = new Filesystem();
+        if($_ENV['MAIN_DIR'] && $_ENV['MAIN_DIR'] != '/') {
+            $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
 
-        $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
-
-        foreach ($audiobookFiles as $file) {
-            $filesystem->remove($_ENV['MAIN_DIR'] . "/" . $file);
+            foreach ($audiobookFiles as $file) {
+                $filesystem->remove($_ENV['MAIN_DIR'] . "/" . $file);
+            }
         }
-
         $io->success("Folder cleared");
 
         return Command::SUCCESS;
