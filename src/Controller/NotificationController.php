@@ -110,7 +110,9 @@ class NotificationController extends AbstractController
             foreach ($userSystemNotifications as $index => $notification) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($index < $maxResult) {
+                }
+
+                if ($index < $maxResult) {
 
                     $notificationCheck = $checkRepository->findOneBy([
                         "user" => $user->getId(),
@@ -132,11 +134,11 @@ class NotificationController extends AbstractController
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -204,10 +206,10 @@ class NotificationController extends AbstractController
             }
 
             return ResponseTool::getResponse(null, 201);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

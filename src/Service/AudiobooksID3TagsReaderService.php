@@ -27,6 +27,6 @@ class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceIn
 
     public function getTagsInfo(): array
     {
-        return self::analyze();
+        return $this->analyze();
     }
 }

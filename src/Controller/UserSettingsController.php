@@ -128,11 +128,11 @@ class UserSettingsController extends AbstractController
             $userPasswordRepository->add($userPassword);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -224,7 +224,7 @@ class UserSettingsController extends AbstractController
 
             $userRepository->add($user);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -240,11 +240,11 @@ class UserSettingsController extends AbstractController
                 $mailer->send($email);
             }
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -343,6 +343,7 @@ class UserSettingsController extends AbstractController
      * @param AuthenticationTokenRepository $authenticationTokenRepository
      * @param UserRepository $userRepository
      * @param MailerInterface $mailer
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
      * @throws TransportExceptionInterface
@@ -395,7 +396,7 @@ class UserSettingsController extends AbstractController
 
         $userDeleteRepository->add($userDelete);
 
-        if ($_ENV["APP_ENV"] != "test") {
+        if ($_ENV["APP_ENV"] !== "test") {
             $email = (new TemplatedEmail())
                 ->from($_ENV["INSTITUTION_EMAIL"])
                 ->to($user->getUserInformation()->getEmail())
@@ -462,11 +463,11 @@ class UserSettingsController extends AbstractController
             $userInformationRepository->add($userInformation);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -580,7 +581,7 @@ class UserSettingsController extends AbstractController
 
             $userRepository->add($user);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -596,11 +597,11 @@ class UserSettingsController extends AbstractController
             }
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -684,11 +685,11 @@ class UserSettingsController extends AbstractController
             $userPasswordRepository->add($password);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
 

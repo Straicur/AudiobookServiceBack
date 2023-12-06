@@ -139,7 +139,9 @@ class UserAudiobookController extends AbstractController
             foreach ($allCategories as $index => $category) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($index < $maxResult) {
+                }
+
+                if ($index < $maxResult) {
 
                     $categoryModel = new UserCategoryModel($category->getName(), $category->getCategoryKey());
 
@@ -166,11 +168,11 @@ class UserAudiobookController extends AbstractController
             $successModel->setMaxPage(ceil(count($allCategories) / $userAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -241,11 +243,11 @@ class UserAudiobookController extends AbstractController
             }
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -425,11 +427,11 @@ class UserAudiobookController extends AbstractController
             }
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -506,11 +508,11 @@ class UserAudiobookController extends AbstractController
             );
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -578,11 +580,11 @@ class UserAudiobookController extends AbstractController
             $myListRepository->add($myList);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -730,11 +732,11 @@ class UserAudiobookController extends AbstractController
             $audiobookInfoRepository->add($audiobookInfo);
 
             return ResponseTool::getResponse(httpCode: 201);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -820,11 +822,11 @@ class UserAudiobookController extends AbstractController
 
             return ResponseTool::getResponse();
 
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -880,11 +882,11 @@ class UserAudiobookController extends AbstractController
 
             return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel($audiobook->getAvgRating()));
 
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -978,11 +980,11 @@ class UserAudiobookController extends AbstractController
 
             return ResponseTool::getResponse();
 
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1075,11 +1077,11 @@ class UserAudiobookController extends AbstractController
 
             return ResponseTool::getResponse();
 
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1313,10 +1315,10 @@ class UserAudiobookController extends AbstractController
             $successModel = new AudiobookCommentsSuccessModel($treeGenerator->generate());
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

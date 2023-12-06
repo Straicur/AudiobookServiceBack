@@ -115,11 +115,11 @@ class AudiobookController extends AbstractController
 
             if ($handle) {
                 while (false !== ($entry = readdir($handle))) {
-                    if ($entry != "." && $entry != "..") {
+                    if ($entry !== "." && $entry !== "..") {
 
                         $file_parts = pathinfo($entry);
 
-                        if ($file_parts['extension'] == "mp3") {
+                        if ($file_parts['extension'] === "mp3") {
                             $allParts[] = $file_parts['basename'];
                         }
                     }
@@ -144,11 +144,11 @@ class AudiobookController extends AbstractController
             }
 
             return ResponseTool::getBinaryFileResponse($dir);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -208,9 +208,9 @@ class AudiobookController extends AbstractController
                     $img = "";
                     if ($handle) {
                         while (false !== ($entry = readdir($handle))) {
-                            if ($entry != "." && $entry != "..") {
+                            if ($entry !== "." && $entry !== "..") {
                                 $file_parts = pathinfo($entry);
-                                if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+                                if ($file_parts['extension'] === "jpg" || $file_parts['extension'] === "jpeg" || $file_parts['extension'] === "png") {
                                     $img = $file_parts["basename"];
                                     break;
                                 }
@@ -225,10 +225,10 @@ class AudiobookController extends AbstractController
             }
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

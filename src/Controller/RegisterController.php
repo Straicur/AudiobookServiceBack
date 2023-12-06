@@ -175,7 +175,7 @@ class RegisterController extends AbstractController
 
             $registerCodeRepository->add($registerCode);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($newUser->getUserInformation()->getEmail())
@@ -193,11 +193,11 @@ class RegisterController extends AbstractController
 
             $usersLogger->info("user." . $newUser->getUserInformation()->getEmail() . "registered");
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -359,7 +359,7 @@ class RegisterController extends AbstractController
 
             $registerCodeRepository->add($registerCode);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -377,10 +377,10 @@ class RegisterController extends AbstractController
 
             $usersLogger->info("user." . $user->getUserInformation()->getEmail() . "got new confim email");
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

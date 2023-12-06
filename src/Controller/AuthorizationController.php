@@ -133,7 +133,7 @@ class AuthorizationController extends AbstractController
             $isUser = false;
 
             foreach ($roles as $role) {
-                if ($role->getName() == "User" || $role->getName() == "Administrator") {
+                if ($role->getName() === "User" || $role->getName() === "Administrator") {
                     $isUser = true;
                 }
             }
@@ -169,12 +169,12 @@ class AuthorizationController extends AbstractController
 
 
             return ResponseTool::getResponse($responseModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**

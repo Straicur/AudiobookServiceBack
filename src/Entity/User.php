@@ -139,9 +139,9 @@ class User
     }
 
     /**
-     * @return UserInformation|null
+     * @return UserInformation
      */
-    public function getUserInformation(): ?UserInformation
+    public function getUserInformation(): UserInformation
     {
         return $this->userInformation;
     }
@@ -203,7 +203,7 @@ class User
         return $this;
     }
 
-    public function getMyList(): ?MyList
+    public function getMyList(): MyList
     {
         return $this->myList;
     }
@@ -219,7 +219,7 @@ class User
         return $this;
     }
 
-    public function getProposedAudiobooks(): ?ProposedAudiobooks
+    public function getProposedAudiobooks(): ProposedAudiobooks
     {
         return $this->proposedAudiobooks;
     }

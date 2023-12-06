@@ -15,7 +15,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     private array $elements;
     private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository;
     private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository;
-    private readonly User $user;
+    private User $user;
     private bool $admin;
 
     /**

@@ -47,23 +47,23 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function checkAndAddFile(): void
     {
-        self::checkConfiguration();
+        $this->checkConfiguration();
 
         $fsObject = new Filesystem();
 
-        $size = self::checkSystemStorage($_ENV['MAIN_DIR']);
+        $size = $this->checkSystemStorage($_ENV['MAIN_DIR']);
 
-        self::checkOrCreateAudiobookFolder($fsObject);
+        $this->checkOrCreateAudiobookFolder($fsObject);
 
         if ($size >= $_ENV['INSTITUTION_VOLUMEN']) {
-            self::removeFolder($this->whole_dir_path);
+            $this->removeFolder($this->whole_dir_path);
             throw new DataNotFoundException([$this->translateService->getTranslation("SystemVolumen")]);
         }
 
         $file = $this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart();
 
         if (!$fsObject->exists($file)) {
-            self::addFileToFolder();
+            $this->addFileToFolder();
         }
     }
 
@@ -85,7 +85,7 @@ class AudiobookService implements AudiobookServiceInterface
      */
     private function addFileToFolder(): void
     {
-        $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart(), "w");
+        $base64File = fopen($this->whole_dir_path . "/" . $this->query->getHashName() . $this->query->getPart(), 'wb');
         fwrite($base64File, $this->query->getBase64());
         fclose($base64File);
     }
@@ -110,13 +110,13 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function lastFile(): bool
     {
-        self::checkConfiguration();
+        $this->checkConfiguration();
 
         $amountOfFiles = 0;
 
         if ($handle = opendir($this->whole_dir_path)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
+                if ($entry !== "." && $entry !== "..") {
                     $amountOfFiles = $amountOfFiles + 1;
                 }
             }
@@ -131,9 +131,9 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function combineFiles(): void
     {
-        self::checkConfiguration();
+        $this->checkConfiguration();
 
-        $zipFile = fopen($this->whole_zip_path . ".zip", "a");
+        $zipFile = fopen($this->whole_zip_path . ".zip", 'ab');
 
         $zipFiles = array_diff(scandir($this->whole_dir_path), array('.', '..'));
         $result = [];
@@ -149,7 +149,7 @@ class AudiobookService implements AudiobookServiceInterface
 
             $fileDir = $this->whole_dir_path . "/" . $this->query->getHashName() . $file;
 
-            $partFile = fopen($fileDir, "r");
+            $partFile = fopen($fileDir, 'rb');
 
             $readData = fread($partFile, filesize($fileDir));
 
@@ -160,7 +160,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         fclose($zipFile);
 
-        self::removeFolder($this->whole_dir_path);
+        $this->removeFolder($this->whole_dir_path);
     }
 
     /**
@@ -170,7 +170,7 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function unzip(string $reAdding = null): string
     {
-        self::checkConfiguration();
+        $this->checkConfiguration();
 
         $file = $this->whole_zip_path . ".zip";
 
@@ -183,7 +183,7 @@ class AudiobookService implements AudiobookServiceInterface
         $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
 
         if (!$extracted) {
-            self::removeFolder($file);
+            $this->removeFolder($file);
         }
 
         $zip->close();
@@ -191,7 +191,7 @@ class AudiobookService implements AudiobookServiceInterface
         unlink($file);
 
         if ($reAdding != null && is_dir($reAdding)) {
-            self::removeFolder($reAdding);
+            $this->removeFolder($reAdding);
         }
 
         $amountOfSameFolders = 0;
@@ -220,7 +220,7 @@ class AudiobookService implements AudiobookServiceInterface
      */
     public function createAudiobookJsonData(string $folderDir): array
     {
-        self::checkConfiguration();
+        $this->checkConfiguration();
 
         $id3Data = [];
         $mp3Size = 0;
@@ -229,9 +229,9 @@ class AudiobookService implements AudiobookServiceInterface
 
         if ($handle = opendir($folderDir)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
+                if ($entry !== "." && $entry !== "..") {
                     $file_parts = pathinfo($entry);
-                    if ($file_parts['extension'] == "mp3") {
+                    if ($file_parts['extension'] === "mp3") {
                         $mp3file = $entry;
                         if ($mp3file !== "") {
 
@@ -258,9 +258,9 @@ class AudiobookService implements AudiobookServiceInterface
                                 foreach ($keys as $key => $index) {
                                     if (array_key_exists($key, $sameKeys)) {
                                         continue;
-                                    } else {
-                                        $id3Data[$index] = $id3TrackData[$index];
                                     }
+
+                                    $id3Data[$index] = $id3TrackData[$index];
                                 }
                             }
                         }
