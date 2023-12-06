@@ -6,6 +6,7 @@ use App\Entity\Audiobook;
 use App\Entity\MyList;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -57,10 +58,8 @@ class MyListRepository extends ServiceEntityRepository
     public function getAudiobookINMyList(User $user, Audiobook $audiobook): bool
     {
         $qb = $this->createQueryBuilder('ml')
-            ->leftJoin('ml.audiobooks', 'a')
-            ->leftJoin('ml.user', 'u')
-            ->where('a.id = :audiobook')
-            ->andWhere('a.active = true')
+            ->innerJoin('ml.audiobooks', 'a', Join::WITH, 'a.id = :audiobook')
+            ->where('a.active = true')
             ->andWhere('ml.user = :user')
             ->setParameter('audiobook', $audiobook->getId()->toBinary())
             ->setParameter('user', $user->getId()->toBinary());

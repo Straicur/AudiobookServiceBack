@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use App\Entity\UserDelete;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -72,14 +73,11 @@ class UserDeleteRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('ud');
 
-        $qb->leftJoin('ud.user', 'u')
+        $qb->innerJoin('ud.user', 'u', Join::WITH, 'u.active = false')
             ->where('ud.deleted = false')
-            ->andWhere('ud.dateDeleted IS NULL')
-            ->andWhere('u.active = false');
+            ->andWhere('ud.dateDeleted IS NULL');
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**

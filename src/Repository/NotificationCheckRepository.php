@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\NotificationCheck;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -48,23 +49,6 @@ class NotificationCheckRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @return int
-     */
-    public function getUserActiveNotifications(User $user): int
-    {
-        $qb = $this->createQueryBuilder('nc')
-            ->leftJoin('nc.notification', 'n')
-            ->leftJoin('nc.user', 'u')
-            ->where('n.deleted = false')
-            ->andWhere('u.id = :user')
-            ->setParameter('user', $user->getId()->toBinary());
-
-        $query = $qb->getQuery();
-
-        return count($query->execute());
-    }
 //    /**
 //     * @return NotificationCheck[] Returns an array of NotificationCheck objects
 //     */
