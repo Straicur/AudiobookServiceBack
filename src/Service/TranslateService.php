@@ -29,7 +29,7 @@ class TranslateService implements TranslateServiceInterface
     public function getTranslation(string $message): string
     {
         if ($this->preferredLanguage == null) {
-            $this->preferredLanguage = self::getLocate();
+            $this->preferredLanguage = $this->getLocate();
         }
 
         return $this->translator->trans($message, locale: $this->preferredLanguage);

@@ -136,7 +136,7 @@ class AddAdminCommand extends Command
 
         foreach ($roleEntities as $roleEntity) {
 
-            if ($roleEntity->getName() == "Administrator") {
+            if ($roleEntity->getName() === "Administrator") {
                 $isAdministrator = true;
             }
 

@@ -14,7 +14,7 @@ class ResponseToolTest extends TestCase
         ]
     ];
 
-    public function testResponseHeaders()
+    public function testResponseHeaders(): void
     {
         $response = ResponseTool::getResponse();
 
@@ -30,7 +30,7 @@ class ResponseToolTest extends TestCase
         }
     }
 
-    public function testResponseContent()
+    public function testResponseContent(): void
     {
         $response = ResponseTool::getResponse();
 
@@ -39,7 +39,7 @@ class ResponseToolTest extends TestCase
         $this->assertNotNull($content);
     }
 
-    public function testResponseContentJson()
+    public function testResponseContentJson(): void
     {
         $response = ResponseTool::getResponse(new NotAuthorizeModel(), 401);
 

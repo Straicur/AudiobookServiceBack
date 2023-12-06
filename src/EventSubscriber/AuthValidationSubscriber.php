@@ -72,42 +72,42 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                             if ($authorizationHeaderField == null) {
                                 throw new AuthenticationException();
-                            } else {
-                                $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
-
-                                if ($authToken == null) {
-                                    throw new AuthenticationException();
-                                } else {
-                                    $loggedUserData = [
-                                        "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
-                                        "user_id" => $authToken->getUser()->getId(),
-                                        "token_auth_id" => $authToken->getId(),
-                                        "user_data" => [
-                                            "email" => $authToken->getUser()->getUserInformation()->getEmail(),
-                                        ]
-                                    ];
-
-                                    $this->requestLogger->info("Logged user action", $loggedUserData);
-
-                                    if($authToken->getUser()->isBanned()){
-                                        $authToken->setDateExpired(new \DateTime("now"));
-                                        $this->authenticationTokenRepository->add($authToken);
-
-                                        throw new PermissionException();
-                                    }
-
-                                    $dateNew = clone $authToken->getDateExpired();
-                                    $dateNew->modify("+2 second");
-                                    $authToken->setDateExpired($dateNew);
-
-                                    $this->authenticationTokenRepository->add($authToken);
-
-                                    AuthorizedUserService::setAuthenticationToken($authToken);
-                                    AuthorizedUserService::setAuthorizedUser($authToken->getUser());
-
-                                    $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
-                                }
                             }
+
+                            $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
+
+                            if ($authToken == null) {
+                                throw new AuthenticationException();
+                            }
+
+                            $loggedUserData = [
+                                "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
+                                "user_id" => $authToken->getUser()->getId(),
+                                "token_auth_id" => $authToken->getId(),
+                                "user_data" => [
+                                    "email" => $authToken->getUser()->getUserInformation()->getEmail(),
+                                ]
+                            ];
+
+                            $this->requestLogger->info("Logged user action", $loggedUserData);
+
+                            if($authToken->getUser()->isBanned()){
+                                $authToken->setDateExpired(new \DateTime("now"));
+                                $this->authenticationTokenRepository->add($authToken);
+
+                                throw new PermissionException();
+                            }
+
+                            $dateNew = clone $authToken->getDateExpired();
+                            $dateNew->modify("+2 second");
+                            $authToken->setDateExpired($dateNew);
+
+                            $this->authenticationTokenRepository->add($authToken);
+
+                            AuthorizedUserService::setAuthenticationToken($authToken);
+                            AuthorizedUserService::setAuthorizedUser($authToken->getUser());
+
+                            $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
                         }
 
                     }
