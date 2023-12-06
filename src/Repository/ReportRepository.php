@@ -24,8 +24,9 @@ class ReportRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param Report $entity
+     * @param bool $flush
+     * @return void
      */
     public function add(Report $entity, bool $flush = false): void
     {
@@ -36,8 +37,9 @@ class ReportRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param Report $entity
+     * @param bool $flush
+     * @return void
      */
     public function remove(Report $entity, bool $flush = false): void
     {

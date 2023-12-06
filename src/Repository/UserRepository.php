@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Enums\UserOrderSearch;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -61,14 +62,11 @@ class UserRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        $qb->leftJoin('u.roles', 'r')
-            ->where('r.id = :role')
-            ->andWhere('u.banned = false')
+        $qb->innerJoin('u.roles', 'r', Join::WITH, 'r.id = :role')
+            ->where('u.banned = false')
             ->setParameter('role', $role->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -80,9 +78,8 @@ class UserRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        $qb->leftJoin('u.roles', 'r')
+        $qb->innerJoin('u.roles', 'r', Join::WITH, 'r.id = :role')
             ->where('u.id = :user')
-            ->andWhere('r.id = :role')
             ->andWhere('u.banned = false')
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('role', $role->getId()->toBinary());
@@ -100,9 +97,8 @@ class UserRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        $qb->leftJoin('u.roles', 'r')
+        $qb->innerJoin('u.roles', 'r', Join::WITH, 'r.name = :role')
             ->where('u.id = :user')
-            ->andWhere('r.name = :role')
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('role', "Administrator");
 
@@ -132,9 +128,7 @@ class UserRepository extends ServiceEntityRepository
             ->andWhere('u.active = true')
             ->setParameter('categories', $audiobookCategories);
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -201,28 +195,30 @@ class UserRepository extends ServiceEntityRepository
         }
         if ($order != null) {
             switch ($order) {
-                case UserOrderSearch::LATEST->value: {
-                        $qb->orderBy("u.dateCreate", "DESC");
-                        break;
-                    }
-                case UserOrderSearch::OLDEST->value: {
-                        $qb->orderBy("u.dateCreate", "ASC");
-                        break;
-                    }
-                case UserOrderSearch::ALPHABETICAL_ASC->value: {
-                        $qb->orderBy("ui.email", "ASC");
-                        break;
-                    }
-                case UserOrderSearch::ALPHABETICAL_DESC->value: {
-                        $qb->orderBy("ui.email", "DESC");
-                        break;
-                    }
+                case UserOrderSearch::LATEST->value:
+                {
+                    $qb->orderBy("u.dateCreate", "DESC");
+                    break;
+                }
+                case UserOrderSearch::OLDEST->value:
+                {
+                    $qb->orderBy("u.dateCreate", "ASC");
+                    break;
+                }
+                case UserOrderSearch::ALPHABETICAL_ASC->value:
+                {
+                    $qb->orderBy("ui.email", "ASC");
+                    break;
+                }
+                case UserOrderSearch::ALPHABETICAL_DESC->value:
+                {
+                    $qb->orderBy("ui.email", "DESC");
+                    break;
+                }
             }
         }
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
 

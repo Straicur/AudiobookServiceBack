@@ -59,9 +59,7 @@ class RoleRepository extends ServiceEntityRepository
         $qb->where('r.name != :administrator')
             ->setParameter('administrator', "Administrator");
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 //    /**
 //     * @return Role[] Returns an array of Role objects

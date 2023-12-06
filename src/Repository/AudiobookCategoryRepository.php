@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -71,13 +72,10 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     public function getAudiobookCategories(Audiobook $audiobook): array
     {
         $qb = $this->createQueryBuilder('ac')
-            ->leftJoin('ac.audiobooks', 'a')
-            ->where('a.id = :audiobook')
+            ->innerJoin('ac.audiobooks', 'a', Join::WITH, 'a.id = :audiobook')
             ->setParameter('audiobook', $audiobook->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -87,14 +85,11 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     public function getAudiobookActiveCategories(Audiobook $audiobook): array
     {
         $qb = $this->createQueryBuilder('ac')
-            ->leftJoin('ac.audiobooks', 'a')
-            ->where('a.id = :audiobook')
-            ->andWhere('ac.active = true')
+            ->innerJoin('ac.audiobooks', 'a', Join::WITH, 'a.id = :audiobook')
+            ->where('ac.active = true')
             ->setParameter('audiobook', $audiobook->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
 
@@ -104,7 +99,7 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     public function getCategoriesByCountAudiobooks(): array
     {
         $qb = $this->createQueryBuilder('ac')
-            ->leftJoin('ac.audiobooks', 'a')
+            ->innerJoin('ac.audiobooks', 'a')
             ->select('COUNT(a.id) AS HIDDEN audiobooks', 'ac')
             ->where('ac.active = true')
             ->andWhere('a.active = true')
@@ -112,9 +107,7 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
             ->orderBy('audiobooks', "DESC")
             ->groupBy('ac');
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 //    /**
 //     * @return AudiobookCategory[] Returns an array of AudiobookCategory objects

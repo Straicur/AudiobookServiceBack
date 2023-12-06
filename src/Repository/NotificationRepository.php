@@ -6,6 +6,7 @@ use App\Entity\Notification;
 use App\Entity\User;
 use App\Enums\NotificationOrderSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -78,15 +79,12 @@ class NotificationRepository extends ServiceEntityRepository
     public function getUserNotifications(User $user): array
     {
         $qb = $this->createQueryBuilder('n')
-            ->leftJoin('n.users', 'u')
+            ->innerJoin('n.users', 'u', Join::WITH, 'u.id = :user')
             ->where('n.deleted = false')
-            ->andWhere('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
             ->orderBy("n.dateAdd", "DESC");
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -96,11 +94,10 @@ class NotificationRepository extends ServiceEntityRepository
     public function getUserActiveNotifications(User $user): int
     {
         $qb = $this->createQueryBuilder('n')
-            ->leftJoin('n.users', 'u')
+            ->innerJoin('n.users', 'u', Join::WITH, 'u.id = :user')
             ->leftJoin('n.notificationChecks', 'nc')
             ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
             ->where('n.deleted = false')
-            ->andWhere('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
             ->having("count(nc.id) = 0")
             ->orderBy('notifications', "DESC")
@@ -149,9 +146,7 @@ class NotificationRepository extends ServiceEntityRepository
             }
         }
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**

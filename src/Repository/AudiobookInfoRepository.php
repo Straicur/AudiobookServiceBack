@@ -6,6 +6,7 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookInfo;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -55,18 +56,13 @@ class AudiobookInfoRepository extends ServiceEntityRepository
      */
     public function getActiveAudiobookInfos(User $user): array
     {
-        $qb = $this->createQueryBuilder('ai');
-
-        $qb->leftJoin('ai.audiobook', 'a')
-            ->leftJoin('ai.user', 'u')
-            ->where('u.id = :user')
-            ->andWhere('ai.active = true')
-            ->andWhere('a.active = true')
+        $qb = $this->createQueryBuilder('ai')
+            ->innerJoin('ai.audiobook', 'a', Join::WITH, 'a.active = true')
+            ->innerJoin('ai.user', 'u', Join::WITH, 'u.id = :user')
+            ->where('ai.active = true')
             ->setParameter('user', $user->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
