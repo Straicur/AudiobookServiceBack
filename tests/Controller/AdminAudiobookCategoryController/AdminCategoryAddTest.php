@@ -43,8 +43,8 @@ class AdminCategoryAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $this->assertCount(14, $audiobookCategoryRepository->findAll());
     }
@@ -79,7 +79,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -119,7 +119,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -162,7 +162,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -204,7 +204,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         $crawler = self::$webClient->request("PUT", "/api/admin/category/add", content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

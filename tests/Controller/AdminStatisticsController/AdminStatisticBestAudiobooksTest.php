@@ -38,12 +38,12 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d5", [$category2]);
 
         $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
+        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
+        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
+        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -54,8 +54,8 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -109,12 +109,12 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d5", [$category2]);
 
         $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
+        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
+        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
+        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -122,7 +122,7 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("GET", "/api/admin/statistic/best/audiobooks");
         
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

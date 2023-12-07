@@ -34,7 +34,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -60,8 +60,8 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -69,7 +69,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfter);
 
-        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $fileBase2 = fopen(self::base64ImgFile, 'rb');
         $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 
         $content2 = [
@@ -86,8 +86,8 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         ], content: json_encode($content2));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -110,7 +110,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $content2 = [
             "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
         ];
-        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $fileBase2 = fopen(self::base64ImgFile, 'rb');
         $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 
         $content2 = [
@@ -126,7 +126,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -166,7 +166,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -189,7 +189,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
     public function test_adminAudiobookChangeCoverPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
-        $fileBase2 = fopen(self::base64ImgFile, "r");
+        $fileBase2 = fopen(self::base64ImgFile, 'rb');
         $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 
         $content2 = [
@@ -205,7 +205,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -241,7 +241,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/change/cover", content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

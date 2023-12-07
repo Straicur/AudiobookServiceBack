@@ -35,8 +35,8 @@ class AdminCategoriesTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -72,7 +72,7 @@ class AdminCategoriesTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -108,7 +108,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $crawler = self::$webClient->request("GET", "/api/admin/categories");
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

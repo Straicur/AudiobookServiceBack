@@ -43,8 +43,8 @@ class UserSettingsEmailTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
             "id" => $user->getId()
@@ -66,26 +66,26 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectEditExists(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("+1 day"));
+        $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("+1 day"));
 
         /// step 2
         $content = [
             "newEmail" => "test2@cos.pl",
-            "oldEmail" => $user->getUserInformation()->getEmail(),
+            "oldEmail" => $user2->getUserInformation()->getEmail(),
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/settings/email", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -111,24 +111,24 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectNewEmail(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         /// step 2
         $content = [
             "newEmail" => "test2@cos.pl",
-            "oldEmail" => $user->getUserInformation()->getEmail(),
+            "oldEmail" => $user2->getUserInformation()->getEmail(),
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/settings/email", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -154,9 +154,9 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectOldEmail(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         /// step 2
         $content = [
@@ -164,14 +164,14 @@ class UserSettingsEmailTest extends AbstractWebTest
             "oldEmail" => "test3@cos.pl",
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/settings/email", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -207,7 +207,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -246,7 +246,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -281,7 +281,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $crawler = self::$webClient->request("POST", "/api/user/settings/email", content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

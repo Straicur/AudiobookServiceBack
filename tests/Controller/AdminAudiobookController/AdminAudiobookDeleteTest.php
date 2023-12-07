@@ -36,7 +36,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -62,8 +62,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -83,8 +83,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $audiobooksAfter = $audiobookRepository->findAll();
 
@@ -139,8 +139,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $not1After = $notificationRepository->findOneBy([
             "id" => $notification1->getId()
@@ -175,7 +175,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -201,8 +201,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -221,7 +221,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -258,7 +258,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -284,8 +284,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -302,7 +302,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -363,8 +363,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //        ], content: json_encode($content));
 //
 //        /// step 4
-//        $this->assertResponseIsSuccessful();
-//        $this->assertResponseStatusCodeSame(201);
+//        self::assertResponseIsSuccessful();
+//        self::assertResponseStatusCodeSame(201);
 //
 //        $audiobookAfter = $audiobookRepository->findOneBy([
 //            "title" => $content["additionalData"]['title']
@@ -385,7 +385,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //            "HTTP_authorization" => $token->getToken()
 //        ], content: json_encode($content));
 //        /// step 3
-//        $this->assertResponseStatusCodeSame(403);
+//        self::assertResponseStatusCodeSame(403);
 //
 //        $responseContent = self::$webClient->getResponse()->getContent();
 //
@@ -418,7 +418,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -444,8 +444,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -463,7 +463,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

@@ -29,8 +29,8 @@ class LoginTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/authorize", content: json_encode($content));
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -57,7 +57,7 @@ class LoginTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("POST", "/api/authorize", content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -78,7 +78,7 @@ class LoginTest extends AbstractWebTest
         /// step 1
         $crawler = self::$webClient->request("POST", "/api/authorize");
         /// step 2
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

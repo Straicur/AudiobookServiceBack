@@ -49,8 +49,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
         /// step 5
         $password = $userPasswordRepository->findOneBy([
             "user" => $user->getId()
@@ -97,7 +97,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -139,7 +139,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -182,7 +182,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -220,7 +220,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("PATCH", "/api/user/reset/password/confirm", content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

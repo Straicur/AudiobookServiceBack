@@ -62,8 +62,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
 
@@ -119,8 +119,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
 
@@ -177,8 +177,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
 
@@ -240,8 +240,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
 
@@ -282,7 +282,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -328,7 +328,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -373,7 +373,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -419,7 +419,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -465,7 +465,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -511,7 +511,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -556,7 +556,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -603,7 +603,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -639,7 +639,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -679,7 +679,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -716,7 +716,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $crawler = self::$webClient->request("PUT", "/api/admin/user/notification", content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

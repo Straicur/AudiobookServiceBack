@@ -53,8 +53,8 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         /// step 5
         $this->assertCount(1, $audiobookUserCommentLikeRepository->findAll());
@@ -100,7 +100,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -146,7 +146,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -198,7 +198,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -245,7 +245,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         $crawler = self::$webClient->request("PATCH", "/api/user/audiobook/comment/like/add", content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

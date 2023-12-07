@@ -28,8 +28,8 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -60,7 +60,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -87,7 +87,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $crawler = self::$webClient->request("GET", "/api/admin/user/system/roles");
 
         /// step2
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

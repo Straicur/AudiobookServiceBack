@@ -29,8 +29,8 @@ class UserResetPasswordTest extends AbstractWebTest
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
-        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
+        $userEdit2 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
 
         /// step 2
         $content = [
@@ -42,14 +42,14 @@ class UserResetPasswordTest extends AbstractWebTest
         $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
         /// step 5
         $userAfter = $userRepository->findOneBy([
             "id" => $user->getId()
         ]);
 
-        $this->assertSame($userAfter->getEdited(), true);
+        $this->assertTrue($userAfter->getEdited());
         $this->assertNotNull($userAfter->getEditableDate());
 
         $this->assertCount(3, $userEditRepository->findAll());
@@ -80,7 +80,7 @@ class UserResetPasswordTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -113,7 +113,7 @@ class UserResetPasswordTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

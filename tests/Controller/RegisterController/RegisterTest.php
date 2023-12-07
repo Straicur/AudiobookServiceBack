@@ -44,8 +44,8 @@ class RegisterTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         /// step 5
         $userAfter = $userInformationRepository->findOneBy([
@@ -57,7 +57,7 @@ class RegisterTest extends AbstractWebTest
         $hasRole = false;
 
         foreach ($userAfter->getRoles() as $role) {
-            if ($role->getName() == "Guest") {
+            if ($role->getName() === "Guest") {
                 $hasRole = true;
             }
         }
@@ -91,7 +91,7 @@ class RegisterTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -110,9 +110,9 @@ class RegisterTest extends AbstractWebTest
      */
     public function test_registerIncorrectInstitutionCredentials(): void
     {
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@1cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@2cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@3cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@1cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@2cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@3cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         /// step 1
 
         $content = [
@@ -123,13 +123,13 @@ class RegisterTest extends AbstractWebTest
             "password" => "zaq12wsx"
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        $token = $this->databaseMockManager->testFunc_loginUser($user3);
         /// step 2
         $crawler = self::$webClient->request("PUT", "/api/register", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -156,7 +156,7 @@ class RegisterTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 2
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
