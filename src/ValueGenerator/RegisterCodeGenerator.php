@@ -14,7 +14,7 @@ class RegisterCodeGenerator implements ValueGeneratorInterface
      */
     public function __construct(string $registerCode = null)
     {
-        if ($registerCode == null) {
+        if ($registerCode === null) {
             $this->registerCode = "";
             $chars = "abcdefghijklmnoprstwxyz1234567890";
 
