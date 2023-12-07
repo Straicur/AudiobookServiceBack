@@ -35,8 +35,8 @@ class UserSettingsDeleteTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
             "id" => $user->getId()
@@ -66,7 +66,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 4
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -99,7 +99,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -129,7 +129,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("PATCH", "/api/user/settings/delete");
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

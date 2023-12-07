@@ -37,8 +37,8 @@ class RegisterConfirmTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
             "id" => $user->getId()
@@ -47,7 +47,7 @@ class RegisterConfirmTest extends AbstractWebTest
         $hasRole = false;
 
         foreach ($userAfter->getRoles() as $role) {
-            if ($role->getName() == "User") {
+            if ($role->getName() === "User") {
                 $hasRole = true;
             }
         }
@@ -80,7 +80,7 @@ class RegisterConfirmTest extends AbstractWebTest
         $crawler = self::$webClient->request("GET", "/api/register/" . $user->getUserInformation()->getEmail() . "/95b7tjxrnbs88xd", server: [
             "HTTP_authorization" => $token->getToken()
         ]);         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -109,7 +109,7 @@ class RegisterConfirmTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -138,7 +138,7 @@ class RegisterConfirmTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -165,7 +165,7 @@ class RegisterConfirmTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 2
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
 
         $response = self::$webClient->getResponse();

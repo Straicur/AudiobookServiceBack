@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\UserSettingsController;
 
-use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -30,8 +29,8 @@ class UserSettingsGetTest extends AbstractWebTest
         ]);
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -39,17 +38,17 @@ class UserSettingsGetTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("phoneNumber",$responseContent);
-        $this->assertSame($user->getUserInformation()->getPhoneNumber(),$responseContent["phoneNumber"]);
-        $this->assertArrayHasKey("firstname",$responseContent);
-        $this->assertSame($user->getUserInformation()->getFirstname(),$responseContent["firstname"]);
-        $this->assertArrayHasKey("lastname",$responseContent);
-        $this->assertSame($user->getUserInformation()->getLastname(),$responseContent["lastname"]);
-        $this->assertArrayHasKey("email",$responseContent);
-        $this->assertSame($user->getUserInformation()->getEmail(),$responseContent["email"]);
-        $this->assertArrayHasKey("edited",$responseContent);
-        $this->assertSame($user->getEdited(),$responseContent["edited"]);
-        $this->assertArrayHasKey("editableDate",$responseContent);
+        $this->assertArrayHasKey("phoneNumber", $responseContent);
+        $this->assertSame($user->getUserInformation()->getPhoneNumber(), $responseContent["phoneNumber"]);
+        $this->assertArrayHasKey("firstname", $responseContent);
+        $this->assertSame($user->getUserInformation()->getFirstname(), $responseContent["firstname"]);
+        $this->assertArrayHasKey("lastname", $responseContent);
+        $this->assertSame($user->getUserInformation()->getLastname(), $responseContent["lastname"]);
+        $this->assertArrayHasKey("email", $responseContent);
+        $this->assertSame($user->getUserInformation()->getEmail(), $responseContent["email"]);
+        $this->assertArrayHasKey("edited", $responseContent);
+        $this->assertSame($user->getEdited(), $responseContent["edited"]);
+        $this->assertArrayHasKey("editableDate", $responseContent);
     }
 
     /**
@@ -70,7 +69,7 @@ class UserSettingsGetTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -99,7 +98,7 @@ class UserSettingsGetTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("GET", "/api/user/settings");
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

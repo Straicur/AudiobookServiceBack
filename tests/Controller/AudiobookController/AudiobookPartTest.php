@@ -35,7 +35,7 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen($base64OnePartFile, "r");
+        $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
@@ -61,8 +61,8 @@ class AudiobookPartTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -83,8 +83,8 @@ class AudiobookPartTest extends AbstractWebTest
         ], content: json_encode($content2));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -111,7 +111,7 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen($base64OnePartFile, "r");
+        $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
@@ -137,8 +137,8 @@ class AudiobookPartTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -159,7 +159,7 @@ class AudiobookPartTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -205,7 +205,7 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen($base64OnePartFile, "r");
+        $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
@@ -231,8 +231,8 @@ class AudiobookPartTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -249,7 +249,7 @@ class AudiobookPartTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -297,7 +297,7 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen($base64OnePartFile, "r");
+        $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile,));
         $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
@@ -312,7 +312,7 @@ class AudiobookPartTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -348,7 +348,7 @@ class AudiobookPartTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen($base64OnePartFile, "r");
+        $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile,));
 
         /// step 2
@@ -374,8 +374,8 @@ class AudiobookPartTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -394,7 +394,7 @@ class AudiobookPartTest extends AbstractWebTest
         /// step 3
         $crawler = self::$webClient->request("POST", "/api/audiobook/part", content: json_encode($content2));
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

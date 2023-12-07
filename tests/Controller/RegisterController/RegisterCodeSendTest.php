@@ -39,8 +39,8 @@ class RegisterCodeSendTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $this->assertCount(2, $registerCodeRepository->findAll());
 
@@ -70,7 +70,7 @@ class RegisterCodeSendTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -105,7 +105,7 @@ class RegisterCodeSendTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(404);
 
         $response = self::$webClient->getResponse();
 
@@ -134,7 +134,7 @@ class RegisterCodeSendTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 2
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

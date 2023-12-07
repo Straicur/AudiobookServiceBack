@@ -47,8 +47,8 @@ class NotificationActivateTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $this->assertCount(1, $notificationCheckRepository->findAll());
     }
@@ -89,8 +89,8 @@ class NotificationActivateTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
         $this->assertNotNull($notificationCheckRepository->findOneBy([
             "user" => $user1->getId(),
             "notification" => $notification1->getId()
@@ -120,7 +120,7 @@ class NotificationActivateTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -162,7 +162,7 @@ class NotificationActivateTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -200,7 +200,7 @@ class NotificationActivateTest extends AbstractWebTest
         $crawler = self::$webClient->request("PUT", "/api/notification/activate", content: json_encode($content));
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
