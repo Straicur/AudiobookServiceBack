@@ -3,6 +3,7 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
+use App\Exception\GeneratorException;
 
 /**
  * AuthTokenGenerator
@@ -20,14 +21,22 @@ class AuthTokenGenerator implements ValueGeneratorInterface
         $this->userEntity = $userEntity;
     }
 
+    /**
+     * @throws GeneratorException
+     */
     public function generate(): string
     {
-        $dateNow = (new \DateTime("now"))->getTimestamp();
-        $userId = $this->userEntity->getId()->toBinary();
-        $randomValue = random_int(0, PHP_INT_MAX - 1);
+        try {
+            $dateNow = (new \DateTime("now"))->getTimestamp();
+            $userId = $this->userEntity->getId()->toBinary();
+            $randomValue = random_int(0, PHP_INT_MAX - 1);
 
-        $tokenToHash = $userId . "-" . $dateNow . "#" . $randomValue;
+            $tokenToHash = $userId . "-" . $dateNow . "#" . $randomValue;
 
-        return hash("sha512", $tokenToHash);
+            return hash("sha512", $tokenToHash);
+        }
+        catch (\Exception){
+            throw new GeneratorException();
+        }
     }
 }

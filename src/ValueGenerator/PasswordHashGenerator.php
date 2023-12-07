@@ -15,7 +15,7 @@ class PasswordHashGenerator implements ValueGeneratorInterface
      */
     public function __construct(#[\SensitiveParameter] string $planeTextPassword = null)
     {
-        if ($planeTextPassword == null) {
+        if ($planeTextPassword === null) {
             $this->planeTextPassword = "";
             $chars = "abcdefghijklmnoprstwxyz1234567890";
 

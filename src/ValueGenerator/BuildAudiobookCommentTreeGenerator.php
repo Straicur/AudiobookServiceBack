@@ -9,7 +9,6 @@ use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use Symfony\Component\Uid\Uuid;
 
-
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
     private array $elements;
@@ -51,7 +50,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
         foreach ($elements as $element) {
 
-            if ($element->getParent() == $parentId || ($element->getParent() != null && $element->getParent()->getId() == $parentId)) {
+            if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
 
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
