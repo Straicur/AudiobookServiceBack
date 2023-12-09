@@ -44,9 +44,9 @@ class RequestService implements RequestServiceInterface
             }
 
             return $query;
-        } else {
-            $this->translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($this->translateService);
         }
+
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

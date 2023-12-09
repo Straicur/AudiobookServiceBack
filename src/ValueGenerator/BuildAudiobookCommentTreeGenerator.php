@@ -3,19 +3,18 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
-use App\Model\AudiobookCommentsModel;
-use App\Model\AudiobookCommentUserModel;
+use App\Model\Common\AudiobookCommentsModel;
+use App\Model\Common\AudiobookCommentModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use Symfony\Component\Uid\Uuid;
-
 
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
     private array $elements;
     private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository;
     private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository;
-    private readonly User $user;
+    private User $user;
     private bool $admin;
 
     /**
@@ -51,7 +50,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
         foreach ($elements as $element) {
 
-            if ($element->getParent() == $parentId || ($element->getParent() != null && $element->getParent()->getId() == $parentId)) {
+            if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
 
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
@@ -72,7 +71,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     "deleted" => false
                 ]);
 
-                $userModel = new AudiobookCommentUserModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
+                $userModel = new AudiobookCommentModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
 
                 $child = new AudiobookCommentsModel(
                     $userModel,

@@ -3,14 +3,14 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Model\AdminAudiobookCategoryModel;
-use App\Model\AdminAudiobookDetailsModel;
-use App\Model\AdminStatisticBestAudiobooksSuccessModel;
-use App\Model\AdminStatisticMainSuccessModel;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
+use App\Model\Admin\AdminAudiobookDetailsModel;
+use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
+use App\Model\Admin\AdminStatisticMainSuccessModel;
+use App\Model\Common\AudiobookDetailCategoryModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
@@ -156,7 +156,7 @@ class AdminStatisticsController extends AbstractController
             $categories = $audiobookCategoryRepository->getAudiobookCategories($firstAudiobook);
 
             foreach ($categories as $category) {
-                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                $audiobookCategories[] = new AudiobookDetailCategoryModel(
                     $category->getId(),
                     $category->getName(),
                     $category->getActive(),
@@ -190,7 +190,7 @@ class AdminStatisticsController extends AbstractController
             $categories = $audiobookCategoryRepository->getAudiobookCategories($secondAudiobook);
 
             foreach ($categories as $category) {
-                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                $audiobookCategories[] = new AudiobookDetailCategoryModel(
                     $category->getId(),
                     $category->getName(),
                     $category->getActive(),
@@ -222,7 +222,7 @@ class AdminStatisticsController extends AbstractController
             $categories = $audiobookCategoryRepository->getAudiobookCategories($thirdAudiobook);
 
             foreach ($categories as $category) {
-                $audiobookCategories[] = new AdminAudiobookCategoryModel(
+                $audiobookCategories[] = new AudiobookDetailCategoryModel(
                     $category->getId(),
                     $category->getName(),
                     $category->getActive(),

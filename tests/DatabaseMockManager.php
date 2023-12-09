@@ -187,9 +187,7 @@ class DatabaseMockManager
 
     public function testFunc_getInstitution(): Institution
     {
-        $institutionRepository = $this->getService(InstitutionRepository::class);
-
-        return $institutionRepository->findOneBy([
+        return $this->getService(InstitutionRepository::class)->findOneBy([
             "name" => $_ENV["INSTITUTION_NAME"]
         ]);
     }

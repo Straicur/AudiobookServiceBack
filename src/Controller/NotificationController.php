@@ -7,13 +7,13 @@ use App\Builder\NotificationBuilder;
 use App\Entity\NotificationCheck;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\NotificationsSuccessModel;
-use App\Model\PermissionNotGrantedModel;
-use App\Query\SystemNotificationActivateQuery;
-use App\Query\SystemNotificationQuery;
+use App\Model\Common\NotificationsSuccessModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Common\SystemNotificationActivateQuery;
+use App\Query\Common\SystemNotificationQuery;
 use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
 use App\Service\AuthorizedUserServiceInterface;
@@ -66,7 +66,7 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
         description: "Method get all notifications from the system for logged user",
         requestBody: new OA\RequestBody(
@@ -110,7 +110,9 @@ class NotificationController extends AbstractController
             foreach ($userSystemNotifications as $index => $notification) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($index < $maxResult) {
+                }
+
+                if ($index < $maxResult) {
 
                     $notificationCheck = $checkRepository->findOneBy([
                         "user" => $user->getId(),
@@ -132,11 +134,11 @@ class NotificationController extends AbstractController
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -152,7 +154,7 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
     #[OA\Post(
         description: "Method get is activating given notification so user can see if he read this notification",
         requestBody: new OA\RequestBody(
@@ -204,10 +206,10 @@ class NotificationController extends AbstractController
             }
 
             return ResponseTool::getResponse(null, 201);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

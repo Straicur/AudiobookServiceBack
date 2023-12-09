@@ -12,32 +12,32 @@ use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
-use App\Model\AdminUserDeleteListSuccessModel;
-use App\Model\AdminUserNotificationsSuccessModel;
-use App\Model\AdminUsersSuccessModel;
-use App\Model\AdminUserSystemRolesSuccessModel;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
-use App\Model\SystemRoleModel;
-use App\Model\UserDeleteModel;
-use App\Model\UserModel;
-use App\Query\AdminUserActivateQuery;
-use App\Query\AdminUserBanQuery;
-use App\Query\AdminUserChangePasswordQuery;
-use App\Query\AdminUserChangePhoneQuery;
-use App\Query\AdminUserDeleteAcceptQuery;
-use App\Query\AdminUserDeleteDeclineQuery;
-use App\Query\AdminUserDeleteListQuery;
-use App\Query\AdminUserDeleteQuery;
-use App\Query\AdminUserNotificationDeleteQuery;
-use App\Query\AdminUserNotificationPatchQuery;
-use App\Query\AdminUserNotificationPutQuery;
-use App\Query\AdminUserNotificationsQuery;
-use App\Query\AdminUserRoleAddQuery;
-use App\Query\AdminUserRoleRemoveQuery;
-use App\Query\AdminUsersQuery;
+use App\Model\Admin\AdminSystemRoleModel;
+use App\Model\Admin\AdminUserDeleteListSuccessModel;
+use App\Model\Admin\AdminUserModel;
+use App\Model\Admin\AdminUserNotificationsSuccessModel;
+use App\Model\Admin\AdminUsersSuccessModel;
+use App\Model\Admin\AdminUserSystemRolesSuccessModel;
+use App\Model\Admin\AdminUserDeleteModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Admin\AdminUserActivateQuery;
+use App\Query\Admin\AdminUserBanQuery;
+use App\Query\Admin\AdminUserChangePasswordQuery;
+use App\Query\Admin\AdminUserChangePhoneQuery;
+use App\Query\Admin\AdminUserDeleteAcceptQuery;
+use App\Query\Admin\AdminUserDeleteDeclineQuery;
+use App\Query\Admin\AdminUserDeleteListQuery;
+use App\Query\Admin\AdminUserDeleteQuery;
+use App\Query\Admin\AdminUserNotificationDeleteQuery;
+use App\Query\Admin\AdminUserNotificationPatchQuery;
+use App\Query\Admin\AdminUserNotificationPutQuery;
+use App\Query\Admin\AdminUserNotificationsQuery;
+use App\Query\Admin\AdminUserRoleAddQuery;
+use App\Query\Admin\AdminUserRoleRemoveQuery;
+use App\Query\Admin\AdminUsersQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\InstitutionRepository;
@@ -118,10 +118,10 @@ class AdminUserController extends AbstractController
         foreach ($roles as $role) {
             switch ($role->getName()) {
                 case UserRolesNames::GUEST->value:
-                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::GUEST->value));
+                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::GUEST->value));
                     break;
                 case UserRolesNames::USER->value:
-                    $successModel->addRole(new SystemRoleModel($role->getName(), UserRoles::USER->value));
+                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::USER->value));
                     break;
             }
 
@@ -217,11 +217,11 @@ class AdminUserController extends AbstractController
             $userRepository->add($user);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -311,11 +311,11 @@ class AdminUserController extends AbstractController
             $userRepository->add($user);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -388,11 +388,11 @@ class AdminUserController extends AbstractController
             $userRepository->add($user);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -458,11 +458,11 @@ class AdminUserController extends AbstractController
             $userRepository->add($user);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -535,11 +535,11 @@ class AdminUserController extends AbstractController
             $userPasswordRepository->add($userPassword);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -608,11 +608,11 @@ class AdminUserController extends AbstractController
             $userInformationRepository->add($userInfo);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -701,13 +701,15 @@ class AdminUserController extends AbstractController
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($userRepository->userIsAdmin($user)) {
+                }
+
+                if ($userRepository->userIsAdmin($user)) {
                     $maxResult = $maxResult + 1;
                 } elseif ($index < $maxResult) {
 
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
 
-                    $userModel = new UserModel(
+                    $userModel = new AdminUserModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -741,11 +743,11 @@ class AdminUserController extends AbstractController
             $successModel->setMaxPage(ceil(count($allUsers) / $adminUsersQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -824,7 +826,7 @@ class AdminUserController extends AbstractController
 
             $userDeleteRepository->add($userDelete);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -838,11 +840,11 @@ class AdminUserController extends AbstractController
             }
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -904,8 +906,10 @@ class AdminUserController extends AbstractController
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
                     continue;
-                } elseif ($index < $maxResult) {
-                    $userDeleteModel = new UserDeleteModel(
+                }
+
+                if ($index < $maxResult) {
+                    $userDeleteModel = new AdminUserDeleteModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -932,11 +936,11 @@ class AdminUserController extends AbstractController
             $successModel->setMaxPage(ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -996,8 +1000,10 @@ class AdminUserController extends AbstractController
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
                     continue;
-                } elseif ($index < $maxResult) {
-                    $userDeleteModel = new UserDeleteModel(
+                }
+
+                if ($index < $maxResult) {
+                    $userDeleteModel = new AdminUserDeleteModel(
                         $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
@@ -1024,11 +1030,11 @@ class AdminUserController extends AbstractController
             $successModel->setMaxPage(ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1100,7 +1106,7 @@ class AdminUserController extends AbstractController
 
             $userDeleteRepository->add($userDelete);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -1114,11 +1120,11 @@ class AdminUserController extends AbstractController
             }
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1199,7 +1205,7 @@ class AdminUserController extends AbstractController
 
             $userRepository->add($user);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -1224,11 +1230,11 @@ class AdminUserController extends AbstractController
             $notificationRepository->add($notification);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1303,7 +1309,9 @@ class AdminUserController extends AbstractController
             foreach ($allUserSystemNotifications as $index => $notification) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($index < $maxResult) {
+                }
+
+                if ($index < $maxResult) {
                     $systemNotifications[] = NotificationBuilder::read($notification);
                 } else {
                     break;
@@ -1527,11 +1535,11 @@ class AdminUserController extends AbstractController
             }
 
             return ResponseTool::getResponse(null, 201);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
 
     }
 
@@ -1624,11 +1632,11 @@ class AdminUserController extends AbstractController
             $notificationRepository->add($notification);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1688,10 +1696,10 @@ class AdminUserController extends AbstractController
             $notificationRepository->add($notification);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Query\AdminAudiobookAddQuery;
-use App\Query\AdminAudiobookReAddingQuery;
+use App\Query\Admin\AdminAudiobookAddQuery;
+use App\Query\Admin\AdminAudiobookReAddingQuery;
 
 interface AudiobookServiceInterface
 {

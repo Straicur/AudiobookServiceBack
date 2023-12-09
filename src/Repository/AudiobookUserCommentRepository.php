@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use App\Entity\AudiobookUserComment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<AudiobookUserComment>
@@ -53,16 +53,12 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
      */
     public function getParentCommentKids(AudiobookUserComment $parent): array
     {
-        $qb = $this->createQueryBuilder('c');
-
-        $qb->leftJoin('c.parent', 'cp')
-            ->where('cp.id = :parent')
-            ->andWhere('c.deleted = false')
+        $qb = $this->createQueryBuilder('c')
+            ->innerJoin('c.parent', 'cp', Join::WITH, 'cp.id = :parent')
+            ->where('c.deleted = false')
             ->setParameter('parent', $parent->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 //    /**
 //     * @return AudiobookUserComment[] Returns an array of AudiobookUserComment objects

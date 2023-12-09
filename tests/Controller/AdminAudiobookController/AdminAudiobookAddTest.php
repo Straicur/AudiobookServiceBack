@@ -36,7 +36,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -62,8 +62,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -75,7 +75,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $hasSecondCategory = false;
 
         foreach ($audiobookAfter->getCategories() as $category) {
-            if ($category->getId()->__toString() == $category->getId()->__toString()) {
+            if ($category->getId()->__toString() == $category1->getId()->__toString()) {
                 $hasFirstCategory = true;
             }
             if ($category->getId()->__toString() == $category2->getId()->__toString()) {
@@ -110,7 +110,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileFirstBase = fopen(self::base64OnePartFile, "r");
+        $fileFirstBase = fopen(self::base64OnePartFile, 'rb');
         $readFirstData = fread($fileFirstBase, filesize(self::base64FirstPartFile,));
 
         $content = [
@@ -135,8 +135,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $audiobookService->removeFolder($_ENV['MAIN_DIR'] . "/" . $content["hashName"]);
     }
@@ -162,7 +162,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
@@ -181,8 +181,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(201);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
 
         $audiobooksAfter = $audiobookRepository->findAll();
 
@@ -236,8 +236,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
 //        ], content: json_encode($content));
 //
 //        /// step 4
-//        $this->assertResponseIsSuccessful();
-//        $this->assertResponseStatusCodeSame(200);
+//        self::assertResponseIsSuccessful();
+//        self::assertResponseStatusCodeSame(200);
 //
 //        $fileSecondBase = fopen(self::base64OnePartFile, "r");
 //        $readSecondData = fread($fileSecondBase, filesize(self::base64SecondPartFile,));
@@ -265,8 +265,8 @@ class AdminAudiobookAddTest extends AbstractWebTest
 //        ], content: json_encode($content));
 //
 //        /// step 4
-//        $this->assertResponseIsSuccessful();
-//        $this->assertResponseStatusCodeSame(201);
+//        self::assertResponseIsSuccessful();
+//        self::assertResponseStatusCodeSame(201);
 //
 //        $audiobookAfter = $audiobookRepository->findOneBy([
 //            "title" => $content["additionalData"]['title']
@@ -307,7 +307,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         $content = [];
@@ -318,7 +318,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(400);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -347,7 +347,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         $content = [
@@ -370,7 +370,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -399,7 +399,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, "r");
+        $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         $content = [
@@ -420,7 +420,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         /// step 2
         $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", content: json_encode($content));
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

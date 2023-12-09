@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\PermissionNotGrantedModel;
+use App\Model\Error\PermissionNotGrantedModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 

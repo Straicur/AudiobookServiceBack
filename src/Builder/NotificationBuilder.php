@@ -8,7 +8,7 @@ use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Exception\NotificationException;
-use App\Model\NotificationModel;
+use App\Model\Common\NotificationModel;
 use Symfony\Component\Uid\Uuid;
 
 

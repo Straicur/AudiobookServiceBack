@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\JsonDataInvalidModel;
+use App\Model\Error\JsonDataInvalidModel;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;

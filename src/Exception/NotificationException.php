@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\ServiceUnavailableModel;
+use App\Model\Error\ServiceUnavailableModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 

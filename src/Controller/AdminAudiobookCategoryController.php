@@ -6,23 +6,23 @@ use App\Annotation\AuthValidation;
 use App\Entity\AudiobookCategory;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\AdminCategoriesSuccessModel;
-use App\Model\AdminCategoryAudiobookModel;
-use App\Model\AdminCategoryAudiobooksSuccessModel;
-use App\Model\AdminCategoryModel;
-use App\Model\AdminCategorySuccessModel;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
-use App\Query\AdminCategoryActiveQuery;
-use App\Query\AdminCategoryAddAudiobookQuery;
-use App\Query\AdminCategoryAddQuery;
-use App\Query\AdminCategoryAudiobooksQuery;
-use App\Query\AdminCategoryDetailQuery;
-use App\Query\AdminCategoryEditQuery;
-use App\Query\AdminCategoryRemoveAudiobookQuery;
-use App\Query\AdminCategoryRemoveQuery;
+use App\Model\Admin\AdminCategoriesSuccessModel;
+use App\Model\Admin\AdminCategoryAudiobookModel;
+use App\Model\Admin\AdminCategoryAudiobooksSuccessModel;
+use App\Model\Admin\AdminCategoryModel;
+use App\Model\Admin\AdminCategorySuccessModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Admin\AdminCategoryActiveQuery;
+use App\Query\Admin\AdminCategoryAddAudiobookQuery;
+use App\Query\Admin\AdminCategoryAddQuery;
+use App\Query\Admin\AdminCategoryAudiobooksQuery;
+use App\Query\Admin\AdminCategoryDetailQuery;
+use App\Query\Admin\AdminCategoryEditQuery;
+use App\Query\Admin\AdminCategoryRemoveAudiobookQuery;
+use App\Query\Admin\AdminCategoryRemoveQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
@@ -132,11 +132,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookCategoryRepository->add($newCategory);
 
             return ResponseTool::getResponse(httpCode: 201);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -195,11 +195,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookCategoryRepository->add($category);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -261,11 +261,11 @@ class AdminAudiobookCategoryController extends AbstractController
 //            $audiobookCategoryRepository->remove($category);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -337,11 +337,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -413,11 +413,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -483,7 +483,9 @@ class AdminAudiobookCategoryController extends AbstractController
             foreach ($audiobooks as $index => $audiobook) {
                 if ($index < $minResult) {
                     continue;
-                } elseif ($index < $maxResult) {
+                }
+
+                if ($index < $maxResult) {
                     $audiobookModel = new AdminCategoryAudiobookModel(
                         $audiobook->getId(),
                         $audiobook->getTitle(),
@@ -508,11 +510,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $successModel->setMaxPage(ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -656,11 +658,11 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookCategoryRepository->add($category);
 
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -720,10 +722,10 @@ class AdminAudiobookCategoryController extends AbstractController
 
             return ResponseTool::getResponse($successModel);
 
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

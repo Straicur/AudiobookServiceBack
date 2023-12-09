@@ -7,14 +7,14 @@ use App\Entity\AuthenticationToken;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\PermissionException;
-use App\Model\AuthorizationRoleModel;
-use App\Model\AuthorizationRolesModel;
-use App\Model\AuthorizationSuccessModel;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
-use App\Query\AuthorizeQuery;
+use App\Model\Common\AuthorizationRoleModel;
+use App\Model\Common\AuthorizationRolesModel;
+use App\Model\Common\AuthorizationSuccessModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Common\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
@@ -133,7 +133,7 @@ class AuthorizationController extends AbstractController
             $isUser = false;
 
             foreach ($roles as $role) {
-                if ($role->getName() == "User" || $role->getName() == "Administrator") {
+                if ($role->getName() === "User" || $role->getName() === "Administrator") {
                     $isUser = true;
                 }
             }
@@ -169,12 +169,12 @@ class AuthorizationController extends AbstractController
 
 
             return ResponseTool::getResponse($responseModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**

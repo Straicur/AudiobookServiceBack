@@ -2,7 +2,7 @@
 
 namespace App\Exception;
 
-use App\Model\NotAuthorizeModel;
+use App\Model\Error\NotAuthorizeModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 

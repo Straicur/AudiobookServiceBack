@@ -5,7 +5,9 @@ namespace App\Repository;
 use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use App\Enums\AudiobookOrderSearch;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -57,19 +59,18 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param string|null $album
      * @param int|null $duration
      * @param int|null $age
-     * @param \DateTime|null $year
+     * @param DateTime|null $year
      * @param int|null $parts
      * @param int|null $order
      * @return Audiobook[]
      */
-    public function getAudiobooksByPage(array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, \DateTime $year = null, int $parts = null, int $order = null): array
+    public function getAudiobooksByPage(array $categories = null, string $author = null, string $title = null, string $album = null, int $duration = null, int $age = null, DateTime $year = null, int $parts = null, int $order = null): array
     {
 
         $qb = $this->createQueryBuilder('a');
 
         if ($categories != null) {
-            $qb->leftJoin('a.categories', 'c')
-                ->andWhere('c.id IN (:categories)')
+            $qb->innerJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
                 ->setParameter('categories', $categories);
         }
         if ($author != null) {
@@ -125,14 +126,14 @@ class AudiobookRepository extends ServiceEntityRepository
             switch ($order) {
                 case AudiobookOrderSearch::POPULAR->value:
                 {
-                    $qb->leftJoin('a.audiobookInfos', 'ai')
+                    $qb->innerJoin('a.audiobookInfos', 'ai')
                         ->groupBy('a')
                         ->orderBy('COUNT(ai)', "DESC");
                     break;
                 }
                 case AudiobookOrderSearch::LEST_POPULAR->value:
                 {
-                    $qb->leftJoin('a.audiobookInfos', 'ai')
+                    $qb->innerJoin('a.audiobookInfos', 'ai')
                         ->groupBy('a')
                         ->orderBy('COUNT(ai)', "ASC");
                     break;
@@ -170,9 +171,7 @@ class AudiobookRepository extends ServiceEntityRepository
             }
         }
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -182,14 +181,11 @@ class AudiobookRepository extends ServiceEntityRepository
     public function getActiveCategoryAudiobooks(AudiobookCategory $category): array
     {
         $qb = $this->createQueryBuilder('a')
-            ->leftJoin('a.categories', 'c')
-            ->where('c.id = :category')
-            ->andWhere('a.active = true')
+          ->innerJoin('a.categories', 'c', Join::WITH, 'c.id = :category')
+            ->where('a.active = true')
             ->setParameter('category', $category->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -199,13 +195,10 @@ class AudiobookRepository extends ServiceEntityRepository
     public function getCategoryAudiobooks(AudiobookCategory $category): array
     {
         $qb = $this->createQueryBuilder('a')
-            ->leftJoin('a.categories', 'c')
-            ->where('c.id = :category')
+            ->innerJoin('a.categories', 'c', Join::WITH, 'c.id = :category')
             ->setParameter('category', $category->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -217,9 +210,8 @@ class AudiobookRepository extends ServiceEntityRepository
     public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey, bool $getActive = true): ?Audiobook
     {
         $qb = $this->createQueryBuilder('a')
-            ->leftJoin('a.categories', 'c')
-            ->where('c.categoryKey = :categoryKey')
-            ->andWhere('a.id = :audiobookId');
+            ->innerJoin('a.categories', 'c', Join::WITH, 'c.categoryKey = :categoryKey')
+            ->where('a.id = :audiobookId');
         if ($getActive) {
             $qb->andWhere('a.active = true');
         }
@@ -240,15 +232,13 @@ class AudiobookRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('a')
             ->select('a')
-            ->leftJoin('a.audiobookRatings', 'ar')
+            ->innerJoin('a.audiobookRatings', 'ar')
             ->where('a.active = true')
             ->groupBy('a')
             ->orderBy('COUNT(ar)', "DESC")
             ->setMaxResults(3);
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 
     /**
@@ -266,9 +256,7 @@ class AudiobookRepository extends ServiceEntityRepository
             ->groupBy('a')
             ->orderBy('COUNT(ar)', "DESC");
 
-        $query = $qb->getQuery();
-
-        return $query->execute();
+        return $qb->getQuery()->execute();
     }
 //    /**
 //     * @return Audiobook[] Returns an array of Audiobook objects

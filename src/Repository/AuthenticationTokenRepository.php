@@ -57,7 +57,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
     public function findActiveToken(string $authorizationHeaderField): ?AuthenticationToken
     {
         return $this->createQueryBuilder('a')
-            ->andWhere("a.token = :token")
+            ->where("a.token = :token")
             ->andWhere("a.dateExpired > :dateNow")
             ->setParameter("token", $authorizationHeaderField)
             ->setParameter("dateNow", new \DateTime("now"))

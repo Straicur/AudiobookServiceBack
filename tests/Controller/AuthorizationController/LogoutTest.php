@@ -33,8 +33,8 @@ class LogoutTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
     }
 
@@ -48,7 +48,7 @@ class LogoutTest extends AbstractWebTest
         /// step 1
         $crawler = self::$webClient->request("POST", "/api/logout");
         /// step 2
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

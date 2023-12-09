@@ -5,14 +5,14 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\AudiobookCoverModel;
-use App\Model\AudiobookCoversSuccessModel;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Model\NotAuthorizeModel;
-use App\Model\PermissionNotGrantedModel;
-use App\Query\AudiobookCoversQuery;
-use App\Query\AudiobookPartQuery;
+use App\Model\Common\AudiobookCoverModel;
+use App\Model\Common\AudiobookCoversSuccessModel;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Model\Error\NotAuthorizeModel;
+use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Common\AudiobookCoversQuery;
+use App\Query\Common\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -115,11 +115,11 @@ class AudiobookController extends AbstractController
 
             if ($handle) {
                 while (false !== ($entry = readdir($handle))) {
-                    if ($entry != "." && $entry != "..") {
+                    if ($entry !== "." && $entry !== "..") {
 
                         $file_parts = pathinfo($entry);
 
-                        if ($file_parts['extension'] == "mp3") {
+                        if ($file_parts['extension'] === "mp3") {
                             $allParts[] = $file_parts['basename'];
                         }
                     }
@@ -144,11 +144,11 @@ class AudiobookController extends AbstractController
             }
 
             return ResponseTool::getBinaryFileResponse($dir);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -208,9 +208,9 @@ class AudiobookController extends AbstractController
                     $img = "";
                     if ($handle) {
                         while (false !== ($entry = readdir($handle))) {
-                            if ($entry != "." && $entry != "..") {
+                            if ($entry !== "." && $entry !== "..") {
                                 $file_parts = pathinfo($entry);
-                                if ($file_parts['extension'] == "jpg" || $file_parts['extension'] == "jpeg" || $file_parts['extension'] == "png") {
+                                if ($file_parts['extension'] === "jpg" || $file_parts['extension'] === "jpeg" || $file_parts['extension'] === "png") {
                                     $img = $file_parts["basename"];
                                     break;
                                 }
@@ -225,10 +225,10 @@ class AudiobookController extends AbstractController
             }
 
             return ResponseTool::getResponse($successModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }

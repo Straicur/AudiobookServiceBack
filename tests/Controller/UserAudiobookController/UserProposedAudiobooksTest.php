@@ -51,8 +51,8 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         ]);
 
         /// step 3
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
@@ -102,7 +102,7 @@ class UserProposedAudiobooksTest extends AbstractWebTest
             "HTTP_authorization" => $token->getToken()
         ]);
         /// step 3
-        $this->assertResponseStatusCodeSame(403);
+        self::assertResponseStatusCodeSame(403);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -141,7 +141,7 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         $crawler = self::$webClient->request("GET", "/api/user/proposed/audiobooks");
 
         /// step 3
-        $this->assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(401);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

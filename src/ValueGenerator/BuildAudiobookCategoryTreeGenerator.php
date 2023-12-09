@@ -2,11 +2,10 @@
 
 namespace App\ValueGenerator;
 
-use App\Model\AdminCategoryModel;
+use App\Model\Admin\AdminCategoryModel;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use Symfony\Component\Uid\Uuid;
-
 
 class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
@@ -32,7 +31,7 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 
         foreach ($elements as $element) {
 
-            if ($element->getParent() == $parentId || ($element->getParent() != null && $element->getParent()->getId() == $parentId)) {
+            if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
 
                 $children = $this->categoryRepository->findBy([
                     "parent" => $element->getId()

@@ -10,10 +10,10 @@ use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\DataNotFoundModel;
-use App\Model\JsonDataInvalidModel;
-use App\Query\RegisterConfirmSendQuery;
-use App\Query\RegisterQuery;
+use App\Model\Error\DataNotFoundModel;
+use App\Model\Error\JsonDataInvalidModel;
+use App\Query\Common\RegisterConfirmSendQuery;
+use App\Query\Common\RegisterQuery;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
@@ -175,7 +175,7 @@ class RegisterController extends AbstractController
 
             $registerCodeRepository->add($registerCode);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($newUser->getUserInformation()->getEmail())
@@ -193,11 +193,11 @@ class RegisterController extends AbstractController
 
             $usersLogger->info("user." . $newUser->getUserInformation()->getEmail() . "registered");
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -208,9 +208,9 @@ class RegisterController extends AbstractController
      * @param RoleRepository $roleRepository
      * @param UserRepository $userRepository
      * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
      * @return Response
      * @throws DataNotFoundException
-     * @throws \Exception
      */
     #[Route("/api/register/{email}/{code}", name: "apiRegisterConfirm", methods: ["GET"])]
     #[OA\Get(
@@ -359,7 +359,7 @@ class RegisterController extends AbstractController
 
             $registerCodeRepository->add($registerCode);
 
-            if ($_ENV["APP_ENV"] != "test") {
+            if ($_ENV["APP_ENV"] !== "test") {
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
@@ -377,10 +377,10 @@ class RegisterController extends AbstractController
 
             $usersLogger->info("user." . $user->getUserInformation()->getEmail() . "got new confim email");
             return ResponseTool::getResponse();
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }
