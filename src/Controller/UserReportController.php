@@ -92,10 +92,11 @@ class UserReportController extends AbstractController
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
-            if ($reportRepository->notLoggedUserReportsCount($userNotAuthorizedUserReportQuery->getIp()) >= 3) {
+            $ip = $userNotAuthorizedUserReportQuery->getIp();
+            if ($reportRepository->notLoggedUserReportsCount($ip) >= 3) {
                 $endpointLogger->error("To many reports from this ip");
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("NotLoggedUserToManyReports")]);
+                throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
             }
 
             $additionalData = $userNotAuthorizedUserReportQuery->getAdditionalData();
@@ -110,6 +111,7 @@ class UserReportController extends AbstractController
             }
 
             $newReport = new Report($userNotAuthorizedUserReportQuery->getType());
+            $newReport->setIp($ip);
 
             if ($actionId) {
                 $newReport->setActionId($actionId);
@@ -133,6 +135,7 @@ class UserReportController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -157,18 +160,49 @@ class UserReportController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        ReportRepository               $reportRepository
     ): Response
     {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            if ($reportRepository->loggedUserReportsCount($user) >= 3) {
+                $endpointLogger->error("To many reports from this ip");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
+            }
+
+            $additionalData = $userReportQuery->getAdditionalData();
+            $actionId = null;
+            $description = null;
+
+            if (array_key_exists('actionId', $additionalData)) {
+                $actionId = $additionalData['actionId'];
+            }
+            if (array_key_exists('description', $additionalData)) {
+                $description = $additionalData['description'];
+            }
+
+            $newReport = new Report($userReportQuery->getType());
+            $newReport->setUser($user);
+
+            if ($actionId) {
+                $newReport->setActionId($actionId);
+            }
+            if ($description) {
+                $newReport->setDescription($description);
+            }
+
+            $reportRepository->add($newReport);
+
             return ResponseTool::getResponse(httpCode: 201);
         }
 
         $endpointLogger->error("Invalid given Query");
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
-        //TODO tu muszę też sprawdzić czy nie robi już za dużo tego samego typu zgłoszeń(max 2)
     }
 }

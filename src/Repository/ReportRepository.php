@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Report;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -61,6 +61,23 @@ class ReportRepository extends ServiceEntityRepository
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('ip', $ip);
+
+        return $qb->getQuery()->execute();
+    }
+
+    public function loggedUserReportsCount(User $user)
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-2 day');
+
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.user = :user')
+            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate)
+            ->setParameter('user', $user->getId()->toBinary());
 
         return $qb->getQuery()->execute();
     }
