@@ -2,23 +2,36 @@
 
 namespace App\Model\Admin;
 
+use App\Enums\ReportType;
 use OpenApi\Attributes as OA;
 
 class AdminReportModel
 {
     private string $id;
     private int $type;
+    private int $dateAdd;
+    private int $accepted;
+    private int $denied;
     private ?string $description = null;
     private ?string $actionId = null;
+    private ?string $email = null;
+    private ?string $ip = null;
+    private ?AdminUserModel $user = null;
 
     /**
      * @param string $id
      * @param int $type
+     * @param int $dateAdd
+     * @param int $accepted
+     * @param int $denied
      */
-    public function __construct(string $id, int $type)
+    public function __construct(string $id, ReportType $type, \DateTime $dateAdd, int $accepted, int $denied)
     {
         $this->id = $id;
-        $this->type = $type;
+        $this->type = $type->value;
+        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->accepted = $accepted;
+        $this->denied = $denied;
     }
 
     public function getId(): string
@@ -60,6 +73,66 @@ class AdminReportModel
     public function setActionId(string $actionId): void
     {
         $this->actionId = $actionId;
+    }
+
+    public function getDateAdd(): int
+    {
+        return $this->dateAdd;
+    }
+
+    public function setDateAdd(\DateTime $dateAdd): void
+    {
+        $this->dateAdd = $dateAdd->getTimestamp();
+    }
+
+    public function getAccepted(): int
+    {
+        return $this->accepted;
+    }
+
+    public function setAccepted(int $accepted): void
+    {
+        $this->accepted = $accepted;
+    }
+
+    public function getDenied(): int
+    {
+        return $this->denied;
+    }
+
+    public function setDenied(int $denied): void
+    {
+        $this->denied = $denied;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(string $ip): void
+    {
+        $this->ip = $ip;
+    }
+
+    public function getUser(): ?AdminUserModel
+    {
+        return $this->user;
+    }
+
+    public function setUser(AdminUserModel $user): void
+    {
+        $this->user = $user;
     }
 
 }
