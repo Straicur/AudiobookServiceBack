@@ -20,6 +20,8 @@ class Report
     #[ORM\Column(type: 'integer')]
     private int $type;
 
+    #[ORM\Column(type: 'datetime')]
+    private \DateTime $dateAdd;
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description;
 
@@ -35,6 +37,7 @@ class Report
     public function __construct(int $type)
     {
         $this->type = $type;
+        $this->dateAdd = new \DateTime();
     }
 
     public function getId(): Uuid
@@ -90,9 +93,19 @@ class Report
         return $this->ip;
     }
 
-    public function setIp(?string $ip): void
+    public function setIp(string $ip): void
     {
         $this->ip = $ip;
+    }
+
+    public function getDateAdd(): \DateTime
+    {
+        return $this->dateAdd;
+    }
+
+    public function setDateAdd(\DateTime $dateAdd): void
+    {
+        $this->dateAdd = $dateAdd;
     }
 
 }

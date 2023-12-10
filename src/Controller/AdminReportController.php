@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminReportListSuccessModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -83,7 +84,15 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-        return ResponseTool::getResponse();
+        $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
+
+        if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
+
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -120,7 +129,15 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-        return ResponseTool::getResponse();
+        $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
+
+        if ($adminReportRejectQuery instanceof AdminReportRejectQuery) {
+
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -158,7 +175,15 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-        return ResponseTool::getResponse();
+        $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
+
+        if ($adminReportListQuery instanceof AdminReportListQuery) {
+
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
 }
