@@ -168,6 +168,8 @@ class NotificationBuilder
             case NotificationType::ADMIN:
             case NotificationType::PROPOSED:
             case NotificationType::NEW_AUDIOBOOK:
+            case NotificationType::USER_REPORT_ACCEPTED:
+            case NotificationType::USER_REPORT_DENIED:
             case NotificationType::USER_DELETE_DECLINE:
                 $keys = ["user"];
                 break;

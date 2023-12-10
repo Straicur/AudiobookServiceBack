@@ -113,7 +113,7 @@ class AdminUserNotificationPatchQuery
      */
     public function setActionId(string $actionId): void
     {
-        $this->actionId = Uuid::fromString($actionId);;
+        $this->actionId = Uuid::fromString($actionId);
     }
 
     /**

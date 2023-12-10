@@ -179,7 +179,7 @@ class RegisterController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($newUser->getUserInformation()->getEmail())
-                    ->subject('Kod aktywacji konta')
+                    ->subject($translateService->getTranslation("AccountActivationCodeSubject"))
                     ->htmlTemplate('emails/register.html.twig')
                     ->context([
                         "userName" => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
@@ -363,7 +363,7 @@ class RegisterController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Kod aktywacji konta')
+                    ->subject($translateService->getTranslation("AccountActivationCodeSubject"))
                     ->htmlTemplate('emails/register.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),

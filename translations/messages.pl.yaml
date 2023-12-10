@@ -45,3 +45,15 @@ SuccessfulEmailChange: Udana zmiana emaila
 Cheers: Dziękujemy
 SystemVolumen: Serwis przekroczył dostępną przestrzeń dyskową
 UserToManyReports: Przez ostatnie 3 dni zostało wysłane od ciebie za duzo zgłoszeń
+ReportAcceptEmail: Cześć twoje zgłoszenie zostało zaakceptowanie i jest przetwarzane
+ReportDeniedEmail: Cześć twoje zgłoszenie zostało odrzucone
+ReportAcceptSubject: Akceptacja zgłoszenia
+ReportDeniedSubject: Odrzucenie zgłoszenia
+Explanation: Wyjasnienie
+YourReport: Twoje zgłoszenie
+AccountActivationCodeSubject: Kod aktywacji konta
+AccountDeletedSubject: Konto usunięte
+DeletionRejectedSubject: Usunięcie odrzucone
+ChangeEmailSubject: Zmiana emaila
+RequestDeleteAccountSubject: Prośba o usunięcie konta jest przetwarzana
+PasswordResetSubject: Reset hasła

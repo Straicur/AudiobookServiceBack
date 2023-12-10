@@ -4,7 +4,6 @@ namespace App\Model\Common;
 
 use App\Entity\NotificationCheck;
 use App\Enums\NotificationType;
-use App\Model\Error\ModelInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 

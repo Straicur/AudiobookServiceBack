@@ -22,6 +22,12 @@ class Report
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $dateAdd;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $accepted;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $denied;
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description;
 
@@ -31,6 +37,8 @@ class Report
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $ip;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $email;
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user;
 
@@ -40,6 +48,8 @@ class Report
     public function __construct(ReportType $type)
     {
         $this->type = $type->value;
+        $this->accepted = false;
+        $this->denied = false;
         $this->dateAdd = new \DateTime();
     }
 
@@ -121,6 +131,40 @@ class Report
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getAccepted(): bool
+    {
+        return $this->accepted;
+    }
+
+    public function setAccepted(bool $accepted): self
+    {
+        $this->accepted = $accepted;
+
+        return $this;
+    }
+
+    public function getDenied(): bool
+    {
+        return $this->denied;
+    }
+
+    public function setDenied(bool $denied): self
+    {
+        $this->denied = $denied;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
 }
