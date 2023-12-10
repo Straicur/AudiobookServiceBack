@@ -65,6 +65,8 @@ class Notification
             4 => NotificationType::NEW_CATEGORY,
             5 => NotificationType::NEW_AUDIOBOOK,
             6 => NotificationType::USER_DELETE_DECLINE,
+            7 => NotificationType::USER_REPORT_ACCEPTED,
+            8 => NotificationType::USER_REPORT_DENIED,
         };
     }
 

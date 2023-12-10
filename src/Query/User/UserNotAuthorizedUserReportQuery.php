@@ -22,6 +22,10 @@ class UserNotAuthorizedUserReportQuery
     #[Assert\Type(type: "string")]
     private string $ip;
 
+    #[Assert\NotNull(message: "Email is null")]
+    #[Assert\NotBlank(message: "Email is empty")]
+    #[Assert\Email]
+    private string $email;
 
     protected array $additionalData = [];
 
@@ -91,6 +95,16 @@ class UserNotAuthorizedUserReportQuery
     public function setIp(string $ip): void
     {
         $this->ip = $ip;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
 }

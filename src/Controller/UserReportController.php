@@ -112,6 +112,7 @@ class UserReportController extends AbstractController
 
             $newReport = new Report($userNotAuthorizedUserReportQuery->getType());
             $newReport->setIp($ip);
+            $newReport->setEmail($userNotAuthorizedUserReportQuery->getEmail());
 
             if ($actionId) {
                 $newReport->setActionId($actionId);
