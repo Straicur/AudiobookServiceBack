@@ -16,6 +16,12 @@ class UserNotAuthorizedUserReportQuery
     #[Assert\LessThan(7)]
     private int $type;
 
+    #[Assert\NotNull(message: "Ip is null")]
+    #[Assert\NotBlank(message: "Ip is empty")]
+    #[Assert\Type(type: "string")]
+    private string $ip;
+
+
     protected array $additionalData = [];
 
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
@@ -29,11 +35,7 @@ class UserNotAuthorizedUserReportQuery
                 'actionId' => new Assert\Optional([
                     new Assert\NotBlank(message: "ActionId is empty"),
                     new Assert\Type(type: "string")
-                ]),
-                'ip' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Ip is empty"),
-                    new Assert\Type(type: "string")
-                ]),
+                ])
             ],
         ]));
     }
@@ -43,8 +45,7 @@ class UserNotAuthorizedUserReportQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "description", type: "string", example: "Desc", nullable: true),
-        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true),
-        new OA\Property(property: "ip", type: "string", example: "Ip", nullable: true),
+        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true)
     ], type: "object")]
     public function setAdditionalData(array $additionalData): void
     {
@@ -71,6 +72,16 @@ class UserNotAuthorizedUserReportQuery
     public function setType(int $type): void
     {
         $this->type = $type;
+    }
+
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(string $ip): void
+    {
+        $this->ip = $ip;
     }
 
 }

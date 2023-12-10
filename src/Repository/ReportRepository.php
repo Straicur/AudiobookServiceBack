@@ -4,8 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Report;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -49,6 +48,22 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
+    public function notLoggedUserReportsCount(string $ip)
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-2 day');
+
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.ip = :ip')
+            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate)
+            ->setParameter('ip', $ip);
+
+        return $qb->getQuery()->execute();
+    }
 //    /**
 //     * @return Report[] Returns an array of Report objects
 //     */

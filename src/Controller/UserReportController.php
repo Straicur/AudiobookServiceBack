@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Entity\Report;
+use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -10,6 +12,7 @@ use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\User\UserNotAuthorizedUserReportQuery;
 use App\Query\User\UserReportQuery;
+use App\Repository\ReportRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -50,10 +53,14 @@ class UserReportController extends AbstractController
 {
     /**
      * @param Request $request
+     * @param RequestServiceInterface $requestService
      * @param LoggerInterface $usersLogger
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
+     * @param ReportRepository $reportRepository
      * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
     #[OA\Put(
@@ -74,15 +81,51 @@ class UserReportController extends AbstractController
         ]
     )]
     public function report(
-        Request          $request,
-        LoggerInterface  $usersLogger,
-        LoggerInterface  $endpointLogger,
-        TranslateService $translateService
+        Request                 $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface         $usersLogger,
+        LoggerInterface         $endpointLogger,
+        TranslateService        $translateService,
+        ReportRepository        $reportRepository
     ): Response
     {
-        //TODO tu dostaje dodatkowo ip i sprawdzam czy dziś już wysłał minimum 3 zgłoszenia
-        // Jeśli tak to nie dodaje nic
-        return ResponseTool::getResponse();
+        $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
+
+        if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
+            if ($reportRepository->notLoggedUserReportsCount($userNotAuthorizedUserReportQuery->getIp()) >= 3) {
+                $endpointLogger->error("To many reports from this ip");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("NotLoggedUserToManyReports")]);
+            }
+
+            $additionalData = $userNotAuthorizedUserReportQuery->getAdditionalData();
+            $actionId = null;
+            $description = null;
+
+            if (array_key_exists('actionId', $additionalData)) {
+                $actionId = $additionalData['actionId'];
+            }
+            if (array_key_exists('description', $additionalData)) {
+                $description = $additionalData['description'];
+            }
+
+            $newReport = new Report($userNotAuthorizedUserReportQuery->getType());
+
+            if ($actionId) {
+                $newReport->setActionId($actionId);
+            }
+            if ($description) {
+                $newReport->setDescription($description);
+            }
+
+            $reportRepository->add($newReport);
+
+            return ResponseTool::getResponse(httpCode: 201);
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -118,7 +161,15 @@ class UserReportController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
+
+        if ($userReportQuery instanceof UserReportQuery) {
+            return ResponseTool::getResponse(httpCode: 201);
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
         //TODO tu muszę też sprawdzić czy nie robi już za dużo tego samego typu zgłoszeń(max 2)
-        return ResponseTool::getResponse(httpCode: 201);
     }
 }
