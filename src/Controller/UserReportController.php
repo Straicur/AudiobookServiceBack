@@ -149,7 +149,6 @@ class UserReportController extends AbstractController
             new OA\Response(
                 response: 201,
                 description: "Success",
-            // content: new Model(type: UserAudiobooksSuccessModel::class)
             )
         ]
     )]

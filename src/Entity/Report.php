@@ -31,12 +31,15 @@ class Report
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $ip;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $user;
+
     /**
-     * @param int $type
+     * @param ReportType $type
      */
-    public function __construct(int $type)
+    public function __construct(ReportType $type)
     {
-        $this->type = $type;
+        $this->type = $type->value;
         $this->dateAdd = new \DateTime();
     }
 
@@ -106,6 +109,18 @@ class Report
     public function setDateAdd(\DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
 }
