@@ -10,6 +10,8 @@ use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\Admin\AdminReportListSuccessModel;
+use App\Model\Admin\AdminReportModel;
+use App\Model\Admin\AdminUserModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -19,6 +21,7 @@ use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
+use App\Repository\UserDeleteRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -255,7 +258,10 @@ class AdminReportController extends AbstractController
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
+     * @param ReportRepository $reportRepository
+     * @param UserDeleteRepository $userDeleteRepository
      * @return Response
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/report/admin/list", name: "apiReportAdminList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -281,13 +287,122 @@ class AdminReportController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        ReportRepository               $reportRepository,
+        UserDeleteRepository           $userDeleteRepository
     ): Response
     {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
+            $reportSearchData = $adminReportListQuery->getSearchData();
 
+            $actionId = null;
+            $desc = null;
+            $email = null;
+            $ip = null;
+            $type = null;
+            $user = null;
+            $accepted = null;
+            $denied = null;
+            $dateFrom = null;
+            $dateTo = null;
+            $order = null;
+
+            if (array_key_exists('desc', $reportSearchData)) {
+                $desc = ($reportSearchData['desc'] && '' != $reportSearchData['desc']) ? "%" . $reportSearchData['desc'] . "%" : null;
+            }
+            if (array_key_exists('email', $reportSearchData)) {
+                $email = ($reportSearchData['email'] && '' != $reportSearchData['email']) ? "%" . $reportSearchData['email'] . "%" : null;
+            }
+            if (array_key_exists('ip', $reportSearchData)) {
+                $ip = ($reportSearchData['ip'] && '' != $reportSearchData['ip']) ? "%" . $reportSearchData['ip'] . "%" : null;
+            }
+            if (array_key_exists('actionId', $reportSearchData)) {
+                $actionId = $reportSearchData['actionId'];
+            }
+            if (array_key_exists('type', $reportSearchData)) {
+                $type = $reportSearchData['type'];
+            }
+            if (array_key_exists('user', $reportSearchData)) {
+                $user = $reportSearchData['user'];
+            }
+            if (array_key_exists('accepted', $reportSearchData)) {
+                $accepted = $reportSearchData['accepted'];
+            }
+            if (array_key_exists('denied', $reportSearchData)) {
+                $denied = $reportSearchData['denied'];
+            }
+            if (array_key_exists('order', $reportSearchData)) {
+                $order = $reportSearchData['order'];
+            }
+            if (array_key_exists('dateFrom', $reportSearchData) && $reportSearchData['dateFrom']) {
+                $date = $reportSearchData['dateFrom'];
+            }
+            if (array_key_exists('dateTo', $reportSearchData) && $reportSearchData['dateTo']) {
+                $date = $reportSearchData['dateTo'];
+            }
+
+            $successModel = new AdminReportListSuccessModel();
+
+            $reports = $reportRepository->getReportsByPage($actionId, $desc, $email, $ip, $type, $user, $accepted, $denied, $dateFrom, $dateTo, $order);
+
+            $minResult = $adminReportListQuery->getPage() * $adminReportListQuery->getLimit();
+            $maxResult = $adminReportListQuery->getLimit() + $minResult;
+
+            foreach ($reports as $index => $report) {
+                if ($index < $minResult) {
+                    continue;
+                }
+
+                if ($index < $maxResult) {
+                    $reportModel = new AdminReportModel(
+                        $report->getId(),
+                        $report->getType(),
+                        $report->getDateAdd(),
+                        $report->getAccepted(),
+                        $report->getDenied()
+                    );
+                    if ($report->getDescription()) {
+                        $reportModel->setDescription($report->getDescription());
+                    }
+                    if ($report->getActionId()) {
+                        $reportModel->setActionId($report->getActionId());
+                    }
+                    if ($report->getEmail()) {
+                        $reportModel->setEmail($report->getEmail());
+                    }
+                    if ($report->getIp()) {
+                        $reportModel->setIp($report->getIp());
+                    }
+                    if ($report->getUser()) {
+
+                        $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());
+
+                        $reportModel->setUser(
+                            new AdminUserModel(
+                                $report->getUser()->getId(),
+                                $report->getUser()->isActive(),
+                                $report->getUser()->isBanned(),
+                                $report->getUser()->getUserInformation()->getEmail(),
+                                $report->getUser()->getUserInformation()->getFirstname(),
+                                $report->getUser()->getUserInformation()->getLastname(),
+                                $report->getUser()->getDateCreate(),
+                                $userDeleted
+                            )
+                        );
+                    }
+                    $successModel->addReport($reportModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminReportListQuery->getPage());
+            $successModel->setLimit($adminReportListQuery->getLimit());
+            $successModel->setMaxPage(ceil(count($reports) / $adminReportListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
         }
 
         $endpointLogger->error("Invalid given Query");

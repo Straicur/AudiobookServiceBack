@@ -25,6 +25,7 @@ class AdminUserModel
      * @param string $firstname
      * @param string $lastname
      * @param \DateTime $dateCreated
+     * @param bool $deleted
      */
     public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, \DateTime $dateCreated, bool $deleted)
     {

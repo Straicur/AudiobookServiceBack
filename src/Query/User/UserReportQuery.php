@@ -62,7 +62,6 @@ class UserReportQuery
     public function getType(): ReportType
     {
         return match ($this->type) {
-            1 => ReportType::COMMENT,
             2 => ReportType::AUDIOBOOK_PROBLEM,
             3 => ReportType::CATEGORY_PROBLEM,
             4 => ReportType::SYSTEM_PROBLEM,
