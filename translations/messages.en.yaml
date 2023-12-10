@@ -44,4 +44,4 @@ SuccessfulActivation: Successful account activation
 SuccessfulEmailChange: Successfully changed email
 Cheers: Cheers
 SystemVolumen: The website has exceeded the available disk space
-NotLoggedUserToManyReports: In last 3 days you send to many reports
+UserToManyReports: In last 3 days you send to many reports
