@@ -16,6 +16,7 @@ use App\Entity\Notification;
 use App\Entity\NotificationCheck;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
+use App\Entity\Report;
 use App\Entity\User;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
@@ -25,6 +26,7 @@ use App\Entity\UserSettings;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\ReportType;
 use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
@@ -39,6 +41,7 @@ use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
+use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
@@ -113,7 +116,7 @@ class DatabaseMockManager
         if ($addedDate != null) {
             $user->setDateCreate($addedDate);
         }
-        
+
         if ($bannedTo != null) {
             $user->setBannedTo($bannedTo);
         }
@@ -430,5 +433,43 @@ class DatabaseMockManager
         $userEditRepository->add($newUserEdit);
 
         return $newUserEdit;
+    }
+
+    public function testFunc_addReport(ReportType $type, bool $accepted = false, bool $denied = false, \DateTime $dateAdd = null, string $desc = null, Uuid $actionId = null, string $ip = null, string $email = null, User $user = null): Report
+    {
+        $reportRepository = $this->getService(ReportRepository::class);
+
+        $newReport = new Report($type);
+
+        if ($accepted) {
+            $newReport->setAccepted($accepted);
+        }
+        if ($denied) {
+            $newReport->setDenied($denied);
+        }
+
+        if ($dateAdd !== null) {
+            $newReport->setDateAdd($dateAdd);
+        }
+
+        if ($desc !== null) {
+            $newReport->setDescription($desc);
+        }
+
+        if ($actionId !== null) {
+            $newReport->setActionId($actionId);
+        }
+        if ($ip !== null) {
+            $newReport->setIp($ip);
+        }
+        if ($email !== null) {
+            $newReport->setEmail($email);
+        }
+        if ($user !== null) {
+            $newReport->setUser($user);
+        }
+        $reportRepository->add($newReport);
+
+        return $newReport;
     }
 }

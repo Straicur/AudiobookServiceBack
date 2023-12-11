@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserNotAuthorizedUserReportQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
+    #[Assert\NotNull(message: "Type is null")]
+    #[Assert\NotBlank(message: "Type is empty")]
     #[Assert\Type(type: "integer")]
     #[Assert\GreaterThan(0)]
     #[Assert\LessThan(7)]
@@ -39,7 +39,7 @@ class UserNotAuthorizedUserReportQuery
                 ]),
                 'actionId' => new Assert\Optional([
                     new Assert\NotBlank(message: "ActionId is empty"),
-                    new Assert\Type(type: "string")
+                    new Assert\Uuid()
                 ])
             ],
         ]));

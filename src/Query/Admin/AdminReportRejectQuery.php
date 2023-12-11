@@ -13,8 +13,8 @@ class AdminReportRejectQuery
     #[Assert\Uuid]
     private Uuid $reportId;
 
-    #[Assert\NotNull(message: "Name is null")]
-    #[Assert\NotBlank(message: "Name is empty")]
+    #[Assert\NotNull(message: "Response is null")]
+    #[Assert\NotBlank(message: "Response is empty")]
     #[Assert\Type(type: "string")]
     private string $response;
 

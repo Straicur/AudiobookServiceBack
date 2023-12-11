@@ -29,18 +29,18 @@ class Report
     #[ORM\Column(type: 'boolean')]
     private bool $denied;
     #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description;
+    private ?string $description = null;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
-    private ?Uuid $actionId;
+    private ?Uuid $actionId = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $ip;
+    private ?string $ip = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $email;
+    private ?string $email = null;
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private ?User $user;
+    private ?User $user = null;
 
     /**
      * @param ReportType $type

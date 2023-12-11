@@ -93,7 +93,9 @@ class UserReportController extends AbstractController
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
-            if ($reportRepository->notLoggedUserReportsCount($ip) >= 3) {
+            $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip);
+
+            if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
                 $endpointLogger->error("To many reports from this ip");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
@@ -134,9 +136,13 @@ class UserReportController extends AbstractController
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @param ReportRepository $reportRepository
      * @return Response
-     * @throws InvalidJsonDataException
      * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -169,8 +175,9 @@ class UserReportController extends AbstractController
 
         if ($userReportQuery instanceof UserReportQuery) {
             $user = $authorizedUserService->getAuthorizedUser();
+            $amountOfReports = $reportRepository->loggedUserReportsCount($user);
 
-            if ($reportRepository->loggedUserReportsCount($user) >= 3) {
+            if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
                 $endpointLogger->error("To many reports from this ip");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);

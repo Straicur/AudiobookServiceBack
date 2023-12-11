@@ -29,7 +29,7 @@ class ReportRepository extends ServiceEntityRepository
      * @param bool $flush
      * @return void
      */
-    public function add(Report $entity, bool $flush = false): void
+    public function add(Report $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -42,7 +42,7 @@ class ReportRepository extends ServiceEntityRepository
      * @param bool $flush
      * @return void
      */
-    public function remove(Report $entity, bool $flush = false): void
+    public function remove(Report $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -64,7 +64,7 @@ class ReportRepository extends ServiceEntityRepository
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('ip', $ip);
 
-        return $qb->getQuery()->execute();
+        return $qb->getQuery()->execute()[0];
     }
 
     public function loggedUserReportsCount(User $user)
@@ -75,13 +75,13 @@ class ReportRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
-            ->where('r.user = :user')
+            ->where('((r.user IS NOT NULL) AND (r.user = :user))')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('user', $user->getId()->toBinary());
 
-        return $qb->getQuery()->execute();
+        return $qb->getQuery()->execute()[0];
     }
 
     /**
@@ -98,7 +98,7 @@ class ReportRepository extends ServiceEntityRepository
      * @param ReportOrderSearch|null $order
      * @return Report[]
      */
-    public function getReportsByPage(string $actionId = null, string $desc = null, string $email = null, string $ip = null, ReportType $type = null, bool $user = null, bool $accepted = null, bool $denied = null, \DateTime $dateFrom = null, \DateTime $dateTo = null, ReportOrderSearch $order = null): array
+    public function getReportsByPage(string $actionId = null, string $desc = null, string $email = null, string $ip = null, int $type = null, bool $user = null, bool $accepted = null, bool $denied = null, \DateTime $dateFrom = null, \DateTime $dateTo = null, int $order = null): array
     {
         $qb = $this->createQueryBuilder('r');
 
@@ -122,7 +122,7 @@ class ReportRepository extends ServiceEntityRepository
 
         if ($type != null) {
             $qb->andWhere('r.type = :type')
-                ->setParameter('type', $type->value);
+                ->setParameter('type', $type);
         }
 
         if ($user) {
