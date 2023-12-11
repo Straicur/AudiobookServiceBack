@@ -245,6 +245,8 @@ class AdminReportController extends AbstractController
                     ]);
                 $mailer->send($email);
             }
+
+            return ResponseTool::getResponse();
         }
 
         $endpointLogger->error("Invalid given Query");
@@ -263,7 +265,7 @@ class AdminReportController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/report/admin/list", name: "apiReportAdminList", methods: ["POST"])]
+    #[Route("/api/admin/report/list", name: "apiAdminReportList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Post(
         description: "Endpoint is used to get report list",
@@ -282,7 +284,7 @@ class AdminReportController extends AbstractController
             )
         ]
     )]
-    public function apiReportAdminList(
+    public function apiAdminReportList(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -337,10 +339,10 @@ class AdminReportController extends AbstractController
                 $order = $reportSearchData['order'];
             }
             if (array_key_exists('dateFrom', $reportSearchData) && $reportSearchData['dateFrom']) {
-                $date = $reportSearchData['dateFrom'];
+                $dateFrom = $reportSearchData['dateFrom'];
             }
             if (array_key_exists('dateTo', $reportSearchData) && $reportSearchData['dateTo']) {
-                $date = $reportSearchData['dateTo'];
+                $dateTo = $reportSearchData['dateTo'];
             }
 
             $successModel = new AdminReportListSuccessModel();

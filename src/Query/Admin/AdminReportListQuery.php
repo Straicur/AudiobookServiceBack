@@ -103,21 +103,16 @@ class AdminReportListQuery
         }
 
         if (array_key_exists('type', $searchData)) {
-            $searchData["type"] = match ((int)$searchData["type"]) {
-                2 => ReportType::AUDIOBOOK_PROBLEM,
-                3 => ReportType::CATEGORY_PROBLEM,
-                4 => ReportType::SYSTEM_PROBLEM,
-                5 => ReportType::USER_PROBLEM,
-                6 => ReportType::SETTINGS_PROBLEM,
-                default => ReportType::COMMENT,
-            };
+            if ($searchData["type"] != ReportType::COMMENT->value && $searchData["type"] != ReportType::AUDIOBOOK_PROBLEM->value && $searchData["type"] != ReportType::CATEGORY_PROBLEM->value && $searchData["type"] != ReportType::SYSTEM_PROBLEM->value && $searchData["type"] != ReportType::USER_PROBLEM->value && $searchData["type"] != ReportType::USER_PROBLEM->value
+            ) {
+                $searchData["type"] = ReportType::COMMENT->value;
+            }
         }
 
         if (array_key_exists('order', $searchData)) {
-            $searchData["order"] = match ((int)$searchData["order"]) {
-                2 => ReportOrderSearch::OLDEST,
-                default => ReportOrderSearch::LATEST,
-            };
+            if ($searchData["order"] != ReportOrderSearch::OLDEST->value && $searchData["order"] != ReportOrderSearch::LATEST->value){
+                $searchData["order"] = ReportType::COMMENT->value;
+            }
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
@@ -132,7 +127,7 @@ class AdminReportListQuery
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function getSearchData(): array
     {
