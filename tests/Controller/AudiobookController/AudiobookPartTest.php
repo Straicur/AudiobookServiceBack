@@ -85,6 +85,13 @@ class AudiobookPartTest extends AbstractWebTest
         /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertArrayHasKey("url", $responseContent);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
