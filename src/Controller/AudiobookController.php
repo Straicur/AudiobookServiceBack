@@ -151,7 +151,7 @@ class AudiobookController extends AbstractController
                 $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
             }
 
-            return ResponseTool::getResponse(new AudiobookPartSuccessModel($audiobook->getId(),$partDir));
+            return ResponseTool::getResponse(new AudiobookPartSuccessModel($partDir));
         }
 
         $endpointLogger->error("Invalid given Query");
