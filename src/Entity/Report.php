@@ -20,21 +20,37 @@ class Report
     #[ORM\Column(type: 'integer')]
     private int $type;
 
+    #[ORM\Column(type: 'datetime')]
+    private \DateTime $dateAdd;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $accepted;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $denied;
     #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description;
+    private ?string $description = null;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
-    private ?Uuid $actionId;
+    private ?Uuid $actionId = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $ip;
+    private ?string $ip = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $email = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $user = null;
 
     /**
-     * @param int $type
+     * @param ReportType $type
      */
-    public function __construct(int $type)
+    public function __construct(ReportType $type)
     {
-        $this->type = $type;
+        $this->type = $type->value;
+        $this->accepted = false;
+        $this->denied = false;
+        $this->dateAdd = new \DateTime();
     }
 
     public function getId(): Uuid
@@ -90,9 +106,65 @@ class Report
         return $this->ip;
     }
 
-    public function setIp(?string $ip): void
+    public function setIp(string $ip): void
     {
         $this->ip = $ip;
+    }
+
+    public function getDateAdd(): \DateTime
+    {
+        return $this->dateAdd;
+    }
+
+    public function setDateAdd(\DateTime $dateAdd): void
+    {
+        $this->dateAdd = $dateAdd;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getAccepted(): bool
+    {
+        return $this->accepted;
+    }
+
+    public function setAccepted(bool $accepted): self
+    {
+        $this->accepted = $accepted;
+
+        return $this;
+    }
+
+    public function getDenied(): bool
+    {
+        return $this->denied;
+    }
+
+    public function setDenied(bool $denied): self
+    {
+        $this->denied = $denied;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
 }

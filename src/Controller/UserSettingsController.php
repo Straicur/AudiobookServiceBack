@@ -228,7 +228,7 @@ class UserSettingsController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Zmiana emaila')
+                    ->subject($translateService->getTranslation("ChangeEmailSubject"))
                     ->htmlTemplate('emails/userSettingsEmailChange.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
@@ -400,7 +400,7 @@ class UserSettingsController extends AbstractController
             $email = (new TemplatedEmail())
                 ->from($_ENV["INSTITUTION_EMAIL"])
                 ->to($user->getUserInformation()->getEmail())
-                ->subject('Prośba o usunięcie konta jest przetwarzana')
+                ->subject($translateService->getTranslation("RequestDeleteAccountSubject"))
                 ->htmlTemplate('emails/userDeleteProcessing.html.twig')
                 ->context([
                     "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
@@ -585,7 +585,7 @@ class UserSettingsController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Reset hasła')
+                    ->subject($translateService->getTranslation("PasswordResetSubject"))
                     ->htmlTemplate('emails/userSettingsResetPassword.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),

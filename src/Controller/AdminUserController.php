@@ -830,7 +830,7 @@ class AdminUserController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Konto usunięte')
+                    ->subject($translateService->getTranslation("AccountDeletedSubject"))
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
@@ -1110,7 +1110,7 @@ class AdminUserController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Konto usunięte')
+                    ->subject($translateService->getTranslation("AccountDeletedSubject"))
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
@@ -1209,7 +1209,7 @@ class AdminUserController extends AbstractController
                 $email = (new TemplatedEmail())
                     ->from($_ENV["INSTITUTION_EMAIL"])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject('Usunięcie odrzucone')
+                    ->subject($translateService->getTranslation("DeletionRejectedSubject"))
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')
                     ->context([
                         "userName" => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),

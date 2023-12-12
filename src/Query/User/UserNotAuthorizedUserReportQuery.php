@@ -2,6 +2,7 @@
 
 namespace App\Query\User;
 
+use App\Enums\ReportType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -9,12 +10,22 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserNotAuthorizedUserReportQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
+    #[Assert\NotNull(message: "Type is null")]
+    #[Assert\NotBlank(message: "Type is empty")]
     #[Assert\Type(type: "integer")]
     #[Assert\GreaterThan(0)]
     #[Assert\LessThan(7)]
     private int $type;
+
+    #[Assert\NotNull(message: "Ip is null")]
+    #[Assert\NotBlank(message: "Ip is empty")]
+    #[Assert\Type(type: "string")]
+    private string $ip;
+
+    #[Assert\NotNull(message: "Email is null")]
+    #[Assert\NotBlank(message: "Email is empty")]
+    #[Assert\Email]
+    private string $email;
 
     protected array $additionalData = [];
 
@@ -28,12 +39,8 @@ class UserNotAuthorizedUserReportQuery
                 ]),
                 'actionId' => new Assert\Optional([
                     new Assert\NotBlank(message: "ActionId is empty"),
-                    new Assert\Type(type: "string")
-                ]),
-                'ip' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Ip is empty"),
-                    new Assert\Type(type: "string")
-                ]),
+                    new Assert\Uuid()
+                ])
             ],
         ]));
     }
@@ -43,8 +50,7 @@ class UserNotAuthorizedUserReportQuery
      */
     #[OA\Property(property: "additionalData", properties: [
         new OA\Property(property: "description", type: "string", example: "Desc", nullable: true),
-        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true),
-        new OA\Property(property: "ip", type: "string", example: "Ip", nullable: true),
+        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true)
     ], type: "object")]
     public function setAdditionalData(array $additionalData): void
     {
@@ -63,14 +69,41 @@ class UserNotAuthorizedUserReportQuery
         return $this->additionalData;
     }
 
-    public function getType(): int
+    public function getType(): ReportType
     {
-        return $this->type;
+        return match ($this->type) {
+            2 => ReportType::AUDIOBOOK_PROBLEM,
+            3 => ReportType::CATEGORY_PROBLEM,
+            4 => ReportType::SYSTEM_PROBLEM,
+            5 => ReportType::USER_PROBLEM,
+            6 => ReportType::SETTINGS_PROBLEM,
+            default => ReportType::COMMENT,
+        };
     }
 
     public function setType(int $type): void
     {
         $this->type = $type;
+    }
+
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(string $ip): void
+    {
+        $this->ip = $ip;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
 }

@@ -44,3 +44,16 @@ SuccessfulActivation: Successful account activation
 SuccessfulEmailChange: Successfully changed email
 Cheers: Cheers
 SystemVolumen: The website has exceeded the available disk space
+UserToManyReports: In last 3 days you send to many reports
+ReportAcceptEmail: Hello your report has been accepted and is processing
+ReportDeniedEmail: Hello your report has been denied
+ReportAcceptSubject: Report acceptance
+ReportDeniedSubject: Report rejected
+Explanation: Explanation
+YourReport: Yours report
+AccountActivationCodeSubject: Account activation code
+AccountDeletedSubject: Account deleted
+DeletionRejectedSubject: Deletion rejected
+ChangeEmailSubject: Change email
+RequestDeleteAccountSubject: Your request to delete your account is being processed
+PasswordResetSubject: Password reset
