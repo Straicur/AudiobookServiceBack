@@ -7,6 +7,7 @@ use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\AudiobookCoverModel;
 use App\Model\Common\AudiobookCoversSuccessModel;
+use App\Model\Common\AudiobookPartSuccessModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -79,6 +80,7 @@ class AudiobookController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
+                content: new Model(type: AudiobookPartSuccessModel::class)
             )
         ]
     )]
@@ -132,7 +134,7 @@ class AudiobookController extends AbstractController
 
             foreach ($allParts as $x => $val) {
                 if ($x === $audiobookPartQuery->getPart()) {
-                    $dir = $audiobook->getFileName() . "/" . $val;
+                    $dir =  $val;
                     break;
                 }
             }
@@ -143,7 +145,13 @@ class AudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookPartDontExists")]);
             }
 
-            return ResponseTool::getBinaryFileResponse($dir);
+            $partDir = "";
+
+            if ($dir != "") {
+                $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
+            }
+
+            return ResponseTool::getResponse(new AudiobookPartSuccessModel($audiobook->getId(),$partDir));
         }
 
         $endpointLogger->error("Invalid given Query");
