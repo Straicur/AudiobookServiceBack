@@ -27,7 +27,7 @@ class AudiobookPartSuccessModel implements ModelInterface
     /**
      * @param string $url
      */
-    public function seturlUrl(string $url): void
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
