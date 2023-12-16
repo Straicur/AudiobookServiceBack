@@ -1228,7 +1228,7 @@ class AdminAudiobookController extends AbstractController
 
             while (false !== ($entry = readdir($handle))) {
 
-                if ($entry != "." && $entry != "..") {
+                if ($entry !== "." && $entry !== "..") {
 
                     $file_parts = pathinfo($entry);
 
