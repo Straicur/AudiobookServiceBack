@@ -123,7 +123,9 @@ class AdminReportController extends AbstractController
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
-
+        //TODO tu dodaj do tego enum odpowiadający za bany, jeśli admin poda jakiś to odpowiedni user dostanie bana na podstawie typu i ID
+        // (0-wcale, 1-12 godz 2-24 godz 3-5 dni 4-30 dni 5-rok)
+        // I do tego jeszcze odpowiedni mail jeśli taki ban wystąpi
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
             $report = $reportRepository->findOneBy([
                 "id" => $adminReportAcceptQuery->getReportId()
