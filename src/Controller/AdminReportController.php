@@ -9,6 +9,7 @@ use App\Enums\BanPeriodRage;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
+use App\Enums\UserBanAmount;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
@@ -78,6 +79,9 @@ class AdminReportController extends AbstractController
      * @param ReportRepository $reportRepository
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
+     * @param AudiobookUserCommentRepository $commentRepository
+     * @param UserRepository $userRepository
+     * @param UserBanHistoryRepository $banHistoryRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -113,14 +117,11 @@ class AdminReportController extends AbstractController
         NotificationRepository         $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
         UserRepository                 $userRepository,
-        UserBanHistoryRepository       $banHistoryRepository
+        UserBanHistoryRepository       $banHistoryRepository,
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
-        //TODO Po typie sprawdzam co to jest i czy report jest walid, muszę jakoś pobrać tego usera.
-        // Dodaj do historii banów tego banika
-        // Sprawdzać też powinienem czy nie ma już takich samych banów bo jak ma to możliwe że zasługije na więcej lub też na mniej w zależności co da Admin
-        // I do tego jeszcze odpowiedni mail jeśli taki ban wystąpi
+
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
             $report = $reportRepository->findOneBy([
                 "id" => $adminReportAcceptQuery->getReportId()
@@ -132,17 +133,42 @@ class AdminReportController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
             }
 
-            if ($report->getActionId() !== null && $adminReportAcceptQuery->getBanPeriod() !== BanPeriodRage::NOT_BANNED && $report->getType() === ReportType::COMMENT) {
+            if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
                 $comment = $commentRepository->findOneBy([
                     "id" => $report->getActionId()
                 ]);
 
                 if ($comment !== null) {
-                    $banPeriod = (new \DateTime('Now'))->modify($adminReportAcceptQuery->getBanPeriod());
-
                     $user = $comment->getUser();
                     $user->setBanned(true);
+
+                    if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
+                        $bannedAmount = count($banHistoryRepository->findBy([
+                            "user" => $user->getId()
+                        ]));
+
+                        if ($bannedAmount === UserBanAmount::NONE->value) {
+                            $periodTo = BanPeriodRage::HALF_DAY_BAN->value;
+                        } elseif ($bannedAmount > 0 && $bannedAmount <= UserBanAmount::LOW->value) {
+                            $periodTo = BanPeriodRage::ONE_DAY_BAN->value;
+                        } elseif ($bannedAmount > UserBanAmount::LOW->value && $bannedAmount <= UserBanAmount::MEDIUM->value) {
+                            $periodTo = BanPeriodRage::FIVE_DAY_BAN->value;
+                        } elseif ($bannedAmount > UserBanAmount::MEDIUM->value && $bannedAmount <= UserBanAmount::HIGH->value) {
+                            $periodTo = BanPeriodRage::ONE_MONTH_BAN->value;
+                        } else {
+                            $periodTo = BanPeriodRage::ONE_YEAR_BAN->value;
+                        }
+                    } else {
+                        $periodTo = $adminReportAcceptQuery->getBanPeriod()->value;
+                    }
+
+                    $banPeriod = (new \DateTime('Now'))->modify($periodTo);
+
                     $user->setBannedTo($banPeriod);
+
+                    if($periodTo !== BanPeriodRage::NOT_BANNED->value){
+                        $user->setBanned(true);
+                    }
 
                     $userRepository->add($user);
                     $banHistoryRepository->add(new UserBanHistory($user, new \DateTime('Now'), $banPeriod));

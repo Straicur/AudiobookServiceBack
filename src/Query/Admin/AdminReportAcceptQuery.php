@@ -6,7 +6,6 @@ use App\Enums\BanPeriodRage;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminReportAcceptQuery
 {
@@ -21,20 +20,21 @@ class AdminReportAcceptQuery
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
-        max: 7,
+        max: 8,
     )]
     private int $banPeriod;
 
     public function getBanPeriod(): BanPeriodRage
     {
         return match ($this->banPeriod) {
-            1 => BanPeriodRage::NOT_BANNED,
-            2 => BanPeriodRage::HALF_DAY_BAN,
-            3 => BanPeriodRage::ONE_DAY_BAN,
-            4 => BanPeriodRage::FIVE_DAY_BAN,
-            5 => BanPeriodRage::ONE_MONTH_BAN,
-            6 => BanPeriodRage::THREE_MONTH_BAN,
-            7 => BanPeriodRage::ONE_YEAR_BAN,
+            1 => BanPeriodRage::SYSTEM,
+            2 => BanPeriodRage::NOT_BANNED,
+            3 => BanPeriodRage::HALF_DAY_BAN,
+            4 => BanPeriodRage::ONE_DAY_BAN,
+            5 => BanPeriodRage::FIVE_DAY_BAN,
+            6 => BanPeriodRage::ONE_MONTH_BAN,
+            7 => BanPeriodRage::THREE_MONTH_BAN,
+            8 => BanPeriodRage::ONE_YEAR_BAN,
         };
     }
 
