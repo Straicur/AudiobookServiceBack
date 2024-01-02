@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Builder\NotificationBuilder;
 use App\Entity\Audiobook;
 use App\Enums\AudiobookAgeRange;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -1075,7 +1078,9 @@ class AdminAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationBuilder            $notificationBuilder,
+        NotificationRepository         $notificationRepository
     ): Response
     {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
@@ -1089,6 +1094,21 @@ class AdminAudiobookController extends AbstractController
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+            }
+
+            $additionalData = $adminAudiobookActiveQuery->getAdditionalData();
+
+            if ($adminAudiobookActiveQuery->isActive() && array_key_exists('text', $additionalData) && !empty($additionalData['text'])) {
+                //TODO dodaj tu:
+                // -Typ do kogo wysyłam(wsyzscy użytkownicy(bez banów), tylko z kategorią w historii oglądanych lub w mojej liście)
+                $notification = $notificationBuilder
+                    ->setType(NotificationType::USER_DELETE_DECLINE)
+                    ->setAction($audiobook->getId())
+                    ->addUser($user)
+                    ->setUserAction(NotificationUserType::SYSTEM)
+                    ->build();
+
+                $notificationRepository->add($notification);
             }
 
             $audiobook->setActive($adminAudiobookActiveQuery->isActive());
