@@ -9,7 +9,7 @@ use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
 use App\Exception\ResponseExceptionInterface;
 use App\Repository\AuthenticationTokenRepository;
-use App\Serializer\SerializerInterface;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Log\LoggerInterface;
@@ -27,18 +27,19 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
     private AuthenticationTokenRepository $authenticationTokenRepository;
-
+    private UserRepository $userRepository;
     private LoggerInterface $responseLogger;
-
     private LoggerInterface $requestLogger;
 
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
+        UserRepository                $userRepository,
         LoggerInterface               $responseLogger,
         LoggerInterface               $requestLogger,
     )
     {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
+        $this->userRepository = $userRepository;
         $this->responseLogger = $responseLogger;
         $this->requestLogger = $requestLogger;
     }
@@ -63,20 +64,20 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 $reflectionMethod = $controllerReflectionClass->getMethod($method);
                 $methodAttributes = $reflectionMethod->getAttributes(AuthValidation::class);
 
-                if (count($methodAttributes) == 1) {
+                if (count($methodAttributes) === 1) {
                     $authValidationAttribute = $methodAttributes[0]->newInstance();
 
                     if ($authValidationAttribute instanceof AuthValidation) {
                         if ($authValidationAttribute->isCheckAuthToken()) {
                             $authorizationHeaderField = $request->headers->get("authorization");
 
-                            if ($authorizationHeaderField == null) {
+                            if ($authorizationHeaderField === null) {
                                 throw new AuthenticationException();
                             }
 
                             $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
 
-                            if ($authToken == null) {
+                            if ($authToken === null) {
                                 throw new AuthenticationException();
                             }
 
@@ -91,11 +92,18 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                             $this->requestLogger->info("Logged user action", $loggedUserData);
 
-                            if($authToken->getUser()->isBanned()){
-                                $authToken->setDateExpired(new \DateTime("now"));
-                                $this->authenticationTokenRepository->add($authToken);
+                            $user = $authToken->getUser();
 
-                                throw new PermissionException();
+                            if ($user->isBanned()) {
+                                if ($user->getBannedTo() < new \DateTime('Now')) {
+                                    $user->setBanned(false);
+                                    $this->userRepository->add($user);
+                                } else {
+                                    $authToken->setDateExpired(new \DateTime("now"));
+                                    $this->authenticationTokenRepository->add($authToken);
+
+                                    throw new PermissionException();
+                                }
                             }
 
                             $dateNew = clone $authToken->getDateExpired();
@@ -210,7 +218,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
         foreach ($userRoles as $userRole) {
             foreach ($roles as $role) {
-                if ($userRole->getName() == $role) {
+                if ($userRole->getName() === $role) {
                     $foundRole = true;
                     break;
                 }
