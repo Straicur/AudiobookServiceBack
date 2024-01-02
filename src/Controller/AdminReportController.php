@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
+use App\Entity\UserBanHistory;
+use App\Enums\BanPeriodRage;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\ReportType;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
@@ -19,9 +22,12 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Admin\AdminReportAcceptQuery;
 use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -104,7 +110,10 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService,
         ReportRepository               $reportRepository,
         MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        AudiobookUserCommentRepository $commentRepository,
+        UserRepository                 $userRepository,
+        UserBanHistoryRepository       $banHistoryRepository
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
@@ -121,6 +130,37 @@ class AdminReportController extends AbstractController
                 $endpointLogger->error("Cant find report");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
+            }
+
+            if ($report->getActionId() !== null && $adminReportAcceptQuery->getBanPeriod() !== BanPeriodRage::NOT_BANNED && $report->getType() === ReportType::COMMENT) {
+                $comment = $commentRepository->findOneBy([
+                    "id" => $report->getActionId()
+                ]);
+
+                if ($comment !== null) {
+                    $banPeriod = (new \DateTime('Now'))->modify($adminReportAcceptQuery->getBanPeriod());
+
+                    $user = $comment->getUser();
+                    $user->setBanned(true);
+                    $user->setBannedTo($banPeriod);
+
+                    $userRepository->add($user);
+                    $banHistoryRepository->add(new UserBanHistory($user, new \DateTime('Now'), $banPeriod));
+
+                    if ($user->getUserInformation()->getEmail() && $_ENV["APP_ENV"] !== "test") {
+                        $email = (new TemplatedEmail())
+                            ->from($_ENV["INSTITUTION_EMAIL"])
+                            ->to($report->getEmail())
+                            ->subject($translateService->getTranslation("UserBannedSubject"))
+                            ->htmlTemplate('emails/userBanned.html.twig')
+                            ->context([
+                                "name" => $user->getUserInformation()->getFirstname(),
+                                "desc" => $comment->getComment(),
+                                "dateTo" => $banPeriod->format('d.m.Y'),
+                            ]);
+                        $mailer->send($email);
+                    }
+                }
             }
 
             if (!$report->getAccepted() && !$report->getDenied()) {

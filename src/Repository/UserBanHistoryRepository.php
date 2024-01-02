@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\UserBanHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -24,8 +22,9 @@ class UserBanHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param UserBanHistory $entity
+     * @param bool $flush
+     * @return void
      */
     public function add(UserBanHistory $entity, bool $flush = false): void
     {
@@ -36,8 +35,9 @@ class UserBanHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param UserBanHistory $entity
+     * @param bool $flush
+     * @return void
      */
     public function remove(UserBanHistory $entity, bool $flush = false): void
     {
