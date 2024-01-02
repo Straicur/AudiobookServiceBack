@@ -26,7 +26,7 @@ class UserBanHistoryRepository extends ServiceEntityRepository
      * @param bool $flush
      * @return void
      */
-    public function add(UserBanHistory $entity, bool $flush = false): void
+    public function add(UserBanHistory $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -39,7 +39,7 @@ class UserBanHistoryRepository extends ServiceEntityRepository
      * @param bool $flush
      * @return void
      */
-    public function remove(UserBanHistory $entity, bool $flush = false): void
+    public function remove(UserBanHistory $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {

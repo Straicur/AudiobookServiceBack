@@ -18,6 +18,7 @@ use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\Report;
 use App\Entity\User;
+use App\Entity\UserBanHistory;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
 use App\Entity\UserInformation;
@@ -43,6 +44,7 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
@@ -471,5 +473,15 @@ class DatabaseMockManager
         $reportRepository->add($newReport);
 
         return $newReport;
+    }
+    public function testFunc_addUserBanHistory(User $user, \DateTime $dateFrom, \DateTime $dateTo): UserBanHistory
+    {
+        $userBanHistoryRepository = $this->getService(UserBanHistoryRepository::class);
+
+        $newUserBanHistory = new UserBanHistory($user,$dateFrom,$dateTo);
+
+        $userBanHistoryRepository->add($newUserBanHistory);
+
+        return $newUserBanHistory;
     }
 }
