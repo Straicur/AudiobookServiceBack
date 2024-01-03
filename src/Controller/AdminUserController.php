@@ -1392,7 +1392,7 @@ class AdminUserController extends AbstractController
                 case NotificationType::NORMAL:
 
                     $userRole = $roleRepository->findOneBy([
-                        "name" => UserRolesNames::USER
+                        "name" => UserRolesNames::USER->value
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);

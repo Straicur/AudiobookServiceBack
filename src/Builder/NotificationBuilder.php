@@ -191,7 +191,7 @@ class NotificationBuilder
     private function checkMetadata(array $keys): bool
     {
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->metaData) || $this->metaData[$key] == null) {
+            if (!array_key_exists($key, $this->metaData) || $this->metaData[$key] === null) {
                 return false;
             }
         }

@@ -8,6 +8,8 @@ use App\Entity\Audiobook;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\UserAudiobookActivationType;
+use App\Enums\UserRolesNames;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -32,11 +34,14 @@ use App\Query\Admin\AdminAudiobookReAddingQuery;
 use App\Query\Admin\AdminAudiobooksQuery;
 use App\Query\Admin\AdminAudiobookZipQuery;
 use App\Repository\AudiobookCategoryRepository;
+use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\RoleRepository;
+use App\Repository\UserRepository;
 use App\Service\AudiobookService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -1079,8 +1084,10 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
-        NotificationBuilder            $notificationBuilder,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        AudiobookInfoRepository        $audiobookInfoRepository,
+        UserRepository                 $userRepository,
+        RoleRepository                 $roleRepository
     ): Response
     {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
@@ -1099,20 +1106,56 @@ class AdminAudiobookController extends AbstractController
             $additionalData = $adminAudiobookActiveQuery->getAdditionalData();
 
             if ($adminAudiobookActiveQuery->isActive() && array_key_exists('text', $additionalData) && !empty($additionalData['text'])) {
-                //TODO dodaj tu:
-                // -Typ do kogo wysyłam(wsyzscy użytkownicy(bez banów), tylko z kategorią w historii oglądanych lub w mojej liście)
-                $notification = $notificationBuilder
-                    ->setType(NotificationType::USER_DELETE_DECLINE)
-                    ->setAction($audiobook->getId())
-                    ->addUser($user)
-                    ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build();
+                if (array_key_exists('type', $additionalData)) {
+                    $users = [];
 
-                $notificationRepository->add($notification);
+                    switch ($additionalData['type']) {
+                        case UserAudiobookActivationType::ALL->value:
+                            $userRole = $roleRepository->findOneBy([
+                                "name" => UserRolesNames::USER->value
+                            ]);
+
+                            $users = $userRepository->getUsersByRole($userRole);
+                            break;
+                        case UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value:
+                            $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
+                            break;
+                        case UserAudiobookActivationType::MY_LIST_RELATED->value:
+                            $users = $userRepository->getUsersWhereAudiobookInMyList($audiobook);
+                            break;
+                        case UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value:
+                            $usersIds = $audiobookInfoRepository->getUsersWhereAudiobookInAudiobookInfo($audiobook);
+
+                            foreach ($usersIds as $id) {
+                                $user = $userRepository->findOneBy([
+                                    "id" => $id
+                                ]);
+
+                                if ($user !== null) {
+                                    $users[] = $user;
+                                }
+                            }
+                    }
+                    $notificationBuilder = new NotificationBuilder();
+
+                    $notificationBuilder
+                        ->setType(NotificationType::USER_DELETE_DECLINE)
+                        ->setAction($audiobook->getId())
+                        ->setUserAction(NotificationUserType::SYSTEM)
+                        ->setText($additionalData["text"]);
+
+                    foreach ($users as $user) {
+                        $notificationBuilder->addUser($user);
+                    }
+
+                    $notification = $notificationBuilder->build();
+
+                    $notificationRepository->add($notification);
+                }
+
+                $audiobook->setActive($adminAudiobookActiveQuery->isActive());
+                $audiobookRepository->add($audiobook);
             }
-
-            $audiobook->setActive($adminAudiobookActiveQuery->isActive());
-            $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();
         }

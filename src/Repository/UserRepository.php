@@ -130,6 +130,29 @@ class UserRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
+    /**
+     * @param Audiobook $audiobook
+     * @return User[]
+     */
+    public function getUsersWhereAudiobookInMyList(Audiobook $audiobook): array
+    {
+        $audiobookCategories = [];
+        foreach ($audiobook->getCategories() as $category) {
+            $audiobookCategories[] = $category->getId()->toBinary();
+        }
+
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->leftJoin('u.myList', 'ml')
+            ->leftJoin('ml.audiobooks', 'a')
+            ->leftJoin('a.categories', 'c')
+            ->where('c.id IN (:categories)')
+            ->andWhere('u.banned = false')
+            ->andWhere('u.active = true')
+            ->setParameter('categories', $audiobookCategories);
+
+        return $qb->getQuery()->execute();
+    }
 
     /**
      * @return bool
