@@ -40,6 +40,8 @@ class AudiobookCoversQuery
             }
         }
 
+        unset($audiobook);
+
         $this->audiobooks = $audiobooks;
     }
 }

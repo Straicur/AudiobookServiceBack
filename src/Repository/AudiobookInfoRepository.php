@@ -6,8 +6,11 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookInfo;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\UuidV6;
 
 /**
  * @extends ServiceEntityRepository<AudiobookInfo>
@@ -85,6 +88,40 @@ class AudiobookInfoRepository extends ServiceEntityRepository
 
         $query = $qb->getQuery();
         $query->execute();
+    }
+
+    /**
+     * @param Audiobook $audiobook
+     * @param User $user
+     * @return User[]
+     */
+    public function getUsersWhereAudiobookInAudiobookInfo(Audiobook $audiobook): array
+    {
+        $audiobookCategories = [];
+        foreach ($audiobook->getCategories() as $category) {
+            $audiobookCategories[] = $category->getId()->toBinary();
+        }
+
+        $qb = $this->createQueryBuilder('ai');
+
+        $qb->select('u.id')
+            ->distinct()
+            ->innerJoin('ai.user', 'u', Join::WITH, 'u.id = ai.user')
+            ->innerJoin('ai.audiobook', 'a')
+            ->innerJoin('a.categories', 'c')
+            ->where('c.id IN (:categories)')
+            ->andWhere('u.banned = false')
+            ->andWhere('u.active = true')
+            ->setParameter('categories', $audiobookCategories);
+
+        $results = $qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+        foreach ($results as &$result) {
+            $result = $result['id'];
+        }
+
+        return $results;
+
     }
 //    /**
 //     * @return AudiobookInfo[] Returns an array of AudiobookInfo objects
