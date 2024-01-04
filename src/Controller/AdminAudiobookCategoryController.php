@@ -40,9 +40,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * AdminAudiobookCategoryController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
