@@ -3,14 +3,14 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Model\Admin\AdminAudiobookDetailsModel;
-use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
-use App\Model\Admin\AdminStatisticMainSuccessModel;
-use App\Model\Common\AudiobookDetailCategoryModel;
+use App\Model\Admin\AdminTechnicalBreakSuccessModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Query\Admin\AdminTechnicalBreakListQuery;
+use App\Query\Admin\AdminTechnicalBreakPatchQuery;
+use App\Query\Admin\AdminTechnicalBreakPutQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
@@ -18,7 +18,6 @@ use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -62,14 +61,14 @@ class AdminTechnicalController extends AbstractController
      * @param NotificationRepository $notificationRepository
      * @return Response
      */
-    #[Route("/api/admin/technical/break", name: "adminTechnicalBreak", methods: ["PUT"])]
+    #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPut", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Put(
         description: "Endpoint is used to add Technical Break for admin",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                ref: new Model(type: AdminReportAcceptQuery::class),
+                ref: new Model(type: AdminTechnicalBreakPutQuery::class),
                 type: "object"
             ),
         ),
@@ -80,7 +79,7 @@ class AdminTechnicalController extends AbstractController
             )
         ]
     )]
-    public function adminTechnicalBreak(
+    public function adminTechnicalBreakPut(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -95,4 +94,94 @@ class AdminTechnicalController extends AbstractController
 
     }
 
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     */
+    #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPatch", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is used to edit Technical Break by admin",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminTechnicalBreakPatchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminTechnicalBreakPatch(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository,
+        AuthenticationTokenRepository  $authenticationTokenRepository,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserRepository $userRepository
+     * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param AudiobookRepository $audiobookRepository
+     * @param AuthenticationTokenRepository $authenticationTokenRepository
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     */
+    #[Route("/api/admin/technical/break/list", name: "adminTechnicalBreakList", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is used to edit Technical Break by admin",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminTechnicalBreakListQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: AdminTechnicalBreakSuccessModel::class)
+            )
+        ]
+    )]
+    public function adminTechnicalBreakList(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface                $endpointLogger,
+        UserRepository                 $userRepository,
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        AudiobookRepository            $audiobookRepository,
+        AuthenticationTokenRepository  $authenticationTokenRepository,
+        NotificationRepository         $notificationRepository
+    ): Response
+    {
+
+    }
 }
