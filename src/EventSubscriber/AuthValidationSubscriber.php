@@ -8,7 +8,9 @@ use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
 use App\Exception\ResponseExceptionInterface;
+use App\Exception\TechnicalBreakException;
 use App\Repository\AuthenticationTokenRepository;
+use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
 use Doctrine\ORM\NonUniqueResultException;
@@ -27,18 +29,21 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
     private AuthenticationTokenRepository $authenticationTokenRepository;
+    private TechnicalBreakRepository $technicalBreakRepository;
     private UserRepository $userRepository;
     private LoggerInterface $responseLogger;
     private LoggerInterface $requestLogger;
 
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
+        TechnicalBreakRepository      $technicalBreakRepository,
         UserRepository                $userRepository,
         LoggerInterface               $responseLogger,
         LoggerInterface               $requestLogger,
     )
     {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
+        $this->technicalBreakRepository = $technicalBreakRepository;
         $this->userRepository = $userRepository;
         $this->responseLogger = $responseLogger;
         $this->requestLogger = $requestLogger;
@@ -49,6 +54,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @return void
      * @throws AuthenticationException
      * @throws PermissionException
+     * @throws TechnicalBreakException
+     * @throws DataNotFoundException
      */
     public function onControllerCall(ControllerEvent $event): void
     {
@@ -63,7 +70,14 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 $controllerReflectionClass = new \ReflectionClass($controller);
                 $reflectionMethod = $controllerReflectionClass->getMethod($method);
                 $methodAttributes = $reflectionMethod->getAttributes(AuthValidation::class);
+                //TODO dodaj sprawdzenie w chache i dopiero kiedy nie ma go tam to dodaję
+                $technicalBreak = $this->technicalBreakRepository->findOneBy([
+                    "active" => true
+                ]);
 
+                if ($technicalBreak !== null) {
+                    throw new TechnicalBreakException();
+                }
                 if (count($methodAttributes) === 1) {
                     $authValidationAttribute = $methodAttributes[0]->newInstance();
 
@@ -117,14 +131,11 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                             $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
                         }
-
                     }
                 }
 
-            } catch (\ReflectionException) {
-                //todo when class or method not exits
-            } catch (NonUniqueResultException) {
-                //todo reaction on error
+            } catch (\ReflectionException|NonUniqueResultException) {
+                throw new DataNotFoundException();
             }
         }
     }
