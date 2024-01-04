@@ -70,66 +70,73 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 $controllerReflectionClass = new \ReflectionClass($controller);
                 $reflectionMethod = $controllerReflectionClass->getMethod($method);
                 $methodAttributes = $reflectionMethod->getAttributes(AuthValidation::class);
-                //TODO dodaj sprawdzenie w chache i dopiero kiedy nie ma go tam to dodaję
-                $technicalBreak = $this->technicalBreakRepository->findOneBy([
-                    "active" => true
-                ]);
 
-                if ($technicalBreak !== null) {
-                    throw new TechnicalBreakException();
-                }
                 if (count($methodAttributes) === 1) {
                     $authValidationAttribute = $methodAttributes[0]->newInstance();
 
-                    if ($authValidationAttribute instanceof AuthValidation) {
-                        if ($authValidationAttribute->isCheckAuthToken()) {
-                            $authorizationHeaderField = $request->headers->get("authorization");
+                    if (($authValidationAttribute instanceof AuthValidation) && $authValidationAttribute->isCheckAuthToken()) {
+                        $authorizationHeaderField = $request->headers->get("authorization");
 
-                            if ($authorizationHeaderField === null) {
-                                throw new AuthenticationException();
+                        if ($authorizationHeaderField === null) {
+                            throw new AuthenticationException();
+                        }
+
+                        $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
+
+                        if ($authToken === null) {
+                            throw new AuthenticationException();
+                        }
+
+                        $loggedUserData = [
+                            "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
+                            "user_id" => $authToken->getUser()->getId(),
+                            "token_auth_id" => $authToken->getId(),
+                            "user_data" => [
+                                "email" => $authToken->getUser()->getUserInformation()->getEmail(),
+                            ]
+                        ];
+
+                        $this->requestLogger->info("Logged user action", $loggedUserData);
+
+                        $user = $authToken->getUser();
+
+                        if ($user->isBanned()) {
+                            if ($user->getBannedTo() < new \DateTime('Now')) {
+                                $user->setBanned(false);
+                                $this->userRepository->add($user);
+                            } else {
+                                $authToken->setDateExpired(new \DateTime("now"));
+                                $this->authenticationTokenRepository->add($authToken);
+
+                                throw new PermissionException();
                             }
+                        }
 
-                            $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
+                        $dateNew = clone $authToken->getDateExpired();
+                        $dateNew->modify("+2 second");
+                        $authToken->setDateExpired($dateNew);
 
-                            if ($authToken === null) {
-                                throw new AuthenticationException();
-                            }
+                        $this->authenticationTokenRepository->add($authToken);
 
-                            $loggedUserData = [
-                                "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
-                                "user_id" => $authToken->getUser()->getId(),
-                                "token_auth_id" => $authToken->getId(),
-                                "user_data" => [
-                                    "email" => $authToken->getUser()->getUserInformation()->getEmail(),
-                                ]
-                            ];
+                        AuthorizedUserService::setAuthenticationToken($authToken);
+                        AuthorizedUserService::setAuthorizedUser($authToken->getUser());
 
-                            $this->requestLogger->info("Logged user action", $loggedUserData);
+                        //TODO dodaj sprawdzenie w cache i dopiero kiedy nie ma go tam to dodaję
+                        // Plus zamień resztę wtedy takich danych żeby to się cachowało
+                        // Tu będzie ewidentnie za dużo szukania
+                        $foundAdminRole = $this->checkRoles($authToken->getUser(), ['Administrator']);
+                        $technicalBreak = $this->technicalBreakRepository->findOneBy([
+                            "active" => true
+                        ]);
 
-                            $user = $authToken->getUser();
+                        if ($technicalBreak !== null && !$foundAdminRole) {
+                            throw new TechnicalBreakException();
+                        }
 
-                            if ($user->isBanned()) {
-                                if ($user->getBannedTo() < new \DateTime('Now')) {
-                                    $user->setBanned(false);
-                                    $this->userRepository->add($user);
-                                } else {
-                                    $authToken->setDateExpired(new \DateTime("now"));
-                                    $this->authenticationTokenRepository->add($authToken);
+                        $foundUserRole = $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
 
-                                    throw new PermissionException();
-                                }
-                            }
-
-                            $dateNew = clone $authToken->getDateExpired();
-                            $dateNew->modify("+2 second");
-                            $authToken->setDateExpired($dateNew);
-
-                            $this->authenticationTokenRepository->add($authToken);
-
-                            AuthorizedUserService::setAuthenticationToken($authToken);
-                            AuthorizedUserService::setAuthorizedUser($authToken->getUser());
-
-                            $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
+                        if (!$foundUserRole) {
+                            throw new PermissionException();
                         }
                     }
                 }
@@ -218,10 +225,10 @@ class AuthValidationSubscriber implements EventSubscriberInterface
     /**
      * @param User $user
      * @param string[] $roles
-     * @return void
+     * @return int
      * @throws PermissionException
      */
-    private function checkRoles(User $user, array $roles): void
+    private function checkRoles(User $user, array $roles): int
     {
         $userRoles = $user->getRoles();
 
@@ -240,8 +247,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
             }
         }
 
-        if (!$foundRole) {
-            throw new PermissionException();
-        }
+        return $foundRole;
     }
 }
