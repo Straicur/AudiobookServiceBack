@@ -59,9 +59,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use ZipArchive;
 
-/**
- * AdminAudiobookController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",

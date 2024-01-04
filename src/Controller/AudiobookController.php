@@ -28,9 +28,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
-/**
- * AudiobookController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",

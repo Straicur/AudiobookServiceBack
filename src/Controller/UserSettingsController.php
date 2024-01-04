@@ -40,9 +40,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * UserController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
