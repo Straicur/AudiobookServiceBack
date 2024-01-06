@@ -191,8 +191,16 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         $authorizationHeaderField = $request->headers->get("authorization");
 
         $authToken = null;
-        if ($authorizationHeaderField != null) {
+        if ($authorizationHeaderField !== null) {
             $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
+        }
+
+        $technicalBreak = $this->technicalBreakRepository->findOneBy([
+            "active" => true
+        ]);
+
+        if($technicalBreak !== null){
+            $response->headers->set('Technical-Break', true);
         }
 
         $headersIterator = $response->headers->getIterator();
