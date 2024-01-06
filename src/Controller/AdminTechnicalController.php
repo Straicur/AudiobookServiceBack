@@ -11,7 +11,6 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
-use App\Query\Admin\AdminAudiobookDetailsQuery;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
 use App\Query\Admin\AdminTechnicalBreakPutQuery;
@@ -159,17 +158,14 @@ class AdminTechnicalController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param NotificationRepository $notificationRepository
+     * @param TechnicalBreakRepository $technicalBreakRepository
+     * @param TranslateService $translateService
      * @return Response
      */
     #[Route("/api/admin/technical/break/list", name: "adminTechnicalBreakList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Post(
-        description: "Endpoint is used to edit Technical Break by admin",
+        description: "Endpoint is used to get list of Technical Breaks for admin",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -190,11 +186,8 @@ class AdminTechnicalController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        NotificationRepository         $notificationRepository
+        TechnicalBreakRepository       $technicalBreakRepository,
+        TranslateService               $translateService
     ): Response
     {
 
