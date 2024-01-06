@@ -124,12 +124,12 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         //TODO dodaj sprawdzenie w cache i dopiero kiedy nie ma go tam to dodaję
                         // Plus zamień resztę wtedy takich danych żeby to się cachowało
                         // Tu będzie ewidentnie za dużo szukania
-                        $foundAdminRole = $this->checkRoles($authToken->getUser(), ['Administrator']);
+
                         $technicalBreak = $this->technicalBreakRepository->findOneBy([
                             "active" => true
                         ]);
 
-                        if ($technicalBreak !== null && !$foundAdminRole) {
+                        if ($technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
                             throw new TechnicalBreakException();
                         }
 
