@@ -14,7 +14,6 @@ use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
-use App\Query\Admin\AdminTechnicalBreakPutQuery;
 use App\Repository\TechnicalBreakRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
