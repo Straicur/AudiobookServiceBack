@@ -68,6 +68,7 @@ class RegisterController extends AbstractController
      * @param InstitutionRepository $institutionRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param TranslateService $translateService
+     * @param UserSettingsRepository $userSettingsRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -86,7 +87,7 @@ class RegisterController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
             ),
         ]
@@ -194,7 +195,7 @@ class RegisterController extends AbstractController
             }
 
             $usersLogger->info("user." . $newUser->getUserInformation()->getEmail() . "registered");
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
         }
 
         $endpointLogger->error("Invalid given Query");

@@ -817,7 +817,7 @@ class UserAudiobookController extends AbstractController
 
             $ratingRepository->add($rating);
 
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
 
         }
 
@@ -975,7 +975,7 @@ class UserAudiobookController extends AbstractController
 
             $audiobookUserCommentRepository->add($audiobookComment);
 
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
 
         }
 

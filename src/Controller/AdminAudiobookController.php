@@ -133,7 +133,7 @@ class AdminAudiobookController extends AbstractController
                 "id" => $adminAudiobookDetailsQuery->getAudiobookId()
             ]);
 
-            if ($audiobook == null) {
+            if ($audiobook === null) {
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
@@ -212,7 +212,7 @@ class AdminAudiobookController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
                 content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
@@ -409,7 +409,7 @@ class AdminAudiobookController extends AbstractController
                 return ResponseTool::getResponse($successModel, 201);
             }
 
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
         }
 
         $usersLogger->error("Invalid given Query");
