@@ -8,6 +8,7 @@ use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
+use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
@@ -22,6 +23,7 @@ use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserSettingsRepository;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -103,7 +105,8 @@ class RegisterController extends AbstractController
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
         InstitutionRepository        $institutionRepository,
         UserPasswordRepository       $userPasswordRepository,
-        TranslateService             $translateService
+        TranslateService             $translateService,
+        UserSettingsRepository $userSettingsRepository
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
@@ -136,6 +139,8 @@ class RegisterController extends AbstractController
 
             $newUser = new User();
 
+            $userRepository->add($newUser,false);
+
             $newUser->setUserInformation(new UserInformation(
                 $newUser,
                 $registerQuery->getEmail(),
@@ -143,6 +148,8 @@ class RegisterController extends AbstractController
                 $registerQuery->getFirstname(),
                 $registerQuery->getLastname()
             ));
+
+            $userSettingsRepository->add(new UserSettings($newUser));
 
             $userMyList = new MyList($newUser);
 
@@ -163,8 +170,6 @@ class RegisterController extends AbstractController
             $userPasswordEntity = new UserPassword($newUser, $passwordGenerator);
 
             $userPasswordRepository->add($userPasswordEntity);
-
-            $userRepository->add($newUser);
 
             $registerCodeGenerator = new RegisterCodeGenerator();
 

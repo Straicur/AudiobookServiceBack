@@ -34,7 +34,7 @@ class User
     private ?UserInformation $userInformation;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserSettings::class, cascade: ['persist'])]
-    private UserSettings $userSettings;
+    private ?UserSettings $userSettings;
 
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $roles;
@@ -162,7 +162,7 @@ class User
         return $this;
     }
 
-    public function getUserSettings(): ?UserSettings
+    public function getUserSettings(): UserSettings
     {
         return $this->userSettings;
     }
