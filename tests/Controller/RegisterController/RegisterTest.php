@@ -45,7 +45,7 @@ class RegisterTest extends AbstractWebTest
         ], content: json_encode($content));
         /// step 4
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(201);
 
         /// step 5
         $userAfter = $userInformationRepository->findOneBy([
