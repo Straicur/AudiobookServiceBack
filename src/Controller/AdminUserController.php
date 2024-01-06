@@ -1531,7 +1531,7 @@ class AdminUserController extends AbstractController
                     break;
             }
 
-            return ResponseTool::getResponse(null, 201);
+            return ResponseTool::getResponse(httpCode: 201);
         }
 
         $endpointLogger->error("Invalid given Query");
