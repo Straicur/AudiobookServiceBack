@@ -23,7 +23,7 @@ class TechnicalBreak
     private \DateTime $dateFrom;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateTo;
+    private ?\DateTime $dateTo = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private User $user;

@@ -17,6 +17,7 @@ use App\Entity\NotificationCheck;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\Report;
+use App\Entity\TechnicalBreak;
 use App\Entity\User;
 use App\Entity\UserBanHistory;
 use App\Entity\UserDelete;
@@ -44,6 +45,7 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
+use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
@@ -474,14 +476,33 @@ class DatabaseMockManager
 
         return $newReport;
     }
+
     public function testFunc_addUserBanHistory(User $user, \DateTime $dateFrom, \DateTime $dateTo): UserBanHistory
     {
         $userBanHistoryRepository = $this->getService(UserBanHistoryRepository::class);
 
-        $newUserBanHistory = new UserBanHistory($user,$dateFrom,$dateTo);
+        $newUserBanHistory = new UserBanHistory($user, $dateFrom, $dateTo);
 
         $userBanHistoryRepository->add($newUserBanHistory);
 
         return $newUserBanHistory;
+    }
+
+    public function testFunc_addTechnicalBreak(bool $active, User $user, ?\DateTime $dateFrom = null, ?\DateTime $dateTo = null): TechnicalBreak
+    {
+        $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
+
+        $newTechnicalBreak = new TechnicalBreak($active, $user);
+
+        if ($dateFrom != null) {
+            $newTechnicalBreak->setDateFrom($dateFrom);
+        }
+        if ($dateTo != null) {
+            $newTechnicalBreak->setDateTo($dateTo);
+        }
+
+        $technicalBreakRepository->add($newTechnicalBreak);
+
+        return $newTechnicalBreak;
     }
 }
