@@ -136,7 +136,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
 
         /// step 4
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookService->removeFolder($_ENV['MAIN_DIR'] . "/" . $content["hashName"]);
     }

@@ -38,8 +38,8 @@ class AdminTechnicalBreakListQuery
                 'order' => new Assert\Optional([
                     new Assert\NotBlank(message: 'Order is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0),
-                    new Assert\LessThan(9)
+                    new Assert\GreaterThanOrEqual(1),
+                    new Assert\LessThanOrEqual(3)
                 ]),
                 'dateFrom' => new Assert\Optional([
                     new Assert\NotBlank(message: 'DateFrom is empty'),

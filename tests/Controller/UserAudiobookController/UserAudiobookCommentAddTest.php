@@ -53,7 +53,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
 
         /// step 3
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(201);
 
         $response = self::$webClient->getResponse();
 

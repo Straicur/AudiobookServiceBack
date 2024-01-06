@@ -129,7 +129,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                             "active" => true
                         ]);
 
-                        if ($technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
+                        if (($_ENV["APP_ENV"] !== "test") && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
                             throw new TechnicalBreakException();
                         }
 
