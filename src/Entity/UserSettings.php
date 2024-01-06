@@ -64,7 +64,7 @@ class UserSettings
         $this->normal = $normal;
     }
 
-    public function getAdmin(): bool
+    public function isAdmin(): bool
     {
         return $this->admin;
     }
