@@ -87,7 +87,7 @@ class AdminAudiobookCategoryController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
             )
         ]
