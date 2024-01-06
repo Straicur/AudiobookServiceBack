@@ -6,6 +6,7 @@ use App\Annotation\AuthValidation;
 use App\Entity\TechnicalBreak;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\Admin\AdminTechnicalBreakModel;
 use App\Model\Admin\AdminTechnicalBreakSuccessModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -14,12 +15,7 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
 use App\Query\Admin\AdminTechnicalBreakPutQuery;
-use App\Repository\AudiobookCategoryRepository;
-use App\Repository\AudiobookRepository;
-use App\Repository\AuthenticationTokenRepository;
-use App\Repository\NotificationRepository;
 use App\Repository\TechnicalBreakRepository;
-use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -161,6 +157,7 @@ class AdminTechnicalController extends AbstractController
      * @param TechnicalBreakRepository $technicalBreakRepository
      * @param TranslateService $translateService
      * @return Response
+     * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/technical/break/list", name: "adminTechnicalBreakList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -190,6 +187,73 @@ class AdminTechnicalController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
+        if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
+
+            $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
+
+            $userId = null;
+            $active = null;
+            $order = null;
+            $dateFrom = null;
+            $dateTo = null;
+
+            if (array_key_exists('userId', $technicalBreakListData)) {
+                $userId = $technicalBreakListData['userId'];
+            }
+            if (array_key_exists('active', $technicalBreakListData)) {
+                $active = $technicalBreakListData['active'];
+            }
+            if (array_key_exists('order', $technicalBreakListData)) {
+                $order = $technicalBreakListData['order'];
+            }
+            if (array_key_exists('dateFrom', $technicalBreakListData)) {
+                $dateFrom = $technicalBreakListData['dateFrom'];
+            }
+            if (array_key_exists('dateTo', $technicalBreakListData) && $technicalBreakListData['dateTo'] !== false) {
+                $dateTo = $technicalBreakListData['dateTo'];
+            }
+
+            $successModel = new AdminTechnicalBreakSuccessModel();
+
+            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($userId, $active, $order, $dateFrom, $dateTo);
+
+            $minResult = $adminTechnicalBreakListQuery->getPage() * $adminTechnicalBreakListQuery->getLimit();
+            $maxResult = $adminTechnicalBreakListQuery->getLimit() + $minResult;
+
+            foreach ($technicalBreaks as $index => $technicalBreak) {
+                if ($index < $minResult) {
+                    continue;
+                }
+
+                if ($index < $maxResult) {
+                    $technicalBreakModel = new AdminTechnicalBreakModel(
+                        $technicalBreak->getId(),
+                        $technicalBreak->getActive(),
+                        $technicalBreak->getDateFrom(),
+                        $technicalBreak->getUser()->getId(),
+                    );
+
+                    if ($technicalBreak->getDateTo() != null) {
+                        $technicalBreakModel->setDateTo($technicalBreak->getDateTo());
+                    }
+
+                    $successModel->addTechnicalBreak($technicalBreakModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminTechnicalBreakListQuery->getPage());
+            $successModel->setLimit($adminTechnicalBreakListQuery->getLimit());
+            $successModel->setMaxPage(ceil(count($technicalBreaks) / $adminTechnicalBreakListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 }
