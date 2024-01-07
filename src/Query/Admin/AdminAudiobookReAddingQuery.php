@@ -39,6 +39,13 @@ class AdminAudiobookReAddingQuery
     #[Assert\Type(type: "integer")]
     private int $parts;
 
+    #[Assert\NotNull(message: "DeleteNotifications is null")]
+    #[Assert\Type(type: "boolean")]
+    private bool $deleteNotifications;
+    #[Assert\NotNull(message: "DeleteComments is null")]
+    #[Assert\Type(type: "boolean")]
+    private bool $deleteComments;
+
     protected array $additionalData = [];
 
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
@@ -183,4 +190,25 @@ class AdminAudiobookReAddingQuery
     {
         $this->parts = $parts;
     }
+
+    public function isDeleteNotifications(): bool
+    {
+        return $this->deleteNotifications;
+    }
+
+    public function setDeleteNotifications(bool $deleteNotifications): void
+    {
+        $this->deleteNotifications = $deleteNotifications;
+    }
+
+    public function isDeleteComments(): bool
+    {
+        return $this->deleteComments;
+    }
+
+    public function setDeleteComments(bool $deleteComments): void
+    {
+        $this->deleteComments = $deleteComments;
+    }
+
 }

@@ -39,10 +39,10 @@ class User
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $roles;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class)]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist'])]
     private ?MyList $myList;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class)]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist'])]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
     #[ORM\Column(type: 'boolean')]

@@ -541,7 +541,7 @@ class AdminAudiobookController extends AbstractController
                 "id" => $adminAudiobookDeleteQuery->getAudiobookId()
             ]);
 
-            if ($audiobook == null) {
+            if ($audiobook === null) {
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
@@ -691,7 +691,10 @@ class AdminAudiobookController extends AbstractController
         AudiobookService               $audiobookService,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        NotificationRepository         $notificationRepository,
+        AudiobookUserCommentRepository $commentRepository,
+        UserRepository                 $userRepository
     ): Response
     {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
@@ -702,7 +705,7 @@ class AdminAudiobookController extends AbstractController
                 "id" => $adminAudiobookReAddingQuery->getAudiobookId()
             ]);
 
-            if ($audiobook == null) {
+            if ($audiobook === null) {
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
@@ -840,7 +843,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->setFileName($folderDir);
 
 
-                if ($encoded != "") {
+                if ($encoded !== "") {
                     $audiobook->setEncoded($encoded);
                 }
 
@@ -865,7 +868,7 @@ class AdminAudiobookController extends AbstractController
                             "id" => $category
                         ]);
 
-                        if ($audiobookCategory != null) {
+                        if ($audiobookCategory !== null) {
                             $audiobook->addCategory($audiobookCategory);
 
                             $audiobookCategories[] = new AudiobookDetailCategoryModel(
@@ -900,11 +903,21 @@ class AdminAudiobookController extends AbstractController
                     ]))
                 );
 
-                if ($audiobook->getEncoded() != null) {
+                if ($audiobook->getEncoded() !== null) {
                     $successModel->setEncoded($audiobook->getEncoded());
                 }
 
-                return ResponseTool::getResponse($successModel, 201);
+                if ($adminAudiobookReAddingQuery->isDeleteNotifications()) {
+                    $notificationRepository->updateDeleteNotificationsByAction($audiobook->getId());
+                }
+
+                if ($adminAudiobookReAddingQuery->isDeleteComments()) {
+                    foreach ($audiobook->getAudiobookUserComments() as $comment) {
+                        $commentRepository->remove($comment);
+                    }
+                }
+
+                return ResponseTool::getResponse($successModel);
             }
 
             return ResponseTool::getResponse();
