@@ -139,18 +139,15 @@ class AdminStatisticsController extends AbstractController
     {
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 
-        if (count($topAudiobooks) == 0) {
+        if (count($topAudiobooks) === 0) {
             return ResponseTool::getResponse();
         }
 
         $successModel = new AdminStatisticBestAudiobooksSuccessModel();
-
-        if (count($topAudiobooks) >= 1) {
-            $firstAudiobook = $topAudiobooks[0];
-
+        foreach ($topAudiobooks as $idx => $topAudiobook) {
             $audiobookCategories = [];
 
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($firstAudiobook);
+            $categories = $audiobookCategoryRepository->getAudiobookCategories($topAudiobook);
 
             foreach ($categories as $category) {
                 $audiobookCategories[] = new AudiobookDetailCategoryModel(
@@ -161,88 +158,29 @@ class AdminStatisticsController extends AbstractController
                 );
             }
 
-            $firstAudiobookModel = new AdminAudiobookDetailsModel(
-                $firstAudiobook->getId(),
-                $firstAudiobook->getTitle(),
-                $firstAudiobook->getAuthor(),
-                $firstAudiobook->getVersion(),
-                $firstAudiobook->getAlbum(),
-                $firstAudiobook->getYear(),
-                $firstAudiobook->getDuration(),
-                $firstAudiobook->getSize(),
-                $firstAudiobook->getParts(),
-                $firstAudiobook->getDescription(),
-                $firstAudiobook->getAge(),
-                $firstAudiobook->getActive(),
+            $audiobookModel = new AdminAudiobookDetailsModel(
+                $topAudiobook->getId(),
+                $topAudiobook->getTitle(),
+                $topAudiobook->getAuthor(),
+                $topAudiobook->getVersion(),
+                $topAudiobook->getAlbum(),
+                $topAudiobook->getYear(),
+                $topAudiobook->getDuration(),
+                $topAudiobook->getSize(),
+                $topAudiobook->getParts(),
+                $topAudiobook->getDescription(),
+                $topAudiobook->getAge(),
+                $topAudiobook->getActive(),
                 $audiobookCategories
             );
 
-            $successModel->setFirstAudiobook($firstAudiobookModel);
+            match ($idx) {
+                1 => $successModel->setFirstAudiobook($audiobookModel),
+                2 => $successModel->setSecondAudiobook($audiobookModel),
+                3 => $successModel->setThirdAudiobook($audiobookModel),
+            };
         }
-        if (count($topAudiobooks) >= 2) {
-            $secondAudiobook = $topAudiobooks[1];
 
-            $audiobookCategories = [];
-
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($secondAudiobook);
-
-            foreach ($categories as $category) {
-                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                    $category->getId(),
-                    $category->getName(),
-                    $category->getActive(),
-                    $category->getCategoryKey()
-                );
-            }
-
-            $secondAudiobookModel = new AdminAudiobookDetailsModel(
-                $secondAudiobook->getId(),
-                $secondAudiobook->getTitle(),
-                $secondAudiobook->getAuthor(),
-                $secondAudiobook->getVersion(),
-                $secondAudiobook->getAlbum(),
-                $secondAudiobook->getYear(),
-                $secondAudiobook->getDuration(),
-                $secondAudiobook->getSize(),
-                $secondAudiobook->getParts(),
-                $secondAudiobook->getDescription(),
-                $secondAudiobook->getAge(),
-                $secondAudiobook->getActive(),
-                $audiobookCategories);
-            $successModel->setSecondAudiobook($secondAudiobookModel);
-        }
-        if (count($topAudiobooks) >= 3) {
-            $thirdAudiobook = $topAudiobooks[2];
-
-            $audiobookCategories = [];
-
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($thirdAudiobook);
-
-            foreach ($categories as $category) {
-                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                    $category->getId(),
-                    $category->getName(),
-                    $category->getActive(),
-                    $category->getCategoryKey()
-                );
-            }
-
-            $thirdAudiobookModel = new AdminAudiobookDetailsModel(
-                $thirdAudiobook->getId(),
-                $thirdAudiobook->getTitle(),
-                $thirdAudiobook->getAuthor(),
-                $thirdAudiobook->getVersion(),
-                $thirdAudiobook->getAlbum(),
-                $thirdAudiobook->getYear(),
-                $thirdAudiobook->getDuration(),
-                $thirdAudiobook->getSize(),
-                $thirdAudiobook->getParts(),
-                $thirdAudiobook->getDescription(),
-                $thirdAudiobook->getAge(),
-                $thirdAudiobook->getActive(),
-                $audiobookCategories);
-            $successModel->setThirdAudiobook($thirdAudiobookModel);
-        }
 
         return ResponseTool::getResponse($successModel);
     }
