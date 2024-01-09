@@ -105,6 +105,23 @@ class TechnicalBreakRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
+
+    /**
+     * @return int
+     */
+    public function getNumberTechnicalBreakFromLastWeak(): int
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-7 day');
+
+        $qb = $this->createQueryBuilder('tb')
+            ->where('( :dateFrom <= tb.dateFrom AND :dateTo >= tb.dateFrom)')
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate);
+
+        return count($qb->getQuery()->execute());
+    }
 //    /**
 //     * @return TechnicalBreak[] Returns an array of TechnicalBreak objects
 //     */
