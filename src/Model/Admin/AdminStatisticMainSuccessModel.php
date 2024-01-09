@@ -12,6 +12,7 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     private int $lastWeekRegistered;
     private int $lastWeekLogins;
     private int $lastWeekNotifications;
+    private int $lastWeekTechnicalBreaks;
 
     /**
      * @param int $users
@@ -20,8 +21,9 @@ class AdminStatisticMainSuccessModel implements ModelInterface
      * @param int $lastWeekRegistered
      * @param int $lastWeekLogins
      * @param int $lastWeekNotifications
+     * @param int $lastWeekTechnicalBreaks
      */
-    public function __construct(int $users, int $categories, int $audiobooks, int $lastWeekRegistered, int $lastWeekLogins, int $lastWeekNotifications)
+    public function __construct(int $users, int $categories, int $audiobooks, int $lastWeekRegistered, int $lastWeekLogins, int $lastWeekNotifications, int $lastWeekTechnicalBreaks)
     {
         $this->users = $users;
         $this->categories = $categories;
@@ -29,6 +31,7 @@ class AdminStatisticMainSuccessModel implements ModelInterface
         $this->lastWeekRegistered = $lastWeekRegistered;
         $this->lastWeekLogins = $lastWeekLogins;
         $this->lastWeekNotifications = $lastWeekNotifications;
+        $this->lastWeekTechnicalBreaks = $lastWeekTechnicalBreaks;
     }
 
     /**
@@ -125,6 +128,16 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     public function setLastWeekNotifications(int $lastWeekNotifications): void
     {
         $this->lastWeekNotifications = $lastWeekNotifications;
+    }
+
+    public function getLastWeekTechnicalBreaks(): int
+    {
+        return $this->lastWeekTechnicalBreaks;
+    }
+
+    public function setLastWeekTechnicalBreaks(int $lastWeekTechnicalBreaks): void
+    {
+        $this->lastWeekTechnicalBreaks = $lastWeekTechnicalBreaks;
     }
 
 }

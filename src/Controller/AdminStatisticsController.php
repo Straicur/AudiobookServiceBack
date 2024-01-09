@@ -15,6 +15,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -84,7 +85,8 @@ class AdminStatisticsController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         AuthenticationTokenRepository  $authenticationTokenRepository,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TechnicalBreakRepository       $technicalBreakRepository
     ): Response
     {
         $users = count($userRepository->findBy([
@@ -101,9 +103,10 @@ class AdminStatisticsController extends AbstractController
 
         $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
         $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-        $lastWeekNotifications = $notificationRepository->getNotificationsFromLastWeak();
+        $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
+        $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
 
-        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications));
+        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }
 
     /**
