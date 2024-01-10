@@ -73,13 +73,47 @@ class RegisterTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerIncorrectCredentials(): void
+    public function test_registerIncorrectEmailCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
         /// step 1
         $content = [
             "email" => "test@cos.pl",
             "phoneNumber" => "786768564",
+            "firstname" => "Damian",
+            "lastname" => "Mos",
+            "password" => "zaq12wsx"
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 2
+        $crawler = self::$webClient->request("PUT", "/api/register", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+        /// step 3
+        self::assertResponseStatusCodeSame(404);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey("data", $responseContent);
+    }
+    /**
+     * step 1 - Preparing JsonBodyContent with bad number
+     * step 2 - Sending Request
+     * step 3 - Checking response
+     * @return void
+     */
+    public function test_registerIncorrectNumberCredentials(): void
+    {
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        /// step 1
+        $content = [
+            "email" => "test@cos.pl",
+            "phoneNumber" => "+48123123123",
             "firstname" => "Damian",
             "lastname" => "Mos",
             "password" => "zaq12wsx"
@@ -111,8 +145,8 @@ class RegisterTest extends AbstractWebTest
     public function test_registerIncorrectInstitutionCredentials(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@1cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@2cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@3cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@2cos.pl", "+48123123124", ["Guest", "User"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@3cos.pl", "+48123123125", ["Guest", "User"], true, "zaq12wsx");
         /// step 1
 
         $content = [

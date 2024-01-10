@@ -178,9 +178,9 @@ class AdminStatisticsController extends AbstractController
             );
 
             match ($idx) {
-                1 => $successModel->setFirstAudiobook($audiobookModel),
-                2 => $successModel->setSecondAudiobook($audiobookModel),
-                3 => $successModel->setThirdAudiobook($audiobookModel),
+                0 => $successModel->setFirstAudiobook($audiobookModel),
+                1 => $successModel->setSecondAudiobook($audiobookModel),
+                2 => $successModel->setThirdAudiobook($audiobookModel),
             };
         }
 

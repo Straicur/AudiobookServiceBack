@@ -21,7 +21,7 @@ class UserDelete
     private User $user;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateDeleted;
+    private ?\DateTime $dateDeleted = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $deleted;
