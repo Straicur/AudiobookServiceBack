@@ -16,7 +16,7 @@ class UserInformation
     #[ORM\Column(type: 'string', length: 510, unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 16)]
+    #[ORM\Column(type: 'string', length: 16, unique: true)]
     private string $phoneNumber;
 
     #[ORM\Column(type: 'string', length: 255)]
