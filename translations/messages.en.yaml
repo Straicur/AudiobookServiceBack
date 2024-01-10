@@ -17,6 +17,7 @@ NotificationDontExists: Notification dont exists
 AudiobookPartDontExists: Audiobook have no available parts
 AudiobookCoverDontExists: Audiobook cover dont exists
 EmailExists: Email exists in system
+PhoneNumberExists: PhoneNumber exists in system
 ToMuchUsers: To much users in system
 WrongCode: Wrong code
 ActiveOrBanned: User is not activated or is banned
