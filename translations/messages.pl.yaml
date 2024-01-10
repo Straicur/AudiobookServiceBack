@@ -17,6 +17,7 @@ NotificationDontExists: Powiadomienie nie istnieje
 AudiobookPartDontExists: Audiobook nie posiada aktywnych części
 AudiobookCoverDontExists: Zdjęcie Audiobooka nie istnieje
 EmailExists: Email istnieje w systemie
+PhoneNumberExists: Numer telefonu istnieje w systemie
 ToMuchUsers: Za dużo użytkowników w systemie
 WrongCode: Zły kod
 ActiveOrBanned: Użytkownik nie jest aktywowany lub jest zbanowany

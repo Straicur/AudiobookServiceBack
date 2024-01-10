@@ -114,14 +114,24 @@ class RegisterController extends AbstractController
 
         if ($registerQuery instanceof RegisterQuery) {
 
-            $duplicateUser = $userInformationRepository->findOneBy([
+            $existingEmail = $userInformationRepository->findOneBy([
                 "email" => $registerQuery->getEmail()
             ]);
 
-            if ($duplicateUser != null) {
+            if ($existingEmail !== null) {
                 $endpointLogger->error("Email already exists");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
+            }
+
+            $existingPhone = $userInformationRepository->findOneBy([
+                "phoneNumber" => $registerQuery->getPhoneNumber()
+            ]);
+
+            if ($existingPhone !== null) {
+                $endpointLogger->error("Phone number already exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("PhoneNumberExists")]);
             }
 
             $institution = $institutionRepository->findOneBy([
@@ -245,7 +255,7 @@ class RegisterController extends AbstractController
             "email" => $userEmail
         ]);
 
-        if ($userInformation == null) {
+        if ($userInformation === null) {
             $endpointLogger->error("Invalid Credentials");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -258,7 +268,7 @@ class RegisterController extends AbstractController
             "code" => $registerCodeGenerator->generate()
         ]);
 
-        if ($registerCode == null || !$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
+        if ($registerCode === null || !$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
             $endpointLogger->error("Invalid Credentials");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("WrongCode")]);
@@ -340,7 +350,7 @@ class RegisterController extends AbstractController
                 "email" => $registerConfirmSendQuery->getEmail()
             ]);
 
-            if ($userInfo == null) {
+            if ($userInfo === null) {
                 $endpointLogger->error("Invalid Credentials");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
