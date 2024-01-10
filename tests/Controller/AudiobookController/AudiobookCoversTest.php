@@ -113,8 +113,8 @@ class AudiobookCoversTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest","User"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -160,8 +160,8 @@ class AudiobookCoversTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123128", ["Guest", "User"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);

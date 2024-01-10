@@ -48,9 +48,51 @@ class UserSettingsChangeTest extends AbstractWebTest
         ]);
 
         /// step 5
-        $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(), $user->getUserInformation()->getPhoneNumber());
-        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), $user->getUserInformation()->getLastname());
-        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), $user->getUserInformation()->getFirstname());
+        $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(), '+48123123123');
+        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), "Test");
+        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), "User");
+    }
+
+    /**
+     * /**
+     *  step 1 - Preparing data
+     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
+     *  step 3 - Sending Request
+     *  step 4 - Checking response
+     *
+     * @return void
+     */
+    public function test_userSettingsIncorrectPhoneNumber(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123121", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        /// step 2
+        $content = [
+            "phoneNumber" => "+48123123121",
+            "firstName" => "Damian",
+            "lastName" => "Mos",
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey("data", $responseContent);
     }
 
     /**

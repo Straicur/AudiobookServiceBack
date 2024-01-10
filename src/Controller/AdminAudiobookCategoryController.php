@@ -389,7 +389,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 "id" => $adminCategoryRemoveAudiobookQuery->getCategoryId()
             ]);
 
-            if ($category == null) {
+            if ($category === null) {
                 $endpointLogger->error("AudiobookCategory dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
@@ -399,14 +399,15 @@ class AdminAudiobookCategoryController extends AbstractController
                 "id" => $adminCategoryRemoveAudiobookQuery->getAudiobookId()
             ]);
 
-            if ($audiobook == null) {
+            if ($audiobook === null) {
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
-            $audiobook->removeCategory($category);
+            $category->removeAudiobook($audiobook);
 
+            $audiobookCategoryRepository->add($category);
             $audiobookRepository->add($audiobook);
 
             return ResponseTool::getResponse();

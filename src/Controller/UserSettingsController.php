@@ -418,6 +418,7 @@ class UserSettingsController extends AbstractController
      * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -455,6 +456,17 @@ class UserSettingsController extends AbstractController
 
             $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
             $userInformation->setLastname($userSettingsChangeQuery->getLastName());
+
+            $existingPhone = $userInformationRepository->findOneBy([
+                "phoneNumber" => $userSettingsChangeQuery->getPhoneNumber()
+            ]);
+
+            if ($existingPhone !== null) {
+                $endpointLogger->error("Phone number already exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("PhoneNumberExists")]);
+            }
+
             $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
 
             $userInformationRepository->add($userInformation);

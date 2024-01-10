@@ -28,8 +28,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest"], true, "zaq12wsx", notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123128", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -84,8 +84,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest"], true, "zaq12wsx", notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -141,8 +141,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest"], true, "zaq12wsx", notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -199,9 +199,9 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest"], true, "zaq12wsx", notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
+        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
@@ -261,8 +261,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest"], true, "zaq12wsx", notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
@@ -309,8 +309,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -355,8 +355,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -399,8 +399,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -445,8 +445,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123177", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -492,8 +492,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
@@ -537,8 +537,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -582,8 +582,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
@@ -628,8 +628,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [];
 
@@ -664,8 +664,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "notificationType" => NotificationType::NEW_AUDIOBOOK->value,
@@ -704,8 +704,8 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
 
         $content = [
             "notificationType" => NotificationType::NEW_AUDIOBOOK->value,
