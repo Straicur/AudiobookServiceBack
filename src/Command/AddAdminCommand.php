@@ -110,6 +110,24 @@ class AddAdminCommand extends Command
             return Command::FAILURE;
         }
 
+        $existingEmail = $this->userInformationRepository->findOneBy([
+            "email" => $email
+        ]);
+
+        if ($existingEmail !== null) {
+            $io->error("Email exists");
+            return Command::FAILURE;
+        }
+
+        $existingPhone = $this->userInformationRepository->findOneBy([
+            "phoneNumber" => $phone
+        ]);
+
+        if ($existingPhone !== null) {
+            $io->error("PhoneNumber exists");
+            return Command::FAILURE;
+        }
+
         $passwordGenerator = new PasswordHashGenerator($password);
 
         $io->text([
