@@ -25,6 +25,9 @@ class UserInformation
     #[ORM\Column(type: 'string', length: 255)]
     private string $lastname;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $birthday = null;
+
     /**
      * @param User $user
      * @param string $email
@@ -132,6 +135,18 @@ class UserInformation
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTime
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(\DateTime $birthday): self
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }
