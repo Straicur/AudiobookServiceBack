@@ -5,7 +5,6 @@ namespace App\Tests\Controller\UserAudiobookController;
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRatingRepository;
 use App\Tests\AbstractWebTest;
-use DateTime;
 
 /**
  * UserAudiobookRatingGetTest

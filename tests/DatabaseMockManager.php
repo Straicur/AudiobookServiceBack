@@ -199,9 +199,29 @@ class DatabaseMockManager
         ]);
     }
 
+    /**
+     * @param string $title
+     * @param string $author
+     * @param string $version
+     * @param string $album
+     * @param \DateTime $year
+     * @param int $duration
+     * @param string $size
+     * @param int $parts
+     * @param string $description
+     * @param AudiobookAgeRange $age
+     * @param string $fileName
+     * @param AudiobookCategory[] $categories
+     * @param string|null $encoded
+     * @param \DateTime|null $dateAdd
+     * @param bool $active
+     * @param float|null $rating
+     * @return Audiobook
+     */
     public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false, float $rating = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age, $fileName);
 
@@ -226,6 +246,11 @@ class DatabaseMockManager
         }
 
         $audiobookRepository->add($newAudiobook);
+
+        foreach ($categories as $category) {
+            $category->addAudiobook($newAudiobook);
+            $audiobookCategoryRepository->add($category);
+        }
 
         return $newAudiobook;
     }
@@ -294,7 +319,7 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 
-    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, ?\DateTime $dateDeleted = null): UserDelete
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 

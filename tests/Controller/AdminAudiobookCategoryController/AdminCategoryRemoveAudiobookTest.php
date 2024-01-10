@@ -57,7 +57,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $hasCategory = false;
 
         foreach ($categories as $category) {
-            if ($category === $category2) {
+            if ($category->getId() === $category1->getId()) {
                 $hasCategory = true;
             }
         }
