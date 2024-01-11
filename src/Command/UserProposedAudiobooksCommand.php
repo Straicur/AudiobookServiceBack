@@ -16,6 +16,7 @@ use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use App\Tool\UserParentalControlTool;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -125,9 +126,15 @@ class UserProposedAudiobooksCommand extends Command
                         "active" => true
                     ]);
 
-                    if ($databaseCategory != null) {
+                    if ($databaseCategory !== null) {
+                        $age = null;
 
-                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory);
+                        if($user->getUserInformation()->getBirthday() !== null){
+                            $userParentalControlTool = new UserParentalControlTool();
+                            $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+                        }
+
+                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory, $age);
 
                         shuffle($audiobooks);
 
