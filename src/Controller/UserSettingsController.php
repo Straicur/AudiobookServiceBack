@@ -488,7 +488,7 @@ class UserSettingsController extends AbstractController
      */
     #[Route("/api/user/settings", name: "userSettingsGet", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Patch(
+    #[OA\Get(
         description: "Endpoint is returning logged user informations",
         requestBody: new OA\RequestBody(),
         responses: [
@@ -700,6 +700,4 @@ class UserSettingsController extends AbstractController
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
-
-
 }

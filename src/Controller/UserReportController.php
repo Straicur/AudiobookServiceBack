@@ -143,7 +143,7 @@ class UserReportController extends AbstractController
      */
     #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Put(
         description: "Endpoint is used for users to report bad behavior",
         requestBody: new OA\RequestBody(
             required: true,

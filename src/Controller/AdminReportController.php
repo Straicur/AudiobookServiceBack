@@ -64,7 +64,7 @@ use Symfony\Component\Routing\Annotation\Route;
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "Report")]
+#[OA\Tag(name: "AdminReport")]
 class AdminReportController extends AbstractController
 {
     /**
@@ -103,7 +103,7 @@ class AdminReportController extends AbstractController
             )
         ]
     )]
-    public function apiReportAdminAccept(
+    public function apiAdminReportAccept(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -241,7 +241,7 @@ class AdminReportController extends AbstractController
      */
     #[Route("/api/report/admin/reject", name: "apiAdminReportReject", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is used to reject report",
         requestBody: new OA\RequestBody(
             required: true,
@@ -257,7 +257,7 @@ class AdminReportController extends AbstractController
             )
         ]
     )]
-    public function apiReportAdminReject(
+    public function apiAdminReportReject(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,

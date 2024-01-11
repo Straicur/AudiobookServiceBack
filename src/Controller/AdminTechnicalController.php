@@ -47,7 +47,7 @@ use Symfony\Component\Routing\Annotation\Route;
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "AdminStatistics")]
+#[OA\Tag(name: "AdminTechnical")]
 class AdminTechnicalController extends AbstractController
 {
     /**
