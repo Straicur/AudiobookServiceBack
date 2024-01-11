@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
+use App\Enums\AudiobookAgeRange;
 use App\Enums\AudiobookOrderSearch;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -176,14 +177,20 @@ class AudiobookRepository extends ServiceEntityRepository
 
     /**
      * @param AudiobookCategory $category
+     * @param AudiobookAgeRange|null $age
      * @return Audiobook[]
      */
-    public function getActiveCategoryAudiobooks(AudiobookCategory $category): array
+    public function getActiveCategoryAudiobooks(AudiobookCategory $category, ?AudiobookAgeRange $age = null): array
     {
         $qb = $this->createQueryBuilder('a')
-          ->innerJoin('a.categories', 'c', Join::WITH, 'c.id = :category')
+            ->innerJoin('a.categories', 'c', Join::WITH, 'c.id = :category')
             ->where('a.active = true')
             ->setParameter('category', $category->getId()->toBinary());
+
+        if ($age !== null) {
+            $qb->andWhere('a.age != :age')
+                ->setParameter('category', $age->value);
+        }
 
         return $qb->getQuery()->execute();
     }
@@ -243,17 +250,24 @@ class AudiobookRepository extends ServiceEntityRepository
 
     /**
      * @param string $title
+     * @param AudiobookAgeRange|null $age
      * @return Audiobook[]
      */
-    public function searchAudiobooksByName(string $title): array
+    public function searchAudiobooksByName(string $title, ?AudiobookAgeRange $age = null): array
     {
         $qb = $this->createQueryBuilder('a')
             ->select('a')
             ->leftJoin('a.audiobookRatings', 'ar')
             ->where('a.active = true')
             ->andWhere('((a.title LIKE :title) OR (a.author LIKE :title))')
-            ->setParameter('title', "%" . $title . "%")
-            ->groupBy('a')
+            ->setParameter('title', "%" . $title . "%");
+
+        if ($age !== null) {
+            $qb->andWhere('a.age != :age')
+                ->setParameter('category', $age->value);
+        }
+
+        $qb->groupBy('a')
             ->orderBy('COUNT(ar)', "DESC");
 
         return $qb->getQuery()->execute();
