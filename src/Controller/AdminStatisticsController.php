@@ -61,6 +61,7 @@ class AdminStatisticsController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AuthenticationTokenRepository $authenticationTokenRepository
      * @param NotificationRepository $notificationRepository
+     * @param TechnicalBreakRepository $technicalBreakRepository
      * @return Response
      */
     #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["GET"])]
