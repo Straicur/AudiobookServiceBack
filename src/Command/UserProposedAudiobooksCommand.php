@@ -72,6 +72,12 @@ class UserProposedAudiobooksCommand extends Command
         $users = $this->userRepository->getUsersByRole($userRole);
 
         foreach ($users as $user) {
+            $age = null;
+
+            if($user->getUserInformation()->getBirthday() !== null){
+                $userParentalControlTool = new UserParentalControlTool();
+                $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+            }
 
             $myList = $user->getMyList();
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
@@ -127,13 +133,6 @@ class UserProposedAudiobooksCommand extends Command
                     ]);
 
                     if ($databaseCategory !== null) {
-                        $age = null;
-
-                        if($user->getUserInformation()->getBirthday() !== null){
-                            $userParentalControlTool = new UserParentalControlTool();
-                            $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
-                        }
-
                         $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory, $age);
 
                         shuffle($audiobooks);
