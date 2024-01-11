@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * ResponseTool
- *
  */
 class ResponseTool
 {

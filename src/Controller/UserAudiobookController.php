@@ -50,6 +50,7 @@ use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
+use App\Tool\UserParentalControlTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -139,10 +140,17 @@ class UserAudiobookController extends AbstractController
                 }
 
                 if ($index < $maxResult) {
-
                     $categoryModel = new UserCategoryModel($category->getName(), $category->getCategoryKey());
 
-                    $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category);
+                    $age = null;
+                    $user = $authorizedUserService->getAuthorizedUser();
+
+                    if ($user->getUserInformation()->getBirthday() !== null) {
+                        $userParentalControlTool = new UserParentalControlTool();
+                        $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+                    }
+
+                    $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category, $age);
 
                     foreach ($audiobooks as $audiobook) {
                         $categoryModel->addAudiobook(new UserAudiobookModel(
@@ -213,8 +221,15 @@ class UserAudiobookController extends AbstractController
         $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
 
         if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
+            $age = null;
+            $user = $authorizedUserService->getAuthorizedUser();
 
-            $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle());
+            if ($user->getUserInformation()->getBirthday() !== null) {
+                $userParentalControlTool = new UserParentalControlTool();
+                $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+            }
+
+            $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle(), $age);
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
