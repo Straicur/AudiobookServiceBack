@@ -43,6 +43,8 @@ class AdminStatisticMainTest extends AbstractWebTest
         $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d2", [$category2], active: true);
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d3", [$category2]);
 
+        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $admin, (new \DateTime("Now"))->modify('-6 day'), (new \DateTime("Now"))->modify('-5 day'));
+
         $token = $this->databaseMockManager->testFunc_loginUser($admin);
 
         /// step 2
@@ -66,6 +68,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertArrayHasKey("lastWeekRegistered", $responseContent);
         $this->assertArrayHasKey("lastWeekLogins", $responseContent);
         $this->assertArrayHasKey("lastWeekNotifications", $responseContent);
+        $this->assertArrayHasKey("lastWeekTechnicalBreaks", $responseContent);
 
         $this->assertSame($responseContent["users"],11);
         $this->assertSame($responseContent["categories"],13);
@@ -73,6 +76,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertSame($responseContent["lastWeekRegistered"],1);
         $this->assertSame($responseContent["lastWeekLogins"],3);
         $this->assertSame($responseContent["lastWeekNotifications"],1);
+        $this->assertSame($responseContent["lastWeekTechnicalBreaks"],1);
     }
     /**
      * step 1 - Preparing data
