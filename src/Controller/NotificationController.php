@@ -152,7 +152,7 @@ class NotificationController extends AbstractController
      */
     #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Post(
+    #[OA\Put(
         description: "Method get is activating given notification so user can see if he read this notification",
         requestBody: new OA\RequestBody(
             required: true,

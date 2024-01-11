@@ -13,6 +13,7 @@ use App\Enums\UserRolesNames;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Exception\NotificationException;
 use App\Model\Admin\AdminAudiobookDetailsSuccessModel;
 use App\Model\Admin\AdminAudiobooksSuccessModel;
 use App\Model\Admin\AdminCategoryAudiobookModel;
@@ -658,6 +659,9 @@ class AdminAudiobookController extends AbstractController
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
      * @param AudiobookRatingRepository $audiobookRatingRepository ,
      * @param TranslateService $translateService
+     * @param NotificationRepository $notificationRepository
+     * @param AudiobookUserCommentRepository $commentRepository
+     * @param UserRepository $userRepository
      * @return Response
      * @throws AudiobookConfigServiceException
      * @throws DataNotFoundException
@@ -1065,9 +1069,14 @@ class AdminAudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param TranslateService $translateService
+     * @param NotificationRepository $notificationRepository
+     * @param AudiobookInfoRepository $audiobookInfoRepository
+     * @param UserRepository $userRepository
+     * @param RoleRepository $roleRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws NotificationException
      */
     #[Route("/api/admin/audiobook/active", name: "adminAudiobookActive", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
