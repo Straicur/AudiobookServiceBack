@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserParentalControlCodeRepository;
+use App\ValueGenerator\ValueGeneratorInterface;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -32,12 +33,12 @@ class UserParentalControlCode
 
     /**
      * @param User $user
-     * @param string $code
+     * @param ValueGeneratorInterface $userParentalControlCodeGenerator
      */
-    public function __construct(User $user, string $code)
+    public function __construct(User $user, ValueGeneratorInterface $userParentalControlCodeGenerator)
     {
         $this->user = $user;
-        $this->code = $code;
+        $this->code = $userParentalControlCodeGenerator->generate();
         $this->dateAdd = new DateTime("Now");
         $this->used = false;
     }
@@ -64,9 +65,9 @@ class UserParentalControlCode
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    public function setCode(ValueGeneratorInterface $userParentalControlCodeGenerator): self
     {
-        $this->code = $code;
+        $this->code = $userParentalControlCodeGenerator->generate();
 
         return $this;
     }
