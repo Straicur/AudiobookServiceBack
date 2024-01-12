@@ -36,7 +36,7 @@ class UserParentControlPatchQuery
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('birthday', $additionalData)) {
-            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['year']);
+            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
         }
 
         $this->additionalData = $additionalData;
