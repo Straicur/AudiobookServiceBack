@@ -42,6 +42,8 @@ ClickToChange: Kliknij aby zmienić
 PasswordReset: Otrzymaliśmy prośbę resetu hasła twojego konta
 YouCanGoBack: Teraz możesz wrócić do strony główniej:)
 Login: Zaloguj
+UserParentalControlCodeToManyAttempts: Przez ostatnie 3 dni otrzymaliśmy za dużą ilość prób
+UserParentalControlCodeDontExists: Kod sms zmiany rodzicielskiej nie istnieje
 SuccessfulActivation: Udana aktywacja konta
 SuccessfulEmailChange: Udana zmiana emaila
 Cheers: Dziękujemy
