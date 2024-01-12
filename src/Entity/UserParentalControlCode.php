@@ -40,7 +40,7 @@ class UserParentalControlCode
         $this->user = $user;
         $this->code = $userParentalControlCodeGenerator->generate();
         $this->dateAdd = new DateTime("Now");
-        $this->active = false;
+        $this->active = true;
     }
 
     public function getId(): Uuid
