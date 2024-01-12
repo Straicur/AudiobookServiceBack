@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
+use App\Entity\UserParentalControlCode;
 use App\Enums\UserEditType;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -12,7 +13,9 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\User\UserParentControlPutSuccessModel;
 use App\Model\User\UserSettingsGetSuccessModel;
+use App\Query\User\UserParentControlPatchQuery;
 use App\Query\User\UserResetPasswordConfirmQuery;
 use App\Query\User\UserResetPasswordQuery;
 use App\Query\User\UserSettingsChangeQuery;
@@ -22,6 +25,7 @@ use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
+use App\Repository\UserParentalControlCodeRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
@@ -29,6 +33,7 @@ use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
+use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -692,6 +697,140 @@ class UserSettingsController extends AbstractController
             $password->setPassword($passwordGenerator);
 
             $userPasswordRepository->add($password);
+
+            return ResponseTool::getResponse();
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @param UserParentalControlCodeRepository $controlCodeRepository
+     * @return Response
+     * @throws DataNotFoundException
+     */
+    #[Route("/api/user/parent/control", name: "userParentControlPut", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is creating a sms code for changing parent control settings",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+                content: new Model(type: UserParentControlPutSuccessModel::class)
+            )
+        ]
+    )]
+    public function userParentControlPut(
+        Request                           $request,
+        RequestServiceInterface           $requestService,
+        AuthorizedUserServiceInterface    $authorizedUserService,
+        LoggerInterface                   $endpointLogger,
+        TranslateService                  $translateService,
+        UserParentalControlCodeRepository $controlCodeRepository
+    ): Response
+    {
+        $user = $authorizedUserService->getAuthorizedUser();
+
+        $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
+
+        if ($lastWeakAttempts > 3) {
+            $endpointLogger->error("To many attempts to get UserParentalControlCode sms code");
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("UserParentalControlCodeToManyAttempts")]);
+        }
+
+        $controlCodeRepository->setCodesToNotActive($user);
+
+        $newGenerator = new UserParentalControlCodeGenerator();
+
+        $newUserParentalControlCode = new UserParentalControlCode($user, $newGenerator);
+
+        $controlCodeRepository->add($newUserParentalControlCode);
+
+        return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
+     * @param UserParentalControlCodeRepository $controlCodeRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/parent/control", name: "userParentControlPatch", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Patch(
+        description: "Endpoint is changing parent control settings",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserParentControlPatchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userParentControlPatch(
+        Request                           $request,
+        RequestServiceInterface           $requestService,
+        AuthorizedUserServiceInterface    $authorizedUserService,
+        LoggerInterface                   $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        TranslateService                  $translateService,
+        UserParentalControlCodeRepository $controlCodeRepository
+    ): Response
+    {
+        $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
+
+        if ($userParentControlPatchQuery instanceof UserParentControlPatchQuery) {
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $controlCode = $controlCodeRepository->findOneBy([
+                "code" => $userParentControlPatchQuery->getSmsCode(),
+                "active" => true,
+                "user" => $user->getId()
+            ]);
+
+            if ($controlCode === null) {
+                $endpointLogger->error("UserParentalControlCode dont exist");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserParentalControlCodeDontExists")]);
+            }
+            $additionalData = $userParentControlPatchQuery->getAdditionalData();
+            $userInformation= $user->getUserInformation();
+
+            $birthday = $additionalData['birthday'] ?? null;
+
+            if($birthday !== null){
+                $userInformation->setBirthday($birthday);
+            }
+            else{
+                $userInformation->setBirthday(null);
+            }
+
+            $userInformationRepository->add($userInformation);
+
+            $controlCode->setActive(false);
+            $controlCodeRepository->add($controlCode);
 
             return ResponseTool::getResponse();
         }

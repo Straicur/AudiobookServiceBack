@@ -42,6 +42,8 @@ ClickToChange: Click to change
 PasswordReset: We have received a request to reset your account password
 YouCanGoBack: Now you can go back to main page :)
 Login: Login
+UserParentalControlCodeToManyAttempts: In last 7 days we received to many attempts
+UserParentalControlCodeDontExists: Parental Control sms code dont exists
 SuccessfulActivation: Successful account activation
 SuccessfulEmailChange: Successfully changed email
 Cheers: Cheers

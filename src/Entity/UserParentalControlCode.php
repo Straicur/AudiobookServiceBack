@@ -29,7 +29,7 @@ class UserParentalControlCode
     private DateTime $dateAdd;
 
     #[ORM\Column(type: 'boolean')]
-    private bool $used;
+    private bool $active;
 
     /**
      * @param User $user
@@ -40,7 +40,7 @@ class UserParentalControlCode
         $this->user = $user;
         $this->code = $userParentalControlCodeGenerator->generate();
         $this->dateAdd = new DateTime("Now");
-        $this->used = false;
+        $this->active = false;
     }
 
     public function getId(): Uuid
@@ -84,15 +84,14 @@ class UserParentalControlCode
         return $this;
     }
 
-    public function getUsed(): bool
+    public function isActive(): bool
     {
-        return $this->used;
+        return $this->active;
     }
 
-    public function setUsed(bool $used): self
+    public function setActive(bool $active): void
     {
-        $this->used = $used;
-
-        return $this;
+        $this->active = $active;
     }
+
 }

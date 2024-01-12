@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\UserParentalControlCode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -47,6 +48,40 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param User $user
+     * @return int
+     */
+    public function getUserParentalControlCodeFromLastWeakByUser(User $user): int
+    {
+        $today = new \DateTime('NOW');
+        $lastDate = clone $today;
+        $lastDate->modify('-7 day');
+
+        $qb = $this->createQueryBuilder('upcc')
+            ->where('( :dateFrom <= upcc.dateAdd AND :dateTo >= upcc.dateAdd)')
+            ->andWhere("upcc.user = :user")
+            ->setParameter("user", $user->getId()->toBinary())
+            ->setParameter('dateTo', $today)
+            ->setParameter('dateFrom', $lastDate);
+
+        return count($qb->getQuery()->execute());
+    }
+
+    /**
+     * @param User $user
+     * @return void
+     */
+    public function setCodesToNotActive(User $user): void
+    {
+        $qb = $this->createQueryBuilder('upcc')
+            ->update()
+            ->set("upcc.active", "false")
+            ->where("upcc.user = :user")
+            ->setParameter("user", $user->getId()->toBinary());
+
+        $qb->getQuery()->execute();
+    }
 //    /**
 //     * @return UserParentalControlCode[] Returns an array of UserParentalControlCode objects
 //     */
