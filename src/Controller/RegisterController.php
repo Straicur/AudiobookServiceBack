@@ -152,13 +152,23 @@ class RegisterController extends AbstractController
 
             $userRepository->add($newUser,false);
 
-            $newUser->setUserInformation(new UserInformation(
+            $additionalData = $registerQuery->getAdditionalData();
+
+            $newUserInformation = new UserInformation(
                 $newUser,
                 $registerQuery->getEmail(),
                 $registerQuery->getPhoneNumber(),
                 $registerQuery->getFirstname(),
                 $registerQuery->getLastname()
-            ));
+           );
+
+            $birthday = $additionalData['birthday'] ?? null;
+
+            if($birthday !== null){
+                $newUserInformation->setBirthday($birthday);
+            }
+
+            $newUser->setUserInformation($newUserInformation);
 
             $userSettingsRepository->add(new UserSettings($newUser));
 
