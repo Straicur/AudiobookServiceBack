@@ -23,6 +23,7 @@ use App\Entity\UserBanHistory;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
 use App\Entity\UserInformation;
+use App\Entity\UserParentalControlCode;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Enums\AudiobookAgeRange;
@@ -50,6 +51,7 @@ use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
+use App\Repository\UserParentalControlCodeRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserSettingsRepository;
@@ -57,6 +59,7 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -529,5 +532,22 @@ class DatabaseMockManager
         $technicalBreakRepository->add($newTechnicalBreak);
 
         return $newTechnicalBreak;
+    }
+
+    public function testFunc_addUserParentalControlCode(User $user, bool $active = true): UserParentalControlCode
+    {
+        $userParentalControlCodeRepository = $this->getService(UserParentalControlCodeRepository::class);
+
+        $generator = new UserParentalControlCodeGenerator();
+
+        $newUserParentalControlCode = new UserParentalControlCode($user, $generator);
+
+        if (!$active) {
+            $newUserParentalControlCode->setActive($active);
+        }
+
+        $userParentalControlCodeRepository->add($newUserParentalControlCode);
+
+        return $newUserParentalControlCode;
     }
 }
