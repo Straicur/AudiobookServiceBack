@@ -78,7 +78,7 @@ class User
      * @param Uuid $id
      * @return User
      */
-    public function setId(Uuid $id): self
+    public function setId(Uuid $id): User
     {
         $this->id = $id;
         return $this;
@@ -96,7 +96,7 @@ class User
      * @param \DateTime $dateCreate
      * @return User
      */
-    public function setDateCreate(\DateTime $dateCreate): self
+    public function setDateCreate(\DateTime $dateCreate): User
     {
         $this->dateCreate = $dateCreate;
         return $this;
@@ -114,7 +114,7 @@ class User
      * @param bool $active
      * @return User
      */
-    public function setActive(bool $active): self
+    public function setActive(bool $active): User
     {
         $this->active = $active;
         return $this;
@@ -132,7 +132,7 @@ class User
      * @param bool $banned
      * @return User
      */
-    public function setBanned(bool $banned): self
+    public function setBanned(bool $banned): User
     {
         $this->banned = $banned;
         return $this;
@@ -150,7 +150,7 @@ class User
      * @param UserInformation $userInformation
      * @return $this
      */
-    public function setUserInformation(UserInformation $userInformation): self
+    public function setUserInformation(UserInformation $userInformation): static
     {
         // set the owning side of the relation if necessary
         if ($userInformation->getUser() !== $this) {
