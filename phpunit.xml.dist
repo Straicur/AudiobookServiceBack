@@ -34,13 +34,7 @@
     </listeners>
 
     <extensions>
-<<<<<<< ours
-<<<<<<< ours
-        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
         <extension class="Symfony\Component\Panther\ServerExtension" />
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
     </extensions>
 </phpunit>

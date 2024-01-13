@@ -25,8 +25,9 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 
         $this->commandApplication = new Application(self::$kernel);
 
+        $this->entityManager = self::$kernel->getContainer()->get("doctrine.orm.entity_manager");
+
         $connection = $this->entityManager->getConnection();
-        $connection->setNestTransactionsWithSavepoints(true);
         $connection->beginTransaction();
     }
 

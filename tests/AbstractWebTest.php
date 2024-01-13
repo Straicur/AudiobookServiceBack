@@ -31,8 +31,8 @@ abstract class AbstractWebTest extends WebTestCase
         self::$webClient->enableProfiler();
 
         $this->entityManager = self::$webClient->getContainer()->get("doctrine.orm.entity_manager");
+
         $connection = $this->entityManager->getConnection();
-        $connection->setNestTransactionsWithSavepoints(true);
         $connection->beginTransaction();
     }
 
