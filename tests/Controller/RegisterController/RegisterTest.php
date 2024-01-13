@@ -179,7 +179,7 @@ class RegisterTest extends AbstractWebTest
      * step 2 - Checking response
      * @return void
      */
-    public function test_registerEmptyRequest()
+    public function test_registerEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
 

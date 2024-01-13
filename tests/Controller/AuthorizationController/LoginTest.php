@@ -73,7 +73,7 @@ class LoginTest extends AbstractWebTest
      * step 2 - Checking response
      * @return void
      */
-    public function test_loginEmptyRequest()
+    public function test_loginEmptyRequest(): void
     {
         /// step 1
         $crawler = self::$webClient->request("POST", "/api/authorize");

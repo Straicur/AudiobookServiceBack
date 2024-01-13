@@ -4,14 +4,6 @@ namespace App\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * Annotation class for @AuthValidation()
- *
- * @Annotation
- * @NamedArgumentConstructor
- * @Target({"METHOD"})
- *
- */
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class AuthValidation
 {

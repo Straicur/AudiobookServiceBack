@@ -37,7 +37,7 @@ class NotificationBuilder
      * @param NotificationType $notificationType
      * @return $this
      */
-    public function setType(NotificationType $notificationType): NotificationBuilder
+    public function setType(NotificationType $notificationType): static
     {
         $this->notification->setType($notificationType);
 
@@ -48,7 +48,7 @@ class NotificationBuilder
      * @param Uuid $id
      * @return $this
      */
-    public function setAction(Uuid $id): NotificationBuilder
+    public function setAction(Uuid $id): static
     {
         $this->notification->setActionId($id);
 
@@ -59,7 +59,7 @@ class NotificationBuilder
      * @param User $user
      * @return $this
      */
-    public function addUser(User $user): NotificationBuilder
+    public function addUser(User $user): static
     {
         $this->notification->addUser($user);
 
@@ -70,7 +70,7 @@ class NotificationBuilder
      * @param NotificationUserType $type
      * @return $this
      */
-    public function setUserAction(NotificationUserType $type): NotificationBuilder
+    public function setUserAction(NotificationUserType $type): static
     {
         $this->metaData["user"] = $type->value;
 
@@ -81,7 +81,7 @@ class NotificationBuilder
      * @param string $text
      * @return $this
      */
-    public function setText(string $text): NotificationBuilder
+    public function setText(string $text): static
     {
         $this->metaData["text"] = $text;
 
@@ -92,7 +92,7 @@ class NotificationBuilder
      * @param string $text
      * @return $this
      */
-    public function setCategoryKey(string $text): NotificationBuilder
+    public function setCategoryKey(string $text): static
     {
         $this->metaData["categoryKey"] = $text;
 

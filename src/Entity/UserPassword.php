@@ -39,7 +39,7 @@ class UserPassword
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): self
+    public function setUser(User $user): static
     {
         $this->user = $user;
 
@@ -58,7 +58,7 @@ class UserPassword
      * @param ValueGeneratorInterface $generator
      * @return $this
      */
-    public function setPassword(ValueGeneratorInterface $generator): self
+    public function setPassword(ValueGeneratorInterface $generator): static
     {
         $this->password = $generator->generate();
 

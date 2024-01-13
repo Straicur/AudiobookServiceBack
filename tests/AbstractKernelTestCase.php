@@ -19,14 +19,15 @@ abstract class AbstractKernelTestCase extends KernelTestCase
             self::bootKernel(["environment" => "test"]);
         }
 
-        if ($this->databaseMockManager == null) {
+        if ($this->databaseMockManager === null) {
             $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
         }
 
         $this->commandApplication = new Application(self::$kernel);
 
-        $this->entityManager = self::$kernel->getContainer()->get("doctrine.orm.entity_manager");
-        $this->entityManager->getConnection()->beginTransaction();
+        $connection = $this->entityManager->getConnection();
+        $connection->setNestTransactionsWithSavepoints(true);
+        $connection->beginTransaction();
     }
 
     protected function tearDown(): void
