@@ -64,3 +64,4 @@ ChangeEmailSubject: Change email
 RequestDeleteAccountSubject: Your request to delete your account is being processed
 PasswordResetSubject: Password reset
 UserBannedSubject: Your account has been banned
+SmsCodeContent: Here is your change code

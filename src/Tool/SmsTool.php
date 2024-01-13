@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tools;
+namespace App\Tool;
 
 use Smsapi\Client\Curl\SmsapiHttpClient;
 use Smsapi\Client\Feature\Sms\Bag\SendSmsBag;
@@ -8,20 +8,19 @@ use Smsapi\Client\Feature\Sms\Bag\SendSmsBag;
 class SmsTool
 {
     /**
-     * @param $data
-     * @return bool
+     * @param string $phone
+     * @param string $content
+     * @return void
      */
-    public function sendSms($data): bool
+    public function sendSms(string $phone, string $content): void
     {
-        $phone = $data["phone"];
-        $content = $data["content"];
+        if ($_ENV["APP_ENV"] !== "test") {
+            $sendSmsBag = SendSmsBag::withMessage($phone, $content);
 
-        $sendSmsBag = SendSmsBag::withMessage($phone, $content);
-
-        $sms = (bool)(new SmsapiHttpClient())
-            ->smsapiPlService($_ENV["SMS_TOKEN"])
-            ->smsFeature()
-            ->sendSms($sendSmsBag);
-        return $sms;
+            (new SmsapiHttpClient())
+                ->smsapiPlService($_ENV["SMS_TOKEN"])
+                ->smsFeature()
+                ->sendSms($sendSmsBag);
+        }
     }
 }
