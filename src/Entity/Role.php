@@ -45,7 +45,7 @@ class Role
      * @param Uuid $id
      * @return Role
      */
-    public function setId(Uuid $id): self
+    public function setId(Uuid $id): Role
     {
         $this->id = $id;
         return $this;
@@ -63,7 +63,7 @@ class Role
      * @param string $name
      * @return Role
      */
-    public function setName(string $name): self
+    public function setName(string $name): Role
     {
         $this->name = $name;
         return $this;

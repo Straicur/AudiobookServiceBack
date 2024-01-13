@@ -22,6 +22,7 @@
     "openpayu/openpayu": "^2.3",
     "psr/log": "^2.0",
     "sensio/framework-extra-bundle": "^6.2",
+    "smsapi/php-client": "^3.0",
     "symfony/asset": "6.4.*",
     "symfony/config": "6.4.*",
     "symfony/console": "6.4.*",
@@ -100,7 +101,7 @@
     }
   },
   "require-dev": {
-    "dama/doctrine-test-bundle": "^6.7",
+    "dama/doctrine-test-bundle": "v7.2.*",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-master",
     "symfony/browser-kit": "6.4.*",

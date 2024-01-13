@@ -41,7 +41,7 @@ class UserSettings
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): self
+    public function setUser(User $user): static
     {
         $this->user = $user;
 
