@@ -32,6 +32,7 @@ use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
+use App\Tool\SmsTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -756,7 +757,9 @@ class UserSettingsController extends AbstractController
 
         $controlCodeRepository->add($newUserParentalControlCode);
 
-        //TODO tu dodaje teraz wysyłanie smsmów
+        $smsTool = new SmsTool();
+        $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ":");
+
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
@@ -795,7 +798,7 @@ class UserSettingsController extends AbstractController
         RequestServiceInterface           $requestService,
         AuthorizedUserServiceInterface    $authorizedUserService,
         LoggerInterface                   $endpointLogger,
-        UserInformationRepository $userInformationRepository,
+        UserInformationRepository         $userInformationRepository,
         TranslateService                  $translateService,
         UserParentalControlCodeRepository $controlCodeRepository
     ): Response
@@ -817,14 +820,13 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("UserParentalControlCodeDontExists")]);
             }
             $additionalData = $userParentControlPatchQuery->getAdditionalData();
-            $userInformation= $user->getUserInformation();
+            $userInformation = $user->getUserInformation();
 
             $birthday = $additionalData['birthday'] ?? null;
 
-            if($birthday !== null){
+            if ($birthday !== null) {
                 $userInformation->setBirthday($birthday);
-            }
-            else{
+            } else {
                 $userInformation->setBirthday(null);
             }
 

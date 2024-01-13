@@ -64,3 +64,4 @@ ChangeEmailSubject: Zmiana emaila
 RequestDeleteAccountSubject: Prośba o usunięcie konta jest przetwarzana
 PasswordResetSubject: Reset hasła
 UserBannedSubject: Twoje konto zostało zbanowane
+SmsCodeContent: Oto twój kod zmiany
