@@ -776,7 +776,9 @@ class UserSettingsController extends AbstractController
 
         $userRepository->add($user);
 
-        //TODO tu dodaje teraz wysyłanie smsmów
+        $smsTool = new SmsTool();
+        $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ":");
+
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
