@@ -2,25 +2,33 @@
 
 namespace App\Tool;
 
-use Smsapi\Client\Curl\SmsapiHttpClient;
-use Smsapi\Client\Feature\Sms\Bag\SendSmsBag;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client;
+use Vonage\Client\Credentials\Basic;
+use Vonage\SMS\Message\SMS;
 
 class SmsTool
 {
     /**
      * @param string $phone
      * @param string $content
-     * @return void
+     * @return bool
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
      */
-    public function sendSms(string $phone, string $content): void
+    public function sendSms(string $phone, string $content): bool
     {
         if ($_ENV["APP_ENV"] !== "test") {
-            $sendSmsBag = SendSmsBag::withMessage($phone, $content);
+            $basic  = new Basic($_ENV["SMS_KEY"], $_ENV["SMS_SECRET"]);
+            $client = new Client($basic);
 
-            (new SmsapiHttpClient())
-                ->smsapiPlService($_ENV["SMS_TOKEN"])
-                ->smsFeature()
-                ->sendSms($sendSmsBag);
+            $response = $client->sms()->send(
+                new SMS($phone, "Audiobooks", $content)
+            );
+
+            return $response->current()->getStatus() === 0;
         }
+
+        return true;
     }
 }
