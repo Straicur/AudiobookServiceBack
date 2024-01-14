@@ -37,6 +37,7 @@ use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,6 +46,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Twilio\Exceptions\ConfigurationException;
+use Twilio\Exceptions\TwilioException;
+use Vonage\Client\Exception\Exception;
 
 #[OA\Response(
     response: 400,
@@ -733,7 +737,8 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface    $authorizedUserService,
         LoggerInterface                   $endpointLogger,
         TranslateService                  $translateService,
-        UserParentalControlCodeRepository $controlCodeRepository
+        UserParentalControlCodeRepository $controlCodeRepository,
+        UserRepository $userRepository
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
@@ -752,10 +757,26 @@ class UserSettingsController extends AbstractController
 
         $newUserParentalControlCode = new UserParentalControlCode($user, $newGenerator);
 
-        $controlCodeRepository->add($newUserParentalControlCode);
+        $controlCodeRepository->add($newUserParentalControlCode, false);
 
         $smsTool = new SmsTool();
-        $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ":");
+
+        try {
+            $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ": " . $newUserParentalControlCode->getCode() . " ");
+        }
+        catch (Exception|ClientExceptionInterface $e){
+            $endpointLogger->error($e->getMessage());
+            $translateService->setPreferredLanguage($request);
+            throw new ([$translateService->getTranslation("SmsCodeError")]);
+        }
+
+        if (!$status) {
+            $endpointLogger->error("Can't send sms");
+            $translateService->setPreferredLanguage($request);
+            throw new ([$translateService->getTranslation("SmsCodeError")]);
+        }
+
+        $userRepository->add($user);
 
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }

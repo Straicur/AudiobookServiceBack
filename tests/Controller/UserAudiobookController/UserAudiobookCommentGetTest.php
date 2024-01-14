@@ -46,7 +46,7 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
             "categoryKey" => $category1->getCategoryKey()
         ];
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [
+        $crawler = self::$webClient->request("POST", "/api/user/audiobook/comment/get", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -151,7 +151,7 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
             "categoryKey" => $category1->getCategoryKey()
         ];
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [
+        $crawler = self::$webClient->request("POST", "/api/user/audiobook/comment/get", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
         /// step 3
@@ -200,7 +200,7 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
             "categoryKey" => $category1->getCategoryKey()
         ];
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/audiobook/comment/get", server: [], content: json_encode($content));
+        $crawler = self::$webClient->request("POST", "/api/user/audiobook/comment/get", server: [], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
