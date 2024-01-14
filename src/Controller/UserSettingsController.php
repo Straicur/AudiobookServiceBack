@@ -738,7 +738,7 @@ class UserSettingsController extends AbstractController
         LoggerInterface                   $endpointLogger,
         TranslateService                  $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
-        UserRepository $userRepository
+        UserRepository                    $userRepository
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
@@ -763,8 +763,7 @@ class UserSettingsController extends AbstractController
 
         try {
             $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ": " . $newUserParentalControlCode->getCode() . " ");
-        }
-        catch (Exception|ClientExceptionInterface $e){
+        } catch (Exception|ClientExceptionInterface $e) {
             $endpointLogger->error($e->getMessage());
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("SmsCodeError")]);
