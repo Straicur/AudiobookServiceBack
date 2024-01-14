@@ -35,6 +35,10 @@ class AudiobookCommentsSuccessModel implements ModelInterface
         $this->comments = $comments;
     }
 
+    /**
+     * @param AudiobookCommentsModel $category
+     * @return void
+     */
     public function addComment(AudiobookCommentsModel $category)
     {
         $this->comments[] = $category;

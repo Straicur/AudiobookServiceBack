@@ -45,7 +45,7 @@ use Symfony\Component\Routing\Attribute\Route;
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "User")]
+#[OA\Tag(name: "UserReport")]
 class UserReportController extends AbstractController
 {
     /**
@@ -61,7 +61,7 @@ class UserReportController extends AbstractController
      */
     #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
     #[OA\Put(
-        description: "Method used to report for not loged users",
+        description: "Method used to report for not logged users",
         security: [],
         requestBody: new OA\RequestBody(
             required: true,

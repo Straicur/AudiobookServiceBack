@@ -11,7 +11,6 @@ use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
 use Symfony\Component\Uid\Uuid;
 
-
 class NotificationBuilder
 {
     /**
@@ -26,7 +25,7 @@ class NotificationBuilder
 
     public function __construct(?Notification $notification = null)
     {
-        if ($notification != null) {
+        if ($notification !== null) {
             $this->notification = $notification;
         } else {
             $this->notification = new Notification();
@@ -123,28 +122,28 @@ class NotificationBuilder
         $metaData = $notification->getMetaData();
 
         if (array_key_exists("user", $metaData)) {
-            if ($metaData["user"] != null) {
+            if ($metaData["user"] !== null) {
                 $notificationModel->setUserType($metaData["user"]);
             }
         }
 
         if (array_key_exists("text", $metaData)) {
-            if ($metaData["text"] != "") {
+            if ($metaData["text"] !== "") {
                 $notificationModel->setText($metaData["text"]);
             }
         }
 
         if (array_key_exists("categoryKey", $metaData)) {
-            if ($metaData["categoryKey"] != "") {
+            if ($metaData["categoryKey"] !== "") {
                 $notificationModel->setCategoryKey($metaData["categoryKey"]);
             }
         }
 
-        if ($notificationCheck != null) {
+        if ($notificationCheck !== null) {
             $notificationModel->setActive($notificationCheck);
         }
 
-        if ($notification->getType() != NotificationType::NEW_CATEGORY) {
+        if ($notification->getType() !== NotificationType::NEW_CATEGORY) {
             $notificationModel->setActionId($notification->getActionId());
         }
 
