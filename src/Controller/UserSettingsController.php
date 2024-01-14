@@ -767,13 +767,13 @@ class UserSettingsController extends AbstractController
         catch (Exception|ClientExceptionInterface $e){
             $endpointLogger->error($e->getMessage());
             $translateService->setPreferredLanguage($request);
-            throw new ([$translateService->getTranslation("SmsCodeError")]);
+            throw new DataNotFoundException([$translateService->getTranslation("SmsCodeError")]);
         }
 
         if (!$status) {
             $endpointLogger->error("Can't send sms");
             $translateService->setPreferredLanguage($request);
-            throw new ([$translateService->getTranslation("SmsCodeError")]);
+            throw new DataNotFoundException([$translateService->getTranslation("SmsCodeError")]);
         }
 
         $userRepository->add($user);
