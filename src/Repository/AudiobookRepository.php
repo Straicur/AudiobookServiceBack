@@ -188,8 +188,8 @@ class AudiobookRepository extends ServiceEntityRepository
             ->setParameter('category', $category->getId()->toBinary());
 
         if ($age !== null) {
-            $qb->andWhere('a.age != :age')
-                ->setParameter('category', $age->value);
+            $qb->andWhere('a.age <= :age')
+                ->setParameter('age', $age->value);
         }
 
         return $qb->getQuery()->execute();
@@ -263,8 +263,8 @@ class AudiobookRepository extends ServiceEntityRepository
             ->setParameter('title', "%" . $title . "%");
 
         if ($age !== null) {
-            $qb->andWhere('a.age != :age')
-                ->setParameter('category', $age->value);
+            $qb->andWhere('a.age <= :age')
+                ->setParameter('age', $age->value);
         }
 
         $qb->groupBy('a')

@@ -91,7 +91,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, \DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null, \DateTime $bannedTo = null): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, \DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null, \DateTime $bannedTo = null, ?\DateTime $birthday = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -135,6 +135,10 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($userProposedAudiobooks);
 
         $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
+
+        if($birthday != null){
+            $userInformationEntity->setBirthday($birthday);
+        }
 
         $userInformationRepository->add($userInformationEntity, false);
 
