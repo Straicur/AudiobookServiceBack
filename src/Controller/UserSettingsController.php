@@ -263,7 +263,6 @@ class UserSettingsController extends AbstractController
      * @throws DataNotFoundException
      */
     #[Route("/api/user/settings/email/change/{email}/{id}", name: "userSettingsEmailChange", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Get(
         description: "Endpoint is sending confirmation email to change user email",
         requestBody: new OA\RequestBody(),
@@ -540,7 +539,6 @@ class UserSettingsController extends AbstractController
      * @throws TransportExceptionInterface'
      */
     #[Route("/api/user/reset/password", name: "userResetPassword", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Post(
         description: "Endpoint is sending reset password email",
         requestBody: new OA\RequestBody(
@@ -633,7 +631,6 @@ class UserSettingsController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Patch(
         description: "Endpoint is changing user password",
         requestBody: new OA\RequestBody(

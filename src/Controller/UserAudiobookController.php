@@ -865,7 +865,7 @@ class UserAudiobookController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 201,
+                response: 200,
                 description: "Success",
                 content: new Model(type: UserAudiobookRatingGetSuccessModel::class)
             )
@@ -1271,7 +1271,7 @@ class UserAudiobookController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/audiobook/comment/get", name: "audiobookCommentGet", methods: ["POST"])]
+    #[Route("/api/user/audiobook/comment/get", name: "userAudiobookCommentGet", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
     #[OA\Post(
         description: "Endpoint is returning comments for given audiobook for user",
@@ -1290,7 +1290,7 @@ class UserAudiobookController extends AbstractController
             )
         ]
     )]
-    public function audiobookCommentGet(
+    public function userAudiobookCommentGet(
         Request                            $request,
         RequestServiceInterface            $requestService,
         AuthorizedUserServiceInterface     $authorizedUserService,
