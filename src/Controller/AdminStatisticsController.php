@@ -90,6 +90,7 @@ class AdminStatisticsController extends AbstractController
         TechnicalBreakRepository       $technicalBreakRepository
     ): Response
     {
+        //TODO tu Cache
         $users = count($userRepository->findBy([
             "active" => true
         ]));
@@ -141,6 +142,7 @@ class AdminStatisticsController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository
     ): Response
     {
+        //TODO tu Cache
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 
         if (count($topAudiobooks) === 0) {

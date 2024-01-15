@@ -123,6 +123,7 @@ class UserAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu też możę być cache jak zapiszę w nazwie page i user ale nwm czy warto
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
 
         if ($userAudiobooksQuery instanceof UserAudiobooksQuery) {
@@ -289,6 +290,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
     ): Response
     {
+        //TODO tu Cache bo rzadko update leci tego
         $user = $authorizedUserService->getAuthorizedUser();
 
         $audiobooks = $user->getProposedAudiobooks()->getAudiobooks();
@@ -369,6 +371,7 @@ class UserAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
 
         if ($userAudiobookDetailsQuery instanceof UserAudiobookDetailsQuery) {
@@ -487,6 +490,7 @@ class UserAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
         if ($userAudiobookInfoQuery instanceof UserAudiobookInfoQuery) {
@@ -626,6 +630,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
     ): Response
     {
+        //TODO tu Cache plus pamiętaj o czyszczeniu go
         $user = $authorizedUserService->getAuthorizedUser();
 
         $audiobooks = $user->getMyList()->getAudiobooks();
@@ -880,6 +885,7 @@ class UserAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache i pamiętaj o czyszczeniu w komendach tak samo z proponowanymi mogę zrobić
         $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 
         if ($userAudiobookRatingGetQuery instanceof UserAudiobookRatingGetQuery) {
@@ -1301,6 +1307,7 @@ class UserAudiobookController extends AbstractController
         TranslateService                   $translateService
     ): Response
     {
+        //TODO tu Cache ale się zastanów czy napewno
         $userAudiobookCommentGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentGetQuery::class);
 
         if ($userAudiobookCommentGetQuery instanceof UserAudiobookCommentGetQuery) {

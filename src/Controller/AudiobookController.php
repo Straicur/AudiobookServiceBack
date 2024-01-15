@@ -90,6 +90,7 @@ class AudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
@@ -194,7 +195,7 @@ class AudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-
+        //TODO tu Cache
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
