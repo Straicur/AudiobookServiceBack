@@ -83,6 +83,7 @@ use ZipArchive;
 #[OA\Tag(name: "AdminAudiobook")]
 class AdminAudiobookController extends AbstractController
 {
+    //TODO tu wszędzie gdzie robię coś z audiobookiem to czyszcze cache (zrób cache dla kontrollera oddzielny)
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -126,6 +127,7 @@ class AdminAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
@@ -970,6 +972,7 @@ class AdminAudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
@@ -1379,6 +1382,7 @@ class AdminAudiobookController extends AbstractController
         TranslateService                   $translateService
     ): Response
     {
+        //TODO tu Cache
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);
 
         if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {

@@ -46,8 +46,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Twilio\Exceptions\ConfigurationException;
-use Twilio\Exceptions\TwilioException;
 use Vonage\Client\Exception\Exception;
 
 #[OA\Response(
@@ -715,6 +713,7 @@ class UserSettingsController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
      * @param UserParentalControlCodeRepository $controlCodeRepository
+     * @param UserRepository $userRepository
      * @return Response
      * @throws DataNotFoundException
      */

@@ -39,6 +39,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 #[OA\Response(
     response: 400,
@@ -63,6 +65,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: "AdminAudiobookCategory")]
 class AdminAudiobookCategoryController extends AbstractController
 {
+    //TODO I wszędzie gdzie modyfikują audiobooka lub robię coś z kategorią to czyszcze ten cache
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -457,6 +460,7 @@ class AdminAudiobookCategoryController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
 
         if ($adminCategoryAudiobooksQuery instanceof AdminCategoryAudiobooksQuery) {
@@ -543,19 +547,40 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository
+        AudiobookRepository            $audiobookRepository,
+        CacheInterface                 $stockCache
     ): Response
     {
-        $categories = $audiobookCategoryRepository->findBy([
-            "parent" => null
-        ]);
+        $key= "AdminCategoryTree";
+        //TODO tu zastanów się co robie i jak
+//        $successModel = $stockCache->get($key, function (ItemInterface $item) use ($audiobookCategoryRepository,$audiobookRepository) {
+//            $item->expiresAfter(10);
+////            $item->expiresAfter(date_create('tomorrow'));
+////            var_dump("dsa");
+//            $categories = $audiobookCategoryRepository->findBy([
+//                "parent" => null
+//            ]);
+//
+//            $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+//
+//            $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
+//        });
+//        return ResponseTool::getResponse($successModel);
 
-        $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+        return $stockCache->get($key, function (ItemInterface $item) use ($audiobookCategoryRepository,$audiobookRepository) {
+            $item->expiresAfter(10);
+//            $item->expiresAfter(date_create('tomorrow'));
+//            var_dump("dsa");
+            $categories = $audiobookCategoryRepository->findBy([
+                "parent" => null
+            ]);
 
-        $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
+            $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
 
-        return ResponseTool::getResponse($successModel);
+            $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
 
+            return ResponseTool::getResponse($successModel);
+        });
     }
 
     /**
@@ -587,6 +612,7 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
     ): Response
     {
+        //TODO tu Cache
         $categories = $audiobookCategoryRepository->findBy([], orderBy: ["dateAdd" => "ASC"]);
 
         $successModel = new AdminCategoriesSuccessModel();
@@ -702,6 +728,7 @@ class AdminAudiobookCategoryController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache
         $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);
 
         if ($adminCategoryDetailQuery instanceof AdminCategoryDetailQuery) {
