@@ -107,7 +107,7 @@ class AdminUserController extends AbstractController
         RoleRepository $roleRepository
     ): Response
     {
-
+        //TODO tu Cache
         $roles = $roleRepository->getSystemRoles();
 
         $successModel = new AdminUserSystemRolesSuccessModel();
@@ -1247,7 +1247,7 @@ class AdminUserController extends AbstractController
     #[Route("/api/admin/user/notifications", name: "adminUserNotifications", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Post(
-        description: "Endpoint is returning list of negotiations in system",
+        description: "Endpoint is returning list of notifications in system",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -1272,6 +1272,7 @@ class AdminUserController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
+        //TODO tu Cache i wszędzie gdzie coś robię z powiadomieniami to usuwam
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
