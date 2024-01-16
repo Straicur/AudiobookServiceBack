@@ -21,3 +21,4 @@ framework:
             stock_cache:
                 adapter: cache.adapter.redis
                 provider: '%env(resolve:REDIS_URL)%'
+                tags: true
