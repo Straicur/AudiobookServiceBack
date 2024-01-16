@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookCategory;
+use App\Enums\CacheKeys;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminCategoriesSuccessModel;
@@ -41,6 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
@@ -548,39 +550,24 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
-        CacheInterface                 $stockCache
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
-        $key= "AdminCategoryTree";
-        //TODO tu zastanów się co robie i jak
-//        $successModel = $stockCache->get($key, function (ItemInterface $item) use ($audiobookCategoryRepository,$audiobookRepository) {
-//            $item->expiresAfter(10);
-////            $item->expiresAfter(date_create('tomorrow'));
-////            var_dump("dsa");
-//            $categories = $audiobookCategoryRepository->findBy([
-//                "parent" => null
-//            ]);
-//
-//            $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
-//
-//            $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
-//        });
-//        return ResponseTool::getResponse($successModel);
-
-        return $stockCache->get($key, function (ItemInterface $item) use ($audiobookCategoryRepository,$audiobookRepository) {
+        $successModel =  $stockCache->get(CacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository, $audiobookRepository) {
             $item->expiresAfter(10);
-//            $item->expiresAfter(date_create('tomorrow'));
-//            var_dump("dsa");
+//            $item->expiresAfter(date_create('tomorrow')->getTimestamp());
+            $item->tag("admin");
+
             $categories = $audiobookCategoryRepository->findBy([
                 "parent" => null
             ]);
 
             $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
 
-            $successModel = new AdminCategoriesSuccessModel($treeGenerator->generate());
-
-            return ResponseTool::getResponse($successModel);
+            return new AdminCategoriesSuccessModel($treeGenerator->generate());
         });
+
+        return ResponseTool::getResponse($successModel);
     }
 
     /**
