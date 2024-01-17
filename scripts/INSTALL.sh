@@ -42,3 +42,5 @@ symfony console audiobookservice:category:add "Romantyzm"
 symfony console audiobookservice:category:add "Pozytywizm"
 symfony console audiobookservice:category:add "Powieść" 
 symfony console audiobookservice:category:add "Wiersz"
+
+symfony console  cache:pool:clear stock_cache
