@@ -195,7 +195,6 @@ class AudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-        //TODO tu Cache
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {

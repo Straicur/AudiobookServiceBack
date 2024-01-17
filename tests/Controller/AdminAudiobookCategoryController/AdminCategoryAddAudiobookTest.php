@@ -40,13 +40,13 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(200);
+        self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "id" => $audiobook->getId()
@@ -82,7 +82,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -127,7 +127,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -169,7 +169,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -213,7 +213,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", server: [
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", server: [
             "HTTP_authorization" => $token->getToken()
         ], content: json_encode($content));
 
@@ -258,7 +258,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/category/add/audiobook", content: json_encode($content));
+        $crawler = self::$webClient->request("PUT", "/api/admin/category/add/audiobook", content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
