@@ -86,7 +86,6 @@ class UserReportController extends AbstractController
         ReportRepository        $reportRepository
     ): Response
     {
-        //TODO tu usuwam cache dla admina
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
@@ -169,7 +168,6 @@ class UserReportController extends AbstractController
         ReportRepository               $reportRepository
     ): Response
     {
-        //TODO tu tez usuwam
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
