@@ -91,6 +91,47 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent with bad Admin user
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     *
+     * @return void
+     */
+    public function test_adminUserDetailsIncorrectPhoneNumberUser(): void
+    {
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 2
+        $content = [
+            "userId" => $user3->getId(),
+            "newPhone" => "+48123123125"
+        ];
+
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/admin/user/change/phone", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey("data", $responseContent);
+    }
 
     /**
      * step 1 - Preparing data

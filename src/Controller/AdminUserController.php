@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\UserDelete;
+use App\Enums\CacheKeys;
+use App\Enums\CacheValidTime;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\StockCacheTags;
 use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
@@ -54,6 +57,7 @@ use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,6 +66,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
@@ -88,7 +94,9 @@ class AdminUserController extends AbstractController
 {
     /**
      * @param RoleRepository $roleRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route("/api/admin/user/system/roles", name: "adminUserSystemRoles", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -104,25 +112,30 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserSystemRoles(
-        RoleRepository $roleRepository
+        RoleRepository         $roleRepository,
+        TagAwareCacheInterface $stockCache
     ): Response
     {
-        //TODO tu Cache
-        $roles = $roleRepository->getSystemRoles();
+        $successModel = $stockCache->get(CacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
+            $item->expiresAfter(CacheValidTime::DAY->value);
+            $item->tag(StockCacheTags::ADMIN_ROLES->value);
 
-        $successModel = new AdminUserSystemRolesSuccessModel();
+            $roles = $roleRepository->getSystemRoles();
 
-        foreach ($roles as $role) {
-            switch ($role->getName()) {
-                case UserRolesNames::GUEST->value:
-                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::GUEST->value));
-                    break;
-                case UserRolesNames::USER->value:
-                    $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::USER->value));
-                    break;
+            $successModel = new AdminUserSystemRolesSuccessModel();
+
+            foreach ($roles as $role) {
+                switch ($role->getName()) {
+                    case UserRolesNames::GUEST->value:
+                        $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::GUEST->value));
+                        break;
+                    case UserRolesNames::USER->value:
+                        $successModel->addRole(new AdminSystemRoleModel($role->getName(), UserRoles::USER->value));
+                        break;
+                }
             }
-
-        }
+            return $successModel;
+        });
 
         return ResponseTool::getResponse($successModel);
     }
@@ -175,7 +188,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserRoleAddQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -269,7 +282,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserRoleRemoveQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -363,7 +376,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserActivateQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -438,7 +451,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserBanQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -510,7 +523,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserChangePasswordQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -587,7 +600,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserChangePhoneQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -598,6 +611,16 @@ class AdminUserController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
             }
+            $duplicatedNumber = $userInformationRepository->findOneBy([
+                'phoneNumber' => $adminUserChangePhoneQuery->getNewPhone()
+            ]);
+
+            if ($duplicatedNumber !== null) {
+                $endpointLogger->error("User PhoneNumber Exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("PhoneNumberExists")]);
+            }
+
             $userInfo = $user->getUserInformation();
 
             $userInfo->setPhoneNumber($adminUserChangePhoneQuery->getNewPhone());
@@ -669,16 +692,16 @@ class AdminUserController extends AbstractController
             $order = null;
 
             if (array_key_exists('email', $usersSearchData)) {
-                $email = ($usersSearchData['email'] && '' != $usersSearchData['email']) ? "%" . $usersSearchData['email'] . "%" : null;
+                $email = ($usersSearchData['email'] && '' !== $usersSearchData['email']) ? "%" . $usersSearchData['email'] . "%" : null;
             }
             if (array_key_exists('phoneNumber', $usersSearchData)) {
-                $phoneNumber = ($usersSearchData['phoneNumber'] && '' != $usersSearchData['phoneNumber']) ? "%" . $usersSearchData['phoneNumber'] . "%" : null;
+                $phoneNumber = ($usersSearchData['phoneNumber'] && '' !== $usersSearchData['phoneNumber']) ? "%" . $usersSearchData['phoneNumber'] . "%" : null;
             }
             if (array_key_exists('firstname', $usersSearchData)) {
-                $firstname = ($usersSearchData['firstname'] && '' != $usersSearchData['firstname']) ? "%" . $usersSearchData['firstname'] . "%" : null;
+                $firstname = ($usersSearchData['firstname'] && '' !== $usersSearchData['firstname']) ? "%" . $usersSearchData['firstname'] . "%" : null;
             }
             if (array_key_exists('lastname', $usersSearchData)) {
-                $lastname = ($usersSearchData['lastname'] && '' != $usersSearchData['lastname']) ? "%" . $usersSearchData['lastname'] . "%" : null;
+                $lastname = ($usersSearchData['lastname'] && '' !== $usersSearchData['lastname']) ? "%" . $usersSearchData['lastname'] . "%" : null;
             }
             if (array_key_exists('active', $usersSearchData)) {
                 $active = $usersSearchData['active'];
@@ -701,7 +724,7 @@ class AdminUserController extends AbstractController
                 }
 
                 if ($userRepository->userIsAdmin($user)) {
-                    $maxResult = $maxResult + 1;
+                    ++$maxResult;
                 } elseif ($index < $maxResult) {
 
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
@@ -798,7 +821,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserDeleteQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -814,7 +837,7 @@ class AdminUserController extends AbstractController
                 "user" => $user->getId()
             ]);
 
-            if ($userDelete == null) {
+            if ($userDelete === null) {
                 $userDelete = new UserDelete($user);
             }
 
@@ -954,7 +977,7 @@ class AdminUserController extends AbstractController
     #[Route("/api/admin/user/to/delete/list", name: "adminUserToDeleteList", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
     #[OA\Post(
-        description: "Endpoint is returning list of users reade to delete",
+        description: "Endpoint is returning list of already delete users",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -1083,7 +1106,7 @@ class AdminUserController extends AbstractController
                 "user" => $adminUserDeleteAcceptQuery->getUserId()
             ]);
 
-            if ($userDelete == null) {
+            if ($userDelete === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDeleteDontExists")]);
@@ -1178,7 +1201,7 @@ class AdminUserController extends AbstractController
                 "user" => $adminUserDeleteDeclineQuery->getUserId()
             ]);
 
-            if ($userDelete == null) {
+            if ($userDelete === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDeleteDontExists")]);
@@ -1272,7 +1295,6 @@ class AdminUserController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-        //TODO tu Cache i wszędzie gdzie coś robię z powiadomieniami to usuwam
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
@@ -1324,11 +1346,11 @@ class AdminUserController extends AbstractController
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
-        } else {
-            $endpointLogger->error("Invalid given Query");
-            $translateService->setPreferredLanguage($request);
-            throw new InvalidJsonDataException($translateService);
         }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
 
     /**
@@ -1428,7 +1450,7 @@ class AdminUserController extends AbstractController
                         "id" => $additionalData["userId"]
                     ]);
 
-                    if ($user == null) {
+                    if ($user === null) {
                         $endpointLogger->error("User dont exist");
                         $translateService->setPreferredLanguage($request);
                         throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -1469,7 +1491,7 @@ class AdminUserController extends AbstractController
                         "categoryKey" => $additionalData["categoryKey"]
                     ]);
 
-                    if ($category == null) {
+                    if ($category === null) {
                         $endpointLogger->error("Category dont exist");
                         $translateService->setPreferredLanguage($request);
                         throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
@@ -1504,7 +1526,7 @@ class AdminUserController extends AbstractController
                         "id" => $additionalData["actionId"]
                     ]);
 
-                    if ($audiobook == null) {
+                    if ($audiobook === null) {
                         $endpointLogger->error("Audiobook dont exist");
                         $translateService->setPreferredLanguage($request);
                         throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
@@ -1592,7 +1614,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserNotificationPatchQuery->getNotificationId()
             ]);
 
-            if ($notification == null) {
+            if ($notification === null) {
                 $endpointLogger->error("Notification dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
@@ -1683,7 +1705,7 @@ class AdminUserController extends AbstractController
                 "id" => $adminUserNotificationDeleteQuery->getNotificationId()
             ]);
 
-            if ($notification == null) {
+            if ($notification === null) {
                 $endpointLogger->error("Notification dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);

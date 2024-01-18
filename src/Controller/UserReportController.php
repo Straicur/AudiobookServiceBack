@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
-use App\Enums\StockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
@@ -20,13 +19,11 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
@@ -58,11 +55,9 @@ class UserReportController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
      * @param ReportRepository $reportRepository
-     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
      */
     #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
     #[OA\Put(
@@ -88,8 +83,7 @@ class UserReportController extends AbstractController
         LoggerInterface         $usersLogger,
         LoggerInterface         $endpointLogger,
         TranslateService        $translateService,
-        ReportRepository        $reportRepository,
-        TagAwareCacheInterface  $stockCache
+        ReportRepository        $reportRepository
     ): Response
     {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
@@ -128,8 +122,6 @@ class UserReportController extends AbstractController
 
             $reportRepository->add($newReport);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_REPORT->value]);
-
             return ResponseTool::getResponse(httpCode: 201);
         }
 
@@ -145,11 +137,9 @@ class UserReportController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
      * @param ReportRepository $reportRepository
-     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
      */
     #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -175,8 +165,7 @@ class UserReportController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        TagAwareCacheInterface         $stockCache
+        ReportRepository               $reportRepository
     ): Response
     {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
@@ -213,8 +202,6 @@ class UserReportController extends AbstractController
             }
 
             $reportRepository->add($newReport);
-
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_REPORT->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
