@@ -67,7 +67,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: "AdminReport")]
 class AdminReportController extends AbstractController
 {
-    //TODO tu jak wszędzie czyszczę jak coś się dzieje i to ma być tak że czyszcze tu jeśli jakiś user dodać report !
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
