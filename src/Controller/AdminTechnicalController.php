@@ -8,12 +8,14 @@ use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminTechnicalBreakModel;
 use App\Model\Admin\AdminTechnicalBreakSuccessModel;
+use App\Model\Admin\AdminTechnicalCachePoolsModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
+use App\Query\Admin\AdminTechnicalCacheClearQuery;
 use App\Repository\TechnicalBreakRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -254,5 +256,72 @@ class AdminTechnicalController extends AbstractController
         $endpointLogger->error("Invalid given Query");
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param TechnicalBreakRepository $technicalBreakRepository
+     * @return Response
+     */
+    #[Route("/api/admin/technical/cache/clear", name: "adminTechnicalCacheClear", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Patch(
+        description: "Endpoint is used to clear cache pools by admin",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: AdminTechnicalCacheClearQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function adminTechnicalCacheClear(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        TechnicalBreakRepository       $technicalBreakRepository
+    ): Response
+    {
+
+
+        return ResponseTool::getResponse(httpCode: 200);
+    }
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param TechnicalBreakRepository $technicalBreakRepository
+     * @return Response
+     */
+    #[Route("/api/admin/technical/cache/pools", name: "adminTechnicalCachePools", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[OA\Post(
+        description: "Endpoint is used to clear cache pools by admin",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type:AdminTechnicalCachePoolsModel::class)
+            )
+        ]
+    )]
+    public function adminTechnicalCachePools(
+        Request                        $request,
+        RequestServiceInterface        $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        TechnicalBreakRepository       $technicalBreakRepository
+    ): Response
+    {
+
+
+        return ResponseTool::getResponse(httpCode: 200);
     }
 }
