@@ -100,7 +100,6 @@ class NotificationController extends AbstractController
         TagAwareCacheInterface         $stockCache
     ): Response
     {
-        //TODO tu Cache
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
 
         if ($systemNotificationQuery instanceof SystemNotificationQuery) {
@@ -194,7 +193,6 @@ class NotificationController extends AbstractController
         NotificationCheckRepository    $checkRepository
     ): Response
     {
-        //TODO tu czyszcze ten cache
         $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);
 
         if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
