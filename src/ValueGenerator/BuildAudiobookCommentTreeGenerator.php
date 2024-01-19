@@ -3,8 +3,8 @@
 namespace App\ValueGenerator;
 
 use App\Entity\User;
-use App\Model\Common\AudiobookCommentsModel;
 use App\Model\Common\AudiobookCommentModel;
+use App\Model\Common\AudiobookCommentsModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use Symfony\Component\Uid\Uuid;
@@ -81,7 +81,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     $myComment
                 );
 
-                if ($parentId != null) {
+                if ($parentId !== null) {
                     $child->setParentId($parentId);
                 }
 

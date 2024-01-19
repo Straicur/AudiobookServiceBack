@@ -120,7 +120,7 @@ class UserSettingsController extends AbstractController
 
             $passwordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getOldPassword());
 
-            if ($passwordGenerator->generate() != $userPassword->getPassword()) {
+            if ($passwordGenerator->generate() !== $userPassword->getPassword()) {
                 $endpointLogger->error("Password dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserPasswordDontExists")]);
@@ -195,7 +195,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userSettingsEmailQuery->getOldEmail()
             ]);
 
-            if ($userOldEmail == null) {
+            if ($userOldEmail === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -205,7 +205,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userSettingsEmailQuery->getNewEmail()
             ]);
 
-            if ($userNewEmail != null) {
+            if ($userNewEmail !== null) {
                 $endpointLogger->error("User exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
@@ -213,7 +213,7 @@ class UserSettingsController extends AbstractController
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
-            if ($userEdit != null) {
+            if ($userEdit !== null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -293,7 +293,7 @@ class UserSettingsController extends AbstractController
             "id" => $userId
         ]);
 
-        if ($user == null) {
+        if ($user === null) {
             $endpointLogger->error("User dont exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -301,7 +301,7 @@ class UserSettingsController extends AbstractController
 
         $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
-        if ($userEdit == null) {
+        if ($userEdit === null) {
             $endpointLogger->error("User dont exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -311,7 +311,7 @@ class UserSettingsController extends AbstractController
             "email" => $userEmail
         ]);
 
-        if ($userNewEmail != null) {
+        if ($userNewEmail !== null) {
             $endpointLogger->error("User exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
@@ -391,7 +391,7 @@ class UserSettingsController extends AbstractController
 
         $activeAuthenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
 
-        if ($activeAuthenticationToken != null) {
+        if ($activeAuthenticationToken !== null) {
             $activeAuthenticationToken->setDateExpired((new \DateTime("now"))->modify("-1 day"));
             $authenticationTokenRepository->add($activeAuthenticationToken, false);
         }
@@ -577,7 +577,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userResetPasswordQuery->getEmail()
             ]);
 
-            if ($userInformation == null) {
+            if ($userInformation === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -668,7 +668,7 @@ class UserSettingsController extends AbstractController
                 "id" => $userResetPasswordConfirmQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -676,7 +676,7 @@ class UserSettingsController extends AbstractController
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD->value);
 
-            if ($userEdit == null) {
+            if ($userEdit === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
