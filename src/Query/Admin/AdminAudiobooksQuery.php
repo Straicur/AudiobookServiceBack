@@ -27,9 +27,8 @@ class AdminAudiobooksQuery
         $metadata->addPropertyConstraint('searchData', new Assert\Collection([
             'fields' => [
                 'categories' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Categories is empty'),
                     new Assert\All(constraints: [
-                        new Assert\NotBlank(),
+                        new Assert\NotBlank(message: 'Categories is empty'),
                         new Assert\Regex(pattern: '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', message: 'Bad Uuid'),
                         new Assert\Uuid(),
                     ]),
