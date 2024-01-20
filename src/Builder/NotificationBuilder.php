@@ -7,9 +7,12 @@ use App\Entity\NotificationCheck;
 use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\StockCacheTags;
 use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class NotificationBuilder
 {
@@ -100,12 +103,15 @@ class NotificationBuilder
 
     /**
      * @throws NotificationException
+     * @throws InvalidArgumentException
      */
-    public function build(): Notification
+    public function build(?TagAwareCacheInterface $stockCache = null): Notification
     {
         $this->checkRequirements();
 
         $this->notification->setMetaData(json_encode($this->metaData));
+
+        $stockCache?->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
 
         return $this->notification;
     }

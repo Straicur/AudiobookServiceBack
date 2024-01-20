@@ -35,6 +35,7 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +44,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
@@ -79,11 +81,13 @@ class AdminReportController extends AbstractController
      * @param AudiobookUserCommentRepository $commentRepository
      * @param UserRepository $userRepository
      * @param UserBanHistoryRepository $banHistoryRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
     #[Route("/api/report/admin/accept", name: "apiAdminReportAccept", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -115,6 +119,7 @@ class AdminReportController extends AbstractController
         AudiobookUserCommentRepository $commentRepository,
         UserRepository                 $userRepository,
         UserBanHistoryRepository       $banHistoryRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
@@ -199,7 +204,7 @@ class AdminReportController extends AbstractController
                     ->setAction($report->getId())
                     ->addUser($report->getUser())
                     ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build();
+                    ->build($stockCache);
 
                 $notificationRepository->add($notification);
             }
@@ -233,8 +238,10 @@ class AdminReportController extends AbstractController
      * @param ReportRepository $reportRepository
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      * @throws TransportExceptionInterface
@@ -265,7 +272,8 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService,
         ReportRepository               $reportRepository,
         MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
@@ -294,7 +302,7 @@ class AdminReportController extends AbstractController
                     ->setAction($report->getId())
                     ->addUser($report->getUser())
                     ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build();
+                    ->build($stockCache);
 
                 $notificationRepository->add($notification);
             }
