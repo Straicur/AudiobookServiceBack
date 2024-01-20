@@ -319,12 +319,9 @@ class AdminTechnicalController extends AbstractController
 
                 $output = new BufferedOutput();
                 $application->run(new ArrayInput([
-                    'command' => 'cache:pool:clear my_cache_pool',
+                    'command' => 'cache:pool:clear',
+                    'pools' => ['stock_cache'],
                 ]), $output);
-
-                $content = $output->fetch();
-                print_r($content);
-//                php bin / console cache:pool:clear my_cache_pool < -Całość
             }
 
             if (array_key_exists('admin', $cacheData) && $cacheData['admin']) {
