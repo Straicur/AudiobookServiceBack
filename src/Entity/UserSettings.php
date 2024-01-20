@@ -41,7 +41,7 @@ class UserSettings
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): self
+    public function setUser(User $user): static
     {
         $this->user = $user;
 
@@ -64,7 +64,7 @@ class UserSettings
         $this->normal = $normal;
     }
 
-    public function getAdmin(): bool
+    public function isAdmin(): bool
     {
         return $this->admin;
     }

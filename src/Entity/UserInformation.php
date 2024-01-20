@@ -16,7 +16,7 @@ class UserInformation
     #[ORM\Column(type: 'string', length: 510, unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 16)]
+    #[ORM\Column(type: 'string', length: 16, unique: true)]
     private string $phoneNumber;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -24,6 +24,9 @@ class UserInformation
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $lastname;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $birthday = null;
 
     /**
      * @param User $user
@@ -53,7 +56,7 @@ class UserInformation
      * @param User $user
      * @return $this
      */
-    public function setUser(User $user): self
+    public function setUser(User $user): static
     {
         $this->user = $user;
 
@@ -72,7 +75,7 @@ class UserInformation
      * @param string $email
      * @return $this
      */
-    public function setEmail(string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
@@ -91,7 +94,7 @@ class UserInformation
      * @param string $phoneNumber
      * @return $this
      */
-    public function setPhoneNumber(string $phoneNumber): self
+    public function setPhoneNumber(string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
 
@@ -110,7 +113,7 @@ class UserInformation
      * @param string $firstname
      * @return $this
      */
-    public function setFirstname(string $firstname): self
+    public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
 
@@ -129,9 +132,21 @@ class UserInformation
      * @param string $lastname
      * @return $this
      */
-    public function setLastname(string $lastname): self
+    public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTime
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(?\DateTime $birthday): self
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }

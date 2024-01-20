@@ -121,7 +121,7 @@ class RegisterCodeSendTest extends AbstractWebTest
      * step 2 - Checking response
      * @return void
      */
-    public function test_registerCodeEmptyRequest()
+    public function test_registerCodeEmptyRequest(): void
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");

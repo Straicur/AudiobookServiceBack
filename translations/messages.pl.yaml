@@ -6,6 +6,7 @@ NotActivePassword: Nie można znaleźć aktywnego konta
 ParentCategoryDontExists: Ojciec kategorii nie isnieje
 CategoryDontExists: Categoria nie istnieje
 AudiobookDontExists: Audiobook nie istnieje
+TechnicalBreakDontExists: Przerwa techniczna nie istnieje
 AudiobookCommentDontExists: Komentarz audiobooka nie istnieje
 AudiobookParentCommentDontExists: Komentarz główny audiobooka nie istnieje
 UserDontExists: Użytkownik nie istnieje
@@ -16,6 +17,7 @@ NotificationDontExists: Powiadomienie nie istnieje
 AudiobookPartDontExists: Audiobook nie posiada aktywnych części
 AudiobookCoverDontExists: Zdjęcie Audiobooka nie istnieje
 EmailExists: Email istnieje w systemie
+PhoneNumberExists: Numer telefonu istnieje w systemie
 ToMuchUsers: Za dużo użytkowników w systemie
 WrongCode: Zły kod
 ActiveOrBanned: Użytkownik nie jest aktywowany lub jest zbanowany
@@ -40,6 +42,8 @@ ClickToChange: Kliknij aby zmienić
 PasswordReset: Otrzymaliśmy prośbę resetu hasła twojego konta
 YouCanGoBack: Teraz możesz wrócić do strony główniej:)
 Login: Zaloguj
+UserParentalControlCodeToManyAttempts: Przez ostatnie 3 dni otrzymaliśmy za dużą ilość prób
+UserParentalControlCodeDontExists: Kod sms zmiany rodzicielskiej nie istnieje
 SuccessfulActivation: Udana aktywacja konta
 SuccessfulEmailChange: Udana zmiana emaila
 Cheers: Dziękujemy
@@ -47,9 +51,11 @@ SystemVolumen: Serwis przekroczył dostępną przestrzeń dyskową
 UserToManyReports: Przez ostatnie 3 dni zostało wysłane od ciebie za duzo zgłoszeń
 ReportAcceptEmail: Cześć twoje zgłoszenie zostało zaakceptowanie i jest przetwarzane
 ReportDeniedEmail: Cześć twoje zgłoszenie zostało odrzucone
+UserBanEmail: Twoje konto zostało zbanowane do
 ReportAcceptSubject: Akceptacja zgłoszenia
 ReportDeniedSubject: Odrzucenie zgłoszenia
 Explanation: Wyjasnienie
+Reason: Wyjasnienie
 YourReport: Twoje zgłoszenie
 AccountActivationCodeSubject: Kod aktywacji konta
 AccountDeletedSubject: Konto usunięte
@@ -57,3 +63,6 @@ DeletionRejectedSubject: Usunięcie odrzucone
 ChangeEmailSubject: Zmiana emaila
 RequestDeleteAccountSubject: Prośba o usunięcie konta jest przetwarzana
 PasswordResetSubject: Reset hasła
+UserBannedSubject: Twoje konto zostało zbanowane
+SmsCodeContent: Oto twoj kod zmiany
+SmsCodeError: Nie możemy wysłać sms. Skontaktuj się z nami

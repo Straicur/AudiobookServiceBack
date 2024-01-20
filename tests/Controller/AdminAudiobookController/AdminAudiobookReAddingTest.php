@@ -3,7 +3,10 @@
 namespace App\Tests\Controller\AdminAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
+use App\Enums\NotificationType;
+use App\Enums\NotificationUserType;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Service\AudiobookService;
 use App\Tests\AbstractWebTest;
 
@@ -83,6 +86,8 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 1,
+            "deleteNotifications" => false,
+            "deleteComments" => false,
             "additionalData" => [
                 "categories" => [
                     $category2->getId()
@@ -98,7 +103,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 4
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(201);
+        self::assertResponseStatusCodeSame(200);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             "title" => $content["additionalData"]['title']
@@ -111,6 +116,101 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $this->assertNotSame($audiobookAfterFirst->getParts(), $audiobookAfter->getParts());
         $this->assertNotSame($audiobookAfterFirst->getDescription(), $audiobookAfter->getDescription());
         $this->assertNotSame($audiobookAfterFirst->getSize(), $audiobookAfter->getSize());
+
+        $hasSecondCategory = false;
+
+        foreach ($audiobookAfter->getCategories() as $category) {
+            if ($category->getId()->__toString() == $category2->getId()->__toString()) {
+                $hasSecondCategory = true;
+            }
+        }
+
+        $this->assertTrue($hasSecondCategory);
+
+        $audiobookService->removeFolder($audiobookAfter->getFileName());
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response if audiobook is added and categories are correct
+     * @return void
+     */
+    public function test_adminAudiobookAddDeleteCommentsAndNotificationsCorrect(): void
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $audiobookService = $this->getService(AudiobookService::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
+
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
+        $this->assertInstanceOf(AudiobookService::class, $audiobookService);
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t1", "a", "2", "d", new \DateTime("Now"), 20, "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category1, $category2], null, (new \DateTime("Now"))->modify("- 1 month"));
+
+        $coment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment("comment2", $audiobook1, $user, $coment1);
+        $coment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment("comment3", $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment("comment1", $audiobook1, $user, $coment2);
+
+        $this->databaseMockManager->testFunc_addNotifications([], NotificationType::NEW_AUDIOBOOK, $audiobook1->getId(), NotificationUserType::SYSTEM);
+        $this->databaseMockManager->testFunc_addNotifications([], NotificationType::NEW_AUDIOBOOK, $audiobook1->getId(), NotificationUserType::SYSTEM);
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $fileBase = fopen(self::base64ReAddingPartFile, 'rb');
+        $readData = fread($fileBase, filesize(self::base64ReAddingPartFile));
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
+            "fileName" => "Base",
+            "base64" => $readData,
+            "part" => 1,
+            "parts" => 1,
+            "deleteNotifications" => true,
+            "deleteComments" => true,
+            "additionalData" => [
+                "categories" => [
+                    $category2->getId()
+                ],
+                "title" => "tytul2",
+                "author" => "author2"
+            ]
+        ];
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/reAdding", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
+
+        $audiobookAfter = $audiobookRepository->findOneBy([
+            "id" => $audiobook1->getId()
+        ]);
+
+        $this->assertNotNull($audiobookAfter);
+
+        $this->assertSame($audiobookAfter->getTitle(), $content["additionalData"]['title']);
+        $this->assertSame($audiobookAfter->getAuthor(), $content["additionalData"]['author']);
+        $this->assertNotSame($audiobook1->getParts(), $audiobookAfter->getParts());
+        $this->assertNotSame($audiobook1->getDescription(), $audiobookAfter->getDescription());
+        $this->assertNotSame($audiobook1->getSize(), $audiobookAfter->getSize());
+        $this->assertCount(2, $notificationRepository->findBy([
+            "actionId" => $audiobook1->getId(),
+            "deleted" => true
+        ]));
+
+        $this->assertCount(0, $audiobookAfter->getAudiobookUserComments());
 
         $hasSecondCategory = false;
 
@@ -192,6 +292,8 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 2,
+            "deleteNotifications" => false,
+            "deleteComments" => false,
             "additionalData" => [
                 "categories" => [
                     $category2->getId()
@@ -273,6 +375,8 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 1,
+            "deleteNotifications" => false,
+            "deleteComments" => false,
             "additionalData" => [
             ]
         ];
@@ -283,7 +387,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         /// step 4
         self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(201);
+        self::assertResponseStatusCodeSame(200);
 
         $audiobookAfter = $audiobookRepository->findAll()[0];
 
@@ -497,6 +601,8 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 1,
+            "deleteNotifications" => false,
+            "deleteComments" => false,
             "additionalData" => [
                 "categories" => [
                     $category2->getId()
@@ -561,6 +667,8 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             "base64" => $readData,
             "part" => 1,
             "parts" => 1,
+            "deleteNotifications" => false,
+            "deleteComments" => false,
             "additionalData" => [
                 "categories" => [
                     $category2->getId()

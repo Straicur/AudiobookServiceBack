@@ -3,7 +3,12 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Enums\CacheKeys;
+use App\Enums\CacheValidTime;
+use App\Enums\StockCacheTags;
 use App\Model\Admin\AdminAudiobookDetailsModel;
+use App\Model\Admin\AdminCategoriesSuccessModel;
+use App\Model\Admin\AdminCategoryModel;
 use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
 use App\Model\Admin\AdminStatisticMainSuccessModel;
 use App\Model\Common\AudiobookDetailCategoryModel;
@@ -15,21 +20,22 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * AdminUserController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -63,7 +69,10 @@ class AdminStatisticsController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AuthenticationTokenRepository $authenticationTokenRepository
      * @param NotificationRepository $notificationRepository
+     * @param TechnicalBreakRepository $technicalBreakRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -87,26 +96,35 @@ class AdminStatisticsController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         AuthenticationTokenRepository  $authenticationTokenRepository,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TechnicalBreakRepository       $technicalBreakRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
-        $users = count($userRepository->findBy([
-            "active" => true
-        ]));
+        [$users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
+            $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
+            $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
-        $categories = count($audiobookCategoryRepository->findBy([
-            "active" => true
-        ]));
+            $users = count($userRepository->findBy([
+                "active" => true
+            ]));
 
-        $audiobooks = count($audiobookRepository->findBy([
-            "active" => true
-        ]));
+            $categories = count($audiobookCategoryRepository->findBy([
+                "active" => true
+            ]));
 
-        $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
-        $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-        $lastWeekNotifications = $notificationRepository->getNotificationsFromLastWeak();
+            $audiobooks = count($audiobookRepository->findBy([
+                "active" => true
+            ]));
 
-        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications));
+            $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
+            $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
+            $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
+            $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
+            return [$users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks];
+        });
+
+        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }
 
     /**
@@ -116,7 +134,9 @@ class AdminStatisticsController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookCategoryRepository $audiobookCategoryRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route("/api/admin/statistic/best/audiobooks", name: "adminStatisticBestAudiobooks", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -137,115 +157,61 @@ class AdminStatisticsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository
+        AudiobookCategoryRepository    $audiobookCategoryRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 
-        if (count($topAudiobooks) == 0) {
+        if (count($topAudiobooks) === 0) {
             return ResponseTool::getResponse();
         }
 
-        $successModel = new AdminStatisticBestAudiobooksSuccessModel();
+        $successModel = $stockCache->get(CacheKeys::ADMIN_STATISTICS_AUDIOBOOKS->value, function (ItemInterface $item) use ($topAudiobooks, $audiobookCategoryRepository) {
+            $item->expiresAfter(CacheValidTime::TWO_HOURS->value);
+            $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
-        if (count($topAudiobooks) >= 1) {
-            $firstAudiobook = $topAudiobooks[0];
+            $successModel = new AdminStatisticBestAudiobooksSuccessModel();
 
-            $audiobookCategories = [];
+            foreach ($topAudiobooks as $idx => $topAudiobook) {
+                $audiobookCategories = [];
 
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($firstAudiobook);
+                $categories = $audiobookCategoryRepository->getAudiobookCategories($topAudiobook);
 
-            foreach ($categories as $category) {
-                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                    $category->getId(),
-                    $category->getName(),
-                    $category->getActive(),
-                    $category->getCategoryKey()
+                foreach ($categories as $category) {
+                    $audiobookCategories[] = new AudiobookDetailCategoryModel(
+                        $category->getId(),
+                        $category->getName(),
+                        $category->getActive(),
+                        $category->getCategoryKey()
+                    );
+                }
+
+                $audiobookModel = new AdminAudiobookDetailsModel(
+                    $topAudiobook->getId(),
+                    $topAudiobook->getTitle(),
+                    $topAudiobook->getAuthor(),
+                    $topAudiobook->getVersion(),
+                    $topAudiobook->getAlbum(),
+                    $topAudiobook->getYear(),
+                    $topAudiobook->getDuration(),
+                    $topAudiobook->getSize(),
+                    $topAudiobook->getParts(),
+                    $topAudiobook->getDescription(),
+                    $topAudiobook->getAge(),
+                    $topAudiobook->getActive(),
+                    $audiobookCategories
                 );
+
+                match ($idx) {
+                    0 => $successModel->setFirstAudiobook($audiobookModel),
+                    1 => $successModel->setSecondAudiobook($audiobookModel),
+                    2 => $successModel->setThirdAudiobook($audiobookModel),
+                };
             }
 
-            $firstAudiobookModel = new AdminAudiobookDetailsModel(
-                $firstAudiobook->getId(),
-                $firstAudiobook->getTitle(),
-                $firstAudiobook->getAuthor(),
-                $firstAudiobook->getVersion(),
-                $firstAudiobook->getAlbum(),
-                $firstAudiobook->getYear(),
-                $firstAudiobook->getDuration(),
-                $firstAudiobook->getSize(),
-                $firstAudiobook->getParts(),
-                $firstAudiobook->getDescription(),
-                $firstAudiobook->getAge(),
-                $firstAudiobook->getActive(),
-                $audiobookCategories
-            );
-
-            $successModel->setFirstAudiobook($firstAudiobookModel);
-        }
-        if (count($topAudiobooks) >= 2) {
-            $secondAudiobook = $topAudiobooks[1];
-
-            $audiobookCategories = [];
-
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($secondAudiobook);
-
-            foreach ($categories as $category) {
-                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                    $category->getId(),
-                    $category->getName(),
-                    $category->getActive(),
-                    $category->getCategoryKey()
-                );
-            }
-
-            $secondAudiobookModel = new AdminAudiobookDetailsModel(
-                $secondAudiobook->getId(),
-                $secondAudiobook->getTitle(),
-                $secondAudiobook->getAuthor(),
-                $secondAudiobook->getVersion(),
-                $secondAudiobook->getAlbum(),
-                $secondAudiobook->getYear(),
-                $secondAudiobook->getDuration(),
-                $secondAudiobook->getSize(),
-                $secondAudiobook->getParts(),
-                $secondAudiobook->getDescription(),
-                $secondAudiobook->getAge(),
-                $secondAudiobook->getActive(),
-                $audiobookCategories);
-            $successModel->setSecondAudiobook($secondAudiobookModel);
-        }
-        if (count($topAudiobooks) >= 3) {
-            $thirdAudiobook = $topAudiobooks[2];
-
-            $audiobookCategories = [];
-
-            $categories = $audiobookCategoryRepository->getAudiobookCategories($thirdAudiobook);
-
-            foreach ($categories as $category) {
-                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                    $category->getId(),
-                    $category->getName(),
-                    $category->getActive(),
-                    $category->getCategoryKey()
-                );
-            }
-
-            $thirdAudiobookModel = new AdminAudiobookDetailsModel(
-                $thirdAudiobook->getId(),
-                $thirdAudiobook->getTitle(),
-                $thirdAudiobook->getAuthor(),
-                $thirdAudiobook->getVersion(),
-                $thirdAudiobook->getAlbum(),
-                $thirdAudiobook->getYear(),
-                $thirdAudiobook->getDuration(),
-                $thirdAudiobook->getSize(),
-                $thirdAudiobook->getParts(),
-                $thirdAudiobook->getDescription(),
-                $thirdAudiobook->getAge(),
-                $thirdAudiobook->getActive(),
-                $audiobookCategories);
-            $successModel->setThirdAudiobook($thirdAudiobookModel);
-        }
+            return $successModel;
+        });
 
         return ResponseTool::getResponse($successModel);
     }

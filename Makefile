@@ -12,9 +12,12 @@ start:
 	@echo '	serverStart     - migrate database'
 	@echo '	serverStop      - migrate database'
 	@echo '	entity          - create entity'
+clearStock:
+	symfony console  cache:pool:clear stock_cache
 unitTests:
 	symfony run bin/phpunit
-tests: unitTests
+tests: clearStock unitTests
+	symfony console  cache:pool:clear stock_cache
 	@echo 'Test Completed'
 migration:
 	symfony console make:migration

@@ -4,8 +4,12 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
+use App\Entity\UserBanHistory;
+use App\Enums\BanPeriodRage;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\ReportType;
+use App\Enums\UserBanAmount;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
@@ -19,15 +23,19 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Admin\AdminReportAcceptQuery;
 use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,11 +43,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * ReportController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -60,7 +66,7 @@ use Symfony\Component\Routing\Annotation\Route;
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "Report")]
+#[OA\Tag(name: "AdminReport")]
 class AdminReportController extends AbstractController
 {
     /**
@@ -72,11 +78,16 @@ class AdminReportController extends AbstractController
      * @param ReportRepository $reportRepository
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
+     * @param AudiobookUserCommentRepository $commentRepository
+     * @param UserRepository $userRepository
+     * @param UserBanHistoryRepository $banHistoryRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
     #[Route("/api/report/admin/accept", name: "apiAdminReportAccept", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -96,7 +107,7 @@ class AdminReportController extends AbstractController
             )
         ]
     )]
-    public function apiReportAdminAccept(
+    public function apiAdminReportAccept(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -104,7 +115,11 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService,
         ReportRepository               $reportRepository,
         MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        AudiobookUserCommentRepository $commentRepository,
+        UserRepository                 $userRepository,
+        UserBanHistoryRepository       $banHistoryRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
@@ -120,6 +135,62 @@ class AdminReportController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
             }
 
+            if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
+                $comment = $commentRepository->findOneBy([
+                    "id" => $report->getActionId()
+                ]);
+
+                if ($comment !== null) {
+                    $user = $comment->getUser();
+                    $user->setBanned(true);
+
+                    if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
+                        $bannedAmount = count($banHistoryRepository->findBy([
+                            "user" => $user->getId()
+                        ]));
+
+                        if ($bannedAmount === UserBanAmount::NONE->value) {
+                            $periodTo = BanPeriodRage::HALF_DAY_BAN->value;
+                        } elseif ($bannedAmount > 0 && $bannedAmount <= UserBanAmount::LOW->value) {
+                            $periodTo = BanPeriodRage::ONE_DAY_BAN->value;
+                        } elseif ($bannedAmount > UserBanAmount::LOW->value && $bannedAmount <= UserBanAmount::MEDIUM->value) {
+                            $periodTo = BanPeriodRage::FIVE_DAY_BAN->value;
+                        } elseif ($bannedAmount > UserBanAmount::MEDIUM->value && $bannedAmount <= UserBanAmount::HIGH->value) {
+                            $periodTo = BanPeriodRage::ONE_MONTH_BAN->value;
+                        } else {
+                            $periodTo = BanPeriodRage::ONE_YEAR_BAN->value;
+                        }
+                    } else {
+                        $periodTo = $adminReportAcceptQuery->getBanPeriod()->value;
+                    }
+
+                    $banPeriod = (new \DateTime('Now'))->modify($periodTo);
+
+                    $user->setBannedTo($banPeriod);
+
+                    if($periodTo !== BanPeriodRage::NOT_BANNED->value){
+                        $user->setBanned(true);
+                    }
+
+                    $userRepository->add($user);
+                    $banHistoryRepository->add(new UserBanHistory($user, new \DateTime('Now'), $banPeriod));
+
+                    if ($user->getUserInformation()->getEmail() && $_ENV["APP_ENV"] !== "test") {
+                        $email = (new TemplatedEmail())
+                            ->from($_ENV["INSTITUTION_EMAIL"])
+                            ->to($report->getEmail())
+                            ->subject($translateService->getTranslation("UserBannedSubject"))
+                            ->htmlTemplate('emails/userBanned.html.twig')
+                            ->context([
+                                "name" => $user->getUserInformation()->getFirstname(),
+                                "desc" => $comment->getComment(),
+                                "dateTo" => $banPeriod->format('d.m.Y'),
+                            ]);
+                        $mailer->send($email);
+                    }
+                }
+            }
+
             if (!$report->getAccepted() && !$report->getDenied()) {
                 $report->setAccepted(true);
                 $reportRepository->add($report);
@@ -133,7 +204,7 @@ class AdminReportController extends AbstractController
                     ->setAction($report->getId())
                     ->addUser($report->getUser())
                     ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build();
+                    ->build($stockCache);
 
                 $notificationRepository->add($notification);
             }
@@ -167,15 +238,17 @@ class AdminReportController extends AbstractController
      * @param ReportRepository $reportRepository
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      * @throws TransportExceptionInterface
      */
     #[Route("/api/report/admin/reject", name: "apiAdminReportReject", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
-    #[OA\Post(
+    #[OA\Patch(
         description: "Endpoint is used to reject report",
         requestBody: new OA\RequestBody(
             required: true,
@@ -191,7 +264,7 @@ class AdminReportController extends AbstractController
             )
         ]
     )]
-    public function apiReportAdminReject(
+    public function apiAdminReportReject(
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -199,7 +272,8 @@ class AdminReportController extends AbstractController
         TranslateService               $translateService,
         ReportRepository               $reportRepository,
         MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository
+        NotificationRepository         $notificationRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
@@ -228,7 +302,7 @@ class AdminReportController extends AbstractController
                     ->setAction($report->getId())
                     ->addUser($report->getUser())
                     ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build();
+                    ->build($stockCache);
 
                 $notificationRepository->add($notification);
             }
@@ -294,6 +368,7 @@ class AdminReportController extends AbstractController
         UserDeleteRepository           $userDeleteRepository
     ): Response
     {
+        //TODO tu Cache
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {

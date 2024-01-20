@@ -17,10 +17,13 @@ use App\Entity\NotificationCheck;
 use App\Entity\ProposedAudiobooks;
 use App\Entity\RegisterCode;
 use App\Entity\Report;
+use App\Entity\TechnicalBreak;
 use App\Entity\User;
+use App\Entity\UserBanHistory;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
 use App\Entity\UserInformation;
+use App\Entity\UserParentalControlCode;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
 use App\Enums\AudiobookAgeRange;
@@ -43,9 +46,12 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RegisterCodeRepository;
 use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
+use App\Repository\TechnicalBreakRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
+use App\Repository\UserParentalControlCodeRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserSettingsRepository;
@@ -53,6 +59,7 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -84,7 +91,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, \DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null, \DateTime $bannedTo = null): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, \DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, \DateTime $editableDate = null, \DateTime $bannedTo = null, ?\DateTime $birthday = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -128,6 +135,10 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($userProposedAudiobooks);
 
         $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
+
+        if($birthday != null){
+            $userInformationEntity->setBirthday($birthday);
+        }
 
         $userInformationRepository->add($userInformationEntity, false);
 
@@ -195,9 +206,29 @@ class DatabaseMockManager
         ]);
     }
 
+    /**
+     * @param string $title
+     * @param string $author
+     * @param string $version
+     * @param string $album
+     * @param \DateTime $year
+     * @param int $duration
+     * @param string $size
+     * @param int $parts
+     * @param string $description
+     * @param AudiobookAgeRange $age
+     * @param string $fileName
+     * @param AudiobookCategory[] $categories
+     * @param string|null $encoded
+     * @param \DateTime|null $dateAdd
+     * @param bool $active
+     * @param float|null $rating
+     * @return Audiobook
+     */
     public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, \DateTime $dateAdd = null, bool $active = false, float $rating = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age, $fileName);
 
@@ -222,6 +253,11 @@ class DatabaseMockManager
         }
 
         $audiobookRepository->add($newAudiobook);
+
+        foreach ($categories as $category) {
+            $category->addAudiobook($newAudiobook);
+            $audiobookCategoryRepository->add($category);
+        }
 
         return $newAudiobook;
     }
@@ -290,7 +326,7 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 
-    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, \DateTime $dateDeleted = null): UserDelete
+    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, ?\DateTime $dateDeleted = null): UserDelete
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
@@ -471,5 +507,51 @@ class DatabaseMockManager
         $reportRepository->add($newReport);
 
         return $newReport;
+    }
+
+    public function testFunc_addUserBanHistory(User $user, \DateTime $dateFrom, \DateTime $dateTo): UserBanHistory
+    {
+        $userBanHistoryRepository = $this->getService(UserBanHistoryRepository::class);
+
+        $newUserBanHistory = new UserBanHistory($user, $dateFrom, $dateTo);
+
+        $userBanHistoryRepository->add($newUserBanHistory);
+
+        return $newUserBanHistory;
+    }
+
+    public function testFunc_addTechnicalBreak(bool $active, User $user, ?\DateTime $dateFrom = null, ?\DateTime $dateTo = null): TechnicalBreak
+    {
+        $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
+
+        $newTechnicalBreak = new TechnicalBreak($active, $user);
+
+        if ($dateFrom != null) {
+            $newTechnicalBreak->setDateFrom($dateFrom);
+        }
+        if ($dateTo != null) {
+            $newTechnicalBreak->setDateTo($dateTo);
+        }
+
+        $technicalBreakRepository->add($newTechnicalBreak);
+
+        return $newTechnicalBreak;
+    }
+
+    public function testFunc_addUserParentalControlCode(User $user, bool $active = true): UserParentalControlCode
+    {
+        $userParentalControlCodeRepository = $this->getService(UserParentalControlCodeRepository::class);
+
+        $generator = new UserParentalControlCodeGenerator();
+
+        $newUserParentalControlCode = new UserParentalControlCode($user, $generator);
+
+        if (!$active) {
+            $newUserParentalControlCode->setActive($active);
+        }
+
+        $userParentalControlCodeRepository->add($newUserParentalControlCode);
+
+        return $newUserParentalControlCode;
     }
 }

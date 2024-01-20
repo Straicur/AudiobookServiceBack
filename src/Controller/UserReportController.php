@@ -23,11 +23,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * UserController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -48,7 +45,7 @@ use Symfony\Component\Routing\Annotation\Route;
     description: "User have no permission",
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "User")]
+#[OA\Tag(name: "UserReport")]
 class UserReportController extends AbstractController
 {
     /**
@@ -64,7 +61,7 @@ class UserReportController extends AbstractController
      */
     #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
     #[OA\Put(
-        description: "Method used to report for not loged users",
+        description: "Method used to report for not logged users",
         security: [],
         requestBody: new OA\RequestBody(
             required: true,
@@ -75,7 +72,7 @@ class UserReportController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
             ),
         ]
@@ -146,7 +143,7 @@ class UserReportController extends AbstractController
      */
     #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Post(
+    #[OA\Put(
         description: "Endpoint is used for users to report bad behavior",
         requestBody: new OA\RequestBody(
             required: true,

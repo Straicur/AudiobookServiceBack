@@ -54,7 +54,7 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * @return int
      */
-    public function getNotificationsFromLastWeak(): int
+    public function getNumberNotificationsFromLastWeak(): int
     {
         $today = new \DateTime('NOW');
         $lastDate = clone $today;

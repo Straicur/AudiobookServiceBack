@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\NotificationCheck;
+use App\Enums\CacheKeys;
+use App\Enums\CacheValidTime;
+use App\Enums\StockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\NotificationsSuccessModel;
@@ -22,15 +25,15 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * NotificationController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -62,8 +65,10 @@ class NotificationController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
      * @param NotificationCheckRepository $checkRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws InvalidArgumentException
      */
     #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
@@ -91,7 +96,8 @@ class NotificationController extends AbstractController
         NotificationRepository         $notificationRepository,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
-        NotificationCheckRepository    $checkRepository
+        NotificationCheckRepository    $checkRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
@@ -100,38 +106,44 @@ class NotificationController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $userSystemNotifications = $notificationRepository->getUserNotifications($user);
+            $systemNotificationSuccessModel = $stockCache->get(CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(), function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
+                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
+                $item->tag(StockCacheTags::USER_NOTIFICATIONS->value);
 
-            $systemNotifications = [];
+                $userSystemNotifications = $notificationRepository->getUserNotifications($user);
 
-            $minResult = $systemNotificationQuery->getPage() * $systemNotificationQuery->getLimit();
-            $maxResult = $systemNotificationQuery->getLimit() + $minResult;
+                $systemNotifications = [];
 
-            foreach ($userSystemNotifications as $index => $notification) {
-                if ($index < $minResult) {
-                    continue;
+                $minResult = $systemNotificationQuery->getPage() * $systemNotificationQuery->getLimit();
+                $maxResult = $systemNotificationQuery->getLimit() + $minResult;
+
+                foreach ($userSystemNotifications as $index => $notification) {
+                    if ($index < $minResult) {
+                        continue;
+                    }
+
+                    if ($index < $maxResult) {
+
+                        $notificationCheck = $checkRepository->findOneBy([
+                            "user" => $user->getId(),
+                            "notification" => $notification->getId()
+                        ]);
+
+                        $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
+                    } else {
+                        break;
+                    }
                 }
 
-                if ($index < $maxResult) {
-
-                    $notificationCheck = $checkRepository->findOneBy([
-                        "user" => $user->getId(),
-                        "notification" => $notification->getId()
-                    ]);
-
-                    $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
-                } else {
-                    break;
-                }
-            }
-
-            $systemNotificationSuccessModel = new NotificationsSuccessModel(
-                $systemNotifications,
-                $systemNotificationQuery->getPage(),
-                $systemNotificationQuery->getLimit(),
-                ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
-                $notificationRepository->getUserActiveNotifications($user)
-            );
+                $systemNotificationSuccessModel = new NotificationsSuccessModel(
+                    $systemNotifications,
+                    $systemNotificationQuery->getPage(),
+                    $systemNotificationQuery->getLimit(),
+                    ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
+                    $notificationRepository->getUserActiveNotifications($user)
+                );
+                return $systemNotificationSuccessModel;
+            });
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         }
@@ -155,7 +167,7 @@ class NotificationController extends AbstractController
      */
     #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
-    #[OA\Post(
+    #[OA\Put(
         description: "Method get is activating given notification so user can see if he read this notification",
         requestBody: new OA\RequestBody(
             required: true,
@@ -189,7 +201,7 @@ class NotificationController extends AbstractController
                 "id" => $systemNotificationActivateQuery->getNotificationId()
             ]);
 
-            if ($notification == null) {
+            if ($notification === null) {
                 throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
             }
 

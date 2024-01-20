@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
+use App\Entity\UserParentalControlCode;
 use App\Enums\UserEditType;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -12,7 +13,9 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\User\UserParentControlPutSuccessModel;
 use App\Model\User\UserSettingsGetSuccessModel;
+use App\Query\User\UserParentControlPatchQuery;
 use App\Query\User\UserResetPasswordConfirmQuery;
 use App\Query\User\UserResetPasswordQuery;
 use App\Query\User\UserSettingsChangeQuery;
@@ -22,15 +25,19 @@ use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserEditRepository;
 use App\Repository\UserInformationRepository;
+use App\Repository\UserParentalControlCodeRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
+use App\Tool\SmsTool;
 use App\ValueGenerator\PasswordHashGenerator;
+use App\ValueGenerator\UserParentalControlCodeGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,11 +45,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Vonage\Client\Exception\Exception;
 
-/**
- * UserController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -115,7 +120,7 @@ class UserSettingsController extends AbstractController
 
             $passwordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getOldPassword());
 
-            if ($passwordGenerator->generate() != $userPassword->getPassword()) {
+            if ($passwordGenerator->generate() !== $userPassword->getPassword()) {
                 $endpointLogger->error("Password dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserPasswordDontExists")]);
@@ -190,7 +195,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userSettingsEmailQuery->getOldEmail()
             ]);
 
-            if ($userOldEmail == null) {
+            if ($userOldEmail === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -200,7 +205,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userSettingsEmailQuery->getNewEmail()
             ]);
 
-            if ($userNewEmail != null) {
+            if ($userNewEmail !== null) {
                 $endpointLogger->error("User exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
@@ -208,7 +213,7 @@ class UserSettingsController extends AbstractController
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
-            if ($userEdit != null) {
+            if ($userEdit !== null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -260,7 +265,6 @@ class UserSettingsController extends AbstractController
      * @throws DataNotFoundException
      */
     #[Route("/api/user/settings/email/change/{email}/{id}", name: "userSettingsEmailChange", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Get(
         description: "Endpoint is sending confirmation email to change user email",
         requestBody: new OA\RequestBody(),
@@ -289,7 +293,7 @@ class UserSettingsController extends AbstractController
             "id" => $userId
         ]);
 
-        if ($user == null) {
+        if ($user === null) {
             $endpointLogger->error("User dont exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -297,7 +301,7 @@ class UserSettingsController extends AbstractController
 
         $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
 
-        if ($userEdit == null) {
+        if ($userEdit === null) {
             $endpointLogger->error("User dont exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -307,7 +311,7 @@ class UserSettingsController extends AbstractController
             "email" => $userEmail
         ]);
 
-        if ($userNewEmail != null) {
+        if ($userNewEmail !== null) {
             $endpointLogger->error("User exist");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
@@ -387,7 +391,7 @@ class UserSettingsController extends AbstractController
 
         $activeAuthenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
 
-        if ($activeAuthenticationToken != null) {
+        if ($activeAuthenticationToken !== null) {
             $activeAuthenticationToken->setDateExpired((new \DateTime("now"))->modify("-1 day"));
             $authenticationTokenRepository->add($activeAuthenticationToken, false);
         }
@@ -421,6 +425,7 @@ class UserSettingsController extends AbstractController
      * @param TranslateService $translateService
      * @return Response
      * @throws InvalidJsonDataException
+     * @throws DataNotFoundException
      */
     #[Route("/api/user/settings/change", name: "userSettingsChange", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
@@ -458,6 +463,17 @@ class UserSettingsController extends AbstractController
 
             $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
             $userInformation->setLastname($userSettingsChangeQuery->getLastName());
+
+            $existingPhone = $userInformationRepository->findOneBy([
+                "phoneNumber" => $userSettingsChangeQuery->getPhoneNumber()
+            ]);
+
+            if ($existingPhone !== null) {
+                $endpointLogger->error("Phone number already exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("PhoneNumberExists")]);
+            }
+
             $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
 
             $userInformationRepository->add($userInformation);
@@ -479,7 +495,7 @@ class UserSettingsController extends AbstractController
      */
     #[Route("/api/user/settings", name: "userSettingsGet", methods: ["GET"])]
     #[AuthValidation(checkAuthToken: true, roles: ["User"])]
-    #[OA\Patch(
+    #[OA\Get(
         description: "Endpoint is returning logged user informations",
         requestBody: new OA\RequestBody(),
         responses: [
@@ -525,7 +541,6 @@ class UserSettingsController extends AbstractController
      * @throws TransportExceptionInterface'
      */
     #[Route("/api/user/reset/password", name: "userResetPassword", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Post(
         description: "Endpoint is sending reset password email",
         requestBody: new OA\RequestBody(
@@ -562,7 +577,7 @@ class UserSettingsController extends AbstractController
                 "email" => $userResetPasswordQuery->getEmail()
             ]);
 
-            if ($userInformation == null) {
+            if ($userInformation === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -618,7 +633,6 @@ class UserSettingsController extends AbstractController
      * @throws InvalidJsonDataException
      */
     #[Route("/api/user/reset/password/confirm", name: "userResetPasswordConfirm", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: false, roles: [])]
     #[OA\Patch(
         description: "Endpoint is changing user password",
         requestBody: new OA\RequestBody(
@@ -654,7 +668,7 @@ class UserSettingsController extends AbstractController
                 "id" => $userResetPasswordConfirmQuery->getUserId()
             ]);
 
-            if ($user == null) {
+            if ($user === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -662,7 +676,7 @@ class UserSettingsController extends AbstractController
 
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD->value);
 
-            if ($userEdit == null) {
+            if ($userEdit === null) {
                 $endpointLogger->error("User dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
@@ -692,5 +706,156 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @param UserParentalControlCodeRepository $controlCodeRepository
+     * @param UserRepository $userRepository
+     * @return Response
+     * @throws DataNotFoundException
+     */
+    #[Route("/api/user/parent/control", name: "userParentControlPut", methods: ["PUT"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Put(
+        description: "Endpoint is creating a sms code for changing parent control settings",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Success",
+                content: new Model(type: UserParentControlPutSuccessModel::class)
+            )
+        ]
+    )]
+    public function userParentControlPut(
+        Request                           $request,
+        RequestServiceInterface           $requestService,
+        AuthorizedUserServiceInterface    $authorizedUserService,
+        LoggerInterface                   $endpointLogger,
+        TranslateService                  $translateService,
+        UserParentalControlCodeRepository $controlCodeRepository,
+        UserRepository                    $userRepository
+    ): Response
+    {
+        $user = $authorizedUserService->getAuthorizedUser();
 
+        $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
+
+        if ($lastWeakAttempts > 3) {
+            $endpointLogger->error("To many attempts to get UserParentalControlCode sms code");
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("UserParentalControlCodeToManyAttempts")]);
+        }
+
+        $controlCodeRepository->setCodesToNotActive($user);
+
+        $newGenerator = new UserParentalControlCodeGenerator();
+
+        $newUserParentalControlCode = new UserParentalControlCode($user, $newGenerator);
+
+        $controlCodeRepository->add($newUserParentalControlCode, false);
+
+        $smsTool = new SmsTool();
+
+        try {
+            $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ": " . $newUserParentalControlCode->getCode() . " ");
+        } catch (Exception|ClientExceptionInterface $e) {
+            $endpointLogger->error($e->getMessage());
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("SmsCodeError")]);
+        }
+
+        if (!$status) {
+            $endpointLogger->error("Can't send sms");
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation("SmsCodeError")]);
+        }
+
+        $userRepository->add($user);
+
+        return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
+    }
+
+    /**
+     * @param Request $request
+     * @param RequestServiceInterface $requestService
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param LoggerInterface $endpointLogger
+     * @param UserInformationRepository $userInformationRepository
+     * @param TranslateService $translateService
+     * @param UserParentalControlCodeRepository $controlCodeRepository
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws InvalidJsonDataException
+     */
+    #[Route("/api/user/parent/control", name: "userParentControlPatch", methods: ["PATCH"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[OA\Patch(
+        description: "Endpoint is changing parent control settings",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: UserParentControlPatchQuery::class),
+                type: "object"
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+            )
+        ]
+    )]
+    public function userParentControlPatch(
+        Request                           $request,
+        RequestServiceInterface           $requestService,
+        AuthorizedUserServiceInterface    $authorizedUserService,
+        LoggerInterface                   $endpointLogger,
+        UserInformationRepository         $userInformationRepository,
+        TranslateService                  $translateService,
+        UserParentalControlCodeRepository $controlCodeRepository
+    ): Response
+    {
+        $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
+
+        if ($userParentControlPatchQuery instanceof UserParentControlPatchQuery) {
+            $user = $authorizedUserService->getAuthorizedUser();
+
+            $controlCode = $controlCodeRepository->findOneBy([
+                "code" => $userParentControlPatchQuery->getSmsCode(),
+                "active" => true,
+                "user" => $user->getId()
+            ]);
+
+            if ($controlCode === null) {
+                $endpointLogger->error("UserParentalControlCode dont exist");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("UserParentalControlCodeDontExists")]);
+            }
+            $additionalData = $userParentControlPatchQuery->getAdditionalData();
+            $userInformation = $user->getUserInformation();
+
+            $birthday = $additionalData['birthday'] ?? null;
+
+            if ($birthday !== null) {
+                $userInformation->setBirthday($birthday);
+            } else {
+                $userInformation->setBirthday(null);
+            }
+
+            $userInformationRepository->add($userInformation);
+
+            $controlCode->setActive(false);
+            $controlCodeRepository->add($controlCode);
+
+            return ResponseTool::getResponse();
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
+    }
 }

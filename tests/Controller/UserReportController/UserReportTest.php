@@ -4,7 +4,6 @@ namespace App\Tests\Controller\UserReportController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\ReportType;
-use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\ReportRepository;
 use App\Tests\AbstractWebTest;
 

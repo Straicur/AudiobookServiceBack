@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Enums\CacheKeys;
+use App\Enums\CacheValidTime;
+use App\Enums\StockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\AudiobookCoverModel;
@@ -21,16 +24,16 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * AudiobookController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -61,9 +64,11 @@ class AudiobookController extends AbstractController
      * @param LoggerInterface $endpointLogger
      * @param AudiobookRepository $audiobookRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
+     * @throws InvalidArgumentException
      */
     #[Route("/api/audiobook/part", name: "audiobookPart", methods: ["POST"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
@@ -90,7 +95,8 @@ class AudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
@@ -101,55 +107,56 @@ class AudiobookController extends AbstractController
                 "id" => $audiobookPartQuery->getAudiobookId()
             ]);
 
-            if ($audiobook == null) {
+            if ($audiobook === null) {
                 $endpointLogger->error("Audiobook dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
 
-            $allParts = [];
+            $dir = $stockCache->get(CacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
+                $item->expiresAfter(CacheValidTime::HOUR->value);
+                $item->tag(StockCacheTags::USER_AUDIOBOOK_PART->value);
+                $allParts = [];
 
-            try {
-                $handle = opendir($audiobook->getFileName());
-            } catch (\Exception) {
-                $handle = false;
-            }
+                try {
+                    $handle = opendir($audiobook->getFileName());
+                } catch (\Exception) {
+                    $handle = false;
+                }
 
-            if ($handle) {
-                while (false !== ($entry = readdir($handle))) {
-                    if ($entry !== "." && $entry !== "..") {
+                if ($handle) {
+                    while (false !== ($entry = readdir($handle))) {
+                        if ($entry !== "." && $entry !== "..") {
 
-                        $file_parts = pathinfo($entry);
+                            $file_parts = pathinfo($entry);
 
-                        if ($file_parts['extension'] === "mp3") {
-                            $allParts[] = $file_parts['basename'];
+                            if ($file_parts['extension'] === "mp3") {
+                                $allParts[] = $file_parts['basename'];
+                            }
                         }
                     }
                 }
-            }
 
-            $dir = "";
+                $dir = "";
 
-            sort($allParts);
+                sort($allParts);
 
-            foreach ($allParts as $x => $val) {
-                if ($x === $audiobookPartQuery->getPart()) {
-                    $dir =  $val;
-                    break;
+                foreach ($allParts as $x => $val) {
+                    if ($x === $audiobookPartQuery->getPart()) {
+                        $dir = $val;
+                        break;
+                    }
                 }
-            }
+                return $dir;
+            });
 
-            if ($dir == "") {
+            if ($dir === "") {
                 $endpointLogger->error("Parts dont exist");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookPartDontExists")]);
             }
 
-            $partDir = "";
-
-            if ($dir != "") {
-                $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
-            }
+            $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
 
             return ResponseTool::getResponse(new AudiobookPartSuccessModel($partDir));
         }
@@ -197,7 +204,6 @@ class AudiobookController extends AbstractController
         TranslateService               $translateService
     ): Response
     {
-
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
@@ -225,7 +231,7 @@ class AudiobookController extends AbstractController
                             }
                         }
                     }
-                    if ($img != "") {
+                    if ($img !== "") {
                         $imgUrl = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img;
                     }
                     $successModel->addAudiobookCoversModel(new AudiobookCoverModel($audiobook->getId(), $imgUrl));

@@ -7,6 +7,7 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
+use App\Enums\StockCacheTags;
 use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
@@ -16,11 +17,14 @@ use App\Repository\NotificationRepository;
 use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use App\Tool\UserParentalControlTool;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * UserProposedAudiobooksCommand
@@ -39,8 +43,9 @@ class UserProposedAudiobooksCommand extends Command
     private AudiobookCategoryRepository $audiobookCategoryRepository;
     private AudiobookRepository $audiobookRepository;
     private NotificationRepository $notificationRepository;
+    private TagAwareCacheInterface $stockCache;
 
-    public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository, NotificationRepository $notificationRepository)
+    public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository, NotificationRepository $notificationRepository, TagAwareCacheInterface $stockCache)
     {
         $this->roleRepository = $roleRepository;
         $this->userRepository = $userRepository;
@@ -50,6 +55,7 @@ class UserProposedAudiobooksCommand extends Command
         $this->audiobookCategoryRepository = $audiobookCategoryRepository;
         $this->audiobookRepository = $audiobookRepository;
         $this->notificationRepository = $notificationRepository;
+        $this->stockCache = $stockCache;
 
         parent::__construct();
     }
@@ -59,6 +65,7 @@ class UserProposedAudiobooksCommand extends Command
      * @param OutputInterface $output
      * @return int
      * @throws NotificationException
+     * @throws InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -71,6 +78,12 @@ class UserProposedAudiobooksCommand extends Command
         $users = $this->userRepository->getUsersByRole($userRole);
 
         foreach ($users as $user) {
+            $age = null;
+
+            if ($user->getUserInformation()->getBirthday() !== null) {
+                $userParentalControlTool = new UserParentalControlTool();
+                $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+            }
 
             $myList = $user->getMyList();
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
@@ -125,43 +138,32 @@ class UserProposedAudiobooksCommand extends Command
                         "active" => true
                     ]);
 
-                    if ($databaseCategory != null) {
-
-                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory);
+                    if ($databaseCategory !== null) {
+                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory, $age);
 
                         shuffle($audiobooks);
 
                         $audiobooksAdded = 0;
 
                         foreach ($audiobooks as $audiobook) {
-                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::MOST_WANTED->value) {
-                                if ($audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
-                                    continue;
-                                }
+                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::MOST_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
+                                continue;
                             }
-                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::WANTED->value) {
-                                if ($audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
-                                    continue;
-                                }
+                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
+                                continue;
                             }
-                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::LESS_WANTED->value) {
-                                if ($audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
-                                    continue;
-                                }
+                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::LESS_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
+                                continue;
                             }
-                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::PROPOSED->value) {
-                                if ($audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
-                                    continue;
-                                }
+                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::PROPOSED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
+                                continue;
                             }
-                            if ($categoryIndex == ProposedAudiobookCategoriesRanges::RANDOM->value) {
-                                if ($audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
-                                    continue;
-                                }
+                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::RANDOM->value) && $audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
+                                continue;
                             }
 
                             if (!$this->myListRepository->getAudiobookINMyList($user, $audiobook)) {
-                                $audiobooksAdded = $audiobooksAdded + 1;
+                                ++$audiobooksAdded;
                                 $proposedAudiobooks->addAudiobook($audiobook);
                             }
                         }
@@ -176,11 +178,13 @@ class UserProposedAudiobooksCommand extends Command
                     ->setAction($proposedAudiobooks->getId())
                     ->addUser($user)
                     ->setUserAction(NotificationUserType::ADMIN)
-                    ->build();
+                    ->build($this->stockCache);
 
                 $this->notificationRepository->add($notification);
             }
         }
+
+        $this->stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
 
         $io->success("Proposed audiobooks added for users");
 

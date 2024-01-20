@@ -7,10 +7,12 @@ use App\Entity\NotificationCheck;
 use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Enums\StockCacheTags;
 use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
-
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class NotificationBuilder
 {
@@ -26,7 +28,7 @@ class NotificationBuilder
 
     public function __construct(?Notification $notification = null)
     {
-        if ($notification != null) {
+        if ($notification !== null) {
             $this->notification = $notification;
         } else {
             $this->notification = new Notification();
@@ -37,7 +39,7 @@ class NotificationBuilder
      * @param NotificationType $notificationType
      * @return $this
      */
-    public function setType(NotificationType $notificationType): NotificationBuilder
+    public function setType(NotificationType $notificationType): static
     {
         $this->notification->setType($notificationType);
 
@@ -48,7 +50,7 @@ class NotificationBuilder
      * @param Uuid $id
      * @return $this
      */
-    public function setAction(Uuid $id): NotificationBuilder
+    public function setAction(Uuid $id): static
     {
         $this->notification->setActionId($id);
 
@@ -59,7 +61,7 @@ class NotificationBuilder
      * @param User $user
      * @return $this
      */
-    public function addUser(User $user): NotificationBuilder
+    public function addUser(User $user): static
     {
         $this->notification->addUser($user);
 
@@ -70,7 +72,7 @@ class NotificationBuilder
      * @param NotificationUserType $type
      * @return $this
      */
-    public function setUserAction(NotificationUserType $type): NotificationBuilder
+    public function setUserAction(NotificationUserType $type): static
     {
         $this->metaData["user"] = $type->value;
 
@@ -81,7 +83,7 @@ class NotificationBuilder
      * @param string $text
      * @return $this
      */
-    public function setText(string $text): NotificationBuilder
+    public function setText(string $text): static
     {
         $this->metaData["text"] = $text;
 
@@ -92,7 +94,7 @@ class NotificationBuilder
      * @param string $text
      * @return $this
      */
-    public function setCategoryKey(string $text): NotificationBuilder
+    public function setCategoryKey(string $text): static
     {
         $this->metaData["categoryKey"] = $text;
 
@@ -101,12 +103,15 @@ class NotificationBuilder
 
     /**
      * @throws NotificationException
+     * @throws InvalidArgumentException
      */
-    public function build(): Notification
+    public function build(?TagAwareCacheInterface $stockCache = null): Notification
     {
         $this->checkRequirements();
 
         $this->notification->setMetaData(json_encode($this->metaData));
+
+        $stockCache?->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
 
         return $this->notification;
     }
@@ -123,28 +128,28 @@ class NotificationBuilder
         $metaData = $notification->getMetaData();
 
         if (array_key_exists("user", $metaData)) {
-            if ($metaData["user"] != null) {
+            if ($metaData["user"] !== null) {
                 $notificationModel->setUserType($metaData["user"]);
             }
         }
 
         if (array_key_exists("text", $metaData)) {
-            if ($metaData["text"] != "") {
+            if ($metaData["text"] !== "") {
                 $notificationModel->setText($metaData["text"]);
             }
         }
 
         if (array_key_exists("categoryKey", $metaData)) {
-            if ($metaData["categoryKey"] != "") {
+            if ($metaData["categoryKey"] !== "") {
                 $notificationModel->setCategoryKey($metaData["categoryKey"]);
             }
         }
 
-        if ($notificationCheck != null) {
+        if ($notificationCheck !== null) {
             $notificationModel->setActive($notificationCheck);
         }
 
-        if ($notification->getType() != NotificationType::NEW_CATEGORY) {
+        if ($notification->getType() !== NotificationType::NEW_CATEGORY) {
             $notificationModel->setActionId($notification->getActionId());
         }
 
@@ -191,7 +196,7 @@ class NotificationBuilder
     private function checkMetadata(array $keys): bool
     {
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->metaData) || $this->metaData[$key] == null) {
+            if (!array_key_exists($key, $this->metaData) || $this->metaData[$key] === null) {
                 return false;
             }
         }

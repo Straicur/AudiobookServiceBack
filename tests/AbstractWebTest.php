@@ -23,7 +23,7 @@ abstract class AbstractWebTest extends WebTestCase
             self::$webClient = static::createClient(["environment" => "test"]);
         }
 
-        if ($this->databaseMockManager == null) {
+        if ($this->databaseMockManager === null) {
             $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
         }
 
@@ -31,7 +31,9 @@ abstract class AbstractWebTest extends WebTestCase
         self::$webClient->enableProfiler();
 
         $this->entityManager = self::$webClient->getContainer()->get("doctrine.orm.entity_manager");
-        $this->entityManager->getConnection()->beginTransaction();
+
+        $connection = $this->entityManager->getConnection();
+        $connection->beginTransaction();
     }
 
     protected function tearDown(): void

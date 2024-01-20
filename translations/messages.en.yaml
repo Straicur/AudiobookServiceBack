@@ -6,6 +6,7 @@ NotActivePassword: Cant find active password
 ParentCategoryDontExists: Parent category dont exists
 CategoryDontExists: Category dont exists
 AudiobookDontExists: Audiobook dont exists
+TechnicalBreakDontExists: Technical break dont exists
 AudiobookCommentDontExists: Audiobook comment dont exists
 AudiobookParentCommentDontExists: Audiobook parent comment dont exists
 UserDontExists: User dont exists
@@ -16,6 +17,7 @@ NotificationDontExists: Notification dont exists
 AudiobookPartDontExists: Audiobook have no available parts
 AudiobookCoverDontExists: Audiobook cover dont exists
 EmailExists: Email exists in system
+PhoneNumberExists: PhoneNumber exists in system
 ToMuchUsers: To much users in system
 WrongCode: Wrong code
 ActiveOrBanned: User is not activated or is banned
@@ -40,6 +42,8 @@ ClickToChange: Click to change
 PasswordReset: We have received a request to reset your account password
 YouCanGoBack: Now you can go back to main page :)
 Login: Login
+UserParentalControlCodeToManyAttempts: In last 7 days we received to many attempts
+UserParentalControlCodeDontExists: Parental Control sms code dont exists
 SuccessfulActivation: Successful account activation
 SuccessfulEmailChange: Successfully changed email
 Cheers: Cheers
@@ -47,9 +51,11 @@ SystemVolumen: The website has exceeded the available disk space
 UserToManyReports: In last 3 days you send to many reports
 ReportAcceptEmail: Hello your report has been accepted and is processing
 ReportDeniedEmail: Hello your report has been denied
+UserBanEmail: Your account has been banned to
 ReportAcceptSubject: Report acceptance
 ReportDeniedSubject: Report rejected
 Explanation: Explanation
+Reason: Reason
 YourReport: Yours report
 AccountActivationCodeSubject: Account activation code
 AccountDeletedSubject: Account deleted
@@ -57,3 +63,6 @@ DeletionRejectedSubject: Deletion rejected
 ChangeEmailSubject: Change email
 RequestDeleteAccountSubject: Your request to delete your account is being processed
 PasswordResetSubject: Password reset
+UserBannedSubject: Your account has been banned
+SmsCodeContent: Here is your change code
+SmsCodeError: We can't send sms. Contact us

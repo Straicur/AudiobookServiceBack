@@ -164,7 +164,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
 
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 2

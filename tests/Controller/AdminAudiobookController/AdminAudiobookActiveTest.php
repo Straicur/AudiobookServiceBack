@@ -5,6 +5,7 @@ namespace App\Tests\Controller\AdminAudiobookController;
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -56,6 +57,147 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->assertTrue($audiobook1After->getActive());
     }
 
+    public function test_adminAudiobookActiveAdditionalInfoCorrect(): void
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
+
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123129", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2], null, (new \DateTime("Now"))->modify("- 1 month"), active: true);
+        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category2], active: true);
+
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user, $audiobook1, 1, 21);
+        $this->databaseMockManager->testFunc_addAudiobookInfo($user2, $audiobook1, 1, 21);
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "active" => true,
+            "additionalData" => [
+                "type" => 4,
+                "text" => "text"
+            ]
+        ];
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
+
+        $audiobook1After = $audiobookRepository->findOneBy([
+            "id" => $audiobook1->getId()
+        ]);
+
+        $this->assertTrue($audiobook1After->getActive());
+//        $this->assertCount(2,$notificationRepository->findAll());
+    }
+    public function test_adminAudiobookActiveAdditionalInfoProposedCorrect(): void
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
+
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123124", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2], null, (new \DateTime("Now"))->modify("- 1 month"), active: true);
+        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category2], active: true);
+
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user, $audiobook1);
+        $this->databaseMockManager->testFunc_addProposedAudiobooks($user2, $audiobook1);
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "active" => true,
+            "additionalData" => [
+                "type" => 2,
+                "text" => "text"
+            ]
+        ];
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
+
+        $audiobook1After = $audiobookRepository->findOneBy([
+            "id" => $audiobook1->getId()
+        ]);
+
+        $this->assertTrue($audiobook1After->getActive());
+//        $this->assertCount(2,$notificationRepository->findAll());
+    }
+    public function test_adminAudiobookActiveAdditionalInfoMyListCorrect(): void
+    {
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+        $notificationRepository = $this->getService(NotificationRepository::class);
+
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
+        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123124", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2], null, (new \DateTime("Now"))->modify("- 1 month"), active: true);
+        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d1", [$category2], active: true);
+
+        $this->databaseMockManager->testFunc_addMyList($user, $audiobook1);
+        $this->databaseMockManager->testFunc_addMyList($user2, $audiobook1);
+
+        /// step 2
+        $content = [
+            "audiobookId" => $audiobook1->getId(),
+            "active" => true,
+            "additionalData" => [
+                "type" => 3,
+                "text" => "text"
+            ]
+        ];
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PATCH", "/api/admin/audiobook/active", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
+
+        $audiobook1After = $audiobookRepository->findOneBy([
+            "id" => $audiobook1->getId()
+        ]);
+
+        $this->assertTrue($audiobook1After->getActive());
+//        $this->assertCount(2,$notificationRepository->findAll());
+    }
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent

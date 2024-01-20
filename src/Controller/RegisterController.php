@@ -8,6 +8,7 @@ use App\Entity\RegisterCode;
 use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
+use App\Entity\UserSettings;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
@@ -22,6 +23,7 @@ use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserSettingsRepository;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -36,11 +38,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * RegisterController
- */
 #[OA\Response(
     response: 400,
     description: "JSON Data Invalid",
@@ -69,6 +68,7 @@ class RegisterController extends AbstractController
      * @param InstitutionRepository $institutionRepository
      * @param UserPasswordRepository $userPasswordRepository
      * @param TranslateService $translateService
+     * @param UserSettingsRepository $userSettingsRepository
      * @return Response
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
@@ -87,7 +87,7 @@ class RegisterController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Success",
             ),
         ]
@@ -106,21 +106,32 @@ class RegisterController extends AbstractController
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
         InstitutionRepository        $institutionRepository,
         UserPasswordRepository       $userPasswordRepository,
-        TranslateService             $translateService
+        TranslateService             $translateService,
+        UserSettingsRepository $userSettingsRepository
     ): Response
     {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
 
-            $duplicateUser = $userInformationRepository->findOneBy([
+            $existingEmail = $userInformationRepository->findOneBy([
                 "email" => $registerQuery->getEmail()
             ]);
 
-            if ($duplicateUser != null) {
+            if ($existingEmail !== null) {
                 $endpointLogger->error("Email already exists");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("EmailExists")]);
+            }
+
+            $existingPhone = $userInformationRepository->findOneBy([
+                "phoneNumber" => $registerQuery->getPhoneNumber()
+            ]);
+
+            if ($existingPhone !== null) {
+                $endpointLogger->error("Phone number already exists");
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation("PhoneNumberExists")]);
             }
 
             $institution = $institutionRepository->findOneBy([
@@ -139,13 +150,27 @@ class RegisterController extends AbstractController
 
             $newUser = new User();
 
-            $newUser->setUserInformation(new UserInformation(
+            $userRepository->add($newUser,false);
+
+            $additionalData = $registerQuery->getAdditionalData();
+
+            $newUserInformation = new UserInformation(
                 $newUser,
                 $registerQuery->getEmail(),
                 $registerQuery->getPhoneNumber(),
                 $registerQuery->getFirstname(),
                 $registerQuery->getLastname()
-            ));
+           );
+
+            $birthday = $additionalData['birthday'] ?? null;
+
+            if($birthday !== null){
+                $newUserInformation->setBirthday($birthday);
+            }
+
+            $newUser->setUserInformation($newUserInformation);
+
+            $userSettingsRepository->add(new UserSettings($newUser));
 
             $userMyList = new MyList($newUser);
 
@@ -166,8 +191,6 @@ class RegisterController extends AbstractController
             $userPasswordEntity = new UserPassword($newUser, $passwordGenerator);
 
             $userPasswordRepository->add($userPasswordEntity);
-
-            $userRepository->add($newUser);
 
             $registerCodeGenerator = new RegisterCodeGenerator();
 
@@ -192,7 +215,7 @@ class RegisterController extends AbstractController
             }
 
             $usersLogger->info("user." . $newUser->getUserInformation()->getEmail() . "registered");
-            return ResponseTool::getResponse();
+            return ResponseTool::getResponse(httpCode: 201);
         }
 
         $endpointLogger->error("Invalid given Query");
@@ -242,7 +265,7 @@ class RegisterController extends AbstractController
             "email" => $userEmail
         ]);
 
-        if ($userInformation == null) {
+        if ($userInformation === null) {
             $endpointLogger->error("Invalid Credentials");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
@@ -255,7 +278,7 @@ class RegisterController extends AbstractController
             "code" => $registerCodeGenerator->generate()
         ]);
 
-        if ($registerCode == null || !$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
+        if ($registerCode === null || !$registerCode->getActive() || $registerCode->getDateAccept() != null || $registerCode->getUser() !== $user) {
             $endpointLogger->error("Invalid Credentials");
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation("WrongCode")]);
@@ -337,7 +360,7 @@ class RegisterController extends AbstractController
                 "email" => $registerConfirmSendQuery->getEmail()
             ]);
 
-            if ($userInfo == null) {
+            if ($userInfo === null) {
                 $endpointLogger->error("Invalid Credentials");
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("UserDontExists")]);
