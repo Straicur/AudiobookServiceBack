@@ -368,7 +368,6 @@ class AdminReportController extends AbstractController
         UserDeleteRepository           $userDeleteRepository
     ): Response
     {
-        //TODO tu Cache
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
