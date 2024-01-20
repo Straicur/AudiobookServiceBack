@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\TechnicalBreak;
+use App\Enums\StockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminTechnicalBreakModel;
 use App\Model\Admin\AdminTechnicalBreakSuccessModel;
 use App\Model\Admin\AdminTechnicalCachePoolsModel;
+use App\Model\Admin\CacheModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -23,11 +25,17 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
@@ -257,12 +265,19 @@ class AdminTechnicalController extends AbstractController
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param TechnicalBreakRepository $technicalBreakRepository
+     * @param TagAwareCacheInterface $stockCache
+     * @param LoggerInterface $endpointLogger
+     * @param TranslateService $translateService
+     * @param KernelInterface $kernel
      * @return Response
+     * @throws InvalidJsonDataException
+     * @throws InvalidArgumentException
+     * @throws \Exception
      */
     #[Route("/api/admin/technical/cache/clear", name: "adminTechnicalCacheClear", methods: ["PATCH"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -286,13 +301,75 @@ class AdminTechnicalController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository
+        TagAwareCacheInterface         $stockCache,
+        LoggerInterface                $endpointLogger,
+        TranslateService               $translateService,
+        KernelInterface                $kernel
     ): Response
     {
+        $adminTechnicalCacheClearQuery = $requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);
 
+        if ($adminTechnicalCacheClearQuery instanceof AdminTechnicalCacheClearQuery) {
 
-        return ResponseTool::getResponse(httpCode: 200);
+            $cacheData = $adminTechnicalCacheClearQuery->getCacheData();
+
+            if (array_key_exists('all', $cacheData) && $cacheData['all']) {
+                $application = new Application($kernel);
+                $application->setAutoExit(false);
+
+                $output = new BufferedOutput();
+                $application->run(new ArrayInput([
+                    'command' => 'cache:pool:clear my_cache_pool',
+                ]), $output);
+
+                $content = $output->fetch();
+                print_r($content);
+//                php bin / console cache:pool:clear my_cache_pool < -Całość
+            }
+
+            if (array_key_exists('admin', $cacheData) && $cacheData['admin']) {
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]);
+            } else {
+                if (array_key_exists('user', $cacheData) && $cacheData['user']) {
+                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_RATING->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
+                }
+
+                if (array_key_exists('pools', $cacheData) && !empty($cacheData["pools"])) {
+                    foreach ($cacheData["pools"] as $pool) {
+                        match ($pool) {
+                            StockCacheTags::ADMIN_CATEGORY->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]),
+                            StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]),
+                            StockCacheTags::ADMIN_AUDIOBOOK->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]),
+                            StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]),
+                            StockCacheTags::ADMIN_STATISTICS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]),
+                            StockCacheTags::ADMIN_ROLES->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]),
+                            StockCacheTags::USER_AUDIOBOOK_PART->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]),
+                            StockCacheTags::USER_NOTIFICATIONS->value => $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]),
+                            StockCacheTags::USER_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]),
+                            StockCacheTags::USER_AUDIOBOOK_RATING->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_RATING->value]),
+                            StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value])
+                        };
+                    }
+                }
+            }
+
+            return ResponseTool::getResponse();
+        }
+
+        $endpointLogger->error("Invalid given Query");
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
     }
+
     /**
      * @param Request $request
      * @param RequestServiceInterface $requestService
@@ -309,7 +386,7 @@ class AdminTechnicalController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: "Success",
-                content: new Model(type:AdminTechnicalCachePoolsModel::class)
+                content: new Model(type: AdminTechnicalCachePoolsModel::class)
             )
         ]
     )]
@@ -320,8 +397,12 @@ class AdminTechnicalController extends AbstractController
         TechnicalBreakRepository       $technicalBreakRepository
     ): Response
     {
+        $successModel = new AdminTechnicalCachePoolsModel();
 
+        foreach (StockCacheTags::cases() as $case) {
+            $successModel->addCachePool(new CacheModel($case->value));
+        }
 
-        return ResponseTool::getResponse(httpCode: 200);
+        return ResponseTool::getResponse($successModel);
     }
 }
