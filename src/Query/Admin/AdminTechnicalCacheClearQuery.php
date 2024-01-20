@@ -15,22 +15,18 @@ class AdminTechnicalCacheClearQuery
         $metadata->addPropertyConstraint('cacheData', new Assert\Collection([
             'fields' => [
                 'pools' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Pools is empty'),
                     new Assert\All(constraints: [
-                        new Assert\NotBlank(message: 'Album is empty'),
+                        new Assert\NotBlank(message: 'Pools is empty'),
                         new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                     ]),
                 ]),
                 'admin' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Admin is empty'),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'user' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'User is empty'),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'all' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'All is empty'),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ])
             ],

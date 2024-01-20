@@ -51,15 +51,12 @@ class AdminReportListQuery
                     new Assert\LessThan(7)
                 ]),
                 'user' => new Assert\Optional([
-                    new Assert\NotBlank(),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'accepted' => new Assert\Optional([
-                    new Assert\NotBlank(),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'denied' => new Assert\Optional([
-                    new Assert\NotBlank(),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'dateFrom' => new Assert\Optional([

@@ -32,7 +32,6 @@ class AdminTechnicalBreakListQuery
                     new Assert\Uuid(),
                 ]),
                 'active' => new Assert\Optional([
-                    new Assert\NotBlank(),
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'order' => new Assert\Optional([
