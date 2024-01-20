@@ -17,11 +17,11 @@ use App\Exception\InvalidJsonDataException;
 use App\Exception\NotificationException;
 use App\Model\Admin\AdminSystemRoleModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
+use App\Model\Admin\AdminUserDeleteModel;
 use App\Model\Admin\AdminUserModel;
 use App\Model\Admin\AdminUserNotificationsSuccessModel;
 use App\Model\Admin\AdminUsersSuccessModel;
 use App\Model\Admin\AdminUserSystemRolesSuccessModel;
-use App\Model\Admin\AdminUserDeleteModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -1157,8 +1157,10 @@ class AdminUserController extends AbstractController
      * @param MailerInterface $mailer
      * @param NotificationRepository $notificationRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      * @throws TransportExceptionInterface
@@ -1190,7 +1192,8 @@ class AdminUserController extends AbstractController
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
         NotificationRepository         $notificationRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
@@ -1245,7 +1248,7 @@ class AdminUserController extends AbstractController
                 ->setAction($userDelete->getId())
                 ->addUser($user)
                 ->setUserAction(NotificationUserType::SYSTEM)
-                ->build();
+                ->build($stockCache);
 
             $notificationRepository->add($notification);
 
@@ -1365,8 +1368,10 @@ class AdminUserController extends AbstractController
      * @param InstitutionRepository $institutionRepository
      * @param AudiobookCategoryRepository $categoryRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      */
@@ -1399,7 +1404,8 @@ class AdminUserController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         InstitutionRepository          $institutionRepository,
         AudiobookCategoryRepository    $categoryRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
@@ -1435,7 +1441,7 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build();
+                    $notification = $notificationBuilder->build($stockCache);
 
                     $notificationRepository->add($notification);
                     break;
@@ -1468,7 +1474,7 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->setText($additionalData["text"]);
                     }
 
-                    $notification = $notificationBuilder->build();
+                    $notification = $notificationBuilder->build($stockCache);
 
                     $notificationRepository->add($notification);
 
@@ -1511,7 +1517,7 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build();
+                    $notification = $notificationBuilder->build($stockCache);
 
                     $notificationRepository->add($notification);
                     break;
@@ -1548,7 +1554,7 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build();
+                    $notification = $notificationBuilder->build($stockCache);
 
                     $notificationRepository->add($notification);
                     break;
@@ -1572,8 +1578,10 @@ class AdminUserController extends AbstractController
      * @param NotificationRepository $notificationRepository
      * @param RoleRepository $roleRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      * @throws NotificationException
      */
@@ -1603,7 +1611,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
         RoleRepository                 $roleRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
@@ -1647,7 +1656,7 @@ class AdminUserController extends AbstractController
                 $notificationBuilder->setAction($adminUserNotificationPatchQuery->getActionId());
             }
 
-            $notification = $notificationBuilder->build();
+            $notification = $notificationBuilder->build($stockCache);
 
             $notificationRepository->add($notification);
 

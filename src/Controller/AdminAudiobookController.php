@@ -1195,7 +1195,7 @@ class AdminAudiobookController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build();
+                    $notification = $notificationBuilder->build($stockCache);
 
                     $notificationRepository->add($notification);
                 }
