@@ -776,9 +776,6 @@ class UserSettingsController extends AbstractController
 
         $userRepository->add($user);
 
-        $smsTool = new SmsTool();
-        $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation("SmsCodeContent") . ":");
-
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 

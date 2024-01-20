@@ -123,10 +123,7 @@ class AdminReportController extends AbstractController
     ): Response
     {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
-        //TODO Po typie sprawdzam co to jest i czy report jest walid, muszę jakoś pobrać tego usera.
-        // Dodaj do historii banów tego banika
-        // Sprawdzać też powinienem czy nie ma już takich samych banów bo jak ma to możliwe że zasługije na więcej lub też na mniej w zależności co da Admin
-        // I do tego jeszcze odpowiedni mail jeśli taki ban wystąpi
+
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
             $report = $reportRepository->findOneBy([
                 "id" => $adminReportAcceptQuery->getReportId()
@@ -371,7 +368,6 @@ class AdminReportController extends AbstractController
         UserDeleteRepository           $userDeleteRepository
     ): Response
     {
-        //TODO tu Cache
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
