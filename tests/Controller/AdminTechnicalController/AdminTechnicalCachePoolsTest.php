@@ -5,9 +5,9 @@ namespace App\Tests\Controller\AdminTechnicalController;
 use App\Tests\AbstractWebTest;
 
 /**
- * AdminTechnicalCachePools
+ * AdminTechnicalCachePoolsTest
  */
-class AdminTechnicalCachePools extends AbstractWebTest
+class AdminTechnicalCachePoolsTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
@@ -37,12 +37,9 @@ class AdminTechnicalCachePools extends AbstractWebTest
         $responseContent = json_decode($response->getContent(), true);
 
         $this->assertIsArray($responseContent);
-        print_r($responseContent);
-//        $this->assertArrayHasKey("technicalBreaks", $responseContent);
-//        $this->assertArrayHasKey("page", $responseContent);
-//        $this->assertArrayHasKey("limit", $responseContent);
-//        $this->assertArrayHasKey("maxPage", $responseContent);
-//        $this->assertCount(2, $responseContent["technicalBreaks"]);
+
+        $this->assertArrayHasKey("cachePools", $responseContent);;
+        $this->assertCount(11, $responseContent["cachePools"]);
     }
 
     /**

@@ -21,20 +21,8 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-2 day'), (new \DateTime("Now"))->modify('-1 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-3 day'), (new \DateTime("Now"))->modify('-2 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-4 day'), (new \DateTime("Now"))->modify('-3 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-6 day'), (new \DateTime("Now"))->modify('-5 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-12 day'), (new \DateTime("Now"))->modify('-11 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-13 day'), (new \DateTime("Now"))->modify('-12 day'));
 
         /// step 2
-        $dateFrom = new \DateTime("Now");
-        $dateTo = clone $dateFrom;
-
         $content = [
             "cacheData" => [
                 "pools" => ["AdminCategory", "AdminAudiobookComments", "UserAudiobooks", "UserAudiobookRating"],
@@ -68,24 +56,12 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-2 day'), (new \DateTime("Now"))->modify('-1 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-3 day'), (new \DateTime("Now"))->modify('-2 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-4 day'), (new \DateTime("Now"))->modify('-3 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-6 day'), (new \DateTime("Now"))->modify('-5 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-12 day'), (new \DateTime("Now"))->modify('-11 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-13 day'), (new \DateTime("Now"))->modify('-12 day'));
 
         /// step 2
-        $dateFrom = new \DateTime("Now");
-        $dateTo = clone $dateFrom;
-
         $content = [
             "cacheData" => [
                 "pools" => [],
-                "admin" => false,
+                "admin" => true,
                 "user" => false,
                 "all" => false,
             ]
@@ -115,25 +91,13 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-2 day'), (new \DateTime("Now"))->modify('-1 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-3 day'), (new \DateTime("Now"))->modify('-2 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-4 day'), (new \DateTime("Now"))->modify('-3 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-6 day'), (new \DateTime("Now"))->modify('-5 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-12 day'), (new \DateTime("Now"))->modify('-11 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-13 day'), (new \DateTime("Now"))->modify('-12 day'));
 
         /// step 2
-        $dateFrom = new \DateTime("Now");
-        $dateTo = clone $dateFrom;
-
         $content = [
             "cacheData" => [
                 "pools" => [],
                 "admin" => false,
-                "user" => false,
+                "user" => true,
                 "all" => false,
             ]
         ];
@@ -162,26 +126,14 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123125", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-2 day'), (new \DateTime("Now"))->modify('-1 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-3 day'), (new \DateTime("Now"))->modify('-2 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user2, (new \DateTime("Now"))->modify('-4 day'), (new \DateTime("Now"))->modify('-3 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-6 day'), (new \DateTime("Now"))->modify('-5 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-12 day'), (new \DateTime("Now"))->modify('-11 day'));
-        $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new \DateTime("Now"))->modify('-13 day'), (new \DateTime("Now"))->modify('-12 day'));
 
         /// step 2
-        $dateFrom = new \DateTime("Now");
-        $dateTo = clone $dateFrom;
-
         $content = [
             "cacheData" => [
                 "pools" => [],
                 "admin" => false,
                 "user" => false,
-                "all" => false,
+                "all" => true,
             ]
         ];
 
