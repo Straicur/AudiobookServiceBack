@@ -65,7 +65,9 @@ class AdminTechnicalController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param TechnicalBreakRepository $technicalBreakRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPut", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -83,11 +85,14 @@ class AdminTechnicalController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository
+        TechnicalBreakRepository       $technicalBreakRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
         $technicalBreakRepository->add(new TechnicalBreak(true, $user));
+
+        $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
 
         return ResponseTool::getResponse(httpCode: 201);
     }
@@ -99,8 +104,10 @@ class AdminTechnicalController extends AbstractController
      * @param TechnicalBreakRepository $technicalBreakRepository
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPatch", methods: ["PATCH"])]
@@ -127,7 +134,8 @@ class AdminTechnicalController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         TechnicalBreakRepository       $technicalBreakRepository,
         LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
@@ -149,6 +157,8 @@ class AdminTechnicalController extends AbstractController
             $technicalBreak->setActive(false);
 
             $technicalBreakRepository->add($technicalBreak);
+
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
 
             return ResponseTool::getResponse();
         }
@@ -331,6 +341,7 @@ class AdminTechnicalController extends AbstractController
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]);
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]);
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
             } else {
                 if (array_key_exists('user', $cacheData) && $cacheData['user']) {
                     $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]);
@@ -349,6 +360,7 @@ class AdminTechnicalController extends AbstractController
                             StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]),
                             StockCacheTags::ADMIN_STATISTICS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]),
                             StockCacheTags::ADMIN_ROLES->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]),
+                            StockCacheTags::ADMIN_TECHNICAL_BREAK->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]),
                             StockCacheTags::USER_AUDIOBOOK_PART->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]),
                             StockCacheTags::USER_NOTIFICATIONS->value => $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]),
                             StockCacheTags::USER_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]),

@@ -4,6 +4,9 @@ namespace App\EventSubscriber;
 
 use App\Annotation\AuthValidation;
 use App\Entity\User;
+use App\Enums\CacheKeys;
+use App\Enums\CacheValidTime;
+use App\Enums\StockCacheTags;
 use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
@@ -13,10 +16,13 @@ use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
 use Doctrine\ORM\NonUniqueResultException;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * AuthValidationSubscriber
@@ -28,18 +34,21 @@ class AuthValidationSubscriber implements EventSubscriberInterface
     private TechnicalBreakRepository $technicalBreakRepository;
     private UserRepository $userRepository;
     private LoggerInterface $requestLogger;
+    private TagAwareCacheInterface $stockCache;
 
     public function __construct(
         AuthenticationTokenRepository $authenticationTokenRepository,
         TechnicalBreakRepository      $technicalBreakRepository,
         UserRepository                $userRepository,
         LoggerInterface               $requestLogger,
+        TagAwareCacheInterface        $stockCache
     )
     {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->technicalBreakRepository = $technicalBreakRepository;
         $this->userRepository = $userRepository;
         $this->requestLogger = $requestLogger;
+        $this->stockCache = $stockCache;
     }
 
     /**
@@ -114,13 +123,14 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         AuthorizedUserService::setAuthenticationToken($authToken);
                         AuthorizedUserService::setAuthorizedUser($authToken->getUser());
 
-                        //TODO dodaj sprawdzenie w cache i dopiero kiedy nie ma go tam to dodaję
-                        // Plus zamień resztę wtedy takich danych żeby to się cachowało
-                        // Tu będzie ewidentnie za dużo szukania
+                        $technicalBreak = $this->stockCache->get(CacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
+                            $item->expiresAfter(CacheValidTime::DAY->value);
+                            $item->tag(StockCacheTags::ADMIN_TECHNICAL_BREAK->value);
 
-                        $technicalBreak = $this->technicalBreakRepository->findOneBy([
-                            "active" => true
-                        ]);
+                            return $this->technicalBreakRepository->findOneBy([
+                                "active" => true
+                            ]);
+                        });
 
                         if (($_ENV["APP_ENV"] !== "test") && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
                             throw new TechnicalBreakException();
@@ -134,7 +144,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                     }
                 }
 
-            } catch (\ReflectionException|NonUniqueResultException) {
+            } catch (\ReflectionException|NonUniqueResultException|InvalidArgumentException) {
                 throw new DataNotFoundException();
             }
         }

@@ -13,6 +13,7 @@ enum StockCacheTags: string
     case ADMIN_AUDIOBOOK_COMMENTS = "AdminAudiobookComments";
     case ADMIN_STATISTICS = "AdminStatistics";
     case ADMIN_ROLES = "AdminRoles";
+    case ADMIN_TECHNICAL_BREAK = "AdminTechnicalBreak";
     case USER_AUDIOBOOK_PART = "UserAudiobookPart";
     case USER_NOTIFICATIONS = "UserNotifications";
     case USER_AUDIOBOOKS = "UserAudiobooks";
