@@ -38,7 +38,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
      */
     public static function getAuthorizedUser(): User
     {
-        if (self::$authorizedUser == null) {
+        if (self::$authorizedUser === null) {
             throw new AuthenticationException();
         }
 
@@ -47,7 +47,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
 
     public static function unAuthorizeUser(): void
     {
-        if (self::$authenticationToken != null) {
+        if (self::$authenticationToken !== null) {
             self::$authenticationToken->setDateExpired(new \DateTime("now"));
             self::$authenticationTokenRepository->add(self::$authenticationToken);
         }

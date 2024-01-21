@@ -16,6 +16,7 @@ enum CacheKeys: string
     case ADMIN_STATISTICS = "AdminStatistics";
     case ADMIN_STATISTICS_AUDIOBOOKS = "AdminStatisticsAudiobooks";
     case ADMIN_ROLES = "AdminRoles";
+    case ADMIN_TECHNICAL_BREAK = "AdminTechnicalBreak";
     case USER_AUDIOBOOK_PART = "UserAudiobookPart";
     case USER_AUDIOBOOKS = "UserAudiobooks";
     case USER_AUDIOBOOK = "UserAudiobook";

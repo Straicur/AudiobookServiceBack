@@ -65,7 +65,9 @@ class AdminTechnicalController extends AbstractController
      * @param RequestServiceInterface $requestService
      * @param AuthorizedUserServiceInterface $authorizedUserService
      * @param TechnicalBreakRepository $technicalBreakRepository
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPut", methods: ["PUT"])]
     #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
@@ -83,11 +85,14 @@ class AdminTechnicalController extends AbstractController
         Request                        $request,
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository
+        TechnicalBreakRepository       $technicalBreakRepository,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $user = $authorizedUserService->getAuthorizedUser();
         $technicalBreakRepository->add(new TechnicalBreak(true, $user));
+
+        $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
 
         return ResponseTool::getResponse(httpCode: 201);
     }
@@ -99,8 +104,10 @@ class AdminTechnicalController extends AbstractController
      * @param TechnicalBreakRepository $technicalBreakRepository
      * @param LoggerInterface $endpointLogger
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
     #[Route("/api/admin/technical/break", name: "adminTechnicalBreakPatch", methods: ["PATCH"])]
@@ -127,7 +134,8 @@ class AdminTechnicalController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         TechnicalBreakRepository       $technicalBreakRepository,
         LoggerInterface                $endpointLogger,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
@@ -149,6 +157,8 @@ class AdminTechnicalController extends AbstractController
             $technicalBreak->setActive(false);
 
             $technicalBreakRepository->add($technicalBreak);
+
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
 
             return ResponseTool::getResponse();
         }
