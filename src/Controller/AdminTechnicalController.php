@@ -341,6 +341,7 @@ class AdminTechnicalController extends AbstractController
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]);
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]);
                 $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
             } else {
                 if (array_key_exists('user', $cacheData) && $cacheData['user']) {
                     $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]);
@@ -359,6 +360,7 @@ class AdminTechnicalController extends AbstractController
                             StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value]),
                             StockCacheTags::ADMIN_STATISTICS->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]),
                             StockCacheTags::ADMIN_ROLES->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]),
+                            StockCacheTags::ADMIN_TECHNICAL_BREAK->value => $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]),
                             StockCacheTags::USER_AUDIOBOOK_PART->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]),
                             StockCacheTags::USER_NOTIFICATIONS->value => $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]),
                             StockCacheTags::USER_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]),
