@@ -10,6 +10,7 @@ use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\Common\NewNotificationsSuccessModel;
 use App\Model\Common\NotificationsSuccessModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -135,14 +136,12 @@ class NotificationController extends AbstractController
                     }
                 }
 
-                $systemNotificationSuccessModel = new NotificationsSuccessModel(
+                return new NotificationsSuccessModel(
                     $systemNotifications,
                     $systemNotificationQuery->getPage(),
                     $systemNotificationQuery->getLimit(),
-                    ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
-                    $notificationRepository->getUserActiveNotifications($user)
+                    ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit())
                 );
-                return $systemNotificationSuccessModel;
             });
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
@@ -223,5 +222,37 @@ class NotificationController extends AbstractController
         $endpointLogger->error("Invalid given Query");
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
+    }
+
+    /**
+     * @param AuthorizedUserServiceInterface $authorizedUserService
+     * @param NotificationRepository $notificationRepository
+     * @return Response
+     */
+    #[Route("/api/new/notifications", name: "newNotifications", methods: ["POST"])]
+    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[OA\Post(
+        description: "Method get amount of new notifications for logged user",
+        requestBody: new OA\RequestBody(),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Success",
+                content: new Model(type: NewNotificationsSuccessModel::class)
+            )
+        ]
+    )]
+    public function newNotifications(
+        AuthorizedUserServiceInterface $authorizedUserService,
+        NotificationRepository         $notificationRepository,
+    ): Response
+    {
+        $user = $authorizedUserService->getAuthorizedUser();
+
+        $systemNotificationSuccessModel = new NewNotificationsSuccessModel(
+            $notificationRepository->getUserActiveNotifications($user)
+        );
+
+        return ResponseTool::getResponse($systemNotificationSuccessModel);
     }
 }

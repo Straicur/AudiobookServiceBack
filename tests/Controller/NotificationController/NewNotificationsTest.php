@@ -10,7 +10,7 @@ use App\Tests\AbstractWebTest;
 /**
  * NotificationsTest
  */
-class NotificationsTest extends AbstractWebTest
+class NewNotificationsTest extends AbstractWebTest
 {
     /**
      * step 1 - Preparing data
@@ -33,17 +33,11 @@ class NotificationsTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification1);
 
-        /// step 2
-        $content = [
-            "page" => 0,
-            "limit" => 10,
-        ];
-
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
+        $crawler = self::$webClient->request("POST", "/api/new/notifications", server: [
             "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
+        ]);
 
         /// step 4
         self::assertResponseIsSuccessful();
@@ -55,49 +49,7 @@ class NotificationsTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("systemNotifications", $responseContent);
-        $this->assertArrayHasKey("page", $responseContent);
-        $this->assertArrayHasKey("limit", $responseContent);
-        $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(3, $responseContent["systemNotifications"]);
-        $this->assertNotNull($responseContent["systemNotifications"][0]["active"]);
-    }
-
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_notificationsEmptyRequestData(): void
-    {
-        /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123126", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-
-        /// step 2
-        $content = [];
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
-            "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
-
-        /// step 3
-        self::assertResponseStatusCodeSame(400);
-
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertSame(2, $responseContent["newNotifications"]);
     }
 
     /**
@@ -113,17 +65,11 @@ class NotificationsTest extends AbstractWebTest
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123126", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        /// step 2
-        $content = [
-            "page" => 0,
-            "limit" => 10,
-        ];
-
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", server: [
+        $crawler = self::$webClient->request("POST", "/api/new/notifications", server: [
             "HTTP_authorization" => $token->getToken()
-        ], content: json_encode($content));
+        ]);
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -153,14 +99,8 @@ class NotificationsTest extends AbstractWebTest
         $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123126", ["Guest", "User", "Administrator"], true, "zaq12wsx");
 
-        /// step 2
-        $content = [
-            "page" => 0,
-            "limit" => 10,
-        ];
-
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/notifications", content: json_encode($content));
+        $crawler = self::$webClient->request("POST", "/api/new/notifications");
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
