@@ -4,6 +4,7 @@ namespace App\Query\Common;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use OpenApi\Attributes as OA;
 
 class RegisterQuery
 {
@@ -55,7 +56,7 @@ class RegisterQuery
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('birthday', $additionalData)) {
-            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['year']);
+            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
         }
 
         $this->additionalData = $additionalData;

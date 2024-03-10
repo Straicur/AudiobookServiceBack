@@ -68,6 +68,66 @@ class RegisterTest extends AbstractWebTest
     }
 
     /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response if user is registered
+     * @return void
+     */
+    public function test_registerParentalControlCorrect(): void
+    {
+        $userInformationRepository = $this->getService(UserInformationRepository::class);
+        $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
+
+        $this->assertInstanceOf(RegisterCodeRepository::class, $registerCodeRepository);
+        $this->assertInstanceOf(UserInformationRepository::class, $userInformationRepository);
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        /// step 2
+
+        $content = [
+            "email" => "mosinskidamian17@gmail.com",
+            "phoneNumber" => "786768564",
+            "firstname" => "Damian",
+            "lastname" => "Mos",
+            "password" => "zaq12wsx",
+            "additionalData" => [
+                "birthday" => '10.09.2005'
+            ]
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request("PUT", "/api/register", server: [
+            "HTTP_authorization" => $token->getToken()
+        ], content: json_encode($content));
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
+
+        /// step 5
+        $userInformationAfter = $userInformationRepository->findOneBy([
+            "email" => "mosinskidamian17@gmail.com"
+        ]);
+
+        $this->assertNotNull($userInformationAfter->getUser());
+
+        $hasRole = false;
+
+        foreach ($userInformationAfter->getUser()->getRoles() as $role) {
+            if ($role->getName() === "Guest") {
+                $hasRole = true;
+            }
+        }
+
+        $this->assertTrue($hasRole);
+        $this->assertFalse($userInformationAfter->getUser()->isActive());
+        $this->assertCount(1, $registerCodeRepository->findAll());
+        $this->assertNotNull($userInformationAfter->getBirthday());
+    }
+
+    /**
      * step 1 - Preparing JsonBodyContent with bad email
      * step 2 - Sending Request
      * step 3 - Checking response
@@ -101,6 +161,7 @@ class RegisterTest extends AbstractWebTest
         $this->assertArrayHasKey("error", $responseContent);
         $this->assertArrayHasKey("data", $responseContent);
     }
+
     /**
      * step 1 - Preparing JsonBodyContent with bad number
      * step 2 - Sending Request
