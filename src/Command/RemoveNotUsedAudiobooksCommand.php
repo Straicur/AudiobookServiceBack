@@ -44,7 +44,7 @@ class RemoveNotUsedAudiobooksCommand extends Command
                 "fileName" => $each
             ]);
 
-            if ($isInRepo == null) {
+            if ($isInRepo === null) {
                 $this->audiobookService->removeFolder($each);
             }
         }

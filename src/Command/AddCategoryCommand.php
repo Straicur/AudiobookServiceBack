@@ -61,20 +61,18 @@ class AddCategoryCommand extends Command
 
         $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
 
-        if ($parent != null) {
+        if ($parent !== null) {
             $parentCategory = $this->audiobookCategoryRepository->findOneBy([
                 "name" => $parent
             ]);
 
-            if ($parentCategory != null) {
+            if ($parentCategory !== null) {
                 $newAudiobookCategory->setParent($parentCategory);
             }
         }
         $newAudiobookCategory->setActive(true);
 
         $this->audiobookCategoryRepository->add($newAudiobookCategory);
-
-        $io = new SymfonyStyle($input, $output);
 
         $io->success('Success');
 

@@ -50,7 +50,7 @@ class CalculateAudiobooksRatingCommand extends Command
 
             $audiobookRatings = count($audiobook->getAudiobookRatings());
 
-            if ($audiobookRatings != 0) {
+            if ($audiobookRatings !== 0) {
                 $audiobook->setAvgRating(($goodRatings / $audiobookRatings) * 100);
 
                 $this->audiobookRepository->add($audiobook);
