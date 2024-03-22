@@ -357,6 +357,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -439,6 +440,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
@@ -504,7 +506,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
             }
 
-            $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getLimit(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
+            $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                 $item->tag(StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value);
 

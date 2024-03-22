@@ -21,7 +21,7 @@ class ResponseTool
 
         $serializeService = new JsonSerializer();
 
-        $serializedObject = $responseModel != null ? $serializeService->serialize($responseModel) : null;
+        $serializedObject = $responseModel !== null ? $serializeService->serialize($responseModel) : null;
 
         if($serializedObject){
             $headers['Content-Length'] = strlen($serializedObject);
