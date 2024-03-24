@@ -242,7 +242,8 @@ class AdminAudiobookController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache
     ): Response
     {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
@@ -420,6 +421,10 @@ class AdminAudiobookController extends AbstractController
                 if ($newAudiobook->getEncoded() !== null) {
                     $successModel->setEncoded($newAudiobook->getEncoded());
                 }
+
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
 
                 return ResponseTool::getResponse($successModel, 201);
             }
