@@ -162,7 +162,7 @@ class UserProposedAudiobooksCommand extends Command
                                 continue;
                             }
 
-                            if (!$this->myListRepository->getAudiobookINMyList($user, $audiobook)) {
+                            if (!$this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
                                 ++$audiobooksAdded;
                                 $proposedAudiobooks->addAudiobook($audiobook);
                             }

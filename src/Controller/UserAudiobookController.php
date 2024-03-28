@@ -428,7 +428,7 @@ class UserAudiobookController extends AbstractController
                     );
                 }
 
-                $inList = $listRepository->getAudiobookINMyList($user, $audiobook);
+                $inList = $listRepository->getAudiobookInMyList($user, $audiobook);
 
                 $audiobookInfo = $audiobookInfoRepository->findBy([
                     "audiobook" => $audiobook->getId(),
@@ -618,7 +618,7 @@ class UserAudiobookController extends AbstractController
 
             $myList = $user->getMyList();
 
-            if ($myListRepository->getAudiobookINMyList($user, $audiobook)) {
+            if ($myListRepository->getAudiobookInMyList($user, $audiobook)) {
                 $myList->removeAudiobook($audiobook);
             } else {
                 $myList->addAudiobook($audiobook);
