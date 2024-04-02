@@ -148,9 +148,11 @@ class AdminAudiobookController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
             }
+
             $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                 $item->tag(StockCacheTags::ADMIN_AUDIOBOOK->value);
+
                 $categories = $audiobookCategoryRepository->getAudiobookCategories($audiobook);
 
                 $audiobookCategories = [];
