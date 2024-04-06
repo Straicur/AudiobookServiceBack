@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserSettingsRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserSettingsRepository::class)]
@@ -13,10 +14,10 @@ class UserSettings
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $normal;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $admin;
 
     /**

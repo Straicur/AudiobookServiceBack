@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserParentalControlCodeRepository;
 use App\ValueGenerator\ValueGeneratorInterface;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -22,13 +23,13 @@ class UserParentalControlCode
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 6)]
+    #[ORM\Column(type: Types::STRING, length: 6)]
     private string $code;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
     /**

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RegisterCodeRepository;
 use App\ValueGenerator\RegisterCodeGenerator;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -18,16 +19,16 @@ class RegisterCode
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'string', length: 512)]
+    #[ORM\Column(type: Types::STRING, length: 512)]
     private string $code;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $dateAccept = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

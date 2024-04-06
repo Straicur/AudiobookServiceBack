@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -19,16 +20,16 @@ class User
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateCreate;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $banned;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $bannedTo = null;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist'])]
@@ -46,10 +47,10 @@ class User
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist'])]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $edited;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $editableDate = null;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]

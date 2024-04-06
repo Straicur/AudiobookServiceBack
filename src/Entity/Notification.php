@@ -7,6 +7,7 @@ use App\Repository\NotificationRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -20,28 +21,28 @@ class Notification
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $type;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $actionId = null;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $metaData;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
     #[ORM\OneToMany(mappedBy: 'notification', targetEntity: NotificationCheck::class)]
     private Collection $notificationChecks;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $dateDeleted;
 
     public function __construct()

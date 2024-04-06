@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookRatingRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -20,7 +21,7 @@ class AudiobookRating
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Audiobook $audiobook;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $rating;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

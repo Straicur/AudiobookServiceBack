@@ -7,6 +7,7 @@ use App\Repository\AudiobookRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -23,46 +24,46 @@ class Audiobook
     #[ORM\ManyToMany(targetEntity: AudiobookCategory::class, inversedBy: 'audiobooks')]
     private Collection $categories;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $title;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $author;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $version;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $album;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $year;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(Types::STRING, length: 255, nullable: true)]
     private ?string $encoded = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $duration;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $size;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $parts;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     private string $description;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $age;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     private string $fileName;
 
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookRating::class)]
@@ -72,8 +73,14 @@ class Audiobook
     #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookInfo::class)]
     private Collection $audiobookInfos;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: Types::FLOAT)]
     private float $avgRating;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $imgFile = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $imgFileChangeDate = null;
 
     /**
      * @param string $title
@@ -411,6 +418,30 @@ class Audiobook
     public function setAvgRating(float $avgRating): self
     {
         $this->avgRating = $avgRating;
+
+        return $this;
+    }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(string $imgFile): static
+    {
+        $this->imgFile = $imgFile;
+
+        return $this;
+    }
+
+    public function getImgFileChangeDate(): ?\DateTime
+    {
+        return $this->imgFileChangeDate;
+    }
+
+    public function setImgFileChangeDate(\DateTime $imgFileChangeDate): static
+    {
+        $this->imgFileChangeDate = $imgFileChangeDate;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\NotificationCheckRepository;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -25,7 +26,7 @@ class NotificationCheck
     #[ORM\JoinColumn(nullable: false)]
     private Notification $notification;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateWatched;
 
     /**

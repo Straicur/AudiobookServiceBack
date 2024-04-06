@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AuthenticationTokenRepository;
 use App\ValueGenerator\ValueGeneratorInterface;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -22,13 +23,13 @@ class AuthenticationToken
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 512)]
+    #[ORM\Column(type: Types::STRING, length: 512)]
     private string $token;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateCreate;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateExpired;
 
     /**

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserInformationRepository;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserInformationRepository::class)]
@@ -14,19 +15,19 @@ class UserInformation
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 510, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 510, unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 16, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 16, unique: true)]
     private string $phoneNumber;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $firstname;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $lastname;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $birthday = null;
 
     /**

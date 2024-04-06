@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AudiobookUserCommentRepository;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -17,7 +18,7 @@ class AudiobookUserComment
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'string', length: 1000)]
+    #[ORM\Column(type: Types::STRING, length: 1000)]
     private string $comment;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookUserComments')]
@@ -32,13 +33,13 @@ class AudiobookUserComment
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?AudiobookUserComment $parent = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $edited;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
     /**
