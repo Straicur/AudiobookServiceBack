@@ -265,6 +265,12 @@ class AudiobookService implements AudiobookServiceInterface
                                 }
                             }
                         }
+                    } elseif ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
+                        $img = $entry;
+                        if ($img !== '') {
+                            $imgDir = '/files/' . pathinfo($folderDir)['filename'] . '/' . $img;
+                            $id3Data['imgFileDir'] = $imgDir;
+                        }
                     }
                 }
             }

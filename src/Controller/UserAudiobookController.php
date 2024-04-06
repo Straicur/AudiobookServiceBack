@@ -176,7 +176,8 @@ class UserAudiobookController extends AbstractController
                                 $audiobook->getTitle(),
                                 $audiobook->getAuthor(),
                                 $audiobook->getParts(),
-                                $audiobook->getAge()
+                                $audiobook->getAge(),
+                                $audiobook->getImgFile()
                             ));
                         }
                         $successModel->addCategory($categoryModel);
@@ -259,7 +260,8 @@ class UserAudiobookController extends AbstractController
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
-                    $audiobook->getAge()
+                    $audiobook->getAge(),
+                    $audiobook->getImgFile()
                 );
 
                 foreach ($audiobook->getCategories() as $category) {
@@ -329,7 +331,8 @@ class UserAudiobookController extends AbstractController
                         $audiobook->getTitle(),
                         $audiobook->getAuthor(),
                         $audiobook->getParts(),
-                        $audiobook->getAge()
+                        $audiobook->getAge(),
+                        $audiobook->getImgFile()
                     );
 
                     foreach ($audiobook->getCategories() as $category) {
@@ -462,7 +465,8 @@ class UserAudiobookController extends AbstractController
                     $audiobook->getAvgRating(),
                     count($audiobookRatingRepository->findBy([
                         'audiobook' => $audiobook->getId()
-                    ]))
+                    ])),
+                    $audiobook->getImgFile()
                 );
 
                 if ($audiobookInfo !== null && count($audiobookInfo) >= $audiobook->getParts()) {
@@ -678,7 +682,8 @@ class UserAudiobookController extends AbstractController
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
-                    $audiobook->getAge()
+                    $audiobook->getAge(),
+                    $audiobook->getImgFile()
                 );
 
                 foreach ($audiobook->getCategories() as $category) {

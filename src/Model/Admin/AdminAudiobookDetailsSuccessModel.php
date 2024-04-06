@@ -26,6 +26,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     private bool $active;
     private float $avgRating;
     private int $ratingAmount;
+    private ?string $imgFile;
     private ?string $encoded;
 
     /**
@@ -49,8 +50,26 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param float $avgRating
      * @param AudiobookDetailCategoryModel[] $categories
      * @param int $ratingAmount
+     * @param string|null $imgFile
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories, int $ratingAmount)
+    public function __construct(
+        string            $id,
+        string            $title,
+        string            $author,
+        string            $version,
+        string            $album,
+        DateTime          $year,
+        int               $duration,
+        string            $size,
+        int               $parts,
+        string            $description,
+        AudiobookAgeRange $age,
+        bool              $active,
+        float             $avgRating,
+        array             $categories,
+        int               $ratingAmount,
+        ?string           $imgFile
+    )
     {
         $this->id = $id;
         $this->title = $title;
@@ -67,6 +86,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
         $this->avgRating = $avgRating;
         $this->ratingAmount = $ratingAmount;
         $this->categories = $categories;
+        $this->imgFile = $imgFile;
     }
 
     /**
@@ -329,6 +349,16 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     public function setRatingAmount(int $ratingAmount): void
     {
         $this->ratingAmount = $ratingAmount;
+    }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(?string $imgFile): void
+    {
+        $this->imgFile = $imgFile;
     }
 
 }

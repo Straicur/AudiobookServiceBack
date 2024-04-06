@@ -168,6 +168,32 @@ class AdminAudiobookController extends AbstractController
                     );
                 }
 
+                if ($audiobook->getImgFileChangeDate() == null || $audiobook->getImgFileChangeDate() < new DateTime()) {
+                    try {
+                        $handle = opendir($audiobook->getFileName());
+                        $img = "";
+                        if ($handle) {
+                            while (false !== ($entry = readdir($handle))) {
+                                if ($entry !== '.' && $entry !== '..') {
+                                    $file_parts = pathinfo($entry);
+                                    if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
+                                        $img = $file_parts['basename'];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if ($img !== "") {
+                            $audiobook->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img);
+                            $audiobook->setImgFileChangeDate();
+                        }
+                    }
+                    catch (\Throwable){
+                        $audiobook->setImgFile(null);
+                        $audiobook->setImgFileChangeDate();
+                    }
+                }
+
                 $successModel = new AdminAudiobookDetailsSuccessModel(
                     (string)$audiobook->getId(),
                     $audiobook->getTitle(),
@@ -185,7 +211,8 @@ class AdminAudiobookController extends AbstractController
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
                         'audiobook' => $audiobook->getId()
-                    ]))
+                    ])),
+                    $audiobook->getImgFile()
                 );
 
                 if ($audiobook->getEncoded() !== null) {
@@ -362,6 +389,12 @@ class AdminAudiobookController extends AbstractController
                     $title = 'title';
                 }
 
+                if (array_key_exists('imgFileDir', $ID3JsonData)) {
+                    $img = $ID3JsonData['imgFileDir'];
+                } else {
+                    $img = 'imgFileDir';
+                }
+
                 $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
                 if (array_key_exists('title', $additionalData)) {
@@ -375,6 +408,11 @@ class AdminAudiobookController extends AbstractController
 
                 if ($encoded !== "") {
                     $newAudiobook->setEncoded($encoded);
+                }
+
+                if ($img !== "") {
+                    $newAudiobook->setImgFile($img);
+                    $newAudiobook->setImgFileChangeDate();
                 }
 
                 $audiobookCategories = [];
@@ -421,7 +459,8 @@ class AdminAudiobookController extends AbstractController
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
                         'audiobook' => $newAudiobook->getId()
-                    ]))
+                    ])),
+                    $newAudiobook->getImgFile()
                 );
 
                 if ($newAudiobook->getEncoded() !== null) {
@@ -862,6 +901,12 @@ class AdminAudiobookController extends AbstractController
                     $title = 'title';
                 }
 
+                if (array_key_exists('imgFileDir', $ID3JsonData)) {
+                    $img = $ID3JsonData['imgFileDir'];
+                } else {
+                    $img = 'imgFileDir';
+                }
+
                 $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
 
                 if (array_key_exists('title', $additionalData)) {
@@ -887,6 +932,11 @@ class AdminAudiobookController extends AbstractController
 
                 if ($encoded !== "") {
                     $audiobook->setEncoded($encoded);
+                }
+
+                if ($img !== "") {
+                    $audiobook->setImgFile($img);
+                    $audiobook->setImgFileChangeDate();
                 }
 
                 foreach ($audiobook->getCategories() as $category) {
@@ -942,7 +992,8 @@ class AdminAudiobookController extends AbstractController
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
                         'audiobook' => $audiobook->getId()
-                    ]))
+                    ])),
+                    $audiobook->getImgFile()
                 );
 
                 if ($audiobook->getEncoded() !== null) {
@@ -1291,15 +1342,11 @@ class AdminAudiobookController extends AbstractController
             }
 
             while (false !== ($entry = readdir($handle))) {
-
                 if ($entry !== '.' && $entry !== '..') {
-
                     $file_parts = pathinfo($entry);
-
                     if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
 
                         $img = $audiobook->getFileName() . '/' . $file_parts['basename'];
-
                         if (file_exists($img)) {
                             unlink($img);
                         }
@@ -1309,6 +1356,10 @@ class AdminAudiobookController extends AbstractController
 
             $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
             file_put_contents($audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
+
+            $audiobook->setImgFile($audiobook->getFileName() . '/' . $audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType());
+            $audiobook->setImgFileChangeDate();
+            $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
 

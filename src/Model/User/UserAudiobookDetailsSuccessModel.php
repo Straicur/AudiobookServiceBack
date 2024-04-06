@@ -34,6 +34,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private int $comments;
     private bool $canRate = false;
     private bool $canComment = false;
+    private ?string $imgFile;
 
     /**
      * @param string $id
@@ -51,8 +52,26 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param int $comments
      * @param float $avgRating
      * @param int $ratingAmount
+     * @param string|null $imgFile
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments, float $avgRating, int $ratingAmount)
+    public function __construct(
+        string            $id,
+        string            $title,
+        string            $author,
+        string            $version,
+        string            $album,
+        DateTime          $year,
+        string            $duration,
+        int               $parts,
+        string            $description,
+        AudiobookAgeRange $age,
+        array             $categories,
+        bool              $inList,
+        int               $comments,
+        float             $avgRating,
+        int               $ratingAmount,
+        ?string           $imgFile
+    )
     {
         $this->id = $id;
         $this->title = $title;
@@ -69,6 +88,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->comments = $comments;
         $this->avgRating = $avgRating;
         $this->ratingAmount = $ratingAmount;
+        $this->imgFile = $imgFile;
     }
 
     /**
@@ -334,9 +354,9 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @param bool $ratingAmount
+     * @param int $ratingAmount
      */
-    public function setRatingAmount(bool $ratingAmount): void
+    public function setRatingAmount(int $ratingAmount): void
     {
         $this->ratingAmount = $ratingAmount;
     }
@@ -347,6 +367,16 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function getRatingAmount(): int
     {
         return $this->ratingAmount;
+    }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(?string $imgFile): void
+    {
+        $this->imgFile = $imgFile;
     }
 
 }

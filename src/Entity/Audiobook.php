@@ -427,7 +427,7 @@ class Audiobook
         return $this->imgFile;
     }
 
-    public function setImgFile(string $imgFile): static
+    public function setImgFile(?string $imgFile): static
     {
         $this->imgFile = $imgFile;
 
@@ -439,9 +439,9 @@ class Audiobook
         return $this->imgFileChangeDate;
     }
 
-    public function setImgFileChangeDate(\DateTime $imgFileChangeDate): static
+    public function setImgFileChangeDate(): static
     {
-        $this->imgFileChangeDate = $imgFileChangeDate;
+        $this->imgFileChangeDate = (new DateTime())->modify('+5 day');
 
         return $this;
     }

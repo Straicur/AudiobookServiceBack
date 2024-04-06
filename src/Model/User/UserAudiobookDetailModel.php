@@ -18,6 +18,7 @@ class UserAudiobookDetailModel
      * @var UserAudiobookCategoryModel[]
      */
     private array $categories = [];
+    private ?string $imgFile;
 
     /**
      * @param string $id
@@ -25,14 +26,16 @@ class UserAudiobookDetailModel
      * @param string $author
      * @param int $parts
      * @param AudiobookAgeRange $age
+     * @param string|null $imgFile
      */
-    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age)
+    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age, ?string $imgFile)
     {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
         $this->parts = $parts;
         $this->age = $age->value;
+        $this->imgFile = $imgFile;
     }
 
     /**
@@ -136,4 +139,15 @@ class UserAudiobookDetailModel
     {
         $this->categories[] = $category;
     }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(?string $imgFile): void
+    {
+        $this->imgFile = $imgFile;
+    }
+
 }
