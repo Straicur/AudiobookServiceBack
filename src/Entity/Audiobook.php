@@ -16,7 +16,7 @@ class Audiobook
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -102,7 +102,7 @@ class Audiobook
         $this->age = $age->value;
         $this->categories = new ArrayCollection();
         $this->active = false;
-        $this->dateAdd = new DateTime('Now');
+        $this->dateAdd = new DateTime();
         $this->fileName = $fileName;
         $this->audiobookRatings = new ArrayCollection();
         $this->audiobookUserComments = new ArrayCollection();

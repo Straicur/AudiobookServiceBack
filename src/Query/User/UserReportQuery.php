@@ -10,9 +10,9 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserReportQuery
 {
-    #[Assert\NotNull(message: "Type is null")]
-    #[Assert\NotBlank(message: "Type is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Type is null')]
+    #[Assert\NotBlank(message: 'Type is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
     #[Assert\LessThan(7)]
     private int $type;
@@ -24,11 +24,11 @@ class UserReportQuery
         $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
             'fields' => [
                 'description' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Description is empty"),
-                    new Assert\Type(type: "string")
+                    new Assert\NotBlank(message: 'Description is empty'),
+                    new Assert\Type(type: 'string')
                 ]),
                 'actionId' => new Assert\Optional([
-                    new Assert\NotBlank(message: "ActionId is empty"),
+                    new Assert\NotBlank(message: 'ActionId is empty'),
                     new Assert\Uuid()
                 ])
             ],
@@ -38,14 +38,14 @@ class UserReportQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
-        new OA\Property(property: "description", type: "string", example: "Desc", nullable: true),
-        new OA\Property(property: "actionId", type: "string", example: "UUID", nullable: true)
-    ], type: "object")]
+    #[OA\Property(property: 'additionalData', properties: [
+        new OA\Property(property: 'description', type: 'string', example: 'Desc', nullable: true),
+        new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true)
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData["actionId"])) {
-            $additionalData["actionId"] = Uuid::fromString($additionalData["actionId"]);
+        if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {
+            $additionalData['actionId'] = Uuid::fromString($additionalData['actionId']);
         }
 
         $this->additionalData = $additionalData;

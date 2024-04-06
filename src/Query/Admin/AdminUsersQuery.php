@@ -9,14 +9,14 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminUsersQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
     protected array $searchData = [];
 
@@ -71,8 +71,8 @@ class AdminUsersQuery
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('order', $searchData)) {
-            if ($searchData["order"] != UserOrderSearch::LATEST->value && $searchData["order"] != UserOrderSearch::OLDEST->value && $searchData["order"] != UserOrderSearch::ALPHABETICAL_ASC->value && $searchData["order"] != UserOrderSearch::ALPHABETICAL_DESC->value) {
-                $searchData["order"] = UserOrderSearch::LATEST->value;
+            if ($searchData['order'] !== UserOrderSearch::LATEST->value && $searchData['order'] !== UserOrderSearch::OLDEST->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value) {
+                $searchData['order'] = UserOrderSearch::LATEST->value;
             }
         }
 
@@ -90,7 +90,7 @@ class AdminUsersQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -107,7 +107,7 @@ class AdminUsersQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

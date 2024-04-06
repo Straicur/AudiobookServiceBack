@@ -9,9 +9,9 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminCategoryAddQuery
 {
-    #[Assert\NotNull(message: "Name is null")]
-    #[Assert\NotBlank(message: "Name is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Name is null')]
+    #[Assert\NotBlank(message: 'Name is empty')]
+    #[Assert\Type(type: 'string')]
     private string $name;
 
     protected array $additionalData = [];
@@ -21,7 +21,7 @@ class AdminCategoryAddQuery
         $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
             'fields' => [
                 'parentId' => new Assert\Optional([
-                    new Assert\NotBlank(message: "ParentId is empty"),
+                    new Assert\NotBlank(message: 'ParentId is empty'),
                     new Assert\NotNull(),
                     new Assert\Uuid()
                 ])
@@ -32,13 +32,13 @@ class AdminCategoryAddQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
-        new OA\Property(property: "parentId", type: "string", example: "UUID", nullable: true),
-    ], type: "object")]
+    #[OA\Property(property: 'additionalData', properties: [
+        new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists("parentId", $additionalData)) {
-            $additionalData["parentId"] = Uuid::fromString($additionalData["parentId"]);
+        if (array_key_exists('parentId', $additionalData)) {
+            $additionalData['parentId'] = Uuid::fromString($additionalData['parentId']);
         }
 
         $this->additionalData = $additionalData;

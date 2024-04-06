@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enums\ReportType;
 use App\Repository\ReportRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -13,7 +14,7 @@ class Report
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -21,7 +22,7 @@ class Report
     private int $type;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    private DateTime $dateAdd;
 
     #[ORM\Column(type: 'boolean')]
     private bool $accepted;
@@ -50,7 +51,7 @@ class Report
         $this->type = $type->value;
         $this->accepted = false;
         $this->denied = false;
-        $this->dateAdd = new \DateTime();
+        $this->dateAdd = new DateTime();
     }
 
     public function getId(): Uuid
@@ -111,12 +112,12 @@ class Report
         $this->ip = $ip;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): void
+    public function setDateAdd(DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd;
     }

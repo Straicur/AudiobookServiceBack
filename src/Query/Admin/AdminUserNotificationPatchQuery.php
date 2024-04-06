@@ -11,14 +11,14 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminUserNotificationPatchQuery
 {
-    #[Assert\NotNull(message: "NotificationId is null")]
-    #[Assert\NotBlank(message: "NotificationId is blank")]
+    #[Assert\NotNull(message: 'NotificationId is null')]
+    #[Assert\NotBlank(message: 'NotificationId is blank')]
     #[Assert\Uuid]
     private Uuid $notificationId;
 
-    #[Assert\NotNull(message: "NotificationType is null")]
-    #[Assert\NotBlank(message: "NotificationType is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'NotificationType is null')]
+    #[Assert\NotBlank(message: 'NotificationType is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
@@ -26,9 +26,9 @@ class AdminUserNotificationPatchQuery
     )]
     private int $notificationType;
 
-    #[Assert\NotNull(message: "NotificationUserType is null")]
-    #[Assert\NotBlank(message: "NotificationUserType is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'NotificationUserType is null')]
+    #[Assert\NotBlank(message: 'NotificationUserType is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
@@ -36,8 +36,8 @@ class AdminUserNotificationPatchQuery
     )]
     private int $notificationUserType;
 
-    #[Assert\NotNull(message: "ActionId is null")]
-    #[Assert\NotBlank(message: "ActionId is blank")]
+    #[Assert\NotNull(message: 'ActionId is null')]
+    #[Assert\NotBlank(message: 'ActionId is blank')]
     #[Assert\Uuid]
     private Uuid $actionId;
 
@@ -49,14 +49,14 @@ class AdminUserNotificationPatchQuery
         $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
             'fields' => [
                 'text' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Text is empty"),
+                    new Assert\NotBlank(message: 'Text is empty'),
                     new Assert\NotNull(),
-                    new Assert\Type(type: "string")
+                    new Assert\Type(type: 'string')
                 ]),
                 'categoryKey' => new Assert\Optional([
-                    new Assert\NotBlank(message: "CategoryKey is empty"),
+                    new Assert\NotBlank(message: 'CategoryKey is empty'),
                     new Assert\NotNull(),
-                    new Assert\Type("string")
+                    new Assert\Type('string')
                 ]),
             ]
         ]));
@@ -65,10 +65,10 @@ class AdminUserNotificationPatchQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
-        new OA\Property(property: "text", type: "string", example: "desc", nullable: true),
-        new OA\Property(property: "categoryKey", type: "string", example: "CategoryKey", nullable: true),
-    ], type: "object")]
+    #[OA\Property(property: 'additionalData', properties: [
+        new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
+        new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         $this->additionalData = $additionalData;
@@ -85,7 +85,7 @@ class AdminUserNotificationPatchQuery
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getNotificationId(): Uuid
     {
         return $this->notificationId;
@@ -102,7 +102,7 @@ class AdminUserNotificationPatchQuery
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getActionId(): Uuid
     {
         return $this->actionId;

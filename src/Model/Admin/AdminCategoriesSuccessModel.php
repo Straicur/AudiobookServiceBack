@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
 
 class AdminCategoriesSuccessModel implements ModelInterface
 {
@@ -16,7 +18,7 @@ class AdminCategoriesSuccessModel implements ModelInterface
      */
     public function __construct(?array $categories = null)
     {
-        if ($categories != null) {
+        if ($categories !== null) {
             $this->categories = $categories;
         }
     }

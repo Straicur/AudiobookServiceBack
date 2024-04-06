@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Builder;
 
 use App\Entity\Notification;
@@ -74,7 +76,7 @@ class NotificationBuilder
      */
     public function setUserAction(NotificationUserType $type): static
     {
-        $this->metaData["user"] = $type->value;
+        $this->metaData['user'] = $type->value;
 
         return $this;
     }
@@ -85,7 +87,7 @@ class NotificationBuilder
      */
     public function setText(string $text): static
     {
-        $this->metaData["text"] = $text;
+        $this->metaData['text'] = $text;
 
         return $this;
     }
@@ -96,7 +98,7 @@ class NotificationBuilder
      */
     public function setCategoryKey(string $text): static
     {
-        $this->metaData["categoryKey"] = $text;
+        $this->metaData['categoryKey'] = $text;
 
         return $this;
     }
@@ -123,25 +125,25 @@ class NotificationBuilder
      */
     public static function read(Notification $notification, ?NotificationCheck $notificationCheck = null): NotificationModel
     {
-        $notificationModel = new NotificationModel($notification->getId(), $notification->getType(), null, null, null);
+        $notificationModel = new NotificationModel((string)$notification->getId(), $notification->getType(), null, null, null);
 
         $metaData = $notification->getMetaData();
 
-        if (array_key_exists("user", $metaData)) {
-            if ($metaData["user"] !== null) {
-                $notificationModel->setUserType($metaData["user"]);
+        if (array_key_exists('user', $metaData)) {
+            if ($metaData['user'] !== null) {
+                $notificationModel->setUserType($metaData['user']);
             }
         }
 
-        if (array_key_exists("text", $metaData)) {
-            if ($metaData["text"] !== "") {
-                $notificationModel->setText($metaData["text"]);
+        if (array_key_exists('text', $metaData)) {
+            if ($metaData['text'] !== "") {
+                $notificationModel->setText($metaData['text']);
             }
         }
 
-        if (array_key_exists("categoryKey", $metaData)) {
-            if ($metaData["categoryKey"] !== "") {
-                $notificationModel->setCategoryKey($metaData["categoryKey"]);
+        if (array_key_exists('categoryKey', $metaData)) {
+            if ($metaData['categoryKey'] !== "") {
+                $notificationModel->setCategoryKey($metaData['categoryKey']);
             }
         }
 
@@ -176,10 +178,10 @@ class NotificationBuilder
             case NotificationType::USER_REPORT_ACCEPTED:
             case NotificationType::USER_REPORT_DENIED:
             case NotificationType::USER_DELETE_DECLINE:
-                $keys = ["user"];
+                $keys = ['user'];
                 break;
             case NotificationType::NEW_CATEGORY:
-                $keys = ["categoryKey", "user"];
+                $keys = ['categoryKey', 'user'];
                 break;
         }
 

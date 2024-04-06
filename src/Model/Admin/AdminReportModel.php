@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
 
 use App\Enums\ReportType;
+use DateTime;
 use OpenApi\Attributes as OA;
 
 class AdminReportModel
@@ -10,8 +13,8 @@ class AdminReportModel
     private string $id;
     private int $type;
     private int $dateAdd;
-    private int $accepted;
-    private int $denied;
+    private bool $accepted;
+    private bool $denied;
     private ?string $description = null;
     private ?string $actionId = null;
     private ?string $email = null;
@@ -20,12 +23,12 @@ class AdminReportModel
 
     /**
      * @param string $id
-     * @param int $type
-     * @param int $dateAdd
-     * @param int $accepted
-     * @param int $denied
+     * @param ReportType $type
+     * @param DateTime $dateAdd
+     * @param bool $accepted
+     * @param bool $denied
      */
-    public function __construct(string $id, ReportType $type, \DateTime $dateAdd, int $accepted, int $denied)
+    public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
         $this->id = $id;
         $this->type = $type->value;
@@ -44,7 +47,7 @@ class AdminReportModel
         $this->id = $id;
     }
 
-    #[OA\Property(type: "integer", enum: [1 => 'COMMENT', 2 => 'AUDIOBOOK_PROBLEM', 3 => 'CATEGORY_PROBLEM', 4 => 'SYSTEM_PROBLEM', 5 => 'USER_PROBLEM', 6 => 'SETTINGS_PROBLEM'])]
+    #[OA\Property(type: 'integer', enum: [1 => 'COMMENT', 2 => 'AUDIOBOOK_PROBLEM', 3 => 'CATEGORY_PROBLEM', 4 => 'SYSTEM_PROBLEM', 5 => 'USER_PROBLEM', 6 => 'SETTINGS_PROBLEM'])]
     public function getType(): int
     {
         return $this->type;
@@ -80,27 +83,27 @@ class AdminReportModel
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): void
+    public function setDateAdd(DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd->getTimestamp();
     }
 
-    public function getAccepted(): int
+    public function getAccepted(): bool
     {
         return $this->accepted;
     }
 
-    public function setAccepted(int $accepted): void
+    public function setAccepted(bool $accepted): void
     {
         $this->accepted = $accepted;
     }
 
-    public function getDenied(): int
+    public function getDenied(): bool
     {
         return $this->denied;
     }
 
-    public function setDenied(int $denied): void
+    public function setDenied(bool $denied): void
     {
         $this->denied = $denied;
     }

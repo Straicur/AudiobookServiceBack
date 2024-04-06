@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Audiobook;
@@ -100,7 +102,7 @@ class UserRepository extends ServiceEntityRepository
         $qb->innerJoin('u.roles', 'r', Join::WITH, 'r.name = :role')
             ->where('u.id = :user')
             ->setParameter('user', $user->getId()->toBinary())
-            ->setParameter('role', "Administrator");
+            ->setParameter('role', 'Administrator');
 
         $query = $qb->getQuery();
 
@@ -130,6 +132,7 @@ class UserRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
+
     /**
      * @param Audiobook $audiobook
      * @return User[]
@@ -155,17 +158,17 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function newUsersFromLastWeak(): bool
+    public function newUsersFromLastWeak(): int
     {
-        $today = new \DateTime('NOW');
+        $today = new DateTime();
         $lastDate = clone $today;
         $lastDate->modify('-7 day');
 
         $qb = $this->createQueryBuilder('u')
             ->where('( :dateFrom <= u.dateCreate AND :dateTo >= u.dateCreate)')
-            ->andWhere("u.active = true")
+            ->andWhere('u.active = true')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate);
 
@@ -192,50 +195,50 @@ class UserRepository extends ServiceEntityRepository
 
         $qb->leftJoin('u.userInformation', 'ui');
 
-        if ($email != null) {
+        if ($email !== null) {
             $qb->andWhere('ui.email LIKE :email')
                 ->setParameter('email', $email);
         }
-        if ($phoneNumber != null) {
+        if ($phoneNumber !== null) {
             $qb->andWhere('ui.phoneNumber LIKE :phoneNumber')
                 ->setParameter('phoneNumber', $phoneNumber);
         }
-        if ($firstname != null) {
+        if ($firstname !== null) {
             $qb->andWhere('ui.firstname LIKE :firstname')
                 ->setParameter('firstname', $firstname);
         }
-        if ($lastname != null) {
+        if ($lastname !== null) {
             $qb->andWhere('ui.lastname LIKE :lastname')
                 ->setParameter('lastname', $lastname);
         }
-        if ($active != null) {
+        if ($active !== null) {
             $qb->andWhere('u.active = :active')
                 ->setParameter('active', $active);
         }
-        if ($banned != null) {
+        if ($banned !== null) {
             $qb->andWhere('u.banned = :banned')
                 ->setParameter('banned', $banned);
         }
-        if ($order != null) {
+        if ($order !== null) {
             switch ($order) {
                 case UserOrderSearch::LATEST->value:
                 {
-                    $qb->orderBy("u.dateCreate", "DESC");
+                    $qb->orderBy('u.dateCreate', 'DESC');
                     break;
                 }
                 case UserOrderSearch::OLDEST->value:
                 {
-                    $qb->orderBy("u.dateCreate", "ASC");
+                    $qb->orderBy('u.dateCreate', 'ASC');
                     break;
                 }
                 case UserOrderSearch::ALPHABETICAL_ASC->value:
                 {
-                    $qb->orderBy("ui.email", "ASC");
+                    $qb->orderBy('ui.email', 'ASC');
                     break;
                 }
                 case UserOrderSearch::ALPHABETICAL_DESC->value:
                 {
-                    $qb->orderBy("ui.email", "DESC");
+                    $qb->orderBy('ui.email', 'DESC');
                     break;
                 }
             }
@@ -252,10 +255,10 @@ class UserRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        $today = new DateTime('Now');
+        $today = new DateTime();
 
         $qb->update()
-            ->set("u.banned", "false")
+            ->set('u.banned', 'false')
             ->where('u.banned = true')
             ->andWhere('u.bannedTo < :date')
             ->setParameter('date', $today);

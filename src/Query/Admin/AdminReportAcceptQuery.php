@@ -9,14 +9,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminReportAcceptQuery
 {
-    #[Assert\NotNull(message: "ReportId is null")]
-    #[Assert\NotBlank(message: "ReportId is blank")]
+    #[Assert\NotNull(message: 'ReportId is null')]
+    #[Assert\NotBlank(message: 'ReportId is blank')]
     #[Assert\Uuid]
     private Uuid $reportId;
 
-    #[Assert\NotNull(message: "BanPeriod is null")]
-    #[Assert\NotBlank(message: "BanPeriod is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'BanPeriod is null')]
+    #[Assert\NotBlank(message: 'BanPeriod is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
@@ -46,7 +46,7 @@ class AdminReportAcceptQuery
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getReportId(): Uuid
     {
         return $this->reportId;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -37,25 +39,25 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
-#[OA\Tag(name: "Notification")]
+#[OA\Tag(name: 'Notification')]
 class NotificationController extends AbstractController
 {
     /**
@@ -71,21 +73,21 @@ class NotificationController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws InvalidArgumentException
      */
-    #[Route("/api/notifications", name: "notifications", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/notifications', name: 'notifications', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Method get all notifications from the system for logged user",
+        description: 'Method get all notifications from the system for logged user',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: SystemNotificationQuery::class),
-                type: "object"
+                type: 'object'
             )
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: NotificationsSuccessModel::class)
             )
         ]
@@ -126,8 +128,8 @@ class NotificationController extends AbstractController
                     if ($index < $maxResult) {
 
                         $notificationCheck = $checkRepository->findOneBy([
-                            "user" => $user->getId(),
-                            "notification" => $notification->getId()
+                            'user' => $user->getId(),
+                            'notification' => $notification->getId()
                         ]);
 
                         $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
@@ -140,14 +142,14 @@ class NotificationController extends AbstractController
                     $systemNotifications,
                     $systemNotificationQuery->getPage(),
                     $systemNotificationQuery->getLimit(),
-                    ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit())
+                    (int)ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit())
                 );
             });
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -164,21 +166,21 @@ class NotificationController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/notification/activate", name: "notificationActivate", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/notification/activate', name: 'notificationActivate', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Put(
-        description: "Method get is activating given notification so user can see if he read this notification",
+        description: 'Method get is activating given notification so user can see if he read this notification',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: SystemNotificationActivateQuery::class),
-                type: "object"
+                type: 'object'
             )
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -197,18 +199,18 @@ class NotificationController extends AbstractController
         if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
 
             $notification = $notificationRepository->findOneBy([
-                "id" => $systemNotificationActivateQuery->getNotificationId()
+                'id' => $systemNotificationActivateQuery->getNotificationId()
             ]);
 
             if ($notification === null) {
-                throw new DataNotFoundException([$translateService->getTranslation("NotificationDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);
             }
 
             $user = $authorizedUserService->getAuthorizedUser();
 
             $notificationCheck = $checkRepository->findOneBy([
-                "user" => $user->getId(),
-                "notification" => $notification->getId()
+                'user' => $user->getId(),
+                'notification' => $notification->getId()
             ]);
 
             if (!$notificationCheck) {
@@ -219,7 +221,7 @@ class NotificationController extends AbstractController
             return ResponseTool::getResponse(null, 201);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -229,15 +231,15 @@ class NotificationController extends AbstractController
      * @param NotificationRepository $notificationRepository
      * @return Response
      */
-    #[Route("/api/new/notifications", name: "newNotifications", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/new/notifications', name: 'newNotifications', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Method get amount of new notifications for logged user",
+        description: 'Method get amount of new notifications for logged user',
         requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: NewNotificationsSuccessModel::class)
             )
         ]

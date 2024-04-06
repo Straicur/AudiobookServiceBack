@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserInformationRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserInformationRepository::class)]
@@ -10,7 +11,7 @@ class UserInformation
 {
     #[ORM\Id]
     #[ORM\OneToOne(inversedBy: 'userInformation', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 510, unique: true)]
@@ -26,7 +27,7 @@ class UserInformation
     private string $lastname;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $birthday = null;
+    private ?DateTime $birthday = null;
 
     /**
      * @param User $user
@@ -139,12 +140,12 @@ class UserInformation
         return $this;
     }
 
-    public function getBirthday(): ?\DateTime
+    public function getBirthday(): ?DateTime
     {
         return $this->birthday;
     }
 
-    public function setBirthday(?\DateTime $birthday): self
+    public function setBirthday(?DateTime $birthday): self
     {
         $this->birthday = $birthday;
 

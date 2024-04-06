@@ -4,6 +4,7 @@ namespace App\Query\Admin;
 
 use App\Enums\ReportOrderSearch;
 use App\Enums\ReportType;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,14 +12,14 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminReportListQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
 
     protected array $searchData = [];
@@ -83,8 +84,8 @@ class AdminReportListQuery
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'description', type: 'string', example: 'description', nullable: true),
-        new OA\Property(property: 'email', type: 'string', example: "fdas@gmail.com", nullable: true),
-        new OA\Property(property: 'ip', type: 'string', example: "192.021.32", nullable: true),
+        new OA\Property(property: 'email', type: 'string', example: 'fdas@gmail.com', nullable: true),
+        new OA\Property(property: 'ip', type: 'string', example: '192.021.32', nullable: true),
         new OA\Property(property: 'type', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'user', type: 'string', example: true, nullable: true),
         new OA\Property(property: 'accepted', type: 'boolean', example: true, nullable: true),
@@ -95,29 +96,29 @@ class AdminReportListQuery
     ], type: 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('actionId', $searchData) && Uuid::isValid($searchData["actionId"])) {
-            $searchData["actionId"] = Uuid::fromString($searchData["actionId"]);
+        if (array_key_exists('actionId', $searchData) && Uuid::isValid($searchData['actionId'])) {
+            $searchData['actionId'] = Uuid::fromString($searchData['actionId']);
         }
 
         if (array_key_exists('type', $searchData)) {
-            if ($searchData["type"] != ReportType::COMMENT->value && $searchData["type"] != ReportType::AUDIOBOOK_PROBLEM->value && $searchData["type"] != ReportType::CATEGORY_PROBLEM->value && $searchData["type"] != ReportType::SYSTEM_PROBLEM->value && $searchData["type"] != ReportType::USER_PROBLEM->value && $searchData["type"] != ReportType::USER_PROBLEM->value
+            if ($searchData['type'] !== ReportType::COMMENT->value && $searchData['type'] !== ReportType::AUDIOBOOK_PROBLEM->value && $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value && $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value
             ) {
-                $searchData["type"] = ReportType::COMMENT->value;
+                $searchData['type'] = ReportType::COMMENT->value;
             }
         }
 
         if (array_key_exists('order', $searchData)) {
-            if ($searchData["order"] != ReportOrderSearch::OLDEST->value && $searchData["order"] != ReportOrderSearch::LATEST->value){
-                $searchData["order"] = ReportType::COMMENT->value;
+            if ($searchData['order'] !== ReportOrderSearch::OLDEST->value && $searchData['order'] !== ReportOrderSearch::LATEST->value){
+                $searchData['order'] = ReportType::COMMENT->value;
             }
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
-            $searchData['dateFrom'] = \DateTime::createFromFormat('d.m.Y', $searchData['dateFrom']);
+            $searchData['dateFrom'] = DateTime::createFromFormat('d.m.Y', $searchData['dateFrom']);
         }
 
         if (array_key_exists('dateTo', $searchData)) {
-            $searchData['dateTo'] = \DateTime::createFromFormat('d.m.Y', $searchData['dateTo']);
+            $searchData['dateTo'] = DateTime::createFromFormat('d.m.Y', $searchData['dateTo']);
         }
 
         $this->searchData = $searchData;
@@ -134,7 +135,7 @@ class AdminReportListQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -151,7 +152,7 @@ class AdminReportListQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

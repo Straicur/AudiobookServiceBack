@@ -6,13 +6,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserSettingsEmailQuery
 {
-    #[Assert\NotNull(message: "NewEmail is null")]
-    #[Assert\NotBlank(message: "NewEmail is empty")]
+    #[Assert\NotNull(message: 'NewEmail is null')]
+    #[Assert\NotBlank(message: 'NewEmail is empty')]
     #[Assert\Email]
     private string $newEmail;
 
-    #[Assert\NotNull(message: "OldEmail is null")]
-    #[Assert\NotBlank(message: "OldEmail is empty")]
+    #[Assert\NotNull(message: 'OldEmail is null')]
+    #[Assert\NotBlank(message: 'OldEmail is empty')]
     #[Assert\Email]
     private string $oldEmail;
 

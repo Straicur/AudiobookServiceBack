@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Repository\UserRepository;
@@ -24,21 +26,21 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $userParentalControlCode = $this->databaseMockManager->testFunc_addUserParentalControlCode($user);
 
         /// step 2
         $content = [
-            "smsCode" => $userParentalControlCode->getCode(),
-            "additionalData" => [
+            'smsCode' => $userParentalControlCode->getCode(),
+            'additionalData' => [
             ],
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -46,7 +48,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
-            "id" => $user->getId()
+            'id' => $user->getId()
         ]);
 
         /// step 5
@@ -67,30 +69,30 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $userParentalControlCode = $this->databaseMockManager->testFunc_addUserParentalControlCode($user);
         /// step 2
         $content = [
-            "smsCode" => $userParentalControlCode->getCode(),
-            "additionalData" => [
-                "birthday" => "01.09.1998",
+            'smsCode' => $userParentalControlCode->getCode(),
+            'additionalData' => [
+                'birthday' => '01.09.1998',
             ],
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $birthdayDate = \DateTime::createFromFormat('d.m.Y', "01.09.1998");
+        $birthdayDate = \DateTime::createFromFormat('d.m.Y', '01.09.1998');
 
         $userAfter = $userRepository->findOneBy([
-            "id" => $user->getId()
+            'id' => $user->getId()
         ]);
 
         /// step 5
@@ -109,20 +111,20 @@ class UserParentControlPatchTest extends AbstractWebTest
     public function test_userSettingsIncorrectSmsCode(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123121", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            "smsCode" => "A2312V4",
-            "additionalData" => [
-                "birthday" => "01.09.1998",
+            'smsCode' => 'A2312V4',
+            'additionalData' => [
+                'birthday' => '01.09.1998',
             ],
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -136,8 +138,8 @@ class UserParentControlPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -150,14 +152,14 @@ class UserParentControlPatchTest extends AbstractWebTest
     public function test_userParentControlPatchEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -171,7 +173,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -184,19 +186,19 @@ class UserParentControlPatchTest extends AbstractWebTest
     public function test_userParentControlPatchPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [
-            "smsCode" => "A2312V4",
-            "additionalData" => [
-                "birthday" => "01.09.1998",
+            'smsCode' => 'A2312V4',
+            'additionalData' => [
+                'birthday' => '01.09.1998',
             ],
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -210,7 +212,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -223,17 +225,17 @@ class UserParentControlPatchTest extends AbstractWebTest
     public function test_userParentControlPatchLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [
-            "smsCode" => "A2312V4",
-            "additionalData" => [
-                "birthday" => "01.09.1998",
+            'smsCode' => 'A2312V4',
+            'additionalData' => [
+                'birthday' => '01.09.1998',
             ],
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/parent/control", content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -246,6 +248,6 @@ class UserParentControlPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
 
 use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
+use DateTime;
 use OpenApi\Attributes as OA;
 
 class AdminAudiobookDetailsSuccessModel implements ModelInterface
@@ -36,7 +39,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param string $author
      * @param string $version
      * @param string $album
-     * @param \DateTime $year
+     * @param DateTime $year
      * @param int $duration
      * @param string $size
      * @param int $parts
@@ -47,7 +50,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
      * @param AudiobookDetailCategoryModel[] $categories
      * @param int $ratingAmount
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories, int $ratingAmount)
+    public function __construct(string $id, string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, float $avgRating, array $categories, int $ratingAmount)
     {
         $this->id = $id;
         $this->title = $title;
@@ -155,9 +158,9 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @param \DateTime $year
+     * @param DateTime $year
      */
-    public function setYear(\DateTime $year): void
+    public function setYear(DateTime $year): void
     {
         $this->year = $year->getTimestamp() * 1000;
     }
@@ -253,7 +256,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     /**
      * @param AudiobookAgeRange $age
      */
-    #[OA\Property(type: "integer", enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
+    #[OA\Property(type: 'integer', enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
     public function setAge(AudiobookAgeRange $age): void
     {
         $this->age = $age->value;

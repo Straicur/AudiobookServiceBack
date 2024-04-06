@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Tests\AbstractWebTest;
@@ -20,12 +22,12 @@ class UserSettingsGetTest extends AbstractWebTest
     public function test_userSettingsGetCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("GET", "/api/user/settings", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/user/settings', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 4
@@ -38,17 +40,17 @@ class UserSettingsGetTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("phoneNumber", $responseContent);
-        $this->assertSame($user->getUserInformation()->getPhoneNumber(), $responseContent["phoneNumber"]);
-        $this->assertArrayHasKey("firstname", $responseContent);
-        $this->assertSame($user->getUserInformation()->getFirstname(), $responseContent["firstname"]);
-        $this->assertArrayHasKey("lastname", $responseContent);
-        $this->assertSame($user->getUserInformation()->getLastname(), $responseContent["lastname"]);
-        $this->assertArrayHasKey("email", $responseContent);
-        $this->assertSame($user->getUserInformation()->getEmail(), $responseContent["email"]);
-        $this->assertArrayHasKey("edited", $responseContent);
-        $this->assertSame($user->getEdited(), $responseContent["edited"]);
-        $this->assertArrayHasKey("editableDate", $responseContent);
+        $this->assertArrayHasKey('phoneNumber', $responseContent);
+        $this->assertSame($user->getUserInformation()->getPhoneNumber(), $responseContent['phoneNumber']);
+        $this->assertArrayHasKey('firstname', $responseContent);
+        $this->assertSame($user->getUserInformation()->getFirstname(), $responseContent['firstname']);
+        $this->assertArrayHasKey('lastname', $responseContent);
+        $this->assertSame($user->getUserInformation()->getLastname(), $responseContent['lastname']);
+        $this->assertArrayHasKey('email', $responseContent);
+        $this->assertSame($user->getUserInformation()->getEmail(), $responseContent['email']);
+        $this->assertArrayHasKey('edited', $responseContent);
+        $this->assertSame($user->getEdited(), $responseContent['edited']);
+        $this->assertArrayHasKey('editableDate', $responseContent);
     }
 
     /**
@@ -61,12 +63,12 @@ class UserSettingsGetTest extends AbstractWebTest
     public function test_userSettingsGetPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/user/settings', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -80,7 +82,7 @@ class UserSettingsGetTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -93,10 +95,10 @@ class UserSettingsGetTest extends AbstractWebTest
     public function test_userSettingsGetLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings");
+        $crawler = self::$webClient->request('GET', '/api/user/settings');
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -109,6 +111,6 @@ class UserSettingsGetTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

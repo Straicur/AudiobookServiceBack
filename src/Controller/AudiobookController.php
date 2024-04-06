@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -36,25 +38,25 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "Audiobook")]
+#[OA\Tag(name: 'Audiobook')]
 class AudiobookController extends AbstractController
 {
     /**
@@ -70,21 +72,21 @@ class AudiobookController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws InvalidArgumentException
      */
-    #[Route("/api/audiobook/part", name: "audiobookPart", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Endpoint is returning specific part of audiobook",
+        description: 'Endpoint is returning specific part of audiobook',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AudiobookPartQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AudiobookPartSuccessModel::class)
             )
         ]
@@ -104,13 +106,13 @@ class AudiobookController extends AbstractController
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $audiobookPartQuery->getAudiobookId()
+                'id' => $audiobookPartQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $dir = $stockCache->get(CacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
@@ -126,11 +128,11 @@ class AudiobookController extends AbstractController
 
                 if ($handle) {
                     while (false !== ($entry = readdir($handle))) {
-                        if ($entry !== "." && $entry !== "..") {
+                        if ($entry !== '.' && $entry !== '..') {
 
                             $file_parts = pathinfo($entry);
 
-                            if ($file_parts['extension'] === "mp3") {
+                            if ($file_parts['extension'] === 'mp3') {
                                 $allParts[] = $file_parts['basename'];
                             }
                         }
@@ -151,9 +153,9 @@ class AudiobookController extends AbstractController
             });
 
             if ($dir === "") {
-                $endpointLogger->error("Parts dont exist");
+                $endpointLogger->error('Parts dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookPartDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookPartDontExists')]);
             }
 
             $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
@@ -161,7 +163,7 @@ class AudiobookController extends AbstractController
             return ResponseTool::getResponse(new AudiobookPartSuccessModel($partDir));
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -176,21 +178,21 @@ class AudiobookController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/audiobook/covers", name: "audiobookCovers", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Endpoint is returning covers paths for given audiobooks",
+        description: 'Endpoint is returning covers paths for given audiobooks',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AudiobookCoversQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AudiobookCoversSuccessModel::class)
             )
         ]
@@ -211,10 +213,11 @@ class AudiobookController extends AbstractController
 
             foreach ($audiobookCoversQuery->getAudiobooks() as $audiobookId) {
                 $audiobook = null;
-                if (Uuid::isValid($audiobookId))
+                if ($audiobookId) {
                     $audiobook = $audiobookRepository->findOneBy([
-                        "id" => $audiobookId
+                        'id' => $audiobookId
                     ]);
+                }
 
                 $imgUrl = "";
                 if ($audiobook) {
@@ -222,10 +225,10 @@ class AudiobookController extends AbstractController
                     $img = "";
                     if ($handle) {
                         while (false !== ($entry = readdir($handle))) {
-                            if ($entry !== "." && $entry !== "..") {
+                            if ($entry !== '.' && $entry !== '..') {
                                 $file_parts = pathinfo($entry);
-                                if ($file_parts['extension'] === "jpg" || $file_parts['extension'] === "jpeg" || $file_parts['extension'] === "png") {
-                                    $img = $file_parts["basename"];
+                                if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
+                                    $img = $file_parts['basename'];
                                     break;
                                 }
                             }
@@ -234,14 +237,14 @@ class AudiobookController extends AbstractController
                     if ($img !== "") {
                         $imgUrl = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img;
                     }
-                    $successModel->addAudiobookCoversModel(new AudiobookCoverModel($audiobook->getId(), $imgUrl));
+                    $successModel->addAudiobookCoversModel(new AudiobookCoverModel((string)$audiobook->getId(), $imgUrl));
                 }
             }
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }

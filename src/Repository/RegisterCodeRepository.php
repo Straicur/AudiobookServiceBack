@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\RegisterCode;
@@ -56,9 +58,9 @@ class RegisterCodeRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('rc')
             ->update()
-            ->set("rc.active", "false")
-            ->where("rc.user = :user")
-            ->setParameter("user", $user->getId()->toBinary());
+            ->set('rc.active', 'false')
+            ->where('rc.user = :user')
+            ->setParameter('user', $user->getId()->toBinary());
 
         $qb->getQuery()->execute();
     }

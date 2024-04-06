@@ -9,14 +9,14 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminUserNotificationsQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
     protected array $searchData = [];
 
@@ -59,8 +59,8 @@ class AdminUserNotificationsQuery
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('order', $searchData)) {
-            if ($searchData["order"] != NotificationOrderSearch::LATEST->value && $searchData["order"] != NotificationOrderSearch::OLDEST->value) {
-                $searchData["order"] = NotificationOrderSearch::LATEST->value;
+            if ($searchData['order'] !== NotificationOrderSearch::LATEST->value && $searchData['order'] !== NotificationOrderSearch::OLDEST->value) {
+                $searchData['order'] = NotificationOrderSearch::LATEST->value;
             }
         }
 
@@ -78,7 +78,7 @@ class AdminUserNotificationsQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -95,7 +95,7 @@ class AdminUserNotificationsQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

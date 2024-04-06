@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
+
+use DateTime;
 
 class AdminTechnicalBreakModel
 {
@@ -13,10 +17,10 @@ class AdminTechnicalBreakModel
     /**
      * @param string $id
      * @param bool $active
-     * @param int $dateFrom
-     * @param int $user
+     * @param DateTime $dateFrom
+     * @param string $user
      */
-    public function __construct(string $id, bool $active, \DateTime $dateFrom, string $user)
+    public function __construct(string $id, bool $active, DateTime $dateFrom, string $user)
     {
         $this->id = $id;
         $this->active = $active;
@@ -49,7 +53,7 @@ class AdminTechnicalBreakModel
         return $this->dateFrom;
     }
 
-    public function setDateFrom(\DateTime $dateFrom): void
+    public function setDateFrom(DateTime $dateFrom): void
     {
         $this->dateFrom = $dateFrom->getTimestamp();
     }
@@ -59,7 +63,7 @@ class AdminTechnicalBreakModel
         return $this->dateTo;
     }
 
-    public function setDateTo(\DateTime $dateTo): void
+    public function setDateTo(DateTime $dateTo): void
     {
         $this->dateTo = $dateTo->getTimestamp();
     }

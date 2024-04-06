@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookUserCommentRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +13,7 @@ class AudiobookUserComment
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -20,15 +21,15 @@ class AudiobookUserComment
     private string $comment;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookUserComments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Audiobook $audiobook;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: self::class, cascade: ["remove"])]
-    #[ORM\JoinColumn(onDelete: "CASCADE")]
+    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['remove'])]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?AudiobookUserComment $parent = null;
 
     #[ORM\Column(type: 'boolean')]
@@ -38,7 +39,7 @@ class AudiobookUserComment
     private bool $edited;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    private DateTime $dateAdd;
 
     /**
      * @param string $comment
@@ -52,7 +53,7 @@ class AudiobookUserComment
         $this->user = $user;
         $this->deleted = false;
         $this->edited = false;
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new DateTime();
     }
 
     public function getId(): Uuid
@@ -132,12 +133,12 @@ class AudiobookUserComment
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 

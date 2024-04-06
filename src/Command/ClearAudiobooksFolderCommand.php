@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -38,10 +40,10 @@ class ClearAudiobooksFolderCommand extends Command
             $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
 
             foreach ($audiobookFiles as $file) {
-                $filesystem->remove($_ENV['MAIN_DIR'] . "/" . $file);
+                $filesystem->remove($_ENV['MAIN_DIR'] . '/' . $file);
             }
         }
-        $io->success("Folder cleared");
+        $io->success('Folder cleared');
 
         return Command::SUCCESS;
     }

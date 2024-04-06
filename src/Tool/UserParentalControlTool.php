@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tool;
 
 use App\Entity\User;
@@ -16,11 +18,11 @@ class UserParentalControlTool
     {
         $birthday = $user->getUserInformation()->getBirthday();
 
-        if($birthday == null){
+        if($birthday === null){
             return null;
         }
 
-        $today = new DateTime('Now');
+        $today = new DateTime();
 
         $age = $today->diff($birthday)->y;
 

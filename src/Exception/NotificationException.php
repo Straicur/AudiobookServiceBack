@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception;
 
 use App\Model\Error\ServiceUnavailableModel;
@@ -14,7 +16,7 @@ class NotificationException extends \Exception implements ResponseExceptionInter
 
     public function __construct(string $serviceName, array $serviceData = [])
     {
-        parent::__construct("Service unavailable");
+        parent::__construct('Service unavailable');
 
         $this->serviceName = $serviceName;
         $this->serviceData = $serviceData;
@@ -23,8 +25,8 @@ class NotificationException extends \Exception implements ResponseExceptionInter
     public function getResponse(): Response
     {
         $serviceDataArray = [
-            "serviceName" => $this->serviceName,
-            "serviceData" => $this->serviceData
+            'serviceName' => $this->serviceName,
+            'serviceData' => $this->serviceData
         ];
 
         return ResponseTool::getResponse(new ServiceUnavailableModel($serviceDataArray), 503);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Audiobook;
@@ -103,8 +105,8 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
             ->select('COUNT(a.id) AS HIDDEN audiobooks', 'ac')
             ->where('ac.active = true')
             ->andWhere('a.active = true')
-            ->having("count(a.id) > 0")
-            ->orderBy('audiobooks', "DESC")
+            ->having('count(a.id) > 0')
+            ->orderBy('audiobooks', 'DESC')
             ->groupBy('ac');
 
         return $qb->getQuery()->execute();

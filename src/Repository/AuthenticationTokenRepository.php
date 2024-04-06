@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\AuthenticationToken;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -57,10 +60,10 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
     public function findActiveToken(string $authorizationHeaderField): ?AuthenticationToken
     {
         return $this->createQueryBuilder('a')
-            ->where("a.token = :token")
-            ->andWhere("a.dateExpired > :dateNow")
-            ->setParameter("token", $authorizationHeaderField)
-            ->setParameter("dateNow", new \DateTime("now"))
+            ->where('a.token = :token')
+            ->andWhere('a.dateExpired > :dateNow')
+            ->setParameter('token', $authorizationHeaderField)
+            ->setParameter('dateNow', new DateTime())
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -75,7 +78,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->where('at.user = :user')
             ->andWhere('at.dateExpired > :today')
             ->setParameter('user', $user->getId()->toBinary())
-            ->setParameter('today', new \DateTime("now"))
+            ->setParameter('today', new DateTime())
             ->addOrderBy('at.dateExpired', 'DESC')
             ->setFirstResult(0)
             ->setMaxResults(1);
@@ -91,7 +94,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
      */
     public function getNumberOfAuthenticationTokensFromLast7Days(): int
     {
-        $today = new \DateTime('NOW');
+        $today = new DateTime();
         $lastDate = clone $today;
         $lastDate->modify('-7 day');
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Repository\AudiobookRepository;
@@ -41,7 +43,7 @@ class RemoveNotUsedAudiobooksCommand extends Command
         foreach (glob(rtrim($_ENV['MAIN_DIR'], '/') . '/*', GLOB_NOSORT) as $each) {
 
             $isInRepo = $this->audiobookRepository->findOneBy([
-                "fileName" => $each
+                'fileName' => $each
             ]);
 
             if ($isInRepo === null) {

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
-use App\Exception\NotificationException;
 use App\Repository\UserRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'audiobookservice:users:unban',
     description: 'Command is unbanning users with valid date',
-)] 
+)]
 class UnbanUsersCommand extends Command
 {
     private UserRepository $userRepository;

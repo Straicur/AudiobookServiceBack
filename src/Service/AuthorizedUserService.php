@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\AuthenticationToken;
 use App\Entity\User;
 use App\Exception\AuthenticationException;
 use App\Repository\AuthenticationTokenRepository;
+use DateTime;
 
 class AuthorizedUserService implements AuthorizedUserServiceInterface
 {
@@ -48,7 +51,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
     public static function unAuthorizeUser(): void
     {
         if (self::$authenticationToken !== null) {
-            self::$authenticationToken->setDateExpired(new \DateTime("now"));
+            self::$authenticationToken->setDateExpired(new DateTime());
             self::$authenticationTokenRepository->add(self::$authenticationToken);
         }
     }

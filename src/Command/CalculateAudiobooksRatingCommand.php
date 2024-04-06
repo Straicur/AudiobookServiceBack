@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Repository\AudiobookRatingRepository;
@@ -39,13 +41,13 @@ class CalculateAudiobooksRatingCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $activeAudiobooks = $this->audiobookRepository->findBy([
-            "active" => true
+            'active' => true
         ]);
 
         foreach ($activeAudiobooks as $audiobook) {
             $goodRatings = count($this->ratingRepository->findBy([
-                "audiobook" => $audiobook->getId(),
-                "rating" => true
+                'audiobook' => $audiobook->getId(),
+                'rating' => true
             ]));
 
             $audiobookRatings = count($audiobook->getAudiobookRatings());
@@ -57,7 +59,7 @@ class CalculateAudiobooksRatingCommand extends Command
             }
         }
 
-        $io->success("Rating calculated successfully.");
+        $io->success('Rating calculated successfully.');
 
         return Command::SUCCESS;
     }

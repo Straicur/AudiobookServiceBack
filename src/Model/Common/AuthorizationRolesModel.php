@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Common;
+declare(strict_types=1);
 
-use App\Model\Error\ModelInterface;
+namespace App\Model\Common;
 
 class AuthorizationRolesModel
 {

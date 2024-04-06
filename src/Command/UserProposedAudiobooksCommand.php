@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Builder\NotificationBuilder;
@@ -72,7 +74,7 @@ class UserProposedAudiobooksCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $userRole = $this->roleRepository->findOneBy([
-            "name" => "User"
+            'name' => 'User'
         ]);
 
         $users = $this->userRepository->getUsersByRole($userRole);
@@ -134,8 +136,8 @@ class UserProposedAudiobooksCommand extends Command
                 foreach ($selectedCategories as $categoryIndex => $category) {
 
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
-                        "id" => $category,
-                        "active" => true
+                        'id' => $category,
+                        'active' => true
                     ]);
 
                     if ($databaseCategory !== null) {
@@ -186,7 +188,7 @@ class UserProposedAudiobooksCommand extends Command
 
         $this->stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
 
-        $io->success("Proposed audiobooks added for users");
+        $io->success('Proposed audiobooks added for users');
 
         return Command::SUCCESS;
     }

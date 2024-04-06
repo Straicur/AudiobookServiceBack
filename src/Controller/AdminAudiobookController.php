@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -68,25 +70,25 @@ use ZipArchive;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "AdminAudiobook")]
+#[OA\Tag(name: 'AdminAudiobook')]
 class AdminAudiobookController extends AbstractController
 {
     /**
@@ -104,21 +106,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/audiobook/details", name: "adminAudiobookDetails", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is getting details of audiobook",
+        description: 'Endpoint is getting details of audiobook',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookDetailsQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
@@ -140,13 +142,13 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookDetailsQuery->getAudiobookId()
+                'id' => $adminAudiobookDetailsQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository) {
@@ -159,7 +161,7 @@ class AdminAudiobookController extends AbstractController
 
                 foreach ($categories as $category) {
                     $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                        $category->getId(),
+                        (string)$category->getId(),
                         $category->getName(),
                         $category->getActive(),
                         $category->getCategoryKey()
@@ -167,7 +169,7 @@ class AdminAudiobookController extends AbstractController
                 }
 
                 $successModel = new AdminAudiobookDetailsSuccessModel(
-                    $audiobook->getId(),
+                    (string)$audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getVersion(),
@@ -182,7 +184,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getAvgRating(),
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
-                        "audiobook" => $audiobook->getId()
+                        'audiobook' => $audiobook->getId()
                     ]))
                 );
 
@@ -196,7 +198,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -211,26 +213,28 @@ class AdminAudiobookController extends AbstractController
      * @param AudiobookRepository $audiobookRepository
      * @param AudiobookRatingRepository $audiobookRatingRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws AudiobookConfigServiceException
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/add", name: "adminAudiobookAdd", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
-        description: "Endpoint is adding new audiobook with files",
+        description: 'Endpoint is adding new audiobook with files',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookAddQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
@@ -260,111 +264,111 @@ class AdminAudiobookController extends AbstractController
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
-                if (array_key_exists("id3v2", $ID3JsonData["tags"])) {
-                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v2"];
-                } else if (array_key_exists("id3v1", $ID3JsonData)) {
-                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v1"];
+                if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
+                    $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
+                } else if (array_key_exists('id3v1', $ID3JsonData)) {
+                    $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
                 } else {
                     $ID3JsonFileData = $ID3JsonData;
                 }
 
-                if (array_key_exists("version", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["version"]) > 0) {
-                        $version = $ID3JsonFileData["version"][0];
+                if (array_key_exists('version', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['version']) > 0) {
+                        $version = $ID3JsonFileData['version'][0];
                     } else {
-                        $version = $ID3JsonFileData["version"];
+                        $version = $ID3JsonFileData['version'];
                     }
                 } else {
-                    $version = "1";
+                    $version = '1';
                 }
 
-                if (array_key_exists("album", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["album"]) > 0) {
-                        $album = $ID3JsonFileData["album"][0];
+                if (array_key_exists('album', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['album']) > 0) {
+                        $album = $ID3JsonFileData['album'][0];
                     } else {
-                        $album = $ID3JsonFileData["album"];
+                        $album = $ID3JsonFileData['album'];
                     }
                 } else {
-                    $album = "album";
+                    $album = 'album';
                 }
 
-                if (array_key_exists("artist", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["artist"]) > 0) {
-                        $author = $ID3JsonFileData["artist"][0];
+                if (array_key_exists('artist', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['artist']) > 0) {
+                        $author = $ID3JsonFileData['artist'][0];
                     } else {
-                        $author = $ID3JsonFileData["artist"];
+                        $author = $ID3JsonFileData['artist'];
                     }
                 } else {
-                    $author = "author";
+                    $author = 'author';
                 }
 
-                if (array_key_exists("year", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["year"]) > 0) {
-                        $year = "01.01." . $ID3JsonFileData["year"][0];
+                if (array_key_exists('year', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['year']) > 0) {
+                        $year = '01.01.' . $ID3JsonFileData['year'][0];
                     } else {
-                        $year = "01.01." . $ID3JsonFileData["year"];
+                        $year = '01.01.' . $ID3JsonFileData['year'];
                     }
 
                     if (DateTime::createFromFormat('d.m.Y', $year)) {
                         $year = DateTime::createFromFormat('d.m.Y', $year);
                     } else {
-                        $year = new \DateTime("Now");
+                        $year = new DateTime();
                     }
                 } else {
-                    $year = new \DateTime("Now");
+                    $year = new DateTime();
                 }
 
-                if (array_key_exists("encoded", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["encoded"]) > 0) {
-                        $encoded = $ID3JsonFileData["encoded"][0];
+                if (array_key_exists('encoded', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['encoded']) > 0) {
+                        $encoded = $ID3JsonFileData['encoded'][0];
                     } else {
-                        $encoded = $ID3JsonFileData["encoded"];
+                        $encoded = $ID3JsonFileData['encoded'];
                     }
                 } else {
                     $encoded = "";
                 }
 
-                if (array_key_exists("comment", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["comment"]) > 0) {
-                        $description = $ID3JsonFileData["comment"][0];
+                if (array_key_exists('comment', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['comment']) > 0) {
+                        $description = $ID3JsonFileData['comment'][0];
                     } else {
-                        $description = $ID3JsonFileData["comment"];
+                        $description = $ID3JsonFileData['comment'];
                     }
                 } else {
-                    $description = "desc";
+                    $description = 'desc';
                 }
 
-                if (array_key_exists("duration", $ID3JsonData)) {
-                    $duration = $ID3JsonData["duration"];
+                if (array_key_exists('duration', $ID3JsonData)) {
+                    $duration = $ID3JsonData['duration'];
                 } else {
                     $duration = 0;
                 }
 
-                if (array_key_exists("size", $ID3JsonData)) {
-                    $size = $ID3JsonData["size"];
+                if (array_key_exists('size', $ID3JsonData)) {
+                    $size = $ID3JsonData['size'];
                 } else {
-                    $size = "1";
+                    $size = '1';
                 }
 
-                if (array_key_exists("parts", $ID3JsonData)) {
-                    $parts = $ID3JsonData["parts"];
+                if (array_key_exists('parts', $ID3JsonData)) {
+                    $parts = $ID3JsonData['parts'];
                 } else {
-                    $parts = "1";
+                    $parts = '1';
                 }
 
-                if (array_key_exists("title", $ID3JsonData)) {
-                    $title = $ID3JsonData["title"];
+                if (array_key_exists('title', $ID3JsonData)) {
+                    $title = $ID3JsonData['title'];
                 } else {
-                    $title = "title";
+                    $title = 'title';
                 }
 
                 $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
-                if (array_key_exists("title", $additionalData)) {
-                    $title = $additionalData["title"];
+                if (array_key_exists('title', $additionalData)) {
+                    $title = $additionalData['title'];
                 }
-                if (array_key_exists("author", $additionalData)) {
-                    $author = $additionalData["author"];
+                if (array_key_exists('author', $additionalData)) {
+                    $author = $additionalData['author'];
                 }
 
                 $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::ABOVE18, $folderDir);
@@ -375,21 +379,21 @@ class AdminAudiobookController extends AbstractController
 
                 $audiobookCategories = [];
 
-                if (array_key_exists("categories", $additionalData)) {
+                if (array_key_exists('categories', $additionalData)) {
 
-                    $categories = $additionalData["categories"];
+                    $categories = $additionalData['categories'];
 
                     foreach ($categories as $category) {
 
                         $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            "id" => Uuid::fromString($category)
+                            'id' => Uuid::fromString($category)
                         ]);
 
                         if ($audiobookCategory !== null) {
                             $newAudiobook->addCategory($audiobookCategory);
 
                             $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                $audiobookCategory->getId(),
+                                (string)$audiobookCategory->getId(),
                                 $audiobookCategory->getName(),
                                 $audiobookCategory->getActive(),
                                 $audiobookCategory->getCategoryKey()
@@ -401,7 +405,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobookRepository->add($newAudiobook);
 
                 $successModel = new AdminAudiobookDetailsSuccessModel(
-                    $newAudiobook->getId(),
+                    (string)$newAudiobook->getId(),
                     $newAudiobook->getTitle(),
                     $newAudiobook->getAuthor(),
                     $newAudiobook->getVersion(),
@@ -416,7 +420,7 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook->getAvgRating(),
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
-                        "audiobook" => $newAudiobook->getId()
+                        'audiobook' => $newAudiobook->getId()
                     ]))
                 );
 
@@ -434,7 +438,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         }
 
-        $usersLogger->error("Invalid given Query");
+        $usersLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -452,21 +456,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/audiobook/edit", name: "adminAudiobookEdit", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is editing given audiobook data",
+        description: 'Endpoint is editing given audiobook data',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookEditQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -485,13 +489,13 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookEditQuery->getAudiobookId()
+                'id' => $adminAudiobookEditQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $audiobook->setTitle($adminAudiobookEditQuery->getTitle());
@@ -499,7 +503,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setVersion($adminAudiobookEditQuery->getVersion());
             $audiobook->setAlbum($adminAudiobookEditQuery->getAlbum());
             $audiobook->setYear($adminAudiobookEditQuery->getYear());
-            $audiobook->setDuration($adminAudiobookEditQuery->getDuration());
+            $audiobook->setDuration((int)$adminAudiobookEditQuery->getDuration());
             $audiobook->setSize($adminAudiobookEditQuery->getSize());
             $audiobook->setParts($adminAudiobookEditQuery->getParts());
             $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
@@ -513,7 +517,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -533,21 +537,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/delete", name: "adminAudiobookDelete", methods: ["DELETE"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
-        description: "Endpoint is deleting audiobook with his files",
+        description: 'Endpoint is deleting audiobook with his files',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookDeleteQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -568,13 +572,13 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookDeleteQuery->getAudiobookId()
+                'id' => $adminAudiobookDeleteQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $audId = $audiobook->getId();
@@ -591,7 +595,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -607,21 +611,21 @@ class AdminAudiobookController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/zip", name: "adminAudiobookZip", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is returning zip blob",
+        description: 'Endpoint is returning zip blob',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookZipQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -639,16 +643,16 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookZipQuery->getAudiobookId()
+                'id' => $adminAudiobookZipQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $zipFile = $audiobook->getFileName() . ".zip";
+            $zipFile = $audiobook->getFileName() . '.zip';
 
             $zip = new ZipArchive;
 
@@ -658,17 +662,17 @@ class AdminAudiobookController extends AbstractController
 
             $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-            $dir = opendir($audiobook->getFileName() . "/");
+            $dir = opendir($audiobook->getFileName() . '/');
 
             if (!$dir) {
-                $endpointLogger->error("Audiobook Folder dont Exists");
+                $endpointLogger->error('Audiobook Folder dont Exists');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             while ($file = readdir($dir)) {
-                if (is_file($audiobook->getFileName() . "/" . $file)) {
-                    $zip->addFile($audiobook->getFileName() . "/" . $file, basename($audiobook->getFileName() . "/" . $file));
+                if (is_file($audiobook->getFileName() . '/' . $file)) {
+                    $zip->addFile($audiobook->getFileName() . '/' . $file, basename($audiobook->getFileName() . '/' . $file));
                 }
             }
 
@@ -677,7 +681,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getBinaryFileResponse($zipFile, true);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -701,21 +705,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/reAdding", name: "adminAudiobookReAdding", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is re-adding audiobook by changing files",
+        description: 'Endpoint is re-adding audiobook by changing files',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookReAddingQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminAudiobookDetailsSuccessModel::class)
             )
         ]
@@ -740,13 +744,13 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookReAddingQuery->getAudiobookId()
+                'id' => $adminAudiobookReAddingQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $audiobookService->configure($adminAudiobookReAddingQuery);
@@ -760,111 +764,111 @@ class AdminAudiobookController extends AbstractController
 
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
-                if (array_key_exists("id3v2", $ID3JsonData["tags"])) {
-                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v2"];
-                } else if (array_key_exists("id3v1", $ID3JsonData)) {
-                    $ID3JsonFileData = $ID3JsonData["tags"]["id3v1"];
+                if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
+                    $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
+                } else if (array_key_exists('id3v1', $ID3JsonData)) {
+                    $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
                 } else {
                     $ID3JsonFileData = $ID3JsonData;
                 }
 
-                if (array_key_exists("version", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["version"]) > 0) {
-                        $version = $ID3JsonFileData["version"][0];
+                if (array_key_exists('version', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['version']) > 0) {
+                        $version = $ID3JsonFileData['version'][0];
                     } else {
-                        $version = $ID3JsonFileData["version"];
+                        $version = $ID3JsonFileData['version'];
                     }
                 } else {
-                    $version = "1";
+                    $version = '1';
                 }
 
-                if (array_key_exists("album", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["album"]) > 0) {
-                        $album = $ID3JsonFileData["album"][0];
+                if (array_key_exists('album', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['album']) > 0) {
+                        $album = $ID3JsonFileData['album'][0];
                     } else {
-                        $album = $ID3JsonFileData["album"];
+                        $album = $ID3JsonFileData['album'];
                     }
                 } else {
-                    $album = "album";
+                    $album = 'album';
                 }
 
-                if (array_key_exists("artist", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["artist"]) > 0) {
-                        $author = $ID3JsonFileData["artist"][0];
+                if (array_key_exists('artist', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['artist']) > 0) {
+                        $author = $ID3JsonFileData['artist'][0];
                     } else {
-                        $author = $ID3JsonFileData["artist"];
+                        $author = $ID3JsonFileData['artist'];
                     }
                 } else {
-                    $author = "author";
+                    $author = 'author';
                 }
 
-                if (array_key_exists("year", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["year"]) > 0) {
-                        $year = "01.01." . $ID3JsonFileData["year"][0];
+                if (array_key_exists('year', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['year']) > 0) {
+                        $year = '01.01.' . $ID3JsonFileData['year'][0];
                     } else {
-                        $year = "01.01." . $ID3JsonFileData["year"];
+                        $year = '01.01.' . $ID3JsonFileData['year'];
                     }
 
                     if (DateTime::createFromFormat('d.m.Y', $year)) {
                         $year = DateTime::createFromFormat('d.m.Y', $year);
                     } else {
-                        $year = new \DateTime("Now");
+                        $year = new DateTime();
                     }
                 } else {
-                    $year = new \DateTime("Now");
+                    $year = new DateTime();
                 }
 
-                if (array_key_exists("encoded", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["encoded"]) > 0) {
-                        $encoded = $ID3JsonFileData["encoded"][0];
+                if (array_key_exists('encoded', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['encoded']) > 0) {
+                        $encoded = $ID3JsonFileData['encoded'][0];
                     } else {
-                        $encoded = $ID3JsonFileData["encoded"];
+                        $encoded = $ID3JsonFileData['encoded'];
                     }
                 } else {
                     $encoded = "";
                 }
 
-                if (array_key_exists("comment", $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData["comment"]) > 0) {
-                        $description = $ID3JsonFileData["comment"][0];
+                if (array_key_exists('comment', $ID3JsonFileData)) {
+                    if (count($ID3JsonFileData['comment']) > 0) {
+                        $description = $ID3JsonFileData['comment'][0];
                     } else {
-                        $description = $ID3JsonFileData["comment"];
+                        $description = $ID3JsonFileData['comment'];
                     }
                 } else {
-                    $description = "desc";
+                    $description = 'desc';
                 }
 
-                if (array_key_exists("duration", $ID3JsonData)) {
-                    $duration = $ID3JsonData["duration"];
+                if (array_key_exists('duration', $ID3JsonData)) {
+                    $duration = $ID3JsonData['duration'];
                 } else {
-                    $duration = "1";
+                    $duration = '1';
                 }
 
-                if (array_key_exists("size", $ID3JsonData)) {
-                    $size = $ID3JsonData["size"];
+                if (array_key_exists('size', $ID3JsonData)) {
+                    $size = $ID3JsonData['size'];
                 } else {
-                    $size = "1";
+                    $size = '1';
                 }
 
-                if (array_key_exists("parts", $ID3JsonData)) {
-                    $parts = $ID3JsonData["parts"];
+                if (array_key_exists('parts', $ID3JsonData)) {
+                    $parts = $ID3JsonData['parts'];
                 } else {
-                    $parts = "1";
+                    $parts = '1';
                 }
 
-                if (array_key_exists("title", $ID3JsonData)) {
-                    $title = $ID3JsonData["title"];
+                if (array_key_exists('title', $ID3JsonData)) {
+                    $title = $ID3JsonData['title'];
                 } else {
-                    $title = "title";
+                    $title = 'title';
                 }
 
                 $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
 
-                if (array_key_exists("title", $additionalData)) {
-                    $title = $additionalData["title"];
+                if (array_key_exists('title', $additionalData)) {
+                    $title = $additionalData['title'];
                 }
-                if (array_key_exists("author", $additionalData)) {
-                    $author = $additionalData["author"];
+                if (array_key_exists('author', $additionalData)) {
+                    $author = $additionalData['author'];
                 }
 
                 $audiobook->setActive(false);
@@ -891,26 +895,26 @@ class AdminAudiobookController extends AbstractController
 
                 $audiobookCategories = [];
 
-                if (array_key_exists("categories", $additionalData)) {
+                if (array_key_exists('categories', $additionalData)) {
 
                     $categories = [];
 
-                    if (!empty($additionalData["categories"])) {
-                        foreach ($additionalData["categories"] as $category) {
+                    if (!empty($additionalData['categories'])) {
+                        foreach ($additionalData['categories'] as $category) {
                             $categories[] = Uuid::fromString($category)->toBinary();
                         }
                     }
                     foreach ($categories as $category) {
 
                         $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            "id" => $category
+                            'id' => $category
                         ]);
 
                         if ($audiobookCategory !== null) {
                             $audiobook->addCategory($audiobookCategory);
 
                             $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                $audiobookCategory->getId(),
+                                (string)$audiobookCategory->getId(),
                                 $audiobookCategory->getName(),
                                 $audiobookCategory->getActive(),
                                 $audiobookCategory->getCategoryKey()
@@ -922,7 +926,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobookRepository->add($audiobook);
 
                 $successModel = new AdminAudiobookDetailsSuccessModel(
-                    $audiobook->getId(),
+                    (string)$audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getVersion(),
@@ -937,7 +941,7 @@ class AdminAudiobookController extends AbstractController
                     $audiobook->getAvgRating(),
                     $audiobookCategories,
                     count($audiobookRatingRepository->findBy([
-                        "audiobook" => $audiobook->getId()
+                        'audiobook' => $audiobook->getId()
                     ]))
                 );
 
@@ -963,7 +967,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -978,21 +982,21 @@ class AdminAudiobookController extends AbstractController
      * @return Response
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobooks", name: "adminAudiobooks", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is returning list of all audiobooks",
+        description: 'Endpoint is returning list of all audiobooks',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobooksQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminAudiobooksSuccessModel::class)
             )
         ]
@@ -1012,7 +1016,7 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
 
-            $categories = [];
+            $categories = null;
             $author = null;
             $title = null;
             $album = null;
@@ -1022,20 +1026,20 @@ class AdminAudiobookController extends AbstractController
             $order = null;
             $year = null;
 
-            if (array_key_exists('categories', $audiobookSearchData) && !empty($audiobookSearchData["categories"])) {
-                foreach ($audiobookSearchData["categories"] as $category) {
+            if (array_key_exists('categories', $audiobookSearchData) && !empty($audiobookSearchData['categories'])) {
+                foreach ($audiobookSearchData['categories'] as $category) {
                     $categories[] = Uuid::fromString($category)->toBinary();
                 }
             }
 
             if (array_key_exists('author', $audiobookSearchData)) {
-                $author = ($audiobookSearchData['author'] && '' !== $audiobookSearchData['author']) ? "%" . $audiobookSearchData['author'] . "%" : null;
+                $author = ($audiobookSearchData['author'] && '' !== $audiobookSearchData['author']) ? '%' . $audiobookSearchData['author'] . '%' : null;
             }
             if (array_key_exists('title', $audiobookSearchData)) {
-                $title = ($audiobookSearchData['title'] && '' !== $audiobookSearchData['title']) ? "%" . $audiobookSearchData['title'] . "%" : null;
+                $title = ($audiobookSearchData['title'] && '' !== $audiobookSearchData['title']) ? '%' . $audiobookSearchData['title'] . '%' : null;
             }
             if (array_key_exists('album', $audiobookSearchData)) {
-                $album = ($audiobookSearchData['album'] && '' !== $audiobookSearchData['album']) ? "%" . $audiobookSearchData['album'] . "%" : null;
+                $album = ($audiobookSearchData['album'] && '' !== $audiobookSearchData['album']) ? '%' . $audiobookSearchData['album'] . '%' : null;
             }
             if (array_key_exists('duration', $audiobookSearchData)) {
                 $duration = $audiobookSearchData['duration'];
@@ -1067,7 +1071,7 @@ class AdminAudiobookController extends AbstractController
 
                 if ($index < $maxResult) {
                     $audiobookModel = new AdminCategoryAudiobookModel(
-                        $audiobook->getId(),
+                        (string)$audiobook->getId(),
                         $audiobook->getTitle(),
                         $audiobook->getAuthor(),
                         $audiobook->getYear(),
@@ -1086,12 +1090,12 @@ class AdminAudiobookController extends AbstractController
 
             $successModel->setPage($adminAudiobooksQuery->getPage());
             $successModel->setLimit($adminAudiobooksQuery->getLimit());
-            $successModel->setMaxPage(ceil(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
+            $successModel->setMaxPage((int)ceil(count($audiobooks) / $adminAudiobooksQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -1114,21 +1118,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws NotificationException
      */
-    #[Route("/api/admin/audiobook/active", name: "adminAudiobookActive", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is activating given audiobook",
+        description: 'Endpoint is activating given audiobook',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookActiveQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -1150,13 +1154,13 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookActiveQuery instanceof AdminAudiobookActiveQuery) {
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookActiveQuery->getAudiobookId()
+                'id' => $adminAudiobookActiveQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $additionalData = $adminAudiobookActiveQuery->getAdditionalData();
@@ -1168,7 +1172,7 @@ class AdminAudiobookController extends AbstractController
                     switch ($additionalData['type']) {
                         case UserAudiobookActivationType::ALL->value:
                             $userRole = $roleRepository->findOneBy([
-                                "name" => UserRolesNames::USER->value
+                                'name' => UserRolesNames::USER->value
                             ]);
 
                             $users = $userRepository->getUsersByRole($userRole);
@@ -1184,7 +1188,7 @@ class AdminAudiobookController extends AbstractController
 
                             foreach ($usersIds as $id) {
                                 $user = $userRepository->findOneBy([
-                                    "id" => $id
+                                    'id' => $id
                                 ]);
 
                                 if ($user !== null) {
@@ -1198,7 +1202,7 @@ class AdminAudiobookController extends AbstractController
                         ->setType(NotificationType::USER_DELETE_DECLINE)
                         ->setAction($audiobook->getId())
                         ->setUserAction(NotificationUserType::SYSTEM)
-                        ->setText($additionalData["text"]);
+                        ->setText($additionalData['text']);
 
                     foreach ($users as $user) {
                         $notificationBuilder->addUser($user);
@@ -1218,7 +1222,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -1236,21 +1240,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/change/cover", name: "adminAudiobookChangeCover", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is changing given cover",
+        description: 'Endpoint is changing given cover',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookChangeCoverQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -1269,32 +1273,32 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminAudiobookChangeCoverQuery->getAudiobookId()
+                'id' => $adminAudiobookChangeCoverQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $handle = opendir($audiobook->getFileName());
 
             if (!$handle) {
-                $endpointLogger->error("Audiobook Folder dont exists");
+                $endpointLogger->error('Audiobook Folder dont exists');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             while (false !== ($entry = readdir($handle))) {
 
-                if ($entry !== "." && $entry !== "..") {
+                if ($entry !== '.' && $entry !== '..') {
 
                     $file_parts = pathinfo($entry);
 
-                    if ($file_parts['extension'] === "jpg" || $file_parts['extension'] === "jpeg" || $file_parts['extension'] === "png") {
+                    if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
 
-                        $img = $audiobook->getFileName() . "/" . $file_parts["basename"];
+                        $img = $audiobook->getFileName() . '/' . $file_parts['basename'];
 
                         if (file_exists($img)) {
                             unlink($img);
@@ -1304,14 +1308,14 @@ class AdminAudiobookController extends AbstractController
             }
 
             $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
-            file_put_contents($audiobook->getFileName() . "/cover." . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
+            file_put_contents($audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -1329,21 +1333,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/comment/delete", name: "adminAudiobookCommentDelete", methods: ["DELETE"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['DELETE'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
-        description: "Endpoint is deleting given comment",
+        description: 'Endpoint is deleting given comment',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookCommentDeleteQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -1362,13 +1366,13 @@ class AdminAudiobookController extends AbstractController
         if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
 
             $audiobookComment = $audiobookUserCommentRepository->findOneBy([
-                "id" => $adminAudiobookCommentDeleteQuery->getAudiobookCommentId()
+                'id' => $adminAudiobookCommentDeleteQuery->getAudiobookCommentId()
             ]);
 
             if ($audiobookComment === null) {
-                $endpointLogger->error("Audiobook comment dont exist");
+                $endpointLogger->error('Audiobook comment dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookCommentDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
             }
 
             $audiobookComment->setDeleted(true);
@@ -1380,7 +1384,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -1400,21 +1404,21 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/audiobook/comment/get", name: "adminAudiobookCommentGet", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is returning comments for given audiobook for admin",
+        description: 'Endpoint is returning comments for given audiobook for admin',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminAudiobookCommentGetQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AudiobookCommentsSuccessModel::class)
             )
         ]
@@ -1436,13 +1440,13 @@ class AdminAudiobookController extends AbstractController
         if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $audiobookCommentGetQuery->getAudiobookId()
+                'id' => $audiobookCommentGetQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $user = $authorizedUserService->getAuthorizedUser();
@@ -1452,8 +1456,8 @@ class AdminAudiobookController extends AbstractController
                 $item->tag(StockCacheTags::ADMIN_AUDIOBOOK_COMMENTS->value);
 
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    "parent" => null,
-                    "audiobook" => $audiobook->getId()
+                    'parent' => null,
+                    'audiobook' => $audiobook->getId()
                 ]);
 
                 $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, true);
@@ -1464,7 +1468,7 @@ class AdminAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }

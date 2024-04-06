@@ -16,7 +16,7 @@ class AudiobookCategory
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -49,7 +49,7 @@ class AudiobookCategory
         $this->active = false;
         $this->audiobooks = new ArrayCollection();
         $this->categoryKey = $categoryKeyGenerator->generate();
-        $this->dateAdd = new DateTime("Now");
+        $this->dateAdd = new DateTime();
     }
 
     public function getId(): Uuid

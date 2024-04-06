@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventSubscriber;
 
 use App\Repository\AuthenticationTokenRepository;
@@ -38,7 +40,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $response = $event->getResponse();
 
-        $authorizationHeaderField = $request->headers->get("authorization");
+        $authorizationHeaderField = $request->headers->get('authorization');
 
         $authToken = null;
         if ($authorizationHeaderField !== null) {
@@ -46,28 +48,28 @@ class ResponseSubscriber implements EventSubscriberInterface
         }
 
         $technicalBreak = $this->technicalBreakRepository->findOneBy([
-            "active" => true
+            'active' => true
         ]);
 
         if ($technicalBreak !== null) {
-            $response->headers->set('Technical-Break', true);
+            $response->headers->set('Technical-Break', 'true');
         }
 
         $headersIterator = $response->headers->getIterator();
 
         $loggerData = [
-            "requestUrl" => $request->getUri(),
-            "requestMethod" => $request->getMethod(),
-            "user" => $authToken?->getUser()->getId(),
-            "statusCode" => $response->getStatusCode(),
-            "headers" => $headersIterator->getArrayCopy(),
-            "responseData" => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true) : null,
+            'requestUrl' => $request->getUri(),
+            'requestMethod' => $request->getMethod(),
+            'user' => $authToken?->getUser()->getId(),
+            'statusCode' => $response->getStatusCode(),
+            'headers' => $headersIterator->getArrayCopy(),
+            'responseData' => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true) : null,
         ];
 
         if ($response->getStatusCode() > 499) {
-            $this->responseLogger->error("Response data", $loggerData);
+            $this->responseLogger->error('Response data', $loggerData);
         } else {
-            $this->responseLogger->info("Response data", $loggerData);
+            $this->responseLogger->info('Response data', $loggerData);
         }
     }
 

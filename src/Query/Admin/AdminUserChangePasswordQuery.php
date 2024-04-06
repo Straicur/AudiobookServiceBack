@@ -8,20 +8,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminUserChangePasswordQuery
 {
-    #[Assert\NotNull(message: "UserId is null")]
-    #[Assert\NotBlank(message: "UserId is blank")]
+    #[Assert\NotNull(message: 'UserId is null')]
+    #[Assert\NotBlank(message: 'UserId is blank')]
     #[Assert\Uuid]
     private Uuid $userId;
 
-    #[Assert\NotNull(message: "NewPassword; is null")]
-    #[Assert\NotBlank(message: "NewPassword is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'NewPassword; is null')]
+    #[Assert\NotBlank(message: 'NewPassword is empty')]
+    #[Assert\Type(type: 'string')]
     private string $newPassword;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getUserId(): Uuid
     {
         return $this->userId;

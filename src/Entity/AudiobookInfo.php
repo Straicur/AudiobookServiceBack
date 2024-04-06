@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookInfoRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +13,7 @@ class AudiobookInfo
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -21,7 +22,7 @@ class AudiobookInfo
     private User $user;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookInfos')]
-    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Audiobook $audiobook;
 
     #[ORM\Column(type: 'integer')]
@@ -31,7 +32,7 @@ class AudiobookInfo
     private int $endedTime;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $watchingDate;
+    private DateTime $watchingDate;
 
     #[ORM\Column(type: 'boolean')]
     private bool $active;
@@ -52,7 +53,7 @@ class AudiobookInfo
         $this->audiobook = $audiobook;
         $this->part = $part;
         $this->endedTime = $endedTime;
-        $this->watchingDate = new \DateTime('Now');
+        $this->watchingDate = new DateTime();
         $this->active = true;
         $this->watched = $watched;
     }
@@ -110,12 +111,12 @@ class AudiobookInfo
         return $this;
     }
 
-    public function getWatchingDate(): \DateTime
+    public function getWatchingDate(): DateTime
     {
         return $this->watchingDate;
     }
 
-    public function setWatchingDate(\DateTime $watchingDate): self
+    public function setWatchingDate(DateTime $watchingDate): self
     {
         $this->watchingDate = $watchingDate;
 

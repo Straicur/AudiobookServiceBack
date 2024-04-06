@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Role;
@@ -32,7 +34,7 @@ class AddRoleCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument("roleName", InputArgument::REQUIRED, "Role name");
+        $this->addArgument('roleName', InputArgument::REQUIRED, 'Role name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -44,7 +46,7 @@ class AddRoleCommand extends Command
 
         $this->roleRepository->add($roleEntity);
 
-        $io->success("Role ${roleName} add successfully.");
+        $io->success('Role ${roleName} add successfully.');
 
         return Command::SUCCESS;
     }

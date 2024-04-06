@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\AudiobookCategory;
@@ -48,13 +50,13 @@ class AddCategoryCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $name = $input->getArgument("name");
-        $parent = $input->getArgument("parent");
+        $name = $input->getArgument('name');
+        $parent = $input->getArgument('parent');
 
 
         $io->text([
-            "Name:  " . $name,
-            "Parent:  " . $parent,
+            'Name:  ' . $name,
+            'Parent:  ' . $parent,
         ]);
 
         $categoryKeyGenerator = new CategoryKeyGenerator();
@@ -63,7 +65,7 @@ class AddCategoryCommand extends Command
 
         if ($parent !== null) {
             $parentCategory = $this->audiobookCategoryRepository->findOneBy([
-                "name" => $parent
+                'name' => $parent
             ]);
 
             if ($parentCategory !== null) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\MyList;
@@ -88,39 +90,39 @@ class CreateUserCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $firstname = $input->getArgument("firstname");
-        $lastname = $input->getArgument("lastname");
-        $email = $input->getArgument("email");
-        $phone = $input->getArgument("phone");
-        $password = md5($input->getArgument("password"));
-        $roles = $input->getArgument("roles");
+        $firstname = $input->getArgument('firstname');
+        $lastname = $input->getArgument('lastname');
+        $email = $input->getArgument('email');
+        $phone = $input->getArgument('phone');
+        $password = md5($input->getArgument('password'));
+        $roles = $input->getArgument('roles');
 
         $passwordGenerator = new PasswordHashGenerator($password);
 
         $io->text([
-            "Firstname:    " . $firstname,
-            "Lastname:     " . $lastname,
-            "E-mail:       " . $email,
-            "Phone number: " . $phone,
-            "Password:     " . str_repeat("*", strlen($password)),
-            "System roles: " . implode(",", $roles),
+            'Firstname:    ' . $firstname,
+            'Lastname:     ' . $lastname,
+            'E-mail:       ' . $email,
+            'Phone number: ' . $phone,
+            'Password:     ' . str_repeat('*', strlen($password)),
+            'System roles: ' . implode(',', $roles),
         ]);
 
         $existingEmail = $this->userInformationRepository->findOneBy([
-            "email" => $email
+            'email' => $email
         ]);
 
         if ($existingEmail !== null) {
-            $io->error("Email exists");
+            $io->error('Email exists');
             return Command::FAILURE;
         }
 
         $existingPhone = $this->userInformationRepository->findOneBy([
-            "phoneNumber" => $phone
+            'phoneNumber' => $phone
         ]);
 
         if ($existingPhone !== null) {
-            $io->error("PhoneNumber exists");
+            $io->error('PhoneNumber exists');
             return Command::FAILURE;
         }
 
@@ -131,7 +133,7 @@ class CreateUserCommand extends Command
         $this->userRepository->add($userEntity, false);
 
         $roleEntities = $this->roleRepository->findBy([
-            "name" => $roles
+            'name' => $roles
         ]);
 
         foreach ($roleEntities as $roleEntity) {
@@ -157,13 +159,13 @@ class CreateUserCommand extends Command
         $userPasswordEntity = new UserPassword($userEntity, $passwordGenerator);
         $this->userPasswordRepository->add($userPasswordEntity);
 
-        $io->info("Database flushed");
+        $io->info('Database flushed');
 
         $io->text([
-            "UserEntity:            " . $userEntity->getId(),
-            "UserInformationEntity: " . $userInformationEntity->getUser()->getId(),
-            "UserSettingEntity:     " . $userSettingsEntity->getUser()->getId(),
-            "UserPasswordEntity:    " . $userPasswordEntity->getUser()->getId()
+            'UserEntity:            ' . $userEntity->getId(),
+            'UserInformationEntity: ' . $userInformationEntity->getUser()->getId(),
+            'UserSettingEntity:     ' . $userSettingsEntity->getUser()->getId(),
+            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId()
         ]);
 
         $io->success('User added');

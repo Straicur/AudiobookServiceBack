@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -7,8 +9,6 @@ use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
 use App\Model\Admin\AdminAudiobookDetailsModel;
-use App\Model\Admin\AdminCategoriesSuccessModel;
-use App\Model\Admin\AdminCategoryModel;
 use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
 use App\Model\Admin\AdminStatisticMainSuccessModel;
 use App\Model\Common\AudiobookDetailCategoryModel;
@@ -38,25 +38,25 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "AdminStatistics")]
+#[OA\Tag(name: 'AdminStatistics')]
 class AdminStatisticsController extends AbstractController
 {
     /**
@@ -74,15 +74,15 @@ class AdminStatisticsController extends AbstractController
      * @return Response
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/statistic/main", name: "adminStatisticMain", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
-        description: "Endpoint is returning main statistic data",
+        description: 'Endpoint is returning main statistic data',
         requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminStatisticMainSuccessModel::class)
             )
         ]
@@ -106,15 +106,15 @@ class AdminStatisticsController extends AbstractController
             $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
             $users = count($userRepository->findBy([
-                "active" => true
+                'active' => true
             ]));
 
             $categories = count($audiobookCategoryRepository->findBy([
-                "active" => true
+                'active' => true
             ]));
 
             $audiobooks = count($audiobookRepository->findBy([
-                "active" => true
+                'active' => true
             ]));
 
             $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
@@ -138,15 +138,15 @@ class AdminStatisticsController extends AbstractController
      * @return Response
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/statistic/best/audiobooks", name: "adminStatisticBestAudiobooks", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
-        description: "Endpoint  is returning most liked audiobooks statistics",
+        description: 'Endpoint  is returning most liked audiobooks statistics',
         requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminStatisticBestAudiobooksSuccessModel::class)
             )
         ]
@@ -180,7 +180,7 @@ class AdminStatisticsController extends AbstractController
 
                 foreach ($categories as $category) {
                     $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                        $category->getId(),
+                        (string)$category->getId(),
                         $category->getName(),
                         $category->getActive(),
                         $category->getCategoryKey()
@@ -188,7 +188,7 @@ class AdminStatisticsController extends AbstractController
                 }
 
                 $audiobookModel = new AdminAudiobookDetailsModel(
-                    $topAudiobook->getId(),
+                    (string)$topAudiobook->getId(),
                     $topAudiobook->getTitle(),
                     $topAudiobook->getAuthor(),
                     $topAudiobook->getVersion(),

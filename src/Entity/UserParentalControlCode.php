@@ -14,7 +14,7 @@ class UserParentalControlCode
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -39,7 +39,7 @@ class UserParentalControlCode
     {
         $this->user = $user;
         $this->code = $userParentalControlCodeGenerator->generate();
-        $this->dateAdd = new DateTime("Now");
+        $this->dateAdd = new DateTime();
         $this->active = true;
     }
 

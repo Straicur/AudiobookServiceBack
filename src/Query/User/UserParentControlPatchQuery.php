@@ -2,15 +2,16 @@
 
 namespace App\Query\User;
 
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserParentControlPatchQuery
 {
-    #[Assert\NotNull(message: "SmsCode is null")]
-    #[Assert\NotBlank(message: "SmsCode is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'SmsCode is null')]
+    #[Assert\NotBlank(message: 'SmsCode is empty')]
+    #[Assert\Type(type: 'string')]
     private string $smsCode;
 
     protected array $additionalData = [];
@@ -30,13 +31,13 @@ class UserParentControlPatchQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
+    #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ], type: "object")]
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('birthday', $additionalData)) {
-            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
+            $additionalData['birthday'] = DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
         }
 
         $this->additionalData = $additionalData;

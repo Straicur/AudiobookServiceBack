@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\RegisterCodeRepository;
 use App\ValueGenerator\RegisterCodeGenerator;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -13,7 +14,7 @@ class RegisterCode
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -21,10 +22,10 @@ class RegisterCode
     private string $code;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    private DateTime $dateAdd;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateAccept = null;
+    private ?DateTime $dateAccept = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $active;
@@ -40,7 +41,7 @@ class RegisterCode
     public function __construct(RegisterCodeGenerator $code, User $user)
     {
         $this->code = $code->generate();
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new DateTime();
         $this->active = true;
         $this->user = $user;
     }
@@ -63,24 +64,24 @@ class RegisterCode
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 
         return $this;
     }
 
-    public function getDateAccept(): ?\DateTime
+    public function getDateAccept(): ?DateTime
     {
         return $this->dateAccept;
     }
 
-    public function setDateAccept(\DateTime $dateAccept): self
+    public function setDateAccept(DateTime $dateAccept): self
     {
         $this->dateAccept = $dateAccept;
 

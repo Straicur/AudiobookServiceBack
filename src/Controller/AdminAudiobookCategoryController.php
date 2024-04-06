@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -48,25 +50,25 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "AdminAudiobookCategory")]
+#[OA\Tag(name: 'AdminAudiobookCategory')]
 class AdminAudiobookCategoryController extends AbstractController
 {
     /**
@@ -82,21 +84,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/add", name: "adminCategoryAdd", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
-        description: "Endpoint is adding new category",
+        description: 'Endpoint is adding new category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryAddQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -120,16 +122,16 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $additionalData = $adminCategoryAddQuery->getAdditionalData();
 
-            if (array_key_exists("parentId", $additionalData) && $additionalData["parentId"] !== "") {
+            if (array_key_exists('parentId', $additionalData) && $additionalData['parentId'] !== "") {
 
                 $parentAudiobookCategory = $audiobookCategoryRepository->findOneBy([
-                    "id" => $additionalData["parentId"]
+                    'id' => $additionalData['parentId']
                 ]);
 
                 if ($parentAudiobookCategory === null) {
-                    $endpointLogger->error("AudiobookCategory dont exist");
+                    $endpointLogger->error('AudiobookCategory dont exist');
                     $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation("ParentCategoryDontExists")]);
+                    throw new DataNotFoundException([$translateService->getTranslation('ParentCategoryDontExists')]);
                 }
 
                 $newCategory->setParent($parentAudiobookCategory);
@@ -142,7 +144,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -160,21 +162,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/edit", name: "adminCategoryEdit", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is editing given category",
+        description: 'Endpoint is editing given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryEditQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -192,13 +194,13 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryEditQuery instanceof AdminCategoryEditQuery) {
             $category = $audiobookCategoryRepository->findOneBy([
-                "id" => $adminCategoryEditQuery->getCategoryId()
+                'id' => $adminCategoryEditQuery->getCategoryId()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $category->setName($adminCategoryEditQuery->getName());
@@ -210,7 +212,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -229,21 +231,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/remove", name: "adminCategoryRemove", methods: ["DELETE"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
-        description: "Endpoint is removing given category",
+        description: 'Endpoint is removing given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryRemoveQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -263,13 +265,13 @@ class AdminAudiobookCategoryController extends AbstractController
         if ($adminCategoryRemoveQuery instanceof AdminCategoryRemoveQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                "id" => $adminCategoryRemoveQuery->getCategoryId()
+                'id' => $adminCategoryRemoveQuery->getCategoryId()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $notificationRepository->updateDeleteNotificationsByAction($category->getId());
@@ -280,7 +282,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -299,21 +301,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/add/audiobook", name: "adminCategoryAddAudiobook", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
-        description: "Endpoint is adding audiobook to given category",
+        description: 'Endpoint is adding audiobook to given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryAddAudiobookQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -333,23 +335,23 @@ class AdminAudiobookCategoryController extends AbstractController
         if ($adminCategoryAddAudiobookQuery instanceof AdminCategoryAddAudiobookQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                "id" => $adminCategoryAddAudiobookQuery->getCategoryId()
+                'id' => $adminCategoryAddAudiobookQuery->getCategoryId()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminCategoryAddAudiobookQuery->getAudiobookId()
+                'id' => $adminCategoryAddAudiobookQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $audiobook->addCategory($category);
@@ -363,7 +365,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -382,21 +384,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/remove/audiobook", name: "adminCategoryRemoveAudiobook", methods: ["DELETE"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
-        description: "Endpoint is removing audiobook from given category",
+        description: 'Endpoint is removing audiobook from given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryRemoveAudiobookQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -416,23 +418,23 @@ class AdminAudiobookCategoryController extends AbstractController
         if ($adminCategoryRemoveAudiobookQuery instanceof AdminCategoryRemoveAudiobookQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                "id" => $adminCategoryRemoveAudiobookQuery->getCategoryId()
+                'id' => $adminCategoryRemoveAudiobookQuery->getCategoryId()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $audiobook = $audiobookRepository->findOneBy([
-                "id" => $adminCategoryRemoveAudiobookQuery->getAudiobookId()
+                'id' => $adminCategoryRemoveAudiobookQuery->getAudiobookId()
             ]);
 
             if ($audiobook === null) {
-                $endpointLogger->error("Audiobook dont exist");
+                $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("AudiobookDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $category->removeAudiobook($audiobook);
@@ -447,7 +449,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -465,21 +467,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/audiobooks", name: "adminCategoryAudiobooks", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is returning all audiobooks in given category",
+        description: 'Endpoint is returning all audiobooks in given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryAudiobooksQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminCategoryAudiobooksSuccessModel::class),
             )
         ]
@@ -499,13 +501,13 @@ class AdminAudiobookCategoryController extends AbstractController
         if ($adminCategoryAudiobooksQuery instanceof AdminCategoryAudiobooksQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                "categoryKey" => $adminCategoryAudiobooksQuery->getCategoryKey()
+                'categoryKey' => $adminCategoryAudiobooksQuery->getCategoryKey()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
@@ -526,7 +528,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
                     if ($index < $maxResult) {
                         $audiobookModel = new AdminCategoryAudiobookModel(
-                            $audiobook->getId(),
+                            (string)$audiobook->getId(),
                             $audiobook->getTitle(),
                             $audiobook->getAuthor(),
                             $audiobook->getYear(),
@@ -547,7 +549,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 $successModel->setPage($adminCategoryAudiobooksQuery->getPage());
                 $successModel->setLimit($adminCategoryAudiobooksQuery->getLimit());
 
-                $successModel->setMaxPage(ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
+                $successModel->setMaxPage((int)ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
                 return $successModel;
             });
@@ -555,7 +557,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -571,15 +573,15 @@ class AdminAudiobookCategoryController extends AbstractController
      * @return Response
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/categories/tree", name: "adminCategoriesTree", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
-        description: "Endpoint is returning all categories in system as a tree",
+        description: 'Endpoint is returning all categories in system as a tree',
         requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminCategoriesSuccessModel::class)
             )
         ]
@@ -599,7 +601,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
 
             $categories = $audiobookCategoryRepository->findBy([
-                "parent" => null
+                'parent' => null
             ]);
 
             $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
@@ -620,15 +622,15 @@ class AdminAudiobookCategoryController extends AbstractController
      * @return Response
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/categories", name: "adminCategories", methods: ["GET"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/categories', name: 'adminCategories', methods: ['GET'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
-        description: "Endpoint is returning all categories in system",
+        description: 'Endpoint is returning all categories in system',
         requestBody: new OA\RequestBody(),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminCategoriesSuccessModel::class)
             )
         ]
@@ -646,12 +648,12 @@ class AdminAudiobookCategoryController extends AbstractController
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
 
-            $categories = $audiobookCategoryRepository->findBy([], orderBy: ["dateAdd" => "ASC"]);
+            $categories = $audiobookCategoryRepository->findBy([], orderBy: ['dateAdd' => 'ASC']);
 
             $successModel = new AdminCategoriesSuccessModel();
 
             foreach ($categories as $category) {
-                $newModel = new AdminCategoryModel($category->getId(), $category->getName(), $category->getActive(), $category->getCategoryKey());
+                $newModel = new AdminCategoryModel((string)$category->getId(), $category->getName(), $category->getActive(), $category->getCategoryKey());
                 $successModel->addCategory($newModel);
             }
 
@@ -674,21 +676,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidJsonDataException
      * @throws InvalidArgumentException
      */
-    #[Route("/api/admin/category/active", name: "adminCategoryActive", methods: ["PATCH"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
-        description: "Endpoint is activating given category",
+        description: 'Endpoint is activating given category',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryActiveQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -707,13 +709,13 @@ class AdminAudiobookCategoryController extends AbstractController
         if ($adminCategoryActiveQuery instanceof AdminCategoryActiveQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                "id" => $adminCategoryActiveQuery->getCategoryId()
+                'id' => $adminCategoryActiveQuery->getCategoryId()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
             $category->setActive($adminCategoryActiveQuery->isActive());
@@ -725,7 +727,7 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -743,21 +745,21 @@ class AdminAudiobookCategoryController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/admin/category/detail", name: "adminCategoryDetail", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator"])]
+    #[Route('/api/admin/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
-        description: "Endpoint is returning category details",
+        description: 'Endpoint is returning category details',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: AdminCategoryDetailQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new Model(type: AdminCategorySuccessModel::class)
             )
         ]
@@ -776,26 +778,26 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryDetailQuery instanceof AdminCategoryDetailQuery) {
             $category = $audiobookCategoryRepository->findOneBy([
-                "categoryKey" => $adminCategoryDetailQuery->getCategoryKey()
+                'categoryKey' => $adminCategoryDetailQuery->getCategoryKey()
             ]);
 
             if ($category === null) {
-                $endpointLogger->error("AudiobookCategory dont exist");
+                $endpointLogger->error('AudiobookCategory dont exist');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("CategoryDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
             $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY->value . $category->getId(), function (ItemInterface $item) use ($category) {
                 $item->expiresAfter(CacheValidTime::DAY->value);
                 $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
 
-                return new AdminCategorySuccessModel($category->getId(), $category->getName(), $category->getActive(), $category->getParent()?->getName(), $category->getParent()?->getId());
+                return new AdminCategorySuccessModel((string)$category->getId(), $category->getName(), $category->getActive(), $category->getParent()?->getName(), (string)$category->getParent()?->getId());
             });
 
             return ResponseTool::getResponse($successModel);
 
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }

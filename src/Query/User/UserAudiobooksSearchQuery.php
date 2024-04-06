@@ -6,9 +6,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserAudiobooksSearchQuery
 {
-    #[Assert\NotNull(message: "Title is null")]
-    #[Assert\NotBlank(message: "Title is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Title is null')]
+    #[Assert\NotBlank(message: 'Title is empty')]
+    #[Assert\Type(type: 'string')]
     private string $title;
 
     /**

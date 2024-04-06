@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
 
 use App\Enums\UserRoles;
+use DateTime;
 
 class AdminUserModel
 {
@@ -24,10 +27,10 @@ class AdminUserModel
      * @param string $email
      * @param string $firstname
      * @param string $lastname
-     * @param \DateTime $dateCreated
+     * @param DateTime $dateCreated
      * @param bool $deleted
      */
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, \DateTime $dateCreated, bool $deleted)
+    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, DateTime $dateCreated, bool $deleted)
     {
         $this->id = $id;
         $this->active = $active;
@@ -144,9 +147,9 @@ class AdminUserModel
     }
 
     /**
-     * @param \DateTime $dateCreated
+     * @param DateTime $dateCreated
      */
-    public function setDateCreated(\DateTime $dateCreated): void
+    public function setDateCreated(DateTime $dateCreated): void
     {
         $this->dateCreated = $dateCreated->getTimestamp() * 1000;
     }

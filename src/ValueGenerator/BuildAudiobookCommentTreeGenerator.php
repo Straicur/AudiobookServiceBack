@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ValueGenerator;
 
 use App\Entity\User;
@@ -54,12 +56,12 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
-                        "parent" => $element->getId()
+                        'parent' => $element->getId()
                     ]);
                 } else {
                     $children = $this->audiobookUserCommentRepository->findBy([
-                        "parent" => $element->getId(),
-                        "deleted" => false
+                        'parent' => $element->getId(),
+                        'deleted' => false
                     ]);
                 }
 
@@ -67,22 +69,22 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 $myComment = $audiobookParentUser === $user;
 
                 $commentLikes = $this->audiobookUserCommentLikeRepository->findBy([
-                    "audiobookUserComment" => $element->getId(),
-                    "deleted" => false
+                    'audiobookUserComment' => $element->getId(),
+                    'deleted' => false
                 ]);
 
                 $userModel = new AudiobookCommentModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
 
                 $child = new AudiobookCommentsModel(
                     $userModel,
-                    $element->getId(),
+                    (string)$element->getId(),
                     $element->getComment(),
                     $element->getEdited(),
                     $myComment
                 );
 
                 if ($parentId !== null) {
-                    $child->setParentId($parentId);
+                    $child->setParentId((string)$parentId);
                 }
 
                 if ($admin) {

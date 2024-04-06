@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Role;
@@ -57,7 +59,7 @@ class RoleRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         $qb->where('r.name != :administrator')
-            ->setParameter('administrator', "Administrator");
+            ->setParameter('administrator', 'Administrator');
 
         return $qb->getQuery()->execute();
     }

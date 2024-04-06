@@ -8,19 +8,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminCategoryActiveQuery
 {
-    #[Assert\NotNull(message: "CategoryId is null")]
-    #[Assert\NotBlank(message: "CategoryId is empty")]
+    #[Assert\NotNull(message: 'CategoryId is null')]
+    #[Assert\NotBlank(message: 'CategoryId is empty')]
     #[Assert\Uuid]
     private Uuid $categoryId;
 
-    #[Assert\NotNull(message: "Active is null")]
-    #[Assert\Type(type: "boolean")]
+    #[Assert\NotNull(message: 'Active is null')]
+    #[Assert\Type(type: 'boolean')]
     private bool $active;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getCategoryId(): Uuid
     {
         return $this->categoryId;

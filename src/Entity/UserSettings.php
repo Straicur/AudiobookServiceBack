@@ -10,7 +10,7 @@ class UserSettings
 {
     #[ORM\Id]
     #[ORM\OneToOne(inversedBy: 'userSettings', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Column(type: 'boolean')]

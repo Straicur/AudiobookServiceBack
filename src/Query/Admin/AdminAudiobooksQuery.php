@@ -4,20 +4,21 @@ namespace App\Query\Admin;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\AudiobookOrderSearch;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminAudiobooksQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
 
     protected array $searchData = [];
@@ -94,19 +95,19 @@ class AdminAudiobooksQuery
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('age', $searchData)) {
-            if ($searchData["age"] != AudiobookAgeRange::FROM3TO7->value && $searchData["age"] != AudiobookAgeRange::FROM7TO12->value && $searchData["age"] != AudiobookAgeRange::FROM12TO16->value && $searchData["age"] != AudiobookAgeRange::FROM16TO18->value && $searchData["age"] != AudiobookAgeRange::ABOVE18->value) {
-                $searchData["age"] = AudiobookAgeRange::FROM12TO16->value;
+            if ($searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
+                $searchData['age'] = AudiobookAgeRange::FROM12TO16->value;
             }
         }
 
         if (array_key_exists('order', $searchData)) {
-            if ( $searchData["order"] != AudiobookOrderSearch::POPULAR->value && $searchData["order"] != AudiobookOrderSearch::LEST_POPULAR->value && $searchData["order"] != AudiobookOrderSearch::LATEST->value && $searchData["order"] != AudiobookOrderSearch::OLDEST->value && $searchData["order"] != AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData["order"] != AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData["order"] != AudiobookOrderSearch::TOP_RATED->value && $searchData["order"] != AudiobookOrderSearch::WORST_RATED->value) {
-                $searchData["order"] = AudiobookOrderSearch::POPULAR->value;
+            if ( $searchData['order'] !== AudiobookOrderSearch::POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LATEST->value && $searchData['order'] !== AudiobookOrderSearch::OLDEST->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value && $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value) {
+                $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
             }
         }
 
         if (array_key_exists('year', $searchData)) {
-            $searchData['year'] = \DateTime::createFromFormat('d.m.Y', $searchData['year']);
+            $searchData['year'] = DateTime::createFromFormat('d.m.Y', $searchData['year']);
         }
 
         $this->searchData = $searchData;
@@ -123,7 +124,7 @@ class AdminAudiobooksQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -140,7 +141,7 @@ class AdminAudiobooksQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

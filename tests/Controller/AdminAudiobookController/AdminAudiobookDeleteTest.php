@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
@@ -10,13 +12,14 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Service\AudiobookService;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * AdminAudiobookDeleteTest
  */
 class AdminAudiobookDeleteTest extends AbstractWebTest
 {
-    private const base64OnePartFile = __DIR__ . "/onePartFile.txt";
+    private const base64OnePartFile = __DIR__ . '/onePartFile.txt';
 
     /**
      * step 1 - Preparing data
@@ -34,34 +37,34 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookUserCommentRepository::class, $audiobookUserCommentRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
         $content = [
-            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-            "fileName" => "Base",
-            "base64" => $readData,
-            "part" => 1,
-            "parts" => 1,
-            "additionalData" => [
-                "categories" => [
+            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            'fileName' => 'Base',
+            'base64' => $readData,
+            'part' => 1,
+            'parts' => 1,
+            'additionalData' => [
+                'categories' => [
                     $category2->getId(),
                     $category1->getId()
                 ],
-                "title" => "tytul",
-                "author" => "author"
+                'title' => 'tytul',
+                'author' => 'author'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -69,20 +72,20 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
+            'title' => $content['additionalData']['title']
         ]);
 
         $this->assertNotNull($audiobookAfter);
 
         $content = [
-            "audiobookId" => $audiobookAfter->getId(),
+            'audiobookId' => $audiobookAfter->getId(),
         ];
         $id = $audiobookAfter->getId();
         $dir = $audiobookAfter->getFileName();
 
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -93,7 +96,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertCount(0, $audiobooksAfter);
         $this->assertCount(0, $audiobookUserCommentRepository->findBy([
-            "audiobook" => $id
+            'audiobook' => $id
         ]));
 
         $this->assertFalse(is_dir($dir));
@@ -116,18 +119,18 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123125", ["Guest", "User"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory("3", $category2);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category4);
-        $category6 = $this->databaseMockManager->testFunc_addAudiobookCategory("6");
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category2);
+        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category4);
+        $category6 = $this->databaseMockManager->testFunc_addAudiobookCategory('6');
 
-        $audiobook = $this->databaseMockManager->testFunc_addAudiobook("t", "a", "2", "d", new \DateTime("Now"), "20", "20", 2, "desc", AudiobookAgeRange::ABOVE18, "d", [$category1, $category2]);
+        $audiobook = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd', [$category1, $category2]);
 
         $notification1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_CATEGORY, $category2->getId(), NotificationUserType::SYSTEM, categoryKey: $category2->getCategoryKey());
         $notification2 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2], NotificationType::NEW_AUDIOBOOK, $audiobook->getId(), NotificationUserType::SYSTEM);
@@ -137,12 +140,12 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            "audiobookId" => $audiobook->getId(),
+            'audiobookId' => $audiobook->getId(),
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -150,13 +153,13 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
         $not1After = $notificationRepository->findOneBy([
-            "id" => $notification1->getId()
+            'id' => $notification1->getId()
         ]);
         $this->assertNotNull($not1After);
         $this->assertFalse($not1After->getDeleted());
 
         $not2After = $notificationRepository->findOneBy([
-            "id" => $notification2->getId()
+            'id' => $notification2->getId()
         ]);
         $this->assertNotNull($not2After);
         $this->assertTrue($not2After->getDeleted());
@@ -178,34 +181,34 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
         $content = [
-            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-            "fileName" => "Base",
-            "base64" => $readData,
-            "part" => 1,
-            "parts" => 1,
-            "additionalData" => [
-                "categories" => [
+            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            'fileName' => 'Base',
+            'base64' => $readData,
+            'part' => 1,
+            'parts' => 1,
+            'additionalData' => [
+                'categories' => [
                     $category2->getId(),
                     $category1->getId()
                 ],
-                "title" => "tytul",
-                "author" => "author"
+                'title' => 'tytul',
+                'author' => 'author'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -213,20 +216,20 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
+            'title' => $content['additionalData']['title']
         ]);
 
         $this->assertNotNull($audiobookAfter);
 
         $content = [
-            "audiobookId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
+            'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
         $dir = $audiobookAfter->getFileName();
 
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
@@ -240,8 +243,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -261,34 +264,34 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
         $content = [
-            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-            "fileName" => "Base",
-            "base64" => $readData,
-            "part" => 1,
-            "parts" => 1,
-            "additionalData" => [
-                "categories" => [
+            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            'fileName' => 'Base',
+            'base64' => $readData,
+            'part' => 1,
+            'parts' => 1,
+            'additionalData' => [
+                'categories' => [
                     $category2->getId(),
                     $category1->getId()
                 ],
-                "title" => "tytul",
-                "author" => "author"
+                'title' => 'tytul',
+                'author' => 'author'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -296,7 +299,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
+            'title' => $content['additionalData']['title']
         ]);
 
         $this->assertNotNull($audiobookAfter);
@@ -306,8 +309,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $dir = $audiobookAfter->getFileName();
 
         /// step 3
-        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -321,7 +324,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -338,36 +341,36 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //
 //        $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
 //        /// step 1
-//        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-//        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tes3@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-//        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "tesr4@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+//        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+//        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'tes3@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
+//        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'tesr4@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 //
-//        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-//        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+//        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
+//        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 //
-//        $fileBase = fopen(self::base64OnePartFile, "r");
+//        $fileBase = fopen(self::base64OnePartFile, 'r');
 //        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 //
 //        /// step 2
 //        $content = [
-//            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-//            "fileName" => "Base",
-//            "base64" => $readData,
-//            "part" => 1,
-//            "parts" => 1,
-//            "additionalData" => [
-//                "categories" => [
+//            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
+//            'fileName' => 'Base',
+//            'base64' => $readData,
+//            'part' => 1,
+//            'parts' => 1,
+//            'additionalData' => [
+//                'categories' => [
 //                    $category2->getId(),
 //                    $category1->getId()
 //                ],
-//                "title" => "tytul",
-//                "author" => "author"
+//                'title' => 'tytul',
+//                'author' => 'author'
 //            ]
 //        ];
 //        $token = $this->databaseMockManager->testFunc_loginUser($user);
 //        /// step 3
-//        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-//            "HTTP_authorization" => $token->getToken()
+//        $crawler = self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+//            'HTTP_authorization' => $token->getToken()
 //        ], content: json_encode($content));
 //
 //        /// step 4
@@ -375,13 +378,13 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //        self::assertResponseStatusCodeSame(201);
 //
 //        $audiobookAfter = $audiobookRepository->findOneBy([
-//            "title" => $content["additionalData"]['title']
+//            'title' => $content['additionalData']['title']
 //        ]);
 //
 //        $this->assertNotNull($audiobookAfter);
 //
 //        $content = [
-//            "audiobookId" => $audiobookAfter->getId(),
+//            'audiobookId' => $audiobookAfter->getId(),
 //        ];
 //
 //        $dir = $audiobookAfter->getFileName();
@@ -389,8 +392,8 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //        $token = $this->databaseMockManager->testFunc_loginUser($user2);
 //
 //        /// step 3
-//        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", server: [
-//            "HTTP_authorization" => $token->getToken()
+//        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+//            'HTTP_authorization' => $token->getToken()
 //        ], content: json_encode($content));
 //        /// step 3
 //        self::assertResponseStatusCodeSame(403);
@@ -404,7 +407,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 //        $responseContent = json_decode($responseContent, true);
 //
 //        $this->assertIsArray($responseContent);
-//        $this->assertArrayHasKey("error", $responseContent);
+//        $this->assertArrayHasKey('error', $responseContent);
 //    }
     /**
      * step 1 - Preparing data
@@ -421,34 +424,34 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1", null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         $fileBase = fopen(self::base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize(self::base64OnePartFile,));
 
         /// step 2
         $content = [
-            "hashName" => "c91c03ea6c46a86cbc019be3d71d0a1a",
-            "fileName" => "Base",
-            "base64" => $readData,
-            "part" => 1,
-            "parts" => 1,
-            "additionalData" => [
-                "categories" => [
+            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            'fileName' => 'Base',
+            'base64' => $readData,
+            'part' => 1,
+            'parts' => 1,
+            'additionalData' => [
+                'categories' => [
                     $category2->getId(),
                     $category1->getId()
                 ],
-                "title" => "tytul",
-                "author" => "author"
+                'title' => 'tytul',
+                'author' => 'author'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PUT", "/api/admin/audiobook/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -456,20 +459,20 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
-            "title" => $content["additionalData"]['title']
+            'title' => $content['additionalData']['title']
         ]);
 
         $this->assertNotNull($audiobookAfter);
 
         $content = [
-            "audiobookId" => $audiobookAfter->getId(),
+            'audiobookId' => $audiobookAfter->getId(),
         ];
 
         $dir = $audiobookAfter->getFileName();
 
         /// step 3
 
-        $crawler = self::$webClient->request("DELETE", "/api/admin/audiobook/delete", content: json_encode($content));
+        $crawler = self::$webClient->request('DELETE', '/api/admin/audiobook/delete', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -482,7 +485,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }

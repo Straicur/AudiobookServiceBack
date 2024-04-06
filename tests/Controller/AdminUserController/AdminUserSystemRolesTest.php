@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminUserController;
 
 use App\Tests\AbstractWebTest;
@@ -19,12 +21,12 @@ class AdminUserSystemRolesTest extends AbstractWebTest
     public function test_adminUserSystemRolesCorrect(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/user/system/roles", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 3
@@ -37,8 +39,8 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         /// step 4
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("roles", $responseContent);
-        $this->assertCount(2, $responseContent["roles"]);
+        $this->assertArrayHasKey('roles', $responseContent);
+        $this->assertCount(2, $responseContent['roles']);
     }
 
     /**
@@ -51,12 +53,12 @@ class AdminUserSystemRolesTest extends AbstractWebTest
     public function test_adminUserSystemRolesPermission(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User",], true, "zaq12wsx", notActive: true);
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/user/system/roles", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 3
@@ -71,7 +73,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -84,7 +86,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
     {
 
         /// step 1
-        $crawler = self::$webClient->request("GET", "/api/admin/user/system/roles");
+        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles');
 
         /// step2
         self::assertResponseStatusCodeSame(401);
@@ -98,6 +100,6 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

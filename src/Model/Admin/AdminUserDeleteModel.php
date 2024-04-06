@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
+
+use DateTime;
 
 class AdminUserDeleteModel
 {
@@ -154,9 +158,9 @@ class AdminUserDeleteModel
     }
 
     /**
-     * @param \DateTime $dateDeleted
+     * @param DateTime $dateDeleted
      */
-    public function setDateDeleted(\DateTime $dateDeleted): void
+    public function setDateDeleted(DateTime $dateDeleted): void
     {
         $this->dateDeleted = $dateDeleted->getTimestamp() * 1000;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
@@ -27,25 +29,25 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
     response: 400,
-    description: "JSON Data Invalid",
+    description: 'JSON Data Invalid',
     content: new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
     response: 404,
-    description: "Data not found",
+    description: 'Data not found',
     content: new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
     response: 401,
-    description: "User not authorized",
+    description: 'User not authorized',
     content: new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
     response: 403,
-    description: "User have no permission",
+    description: 'User have no permission',
     content: new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "UserReport")]
+#[OA\Tag(name: 'UserReport')]
 class UserReportController extends AbstractController
 {
     /**
@@ -59,21 +61,21 @@ class UserReportController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/report", name: "apiReport", methods: ["PUT"])]
+    #[Route('/api/report', name: 'apiReport', methods: ['PUT'])]
     #[OA\Put(
-        description: "Method used to report for not logged users",
+        description: 'Method used to report for not logged users',
         security: [],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: UserNotAuthorizedUserReportQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
             ),
         ]
     )]
@@ -93,9 +95,9 @@ class UserReportController extends AbstractController
             $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip);
 
             if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
-                $endpointLogger->error("To many reports from this ip");
+                $endpointLogger->error('To many reports from this ip');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
             }
 
             $additionalData = $userNotAuthorizedUserReportQuery->getAdditionalData();
@@ -125,7 +127,7 @@ class UserReportController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
@@ -141,21 +143,21 @@ class UserReportController extends AbstractController
      * @throws DataNotFoundException
      * @throws InvalidJsonDataException
      */
-    #[Route("/api/report/user", name: "apiUserReport", methods: ["PUT"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["User"])]
+    #[Route('/api/report/user', name: 'apiUserReport', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Put(
-        description: "Endpoint is used for users to report bad behavior",
+        description: 'Endpoint is used for users to report bad behavior',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 ref: new Model(type: UserReportQuery::class),
-                type: "object"
+                type: 'object'
             ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
             )
         ]
     )]
@@ -175,9 +177,9 @@ class UserReportController extends AbstractController
             $amountOfReports = $reportRepository->loggedUserReportsCount($user);
 
             if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
-                $endpointLogger->error("To many reports from this ip");
+                $endpointLogger->error('To many reports from this ip');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("UserToManyReports")]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
             }
 
             $additionalData = $userReportQuery->getAdditionalData();
@@ -206,7 +208,7 @@ class UserReportController extends AbstractController
             return ResponseTool::getResponse(httpCode: 201);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }

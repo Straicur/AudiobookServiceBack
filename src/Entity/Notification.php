@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enums\NotificationType;
 use App\Repository\NotificationRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +16,7 @@ class Notification
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -23,7 +24,7 @@ class Notification
     private ?int $type;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    private DateTime $dateAdd;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $actionId = null;
@@ -41,11 +42,11 @@ class Notification
     private Collection $notificationChecks;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateDeleted;
+    private ?DateTime $dateDeleted;
 
     public function __construct()
     {
-        $this->dateAdd = new \DateTime('now');
+        $this->dateAdd = new DateTime();
         $this->users = new ArrayCollection();
         $this->deleted = false;
         $this->notificationChecks = new ArrayCollection();
@@ -77,12 +78,12 @@ class Notification
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 

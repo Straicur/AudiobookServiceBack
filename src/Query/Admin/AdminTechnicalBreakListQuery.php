@@ -3,6 +3,7 @@
 namespace App\Query\Admin;
 
 use App\Enums\TechnicalBreakOrder;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,14 +11,14 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminTechnicalBreakListQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
 
     protected array $searchData = [];
@@ -64,21 +65,21 @@ class AdminTechnicalBreakListQuery
     ], type: 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('userId', $searchData) && Uuid::isValid($searchData["userId"])) {
-            $searchData["userId"] = Uuid::fromString($searchData["userId"]);
+        if (array_key_exists('userId', $searchData) && Uuid::isValid($searchData['userId'])) {
+            $searchData['userId'] = Uuid::fromString($searchData['userId']);
         }
 
         if (array_key_exists('order', $searchData)) {
-            if ($searchData["order"] != TechnicalBreakOrder::LATEST->value && $searchData["order"] != TechnicalBreakOrder::OLDEST->value && $searchData["order"] != TechnicalBreakOrder::ACTIVE->value) {
-                $searchData["order"] = TechnicalBreakOrder::ACTIVE->value;
+            if ($searchData['order'] !== TechnicalBreakOrder::LATEST->value && $searchData['order'] !== TechnicalBreakOrder::OLDEST->value && $searchData['order'] !== TechnicalBreakOrder::ACTIVE->value) {
+                $searchData['order'] = TechnicalBreakOrder::ACTIVE->value;
             }
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
-            $searchData['dateFrom'] = \DateTime::createFromFormat('d.m.Y', $searchData['dateFrom']);
+            $searchData['dateFrom'] = DateTime::createFromFormat('d.m.Y', $searchData['dateFrom']);
         }
         if (array_key_exists('dateTo', $searchData)) {
-            $searchData['dateTo'] = \DateTime::createFromFormat('d.m.Y', $searchData['dateTo']);
+            $searchData['dateTo'] = DateTime::createFromFormat('d.m.Y', $searchData['dateTo']);
         }
 
         $this->searchData = $searchData;
@@ -95,7 +96,7 @@ class AdminTechnicalBreakListQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -112,7 +113,7 @@ class AdminTechnicalBreakListQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
