@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\PermissionException;
@@ -161,11 +162,17 @@ class AuthorizationController extends AbstractController
 
             $rolesModel = new AuthorizationRolesModel();
 
+            $isAdmin = false;
+
             foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
+
+                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value) {
+                    $isAdmin = true;
+                }
             }
 
-            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
+            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel, $isAdmin);
 
 
             return ResponseTool::getResponse($responseModel);
