@@ -134,18 +134,18 @@ class NotificationRepository extends ServiceEntityRepository
             $qb->andWhere('n.deleted = :deleted')
                 ->setParameter('deleted', $deleted);
         }
-        if ($order !== null) {
-            switch ($order) {
-                case NotificationOrderSearch::LATEST->value:
-                {
-                    $qb->orderBy('n.dateAdd', 'DESC');
-                    break;
-                }
-                case NotificationOrderSearch::OLDEST->value:
-                {
-                    $qb->orderBy('n.dateAdd', 'ASC');
-                    break;
-                }
+
+        switch ($order) {
+            case NotificationOrderSearch::OLDEST->value:
+            {
+                $qb->orderBy('n.dateAdd', 'ASC');
+                break;
+            }
+            case NotificationOrderSearch::LATEST->value:
+            default:
+            {
+                $qb->orderBy('n.dateAdd', 'DESC');
+                break;
             }
         }
 
