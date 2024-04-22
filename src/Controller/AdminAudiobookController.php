@@ -151,7 +151,7 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository) {
+            $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository,$audiobookRepository) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                 $item->tag(StockCacheTags::ADMIN_AUDIOBOOK->value);
 
@@ -186,11 +186,13 @@ class AdminAudiobookController extends AbstractController
                         if ($img !== "") {
                             $audiobook->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img);
                             $audiobook->setImgFileChangeDate();
+                            $audiobookRepository->add($audiobook);
                         }
                     }
                     catch (\Throwable){
                         $audiobook->setImgFile(null);
                         $audiobook->setImgFileChangeDate();
+                        $audiobookRepository->add($audiobook);
                     }
                 }
 
