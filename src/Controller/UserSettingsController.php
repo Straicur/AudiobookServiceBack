@@ -467,17 +467,19 @@ class UserSettingsController extends AbstractController
             $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
             $userInformation->setLastname($userSettingsChangeQuery->getLastName());
 
-            $existingPhone = $userInformationRepository->findOneBy([
-                'phoneNumber' => $userSettingsChangeQuery->getPhoneNumber()
-            ]);
+            if($userInformation->getPhoneNumber() !== $userSettingsChangeQuery->getPhoneNumber()){
+                $existingPhone = $userInformationRepository->findOneBy([
+                    'phoneNumber' => $userSettingsChangeQuery->getPhoneNumber()
+                ]);
 
-            if ($existingPhone !== null) {
-                $endpointLogger->error('Phone number already exists');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('PhoneNumberExists')]);
+                if ($existingPhone !== null) {
+                    $endpointLogger->error('Phone number already exists');
+                    $translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$translateService->getTranslation('PhoneNumberExists')]);
+                }
+
+                $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
             }
-
-            $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
 
             $userInformationRepository->add($userInformation);
 
