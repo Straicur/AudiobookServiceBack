@@ -93,19 +93,15 @@ class UserAudiobookInfoTest extends AbstractWebTest
         ], content: json_encode($content));
 
         /// step 4
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
+        $response = self::$webClient->getResponse();
 
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
+        $responseContent = json_decode($response->getContent(), true);
 
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        /// step 5
+        $this->assertNull($responseContent);
     }
 
     /**

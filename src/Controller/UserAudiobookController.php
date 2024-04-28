@@ -540,9 +540,7 @@ class UserAudiobookController extends AbstractController
             ]);
 
             if ($audiobookInfo === null) {
-                $endpointLogger->error('AudiobookInfo dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookInfoDontExists')]);
+                return ResponseTool::getResponse();
             }
 
             $successModel = new UserAudiobookInfoSuccessModel(
