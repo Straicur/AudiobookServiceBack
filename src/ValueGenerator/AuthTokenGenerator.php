@@ -10,7 +10,6 @@ use DateTime;
 
 /**
  * AuthTokenGenerator
- *
  */
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
@@ -37,8 +36,7 @@ class AuthTokenGenerator implements ValueGeneratorInterface
             $tokenToHash = $userId . '-' . $dateNow . '#' . $randomValue;
 
             return hash('sha512', $tokenToHash);
-        }
-        catch (\Exception){
+        } catch (\Exception) {
             throw new GeneratorException();
         }
     }

@@ -27,10 +27,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * CreateUserCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:users:create',
+    name       : 'audiobookservice:users:create',
     description: 'Add user to service',
 )]
 class CreateUserCommand extends Command
@@ -56,9 +55,8 @@ class CreateUserCommand extends Command
         UserPasswordRepository       $userPasswordRepository,
         UserSettingsRepository       $userSettingsRepository,
         MyListRepository             $myListRepository,
-        ProposedAudiobooksRepository $proposedAudiobooksRepository
-    )
-    {
+        ProposedAudiobooksRepository $proposedAudiobooksRepository,
+    ) {
         $this->userRepository = $userRepository;
         $this->userPasswordRepository = $userPasswordRepository;
         $this->roleRepository = $roleRepository;
@@ -109,7 +107,7 @@ class CreateUserCommand extends Command
         ]);
 
         $existingEmail = $this->userInformationRepository->findOneBy([
-            'email' => $email
+            'email' => $email,
         ]);
 
         if ($existingEmail !== null) {
@@ -118,7 +116,7 @@ class CreateUserCommand extends Command
         }
 
         $existingPhone = $this->userInformationRepository->findOneBy([
-            'phoneNumber' => $phone
+            'phoneNumber' => $phone,
         ]);
 
         if ($existingPhone !== null) {
@@ -133,7 +131,7 @@ class CreateUserCommand extends Command
         $this->userRepository->add($userEntity, false);
 
         $roleEntities = $this->roleRepository->findBy([
-            'name' => $roles
+            'name' => $roles,
         ]);
 
         foreach ($roleEntities as $roleEntity) {
@@ -165,7 +163,7 @@ class CreateUserCommand extends Command
             'UserEntity:            ' . $userEntity->getId(),
             'UserInformationEntity: ' . $userInformationEntity->getUser()->getId(),
             'UserSettingEntity:     ' . $userSettingsEntity->getUser()->getId(),
-            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId()
+            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId(),
         ]);
 
         $io->success('User added');

@@ -73,24 +73,24 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminUser')]
 class AdminUserController extends AbstractController
@@ -106,19 +106,18 @@ class AdminUserController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning roles in system',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminUserSystemRolesSuccessModel::class)
-            )
+                content    : new Model(type: AdminUserSystemRolesSuccessModel::class),
+            ),
         ]
     )]
     public function adminUserSystemRoles(
         RoleRepository         $roleRepository,
-        TagAwareCacheInterface $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface $stockCache,
+    ): Response {
         $successModel = $stockCache->get(CacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(StockCacheTags::ADMIN_ROLES->value);
@@ -161,16 +160,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is Adding role to user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserRoleAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserRoleAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserRoleAdd(
@@ -180,15 +179,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
 
         if ($adminUserRoleAddQuery instanceof AdminUserRoleAddQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserRoleAddQuery->getUserId()
+                'id' => $adminUserRoleAddQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -206,21 +204,21 @@ class AdminUserController extends AbstractController
             switch ($adminUserRoleAddQuery->getRole()) {
                 case UserRoles::GUEST:
                     $guestRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::GUEST
+                        'name' => UserRolesNames::GUEST,
                     ]);
                     $user->addRole($guestRole);
                     break;
 
                 case UserRoles::USER:
                     $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER
+                        'name' => UserRolesNames::USER,
                     ]);
                     $user->addRole($userRole);
                     break;
 
                 case UserRoles::ADMINISTRATOR:
                     $adminRole = $roleRepository->findOneBy([
-                        'name' => 'Administrator'
+                        'name' => 'Administrator',
                     ]);
                     $user->addRole($adminRole);
                     break;
@@ -255,16 +253,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is removing role for user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserRoleRemoveQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserRoleRemoveQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserRoleRemove(
@@ -274,15 +272,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
 
         if ($adminUserRoleRemoveQuery instanceof AdminUserRoleRemoveQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserRoleRemoveQuery->getUserId()
+                'id' => $adminUserRoleRemoveQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -300,21 +297,21 @@ class AdminUserController extends AbstractController
             switch ($adminUserRoleRemoveQuery->getRole()) {
                 case UserRoles::GUEST:
                     $guestRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::GUEST
+                        'name' => UserRolesNames::GUEST,
                     ]);
                     $user->removeRole($guestRole);
                     break;
 
                 case UserRoles::USER:
                     $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER
+                        'name' => UserRolesNames::USER,
                     ]);
                     $user->removeRole($userRole);
                     break;
 
                 case UserRoles::ADMINISTRATOR:
                     $adminRole = $roleRepository->findOneBy([
-                        'name' => 'Administrator'
+                        'name' => 'Administrator',
                     ]);
                     $user->removeRole($adminRole);
                     break;
@@ -349,16 +346,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is activating given user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserActivateQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserActivateQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserActivate(
@@ -368,15 +365,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
 
         if ($adminUserActivateQuery instanceof AdminUserActivateQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserActivateQuery->getUserId()
+                'id' => $adminUserActivateQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -392,7 +388,7 @@ class AdminUserController extends AbstractController
             }
 
             $userRole = $roleRepository->findOneBy([
-                'name' => UserRolesNames::USER
+                'name' => UserRolesNames::USER,
             ]);
 
             $user->addRole($userRole);
@@ -425,16 +421,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is banning/unbanning user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserBanQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserBanQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserBan(
@@ -443,15 +439,14 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
 
         if ($adminUserBanQuery instanceof AdminUserBanQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserBanQuery->getUserId()
+                'id' => $adminUserBanQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -496,16 +491,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is changing password of given user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserChangePasswordQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserChangePasswordQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserChangePassword(
@@ -515,15 +510,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
 
         if ($adminUserChangePasswordQuery instanceof AdminUserChangePasswordQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserChangePasswordQuery->getUserId()
+                'id' => $adminUserChangePasswordQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -538,7 +532,7 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
             }
             $userPassword = $userPasswordRepository->findOneBy([
-                'user' => $user->getId()
+                'user' => $user->getId(),
             ]);
 
             $passwordGenerator = new PasswordHashGenerator($adminUserChangePasswordQuery->getNewPassword());
@@ -573,16 +567,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is changing phone number of given user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserChangePhoneQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserChangePhoneQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserChangePhone(
@@ -592,15 +586,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
         if ($adminUserChangePhoneQuery instanceof AdminUserChangePhoneQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserChangePhoneQuery->getUserId()
+                'id' => $adminUserChangePhoneQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -615,7 +608,7 @@ class AdminUserController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
             }
             $duplicatedNumber = $userInformationRepository->findOneBy([
-                'phoneNumber' => $adminUserChangePhoneQuery->getNewPhone()
+                'phoneNumber' => $adminUserChangePhoneQuery->getNewPhone(),
             ]);
 
             if ($duplicatedNumber !== null) {
@@ -655,17 +648,17 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is returning list of users in system',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUsersQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUsersQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminUsersSuccessModel::class)
-            )
+                content    : new Model(type: AdminUsersSuccessModel::class),
+            ),
         ]
     )]
     public function adminUsers(
@@ -675,9 +668,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
         if ($adminUsersQuery instanceof AdminUsersQuery) {
@@ -740,7 +732,7 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getFirstname(),
                         $user->getUserInformation()->getLastname(),
                         $user->getDateCreate(),
-                        $userDeleted
+                        $userDeleted,
                     );
 
                     foreach ($user->getRoles() as $role) {
@@ -793,16 +785,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is deleting given user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserDeleteQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserDelete(
@@ -813,15 +805,14 @@ class AdminUserController extends AbstractController
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
 
         if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $adminUserDeleteQuery->getUserId()
+                'id' => $adminUserDeleteQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -837,7 +828,7 @@ class AdminUserController extends AbstractController
             }
 
             $userDelete = $userDeleteRepository->findOneBy([
-                'user' => $user->getId()
+                'user' => $user->getId(),
             ]);
 
             if ($userDelete === null) {
@@ -857,7 +848,7 @@ class AdminUserController extends AbstractController
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -887,17 +878,17 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is returning list of users to delete',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteListQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserDeleteListQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminUserDeleteListSuccessModel::class)
-            )
+                content    : new Model(type: AdminUserDeleteListSuccessModel::class),
+            ),
         ]
     )]
     public function adminUserDeleteList(
@@ -907,9 +898,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
@@ -920,7 +910,7 @@ class AdminUserController extends AbstractController
             $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
 
             $allDeleteUsers = $userDeleteRepository->findBy([
-                'deleted' => true
+                'deleted' => true,
             ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
@@ -939,9 +929,8 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getEmail(),
                         $user->getUserInformation()->getFirstname(),
                         $userDelete->getDeleted(),
-                        $userDelete->getDeclined()
+                        $userDelete->getDeclined(),
                     );
-
 
                     if ($userDelete->getDateDeleted() !== null) {
                         $userDeleteModel->setDateDeleted($userDelete->getDateDeleted());
@@ -983,17 +972,17 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is returning list of already delete users',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteListQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserDeleteListQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminUserDeleteListSuccessModel::class)
-            )
+                content    : new Model(type: AdminUserDeleteListSuccessModel::class),
+            ),
         ]
     )]
     public function adminUserToDeleteList(
@@ -1003,9 +992,8 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
@@ -1033,9 +1021,8 @@ class AdminUserController extends AbstractController
                         $user->getUserInformation()->getEmail(),
                         $user->getUserInformation()->getFirstname(),
                         $userDelete->getDeleted(),
-                        $userDelete->getDeclined()
+                        $userDelete->getDeclined(),
                     );
-
 
                     if ($userDelete->getDateDeleted() !== null) {
                         $userDeleteModel->setDateDeleted($userDelete->getDateDeleted());
@@ -1079,16 +1066,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is deleting given user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteAcceptQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserDeleteAcceptQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserDeleteAccept(
@@ -1098,15 +1085,14 @@ class AdminUserController extends AbstractController
         LoggerInterface                $endpointLogger,
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
 
         if ($adminUserDeleteAcceptQuery instanceof AdminUserDeleteAcceptQuery) {
 
             $userDelete = $userDeleteRepository->findOneBy([
-                'user' => $adminUserDeleteAcceptQuery->getUserId()
+                'user' => $adminUserDeleteAcceptQuery->getUserId(),
             ]);
 
             if ($userDelete === null) {
@@ -1137,7 +1123,7 @@ class AdminUserController extends AbstractController
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -1174,16 +1160,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is declining user request to delete his account',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserDeleteDeclineQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserDeleteDeclineQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserDeleteDecline(
@@ -1196,15 +1182,14 @@ class AdminUserController extends AbstractController
         MailerInterface                $mailer,
         NotificationRepository         $notificationRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
 
         if ($adminUserDeleteDeclineQuery instanceof AdminUserDeleteDeclineQuery) {
 
             $userDelete = $userDeleteRepository->findOneBy([
-                'user' => $adminUserDeleteDeclineQuery->getUserId()
+                'user' => $adminUserDeleteDeclineQuery->getUserId(),
             ]);
 
             if ($userDelete === null) {
@@ -1239,7 +1224,7 @@ class AdminUserController extends AbstractController
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -1279,17 +1264,17 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is returning list of notifications in system',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserNotificationsQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserNotificationsQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminUserNotificationsSuccessModel::class)
-            )
+                content    : new Model(type: AdminUserNotificationsSuccessModel::class),
+            ),
         ]
     )]
     public function adminUserNotifications(
@@ -1298,9 +1283,8 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
@@ -1348,7 +1332,7 @@ class AdminUserController extends AbstractController
                 $systemNotifications,
                 $adminUserNotificationsQuery->getPage(),
                 $adminUserNotificationsQuery->getLimit(),
-                (int)ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit())
+                (int)ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()),
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
@@ -1384,16 +1368,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is adding notification',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserNotificationPutQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserNotificationPutQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserNotificationPut(
@@ -1408,9 +1392,8 @@ class AdminUserController extends AbstractController
         InstitutionRepository          $institutionRepository,
         AudiobookCategoryRepository    $categoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
@@ -1421,14 +1404,14 @@ class AdminUserController extends AbstractController
                 case NotificationType::NORMAL:
 
                     $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER->value
+                        'name' => UserRolesNames::USER->value,
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
                     $notificationBuilder = new NotificationBuilder();
 
                     $institution = $institutionRepository->findOneBy([
-                        'name' => $_ENV['INSTITUTION_NAME']
+                        'name' => $_ENV['INSTITUTION_NAME'],
                     ]);
 
                     $notificationBuilder
@@ -1456,7 +1439,7 @@ class AdminUserController extends AbstractController
                     }
 
                     $user = $userRepository->findOneBy([
-                        'id' => $additionalData['userId']
+                        'id' => $additionalData['userId'],
                     ]);
 
                     if ($user === null) {
@@ -1490,14 +1473,14 @@ class AdminUserController extends AbstractController
                     }
 
                     $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER
+                        'name' => UserRolesNames::USER,
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
                     $notificationBuilder = new NotificationBuilder();
 
                     $category = $categoryRepository->findOneBy([
-                        'categoryKey' => $additionalData['categoryKey']
+                        'categoryKey' => $additionalData['categoryKey'],
                     ]);
 
                     if ($category === null) {
@@ -1532,7 +1515,7 @@ class AdminUserController extends AbstractController
                     }
 
                     $audiobook = $audiobookRepository->findOneBy([
-                        'id' => $additionalData['actionId']
+                        'id' => $additionalData['actionId'],
                     ]);
 
                     if ($audiobook === null) {
@@ -1594,16 +1577,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is editing notification',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserNotificationPatchQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserNotificationPatchQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserNotificationPatch(
@@ -1615,15 +1598,14 @@ class AdminUserController extends AbstractController
         NotificationRepository         $notificationRepository,
         RoleRepository                 $roleRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
 
             $notification = $notificationRepository->findOneBy([
-                'id' => $adminUserNotificationPatchQuery->getNotificationId()
+                'id' => $adminUserNotificationPatchQuery->getNotificationId(),
             ]);
 
             if ($notification === null) {
@@ -1639,7 +1621,7 @@ class AdminUserController extends AbstractController
                 ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
 
             $userRole = $roleRepository->findOneBy([
-                'name' => UserRolesNames::USER
+                'name' => UserRolesNames::USER,
             ]);
 
             $users = $userRepository->getUsersByRole($userRole);
@@ -1688,16 +1670,16 @@ class AdminUserController extends AbstractController
         description: 'Endpoint is deleting notification',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminUserNotificationDeleteQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminUserNotificationDeleteQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminUserNotificationDelete(
@@ -1706,15 +1688,14 @@ class AdminUserController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
         if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
 
             $notification = $notificationRepository->findOneBy([
-                'id' => $adminUserNotificationDeleteQuery->getNotificationId()
+                'id' => $adminUserNotificationDeleteQuery->getNotificationId(),
             ]);
 
             if ($notification === null) {

@@ -37,24 +37,24 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminStatistics')]
 class AdminStatisticsController extends AbstractController
@@ -79,12 +79,12 @@ class AdminStatisticsController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning main statistic data',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminStatisticMainSuccessModel::class)
-            )
+                content    : new Model(type: AdminStatisticMainSuccessModel::class),
+            ),
         ]
     )]
     public function adminStatisticMain(
@@ -98,30 +98,41 @@ class AdminStatisticsController extends AbstractController
         AuthenticationTokenRepository  $authenticationTokenRepository,
         NotificationRepository         $notificationRepository,
         TechnicalBreakRepository       $technicalBreakRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
-        [$users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
+        [$users,
+            $categories,
+            $audiobooks,
+            $lastWeekRegistered,
+            $lastWeekLogins,
+            $lastWeekNotifications,
+            $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
             $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
             $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
             $users = count($userRepository->findBy([
-                'active' => true
+                'active' => true,
             ]));
 
             $categories = count($audiobookCategoryRepository->findBy([
-                'active' => true
+                'active' => true,
             ]));
 
             $audiobooks = count($audiobookRepository->findBy([
-                'active' => true
+                'active' => true,
             ]));
 
             $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
             $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
             $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
             $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
-            return [$users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks];
+            return [$users,
+                $categories,
+                $audiobooks,
+                $lastWeekRegistered,
+                $lastWeekLogins,
+                $lastWeekNotifications,
+                $lastWeekSystemBreaks];
         });
 
         return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
@@ -143,12 +154,12 @@ class AdminStatisticsController extends AbstractController
     #[OA\Get(
         description: 'Endpoint  is returning most liked audiobooks statistics',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminStatisticBestAudiobooksSuccessModel::class)
-            )
+                content    : new Model(type: AdminStatisticBestAudiobooksSuccessModel::class),
+            ),
         ]
     )]
     public function adminStatisticBestAudiobooks(
@@ -158,9 +169,8 @@ class AdminStatisticsController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 
         if (count($topAudiobooks) === 0) {
@@ -183,7 +193,7 @@ class AdminStatisticsController extends AbstractController
                         (string)$category->getId(),
                         $category->getName(),
                         $category->getActive(),
-                        $category->getCategoryKey()
+                        $category->getCategoryKey(),
                     );
                 }
 
@@ -200,7 +210,7 @@ class AdminStatisticsController extends AbstractController
                     $topAudiobook->getDescription(),
                     $topAudiobook->getAge(),
                     $topAudiobook->getActive(),
-                    $audiobookCategories
+                    $audiobookCategories,
                 );
 
                 match ($idx) {

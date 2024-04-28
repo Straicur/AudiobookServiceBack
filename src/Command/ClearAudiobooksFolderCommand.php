@@ -15,12 +15,11 @@ use Symfony\Component\Filesystem\Filesystem;
  * ClearAudiobooksFolderCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:clear:audiobooks',
+    name       : 'audiobookservice:clear:audiobooks',
     description: 'Clear audiobooks folder',
 )]
 class ClearAudiobooksFolderCommand extends Command
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -36,8 +35,8 @@ class ClearAudiobooksFolderCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $filesystem = new Filesystem();
-        if($_ENV['MAIN_DIR'] && $_ENV['MAIN_DIR'] !== '/') {
-            $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), array('.', '..'));
+        if ($_ENV['MAIN_DIR'] && $_ENV['MAIN_DIR'] !== '/') {
+            $audiobookFiles = array_diff(scandir($_ENV['MAIN_DIR']), ['.', '..']);
 
             foreach ($audiobookFiles as $file) {
                 $filesystem->remove($_ENV['MAIN_DIR'] . '/' . $file);

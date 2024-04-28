@@ -24,7 +24,7 @@ class UserParentControlPatchQuery
                     new Assert\NotBlank(message: 'Birthday is empty'),
                     new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-            ]
+            ],
         ]));
     }
 
@@ -33,7 +33,7 @@ class UserParentControlPatchQuery
      */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('birthday', $additionalData)) {

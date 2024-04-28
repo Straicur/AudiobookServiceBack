@@ -18,7 +18,7 @@ class UserParentalControlTool
     {
         $birthday = $user->getUserInformation()->getBirthday();
 
-        if($birthday === null){
+        if ($birthday === null) {
             return null;
         }
 

@@ -16,8 +16,8 @@ class AdminUserNotificationPutQuery
     #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
-        min: 1,
-        max: 5,
+        min              : 1,
+        max              : 5,
     )]
     private int $notificationType;
 
@@ -26,8 +26,8 @@ class AdminUserNotificationPutQuery
     #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
-        min: 1,
-        max: 2,
+        min              : 1,
+        max              : 2,
     )]
     private int $notificationUserType;
 
@@ -37,27 +37,27 @@ class AdminUserNotificationPutQuery
     {
         $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
             'fields' => [
-                'text' => new Assert\Optional([
+                'text'        => new Assert\Optional([
                     new Assert\NotBlank(message: 'Text is empty'),
                     new Assert\NotNull(),
-                    new Assert\Type('string')
+                    new Assert\Type('string'),
                 ]),
                 'categoryKey' => new Assert\Optional([
                     new Assert\NotBlank(message: 'CategoryKey is empty'),
                     new Assert\NotNull(),
-                    new Assert\Type('string')
+                    new Assert\Type('string'),
                 ]),
-                'actionId' => new Assert\Optional([
+                'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
                     new Assert\NotNull(),
-                    new Assert\Uuid()
+                    new Assert\Uuid(),
                 ]),
-                'userId' => new Assert\Optional([
+                'userId'      => new Assert\Optional([
                     new Assert\NotBlank(message: 'UserId is empty'),
                     new Assert\NotNull(),
-                    new Assert\Uuid()
+                    new Assert\Uuid(),
                 ]),
-            ]
+            ],
         ]));
     }
 
@@ -69,7 +69,7 @@ class AdminUserNotificationPutQuery
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'userId', type: 'string', example: 'UUID', nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('actionId', $additionalData)) {
@@ -119,7 +119,7 @@ class AdminUserNotificationPutQuery
     {
         return match ($this->notificationUserType) {
             1 => NotificationUserType::ADMIN,
-            2 => NotificationUserType::SYSTEM
+            2 => NotificationUserType::SYSTEM,
         };
     }
 

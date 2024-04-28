@@ -70,24 +70,24 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserAudiobook')]
 class UserAudiobookController extends AbstractController
@@ -111,17 +111,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is returning list of categories with audiobooks',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobooksQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserAudiobooksSuccessModel::class)
-            )
+                content    : new Model(type: UserAudiobooksSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobooks(
@@ -132,9 +132,8 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
 
         if ($userAudiobooksQuery instanceof UserAudiobooksQuery) {
@@ -162,7 +161,6 @@ class UserAudiobookController extends AbstractController
 
                         $age = null;
 
-
                         if ($user->getUserInformation()->getBirthday() !== null) {
                             $userParentalControlTool = new UserParentalControlTool();
                             $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
@@ -177,7 +175,7 @@ class UserAudiobookController extends AbstractController
                                 $audiobook->getAuthor(),
                                 $audiobook->getParts(),
                                 $audiobook->getAge(),
-                                $audiobook->getImgFile()
+                                $audiobook->getImgFile(),
                             ));
                         }
                         $successModel->addCategory($categoryModel);
@@ -216,17 +214,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is returning list of audiobooks by title',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobooksSearchQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobooksSearchQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserAudiobooksSearchSuccessModel::class)
-            )
+                content    : new Model(type: UserAudiobooksSearchSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobooksSearch(
@@ -235,9 +233,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
 
         if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
@@ -261,13 +258,13 @@ class UserAudiobookController extends AbstractController
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
                     $audiobook->getAge(),
-                    $audiobook->getImgFile()
+                    $audiobook->getImgFile(),
                 );
 
                 foreach ($audiobook->getCategories() as $category) {
                     $audiobookModel->addCategory(new UserAudiobookCategoryModel(
                         $category->getName(),
-                        $category->getCategoryKey()
+                        $category->getCategoryKey(),
                     ));
                 }
 
@@ -297,12 +294,12 @@ class UserAudiobookController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning list of proposed audiobooks',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserProposedAudiobooksSuccessModel::class)
-            )
+                content    : new Model(type: UserProposedAudiobooksSuccessModel::class),
+            ),
         ]
     )]
     public function userProposedAudiobooks(
@@ -310,9 +307,8 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $successModel = $stockCache->get(CacheKeys::USER_PROPOSED_AUDIOBOOKS->value . $user->getId(), function (ItemInterface $item) use ($user) {
@@ -332,13 +328,13 @@ class UserAudiobookController extends AbstractController
                         $audiobook->getAuthor(),
                         $audiobook->getParts(),
                         $audiobook->getAge(),
-                        $audiobook->getImgFile()
+                        $audiobook->getImgFile(),
                     );
 
                     foreach ($audiobook->getCategories() as $category) {
                         $audiobookModel->addCategory(new UserAudiobookCategoryModel(
                             $category->getName(),
-                            $category->getCategoryKey()
+                            $category->getCategoryKey(),
                         ));
                     }
 
@@ -366,7 +362,6 @@ class UserAudiobookController extends AbstractController
      * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
-     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
     #[Route('/api/user/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
@@ -375,17 +370,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is returning details of given audiobook',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookDetailsQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookDetailsQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserAudiobookDetailsSuccessModel::class)
-            )
+                content    : new Model(type: UserAudiobookDetailsSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobookDetails(
@@ -400,9 +395,8 @@ class UserAudiobookController extends AbstractController
         AudiobookInfoRepository        $audiobookInfoRepository,
         AudiobookRatingRepository      $audiobookRatingRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
 
         if ($userAudiobookDetailsQuery instanceof UserAudiobookDetailsQuery) {
@@ -416,67 +410,64 @@ class UserAudiobookController extends AbstractController
             }
 
             $user = $authorizedUserService->getAuthorizedUser();
-
             $successModel = $stockCache->get(CacheKeys::USER_AUDIOBOOK->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($audiobookUserCommentRepository, $audiobookInfoRepository, $user, $listRepository, $audiobook, $audiobookRatingRepository, $audiobookCategoryRepository) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                 $item->tag(StockCacheTags::USER_AUDIOBOOKS->value);
 
-                $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
+            $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
-                $audiobookCategories = [];
+            $audiobookCategories = [];
 
-                foreach ($categories as $category) {
-                    $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                        (string)$category->getId(),
-                        $category->getName(),
-                        $category->getActive(),
-                        $category->getCategoryKey()
-                    );
-                }
-
-                $inList = $listRepository->getAudiobookInMyList($user, $audiobook);
-
-                $audiobookInfo = $audiobookInfoRepository->findBy([
-                    'audiobook' => $audiobook->getId(),
-                    'watched' => true,
-                    'user' => $user->getId()
-                ]);
-
-                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    'parent' => null,
-                    'audiobook' => $audiobook->getId(),
-                    'deleted' => false
-                ]);
-
-                $successModel = new UserAudiobookDetailsSuccessModel(
-                    (string)$audiobook->getId(),
-                    $audiobook->getTitle(),
-                    $audiobook->getAuthor(),
-                    $audiobook->getVersion(),
-                    $audiobook->getAlbum(),
-                    $audiobook->getYear(),
-                    (string)$audiobook->getDuration(),
-                    $audiobook->getParts(),
-                    $audiobook->getDescription(),
-                    $audiobook->getAge(),
-                    $audiobookCategories,
-                    $inList,
-                    count($audiobookUserComments),
-                    $audiobook->getAvgRating(),
-                    count($audiobookRatingRepository->findBy([
-                        'audiobook' => $audiobook->getId()
-                    ])),
-                    $audiobook->getImgFile()
+            foreach ($categories as $category) {
+                $audiobookCategories[] = new AudiobookDetailCategoryModel(
+                    (string)$category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getCategoryKey(),
                 );
+            }
 
-                if ($audiobookInfo !== null && count($audiobookInfo) >= $audiobook->getParts()) {
-                    $successModel->setCanRate(true);
-                }
+            $inList = $listRepository->getAudiobookInMyList($user, $audiobook);
 
-                if (floor($audiobook->getParts() / 2) > $audiobookInfo) {
-                    $successModel->setCanComment(true);
-                }
+            $audiobookInfo = $audiobookInfoRepository->findBy([
+                'audiobook' => $audiobook->getId(),
+                'watched'   => true,
+                'user'      => $user->getId(),
+            ]);
 
+            $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                'parent'    => null,
+                'audiobook' => $audiobook->getId(),
+                'deleted'   => false,
+            ]);
+
+            $successModel = new UserAudiobookDetailsSuccessModel(
+                (string)$audiobook->getId(),
+                $audiobook->getTitle(),
+                $audiobook->getAuthor(),
+                $audiobook->getVersion(),
+                $audiobook->getAlbum(),
+                $audiobook->getYear(),
+                (string)$audiobook->getDuration(),
+                $audiobook->getParts(),
+                $audiobook->getDescription(),
+                $audiobook->getAge(),
+                $audiobookCategories,
+                $inList,
+                count($audiobookUserComments),
+                $audiobook->getAvgRating(),
+                count($audiobookRatingRepository->findBy([
+                    'audiobook' => $audiobook->getId(),
+                ])),
+                $audiobook->getImgFile(),
+            );
+
+            if ($audiobookInfo !== null && count($audiobookInfo) >= $audiobook->getParts()) {
+                $successModel->setCanRate(true);
+            }
+            if (floor($audiobook->getParts() / 2) <= count($audiobookInfo)) {
+                $successModel->setCanComment(true);
+            }
                 return $successModel;
             });
 
@@ -506,17 +497,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is returning last information about last played part and time of given audiobook',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookInfoQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookInfoQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserAudiobookInfoSuccessModel::class)
-            )
+                content    : new Model(type: UserAudiobookInfoSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobookInfo(
@@ -526,9 +517,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
         if ($userAudiobookInfoQuery instanceof UserAudiobookInfoQuery) {
@@ -545,8 +535,8 @@ class UserAudiobookController extends AbstractController
 
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
-                'active' => true,
-                'user' => $user->getId()
+                'active'    => true,
+                'user'      => $user->getId(),
             ]);
 
             if ($audiobookInfo === null) {
@@ -558,7 +548,7 @@ class UserAudiobookController extends AbstractController
             $successModel = new UserAudiobookInfoSuccessModel(
                 $audiobookInfo->getPart(),
                 $audiobookInfo->getEndedTime(),
-                $audiobookInfo->getWatchingDate()
+                $audiobookInfo->getWatchingDate(),
             );
 
             return ResponseTool::getResponse($successModel);
@@ -587,16 +577,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding/deleting audiobook from my list',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookLikeQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookLikeQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookLike(
@@ -606,9 +596,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         MyListRepository               $myListRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
 
         if ($userAudiobookLikeQuery instanceof UserAudiobookLikeQuery) {
@@ -653,12 +642,12 @@ class UserAudiobookController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning list of audiobooks from my list',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserMyListAudiobooksSuccessModel::class)
-            )
+                content    : new Model(type: UserMyListAudiobooksSuccessModel::class),
+            ),
         ]
     )]
     public function userMyListAudiobooks(
@@ -666,8 +655,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-    ): Response
-    {
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $audiobooks = $user->getMyList()->getAudiobooks();
@@ -683,13 +671,13 @@ class UserAudiobookController extends AbstractController
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
                     $audiobook->getAge(),
-                    $audiobook->getImgFile()
+                    $audiobook->getImgFile(),
                 );
 
                 foreach ($audiobook->getCategories() as $category) {
                     $audiobookModel->addCategory(new UserAudiobookCategoryModel(
                         $category->getName(),
-                        $category->getCategoryKey()
+                        $category->getCategoryKey(),
                     ));
                 }
 
@@ -718,16 +706,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding new info about given audiobook',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookInfoAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookInfoAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookInfoAdd(
@@ -737,9 +725,8 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
 
         if ($userAudiobookInfoAddQuery instanceof UserAudiobookInfoAddQuery) {
@@ -758,8 +745,8 @@ class UserAudiobookController extends AbstractController
 
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
-                'part' => $userAudiobookInfoAddQuery->getPart(),
-                'user' => $user->getId()
+                'part'      => $userAudiobookInfoAddQuery->getPart(),
+                'user'      => $user->getId(),
             ]);
 
             if ($audiobookInfo !== null) {
@@ -780,7 +767,7 @@ class UserAudiobookController extends AbstractController
                     $audiobook,
                     $userAudiobookInfoAddQuery->getPart(),
                     (string)$userAudiobookInfoAddQuery->getEndedTime(),
-                    $userAudiobookInfoAddQuery->getWatched()
+                    $userAudiobookInfoAddQuery->getWatched(),
                 );
             }
 
@@ -813,16 +800,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding/editing user audiobook rating',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookRatingAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookRatingAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookRatingAdd(
@@ -833,9 +820,8 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
         AudiobookRatingRepository      $ratingRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
 
         if ($userAudiobookRatingAddQuery instanceof UserAudiobookRatingAddQuery) {
@@ -852,7 +838,7 @@ class UserAudiobookController extends AbstractController
 
             $rating = $ratingRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
-                'user' => $user->getId()
+                'user'      => $user->getId(),
             ]);
 
             if ($rating !== null) {
@@ -860,8 +846,8 @@ class UserAudiobookController extends AbstractController
             } else {
                 $audiobookInfo = $audiobookInfoRepository->findBy([
                     'audiobook' => $audiobook->getId(),
-                    'watched' => true,
-                    'user' => $user->getId()
+                    'watched'   => true,
+                    'user'      => $user->getId(),
                 ]);
 
                 if (count($audiobookInfo) < $audiobook->getParts()) {
@@ -901,17 +887,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is getting audiobook overall rating',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookRatingGetQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookRatingGetQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserAudiobookRatingGetSuccessModel::class)
-            )
+                content    : new Model(type: UserAudiobookRatingGetSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobookRatingGet(
@@ -920,9 +906,8 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 
         if ($userAudiobookRatingGetQuery instanceof UserAudiobookRatingGetQuery) {
@@ -963,16 +948,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding comment for given audiobook',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookCommentAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookCommentAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
-                description: 'Success'
-            )
+                response   : 201,
+                description: 'Success',
+            ),
         ]
     )]
     public function userAudiobookCommentAdd(
@@ -983,9 +968,9 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookInfoRepository        $audiobookInfoRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
 
         if ($userAudiobookCommentAddQuery instanceof UserAudiobookCommentAddQuery) {
@@ -1002,8 +987,8 @@ class UserAudiobookController extends AbstractController
 
             $watchedParts = $audiobookInfoRepository->findBy([
                 'audiobook' => $audiobook->getId(),
-                'user' => $user->getId(),
-                'watched' => true
+                'user'      => $user->getId(),
+                'watched'   => true,
             ]);
 
             if (floor($audiobook->getParts() / 2) > $watchedParts) {
@@ -1019,7 +1004,7 @@ class UserAudiobookController extends AbstractController
             if (array_key_exists('parentId', $additionalData)) {
 
                 $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
-                    'id' => $additionalData['parentId']
+                    'id' => $additionalData['parentId'],
                 ]);
 
                 if ($audiobookParentComment === null || $audiobookParentComment->getParent() !== null) {
@@ -1032,9 +1017,10 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookUserCommentRepository->add($audiobookComment);
+            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
-
         }
 
         $endpointLogger->error('Invalid given Query');
@@ -1060,16 +1046,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is editing given comment',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookCommentEditQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookCommentEditQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookCommentEdit(
@@ -1079,9 +1065,9 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $userAudiobookCommentEditQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentEditQuery::class);
 
         if ($userAudiobookCommentEditQuery instanceof UserAudiobookCommentEditQuery) {
@@ -1097,8 +1083,8 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookComment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $userAudiobookCommentEditQuery->getAudiobookCommentId(),
-                'user' => $user->getId()
+                'id'   => $userAudiobookCommentEditQuery->getAudiobookCommentId(),
+                'user' => $user->getId(),
             ]);
 
             if ($audiobookComment === null) {
@@ -1116,7 +1102,7 @@ class UserAudiobookController extends AbstractController
             if (array_key_exists('parentId', $additionalData)) {
 
                 $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
-                    'id' => $additionalData['parentId']
+                    'id' => $additionalData['parentId'],
                 ]);
 
                 if ($audiobookParentComment === null) {
@@ -1129,6 +1115,8 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookUserCommentRepository->add($audiobookComment);
+            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
 
@@ -1147,8 +1135,10 @@ class UserAudiobookController extends AbstractController
      * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
      * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
      * @param TranslateService $translateService
+     * @param TagAwareCacheInterface $stockCache
      * @return Response
      * @throws DataNotFoundException
+     * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
     #[Route('/api/user/audiobook/comment/like/add', name: 'userAudiobookCommentLikeAdd', methods: ['PATCH'])]
@@ -1157,16 +1147,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding/editing user audiobook comment like',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookCommentLikeAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookCommentLikeAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookCommentLikeAdd(
@@ -1176,9 +1166,9 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        TranslateService                   $translateService
-    ): Response
-    {
+        TranslateService                   $translateService,
+        TagAwareCacheInterface             $stockCache,
+    ): Response {
         $userAudiobookCommentLikeAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeAddQuery::class);
 
         if ($userAudiobookCommentLikeAddQuery instanceof UserAudiobookCommentLikeAddQuery) {
@@ -1186,7 +1176,7 @@ class UserAudiobookController extends AbstractController
             $user = $authorizedUserService->getAuthorizedUser();
 
             $comment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $userAudiobookCommentLikeAddQuery->getCommentId()
+                'id' => $userAudiobookCommentLikeAddQuery->getCommentId(),
             ]);
 
             if ($comment === null) {
@@ -1197,7 +1187,7 @@ class UserAudiobookController extends AbstractController
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
                 'audiobookUserComment' => $comment->getId(),
-                'user' => $user->getId()
+                'user'                 => $user->getId(),
             ]);
 
             if ($commentLike === null) {
@@ -1210,6 +1200,7 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookUserCommentLikeRepository->add($commentLike);
+            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
 
             return ResponseTool::getResponse();
 
@@ -1238,16 +1229,16 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is adding/editing user audiobook comment like',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookCommentLikeDeleteQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookCommentLikeDeleteQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userAudiobookCommentLikeDelete(
@@ -1257,9 +1248,9 @@ class UserAudiobookController extends AbstractController
         LoggerInterface                    $endpointLogger,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        TranslateService                   $translateService
-    ): Response
-    {
+        TranslateService                   $translateService,
+        TagAwareCacheInterface             $stockCache,
+    ): Response {
         $userAudiobookCommentLikeDeleteQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeDeleteQuery::class);
 
         if ($userAudiobookCommentLikeDeleteQuery instanceof UserAudiobookCommentLikeDeleteQuery) {
@@ -1267,7 +1258,7 @@ class UserAudiobookController extends AbstractController
             $user = $authorizedUserService->getAuthorizedUser();
 
             $comment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $userAudiobookCommentLikeDeleteQuery->getCommentId()
+                'id' => $userAudiobookCommentLikeDeleteQuery->getCommentId(),
             ]);
 
             if ($comment === null) {
@@ -1278,8 +1269,8 @@ class UserAudiobookController extends AbstractController
 
             $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
                 'audiobookUserComment' => $comment->getId(),
-                'user' => $user->getId(),
-                'deleted' => false
+                'user'                 => $user->getId(),
+                'deleted'              => false,
             ]);
 
             if ($commentLike === null) {
@@ -1291,6 +1282,7 @@ class UserAudiobookController extends AbstractController
             $commentLike->setDeleted(true);
 
             $audiobookUserCommentLikeRepository->add($commentLike);
+            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
 
             return ResponseTool::getResponse();
 
@@ -1322,17 +1314,17 @@ class UserAudiobookController extends AbstractController
         description: 'Endpoint is returning comments for given audiobook for user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserAudiobookCommentGetQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserAudiobookCommentGetQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AudiobookCommentsSuccessModel::class)
-            )
+                content    : new Model(type: AudiobookCommentsSuccessModel::class),
+            ),
         ]
     )]
     public function userAudiobookCommentGet(
@@ -1344,9 +1336,8 @@ class UserAudiobookController extends AbstractController
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookRepository                $audiobookRepository,
         TranslateService                   $translateService,
-        TagAwareCacheInterface             $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface             $stockCache,
+    ): Response {
 
         $userAudiobookCommentGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentGetQuery::class);
 
@@ -1364,12 +1355,12 @@ class UserAudiobookController extends AbstractController
 
             $successModel = $stockCache->get(CacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
                 $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                $item->tag(StockCacheTags::USER_AUDIOBOOKS->value);
+                $item->tag(StockCacheTags::AUDIOBOOK_COMMENTS->value);
 
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    'parent' => null,
+                    'parent'    => null,
                     'audiobook' => $audiobook->getId(),
-                    'deleted' => false
+                    'deleted'   => false,
                 ]);
 
                 $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, false);

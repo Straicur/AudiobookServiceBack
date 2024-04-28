@@ -28,24 +28,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserReport')]
 class UserReportController extends AbstractController
@@ -64,17 +64,17 @@ class UserReportController extends AbstractController
     #[Route('/api/report', name: 'apiReport', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to report for not logged users',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserNotAuthorizedUserReportQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserNotAuthorizedUserReportQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
             ),
         ]
@@ -85,9 +85,8 @@ class UserReportController extends AbstractController
         LoggerInterface         $usersLogger,
         LoggerInterface         $endpointLogger,
         TranslateService        $translateService,
-        ReportRepository        $reportRepository
-    ): Response
-    {
+        ReportRepository        $reportRepository,
+    ): Response {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
@@ -149,16 +148,16 @@ class UserReportController extends AbstractController
         description: 'Endpoint is used for users to report bad behavior',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserReportQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserReportQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function apiReportUser(
@@ -167,9 +166,8 @@ class UserReportController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
-        ReportRepository               $reportRepository
-    ): Response
-    {
+        ReportRepository               $reportRepository,
+    ): Response {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {

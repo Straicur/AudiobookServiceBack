@@ -25,7 +25,7 @@ class SmsTool
             $client = new Client($basic);
 
             $response = $client->sms()->send(
-                new SMS($phone, 'Audiobooks', $content)
+                new SMS($phone, 'Audiobooks', $content),
             );
 
             return $response->current()->getStatus() === 0;

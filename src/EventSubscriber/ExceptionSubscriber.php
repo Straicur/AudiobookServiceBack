@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * AuthValidationSubscriber
- *
  */
 class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -24,8 +23,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function __construct(
         LoggerInterface $responseLogger,
-    )
-    {
+    ) {
         $this->responseLogger = $responseLogger;
     }
 
@@ -42,18 +40,19 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $loggingContext = [
                 'statusCode' => $exception->getResponse()->getStatusCode(),
                 'file' => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
-                'responseData' => json_decode($exception->getResponse()->getContent(), true)
+                'responseData' => json_decode($exception->getResponse()->getContent(), true),
             ];
 
             $this->responseLogger->info('ResponseException', $loggingContext);
 
             $event->setResponse($exception->getResponse());
         } else {
-            $this->responseLogger->critical('ResponseException', ['class' => $exception::class, 'data' => $exception]);
+            $this->responseLogger->critical('ResponseException', ['class' => $exception::class,
+                                                                  'data'  => $exception]);
 
             $loggingContext = [
                 'message' => $exception->getMessage(),
-                'file' => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
+                'file'    => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
             ];
 
             switch ($exception::class) {

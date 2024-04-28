@@ -42,9 +42,9 @@ class UserAudiobookCommentEditQuery
                 'parentId' => new Assert\Optional([
                     new Assert\NotBlank(message: 'ParentId is empty'),
                     new Assert\NotNull(),
-                    new Assert\Uuid()
-                ])
-            ]
+                    new Assert\Uuid(),
+                ]),
+            ],
         ]));
     }
 
@@ -53,7 +53,7 @@ class UserAudiobookCommentEditQuery
      */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('parentId', $additionalData)) {

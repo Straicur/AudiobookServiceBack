@@ -49,24 +49,24 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminAudiobookCategory')]
 class AdminAudiobookCategoryController extends AbstractController
@@ -90,16 +90,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is adding new category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryAddQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryAddQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryAdd(
@@ -109,9 +109,8 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryAddQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
 
         if ($adminCategoryAddQuery instanceof AdminCategoryAddQuery) {
@@ -125,7 +124,7 @@ class AdminAudiobookCategoryController extends AbstractController
             if (array_key_exists('parentId', $additionalData) && $additionalData['parentId'] !== "") {
 
                 $parentAudiobookCategory = $audiobookCategoryRepository->findOneBy([
-                    'id' => $additionalData['parentId']
+                    'id' => $additionalData['parentId'],
                 ]);
 
                 if ($parentAudiobookCategory === null) {
@@ -168,16 +167,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is editing given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryEditQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryEditQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryEdit(
@@ -187,14 +186,13 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
 
         if ($adminCategoryEditQuery instanceof AdminCategoryEditQuery) {
             $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryEditQuery->getCategoryId()
+                'id' => $adminCategoryEditQuery->getCategoryId(),
             ]);
 
             if ($category === null) {
@@ -237,16 +235,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is removing given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryRemoveQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryRemoveQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryRemove(
@@ -257,15 +255,14 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
         NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryRemoveQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
 
         if ($adminCategoryRemoveQuery instanceof AdminCategoryRemoveQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryRemoveQuery->getCategoryId()
+                'id' => $adminCategoryRemoveQuery->getCategoryId(),
             ]);
 
             if ($category === null) {
@@ -307,16 +304,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is adding audiobook to given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryAddAudiobookQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryAddAudiobookQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryAddAudiobook(
@@ -327,15 +324,14 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryAddAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
 
         if ($adminCategoryAddAudiobookQuery instanceof AdminCategoryAddAudiobookQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryAddAudiobookQuery->getCategoryId()
+                'id' => $adminCategoryAddAudiobookQuery->getCategoryId(),
             ]);
 
             if ($category === null) {
@@ -345,7 +341,7 @@ class AdminAudiobookCategoryController extends AbstractController
             }
 
             $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminCategoryAddAudiobookQuery->getAudiobookId()
+                'id' => $adminCategoryAddAudiobookQuery->getAudiobookId(),
             ]);
 
             if ($audiobook === null) {
@@ -390,16 +386,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is removing audiobook from given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryRemoveAudiobookQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryRemoveAudiobookQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryRemoveAudiobook(
@@ -410,15 +406,14 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryRemoveAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
 
         if ($adminCategoryRemoveAudiobookQuery instanceof AdminCategoryRemoveAudiobookQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryRemoveAudiobookQuery->getCategoryId()
+                'id' => $adminCategoryRemoveAudiobookQuery->getCategoryId(),
             ]);
 
             if ($category === null) {
@@ -428,7 +423,7 @@ class AdminAudiobookCategoryController extends AbstractController
             }
 
             $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminCategoryRemoveAudiobookQuery->getAudiobookId()
+                'id' => $adminCategoryRemoveAudiobookQuery->getAudiobookId(),
             ]);
 
             if ($audiobook === null) {
@@ -473,17 +468,17 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is returning all audiobooks in given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryAudiobooksQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryAudiobooksQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminCategoryAudiobooksSuccessModel::class),
-            )
+                content    : new Model(type: AdminCategoryAudiobooksSuccessModel::class),
+            ),
         ]
     )]
     public function adminCategoryAudiobooks(
@@ -493,15 +488,14 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
 
         if ($adminCategoryAudiobooksQuery instanceof AdminCategoryAudiobooksQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                'categoryKey' => $adminCategoryAudiobooksQuery->getCategoryKey()
+                'categoryKey' => $adminCategoryAudiobooksQuery->getCategoryKey(),
             ]);
 
             if ($category === null) {
@@ -537,7 +531,7 @@ class AdminAudiobookCategoryController extends AbstractController
                             $audiobook->getParts(),
                             $audiobook->getAvgRating(),
                             $audiobook->getAge(),
-                            $audiobook->getActive()
+                            $audiobook->getActive(),
                         );
 
                         $successModel->addAudiobook($audiobookModel);
@@ -578,12 +572,12 @@ class AdminAudiobookCategoryController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning all categories in system as a tree',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminCategoriesSuccessModel::class)
-            )
+                content    : new Model(type: AdminCategoriesSuccessModel::class),
+            ),
         ]
     )]
     public function adminCategoriesTree(
@@ -593,15 +587,14 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository, $audiobookRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
 
             $categories = $audiobookCategoryRepository->findBy([
-                'parent' => null
+                'parent' => null,
             ]);
 
             $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
@@ -627,12 +620,12 @@ class AdminAudiobookCategoryController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning all categories in system',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminCategoriesSuccessModel::class)
-            )
+                content    : new Model(type: AdminCategoriesSuccessModel::class),
+            ),
         ]
     )]
     public function adminCategories(
@@ -641,9 +634,8 @@ class AdminAudiobookCategoryController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORIES->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
@@ -682,16 +674,16 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is activating given category',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryActiveQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryActiveQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function adminCategoryActive(
@@ -701,15 +693,14 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryActiveQuery = $requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
 
         if ($adminCategoryActiveQuery instanceof AdminCategoryActiveQuery) {
 
             $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryActiveQuery->getCategoryId()
+                'id' => $adminCategoryActiveQuery->getCategoryId(),
             ]);
 
             if ($category === null) {
@@ -751,17 +742,17 @@ class AdminAudiobookCategoryController extends AbstractController
         description: 'Endpoint is returning category details',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminCategoryDetailQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminCategoryDetailQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminCategorySuccessModel::class)
-            )
+                content    : new Model(type: AdminCategorySuccessModel::class),
+            ),
         ]
     )]
     public function adminCategoryDetail(
@@ -771,14 +762,13 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);
 
         if ($adminCategoryDetailQuery instanceof AdminCategoryDetailQuery) {
             $category = $audiobookCategoryRepository->findOneBy([
-                'categoryKey' => $adminCategoryDetailQuery->getCategoryKey()
+                'categoryKey' => $adminCategoryDetailQuery->getCategoryKey(),
             ]);
 
             if ($category === null) {

@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * RemoveNotUsedAudiobooksCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:audioobooks:remove:notused',
+    name       : 'audiobookservice:audioobooks:remove:notused',
     description: 'Command is removing not used audiobooks from files',
 )]
 class RemoveNotUsedAudiobooksCommand extends Command
@@ -43,7 +43,7 @@ class RemoveNotUsedAudiobooksCommand extends Command
         foreach (glob(rtrim($_ENV['MAIN_DIR'], '/') . '/*', GLOB_NOSORT) as $each) {
 
             $isInRepo = $this->audiobookRepository->findOneBy([
-                'fileName' => $each
+                'fileName' => $each,
             ]);
 
             if ($isInRepo === null) {

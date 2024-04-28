@@ -14,10 +14,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * CalculateAudiobooksRatingCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:calculate:rating',
+    name       : 'audiobookservice:calculate:rating',
     description: 'Calculate audiobooks rating',
 )]
 class CalculateAudiobooksRatingCommand extends Command
@@ -41,13 +40,13 @@ class CalculateAudiobooksRatingCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $activeAudiobooks = $this->audiobookRepository->findBy([
-            'active' => true
+            'active' => true,
         ]);
 
         foreach ($activeAudiobooks as $audiobook) {
             $goodRatings = count($this->ratingRepository->findBy([
                 'audiobook' => $audiobook->getId(),
-                'rating' => true
+                'rating'    => true,
             ]));
 
             $audiobookRatings = count($audiobook->getAudiobookRatings());

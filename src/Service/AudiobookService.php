@@ -136,7 +136,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $zipFile = fopen($this->whole_zip_path . '.zip', 'ab');
 
-        $zipFiles = array_diff(scandir($this->whole_dir_path), array('.', '..'));
+        $zipFiles = array_diff(scandir($this->whole_dir_path), ['.', '..']);
         $result = [];
 
         foreach ($zipFiles as $file) {

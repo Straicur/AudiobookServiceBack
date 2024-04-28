@@ -38,24 +38,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Authorize')]
 class AuthorizationController extends AbstractController
@@ -78,19 +78,19 @@ class AuthorizationController extends AbstractController
     #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to authorize user credentials. Return authorized token',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AuthorizeQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AuthorizeQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AuthorizationSuccessModel::class)
+                content    : new Model(type: AuthorizationSuccessModel::class),
             ),
         ]
     )]
@@ -102,9 +102,8 @@ class AuthorizationController extends AbstractController
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService              $translateService
-    ): Response
-    {
+        TranslateService              $translateService,
+    ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
@@ -112,7 +111,7 @@ class AuthorizationController extends AbstractController
             $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
 
             $userInformationEntity = $userInformationRepository->findOneBy([
-                'email' => $authenticationQuery->getEmail()
+                'email' => $authenticationQuery->getEmail(),
             ]);
 
             if ($userInformationEntity === null) {
@@ -144,8 +143,8 @@ class AuthorizationController extends AbstractController
             }
 
             $passwordEntity = $userPasswordRepository->findOneBy([
-                'user' => $userInformationEntity->getUser(),
-                'password' => $passwordHashGenerator->generate()
+                'user'     => $userInformationEntity->getUser(),
+                'password' => $passwordHashGenerator->generate(),
             ]);
 
             if ($passwordEntity === null) {
@@ -174,7 +173,6 @@ class AuthorizationController extends AbstractController
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel, $isAdmin);
 
-
             return ResponseTool::getResponse($responseModel);
         }
 
@@ -197,9 +195,9 @@ class AuthorizationController extends AbstractController
     #[OA\Post(
         description: 'Method used to logout user',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
             ),
         ]
@@ -209,8 +207,7 @@ class AuthorizationController extends AbstractController
         AuthenticationTokenRepository  $authenticationTokenRepository,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $usersLogger,
-    ): Response
-    {
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $authorizationHeaderField = $request->headers->get('authorization');
@@ -237,11 +234,11 @@ class AuthorizationController extends AbstractController
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
         description: 'Method is checking if given token is authorized',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
             ),
         ]
@@ -250,8 +247,7 @@ class AuthorizationController extends AbstractController
         Request                 $request,
         RequestServiceInterface $requestServiceInterface,
         LoggerInterface         $usersLogger,
-    ): Response
-    {
+    ): Response {
         return ResponseTool::getResponse();
     }
 }

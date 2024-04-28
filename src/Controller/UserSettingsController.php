@@ -52,24 +52,24 @@ use Symfony\Component\Routing\Attribute\Route;
 use Vonage\Client\Exception\Exception;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'User')]
 class UserSettingsController extends AbstractController
@@ -91,16 +91,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is changing password of logged user',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserSettingsPasswordQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserSettingsPasswordQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userSettingsPassword(
@@ -109,16 +109,15 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
         if ($userSettingsPasswordQuery instanceof UserSettingsPasswordQuery) {
             $user = $authorizedUserService->getAuthorizedUser();
 
             $userPassword = $userPasswordRepository->findOneBy([
-                'user' => $user->getId()
+                'user' => $user->getId(),
             ]);
 
             $passwordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getOldPassword());
@@ -164,16 +163,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is sending confirmation email to change user email',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserSettingsEmailQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserSettingsEmailQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userSettingsEmail(
@@ -185,9 +184,8 @@ class UserSettingsController extends AbstractController
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
         UserEditRepository             $editRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
 
         if ($userSettingsEmailQuery instanceof UserSettingsEmailQuery) {
@@ -195,7 +193,7 @@ class UserSettingsController extends AbstractController
             $user = $authorizedUserService->getAuthorizedUser();
 
             $userOldEmail = $userInformationRepository->findOneBy([
-                'email' => $userSettingsEmailQuery->getOldEmail()
+                'email' => $userSettingsEmailQuery->getOldEmail(),
             ]);
 
             if ($userOldEmail === null) {
@@ -205,7 +203,7 @@ class UserSettingsController extends AbstractController
             }
 
             $userNewEmail = $userInformationRepository->findOneBy([
-                'email' => $userSettingsEmailQuery->getNewEmail()
+                'email' => $userSettingsEmailQuery->getNewEmail(),
             ]);
 
             if ($userNewEmail !== null) {
@@ -239,11 +237,11 @@ class UserSettingsController extends AbstractController
                     ->subject($translateService->getTranslation('ChangeEmailSubject'))
                     ->htmlTemplate('emails/userSettingsEmailChange.html.twig')
                     ->context([
-                        'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'id' => $user->getId()->__toString(),
+                        'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        'id'        => $user->getId()->__toString(),
                         'userEmail' => $userSettingsEmailQuery->getNewEmail(),
-                        'url' => $_ENV['BACKEND_URL'],
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'url'       => $_ENV['BACKEND_URL'],
+                        'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -271,11 +269,11 @@ class UserSettingsController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is sending confirmation email to change user email',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userSettingsEmailChange(
@@ -286,14 +284,13 @@ class UserSettingsController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         UserEditRepository             $editRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userEmail = $request->get('email');
         $userId = $request->get('id');
 
         $user = $userRepository->findOneBy([
-            'id' => $userId
+            'id' => $userId,
         ]);
 
         if ($user === null) {
@@ -311,7 +308,7 @@ class UserSettingsController extends AbstractController
         }
 
         $userNewEmail = $userInformationRepository->findOneBy([
-            'email' => $userEmail
+            'email' => $userEmail,
         ]);
 
         if ($userNewEmail !== null) {
@@ -335,9 +332,9 @@ class UserSettingsController extends AbstractController
         return $this->render(
             'pages/userSettingsEmailChange.html.twig',
             [
-                'url' => $_ENV['FRONTEND_URL'],
-                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
-            ]
+                'url'  => $_ENV['FRONTEND_URL'],
+                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+            ],
         );
     }
 
@@ -360,11 +357,11 @@ class UserSettingsController extends AbstractController
     #[OA\Patch(
         description: 'Endpoint is setting user account to not active',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userSettingsDelete(
@@ -376,9 +373,8 @@ class UserSettingsController extends AbstractController
         AuthenticationTokenRepository  $authenticationTokenRepository,
         UserRepository                 $userRepository,
         MailerInterface                $mailer,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $userInDelete = $userDeleteRepository->userInList($user);
@@ -411,7 +407,7 @@ class UserSettingsController extends AbstractController
                 ->htmlTemplate('emails/userDeleteProcessing.html.twig')
                 ->context([
                     'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                    'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                    'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                 ]);
             $mailer->send($email);
         }
@@ -436,16 +432,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is changing given user informations',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserSettingsChangeQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserSettingsChangeQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userSettingsChange(
@@ -454,9 +450,8 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
         if ($userSettingsChangeQuery instanceof UserSettingsChangeQuery) {
@@ -467,9 +462,9 @@ class UserSettingsController extends AbstractController
             $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
             $userInformation->setLastname($userSettingsChangeQuery->getLastName());
 
-            if($userInformation->getPhoneNumber() !== $userSettingsChangeQuery->getPhoneNumber()){
+            if ($userInformation->getPhoneNumber() !== $userSettingsChangeQuery->getPhoneNumber()) {
                 $existingPhone = $userInformationRepository->findOneBy([
-                    'phoneNumber' => $userSettingsChangeQuery->getPhoneNumber()
+                    'phoneNumber' => $userSettingsChangeQuery->getPhoneNumber(),
                 ]);
 
                 if ($existingPhone !== null) {
@@ -503,12 +498,12 @@ class UserSettingsController extends AbstractController
     #[OA\Get(
         description: 'Endpoint is returning logged user informations',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: UserSettingsGetSuccessModel::class)
-            )
+                content    : new Model(type: UserSettingsGetSuccessModel::class),
+            ),
         ]
     )]
     public function userSettingsGet(
@@ -516,8 +511,7 @@ class UserSettingsController extends AbstractController
         RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
-    ): Response
-    {
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $userInformation = $user->getUserInformation();
@@ -550,16 +544,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is sending reset password email',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserResetPasswordQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserResetPasswordQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userResetPassword(
@@ -571,15 +565,14 @@ class UserSettingsController extends AbstractController
         UserInformationRepository      $userInformationRepository,
         UserRepository                 $userRepository,
         UserEditRepository             $editRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
 
         if ($userResetPasswordQuery instanceof UserResetPasswordQuery) {
 
             $userInformation = $userInformationRepository->findOneBy([
-                'email' => $userResetPasswordQuery->getEmail()
+                'email' => $userResetPasswordQuery->getEmail(),
             ]);
 
             if ($userInformation === null) {
@@ -609,9 +602,9 @@ class UserSettingsController extends AbstractController
                     ->htmlTemplate('emails/userSettingsResetPassword.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'id' => $user->getId()->__toString(),
-                        'url' => $_ENV['FRONTEND_URL'],
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'id'       => $user->getId()->__toString(),
+                        'url'      => $_ENV['FRONTEND_URL'],
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -642,16 +635,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is changing user password',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserResetPasswordConfirmQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserResetPasswordConfirmQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userResetPasswordConfirm(
@@ -662,15 +655,14 @@ class UserSettingsController extends AbstractController
         UserRepository                 $userRepository,
         UserPasswordRepository         $userPasswordRepository,
         UserEditRepository             $editRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
 
         if ($userResetPasswordConfirmQuery instanceof UserResetPasswordConfirmQuery) {
 
             $user = $userRepository->findOneBy([
-                'id' => $userResetPasswordConfirmQuery->getUserId()
+                'id' => $userResetPasswordConfirmQuery->getUserId(),
             ]);
 
             if ($user === null) {
@@ -694,7 +686,7 @@ class UserSettingsController extends AbstractController
             $userRepository->add($user);
 
             $password = $userPasswordRepository->findOneBy([
-                'user' => $user->getId()
+                'user' => $user->getId(),
             ]);
 
             $passwordGenerator = new PasswordHashGenerator($userResetPasswordConfirmQuery->getPassword());
@@ -727,12 +719,12 @@ class UserSettingsController extends AbstractController
     #[OA\Put(
         description: 'Endpoint is creating a sms code for changing parent control settings',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
-                content: new Model(type: UserParentControlPutSuccessModel::class)
-            )
+                content    : new Model(type: UserParentControlPutSuccessModel::class),
+            ),
         ]
     )]
     public function userParentControlPut(
@@ -742,9 +734,8 @@ class UserSettingsController extends AbstractController
         LoggerInterface                   $endpointLogger,
         TranslateService                  $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
-        UserRepository                    $userRepository
-    ): Response
-    {
+        UserRepository                    $userRepository,
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
         $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
@@ -802,16 +793,16 @@ class UserSettingsController extends AbstractController
         description: 'Endpoint is changing parent control settings',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: UserParentControlPatchQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: UserParentControlPatchQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function userParentControlPatch(
@@ -821,18 +812,17 @@ class UserSettingsController extends AbstractController
         LoggerInterface                   $endpointLogger,
         UserInformationRepository         $userInformationRepository,
         TranslateService                  $translateService,
-        UserParentalControlCodeRepository $controlCodeRepository
-    ): Response
-    {
+        UserParentalControlCodeRepository $controlCodeRepository,
+    ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
         if ($userParentControlPatchQuery instanceof UserParentControlPatchQuery) {
             $user = $authorizedUserService->getAuthorizedUser();
 
             $controlCode = $controlCodeRepository->findOneBy([
-                'code' => $userParentControlPatchQuery->getSmsCode(),
+                'code'   => $userParentControlPatchQuery->getSmsCode(),
                 'active' => true,
-                'user' => $user->getId()
+                'user'   => $user->getId(),
             ]);
 
             if ($controlCode === null) {

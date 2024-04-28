@@ -23,12 +23,12 @@ class AdminTechnicalCacheClearQuery
                 'admin' => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'user' => new Assert\Optional([
+                'user'  => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'all' => new Assert\Optional([
+                'all'   => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ])
+                ]),
             ],
         ]));
     }
@@ -43,7 +43,7 @@ class AdminTechnicalCacheClearQuery
         new OA\Property(property: 'admin', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'user', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'all', type: 'boolean', example: true, nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setCacheData(array $cacheData): void
     {
         $this->cacheData = $cacheData;

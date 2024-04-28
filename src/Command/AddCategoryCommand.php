@@ -16,10 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * AddCategoryCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:category:add',
+    name       : 'audiobookservice:category:add',
     description: 'Add user to service',
 )]
 class AddCategoryCommand extends Command
@@ -28,8 +27,7 @@ class AddCategoryCommand extends Command
 
     public function __construct(
         AudiobookCategoryRepository $audiobookCategoryRepository,
-    )
-    {
+    ) {
         $this->audiobookCategoryRepository = $audiobookCategoryRepository;
 
         parent::__construct();
@@ -53,7 +51,6 @@ class AddCategoryCommand extends Command
         $name = $input->getArgument('name');
         $parent = $input->getArgument('parent');
 
-
         $io->text([
             'Name:  ' . $name,
             'Parent:  ' . $parent,
@@ -65,7 +62,7 @@ class AddCategoryCommand extends Command
 
         if ($parent !== null) {
             $parentCategory = $this->audiobookCategoryRepository->findOneBy([
-                'name' => $parent
+                'name' => $parent,
             ]);
 
             if ($parentCategory !== null) {

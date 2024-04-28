@@ -24,25 +24,25 @@ class AdminUserNotificationsQuery
     {
         $metadata->addPropertyConstraint('searchData', new Assert\Collection([
             'fields' => [
-                'text' => new Assert\Optional([
+                'text'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'Text is empty'),
                     new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'type' => new Assert\Optional([
+                'type'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'Type is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(7)
+                    new Assert\LessThan(7),
                 ]),
                 'deleted' => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'order' => new Assert\Optional([
+                'order'   => new Assert\Optional([
                     new Assert\NotBlank(message: 'Order is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(9)
-                ])
+                    new Assert\LessThan(9),
+                ]),
             ],
         ]));
     }
@@ -55,7 +55,7 @@ class AdminUserNotificationsQuery
         new OA\Property(property: 'type', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'deleted', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('order', $searchData)) {

@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * UnbanUsersCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:users:unban',
+    name       : 'audiobookservice:users:unban',
     description: 'Command is unbanning users with valid date',
 )]
 class UnbanUsersCommand extends Command

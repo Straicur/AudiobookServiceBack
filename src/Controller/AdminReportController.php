@@ -50,24 +50,24 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminReport')]
 class AdminReportController extends AbstractController
@@ -98,16 +98,16 @@ class AdminReportController extends AbstractController
         description: 'Endpoint is used to accept report',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminReportAcceptQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminReportAcceptQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function apiAdminReportAccept(
@@ -122,14 +122,13 @@ class AdminReportController extends AbstractController
         AudiobookUserCommentRepository $commentRepository,
         UserRepository                 $userRepository,
         UserBanHistoryRepository       $banHistoryRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
             $report = $reportRepository->findOneBy([
-                'id' => $adminReportAcceptQuery->getReportId()
+                'id' => $adminReportAcceptQuery->getReportId(),
             ]);
 
             if ($report === null) {
@@ -140,7 +139,7 @@ class AdminReportController extends AbstractController
 
             if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
                 $comment = $commentRepository->findOneBy([
-                    'id' => $report->getActionId()
+                    'id' => $report->getActionId(),
                 ]);
 
                 if ($comment !== null) {
@@ -149,7 +148,7 @@ class AdminReportController extends AbstractController
 
                     if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
                         $bannedAmount = count($banHistoryRepository->findBy([
-                            'user' => $user->getId()
+                            'user' => $user->getId(),
                         ]));
 
                         if ($bannedAmount === UserBanAmount::NONE->value) {
@@ -171,7 +170,7 @@ class AdminReportController extends AbstractController
 
                     $user->setBannedTo($banPeriod);
 
-                    if($periodTo !== BanPeriodRage::NOT_BANNED->value){
+                    if ($periodTo !== BanPeriodRage::NOT_BANNED->value) {
                         $user->setBanned(true);
                     }
 
@@ -185,8 +184,8 @@ class AdminReportController extends AbstractController
                             ->subject($translateService->getTranslation('UserBannedSubject'))
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
-                                'name' => $user->getUserInformation()->getFirstname(),
-                                'desc' => $comment->getComment(),
+                                'name'   => $user->getUserInformation()->getFirstname(),
+                                'desc'   => $comment->getComment(),
                                 'dateTo' => $banPeriod->format('d.m.Y'),
                             ]);
                         $mailer->send($email);
@@ -255,16 +254,16 @@ class AdminReportController extends AbstractController
         description: 'Endpoint is used to reject report',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminReportRejectQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminReportRejectQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-            )
+            ),
         ]
     )]
     public function apiAdminReportReject(
@@ -276,14 +275,13 @@ class AdminReportController extends AbstractController
         ReportRepository               $reportRepository,
         MailerInterface                $mailer,
         NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
         if ($adminReportRejectQuery instanceof AdminReportRejectQuery) {
             $report = $reportRepository->findOneBy([
-                'id' => $adminReportRejectQuery->getReportId()
+                'id' => $adminReportRejectQuery->getReportId(),
             ]);
 
             if ($report === null) {
@@ -317,7 +315,7 @@ class AdminReportController extends AbstractController
                     ->subject($translateService->getTranslation('ReportDeniedSubject'))
                     ->htmlTemplate('emails/reportDenied.html.twig')
                     ->context([
-                        'desc' => $report->getDescription(),
+                        'desc'        => $report->getDescription(),
                         'explanation' => $adminReportRejectQuery->getResponse(),
                     ]);
                 $mailer->send($email);
@@ -348,17 +346,17 @@ class AdminReportController extends AbstractController
         description: 'Endpoint is used to get report list',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AdminReportListQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AdminReportListQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AdminReportListSuccessModel::class)
-            )
+                content    : new Model(type: AdminReportListSuccessModel::class),
+            ),
         ]
     )]
     public function apiAdminReportList(
@@ -368,9 +366,8 @@ class AdminReportController extends AbstractController
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,
         ReportRepository               $reportRepository,
-        UserDeleteRepository           $userDeleteRepository
-    ): Response
-    {
+        UserDeleteRepository           $userDeleteRepository,
+    ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
@@ -440,7 +437,7 @@ class AdminReportController extends AbstractController
                         $report->getType(),
                         $report->getDateAdd(),
                         $report->getAccepted(),
-                        $report->getDenied()
+                        $report->getDenied(),
                     );
                     if ($report->getDescription()) {
                         $reportModel->setDescription($report->getDescription());
@@ -467,8 +464,8 @@ class AdminReportController extends AbstractController
                                 $report->getUser()->getUserInformation()->getFirstname(),
                                 $report->getUser()->getUserInformation()->getLastname(),
                                 $report->getUser()->getDateCreate(),
-                                $userDeleted
-                            )
+                                $userDeleted,
+                            ),
                         );
                     }
                     $successModel->addReport($reportModel);

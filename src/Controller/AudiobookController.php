@@ -32,29 +32,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
+    response   : 401,
     description: 'User not authorized',
-    content: new Model(type: NotAuthorizeModel::class)
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
+    response   : 403,
     description: 'User have no permission',
-    content: new Model(type: PermissionNotGrantedModel::class)
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Audiobook')]
 class AudiobookController extends AbstractController
@@ -78,17 +77,17 @@ class AudiobookController extends AbstractController
         description: 'Endpoint is returning specific part of audiobook',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AudiobookPartQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AudiobookPartQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AudiobookPartSuccessModel::class)
-            )
+                content    : new Model(type: AudiobookPartSuccessModel::class),
+            ),
         ]
     )]
     public function audiobookPart(
@@ -98,15 +97,14 @@ class AudiobookController extends AbstractController
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache
-    ): Response
-    {
+        TagAwareCacheInterface         $stockCache,
+    ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
 
             $audiobook = $audiobookRepository->findOneBy([
-                'id' => $audiobookPartQuery->getAudiobookId()
+                'id' => $audiobookPartQuery->getAudiobookId(),
             ]);
 
             if ($audiobook === null) {
@@ -184,17 +182,17 @@ class AudiobookController extends AbstractController
         description: 'Endpoint is returning covers paths for given audiobooks',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AudiobookCoversQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: AudiobookCoversQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
-                content: new Model(type: AudiobookCoversSuccessModel::class)
-            )
+                content    : new Model(type: AudiobookCoversSuccessModel::class),
+            ),
         ]
     )]
     public function audiobookCovers(
@@ -203,9 +201,8 @@ class AudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService
-    ): Response
-    {
+        TranslateService               $translateService,
+    ): Response {
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
@@ -215,7 +212,7 @@ class AudiobookController extends AbstractController
                 $audiobook = null;
                 if ($audiobookId) {
                     $audiobook = $audiobookRepository->findOneBy([
-                        'id' => $audiobookId
+                        'id' => $audiobookId,
                     ]);
                 }
 

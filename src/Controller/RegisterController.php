@@ -44,14 +44,14 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
-    response: 400,
+    response   : 400,
     description: 'JSON Data Invalid',
-    content: new Model(type: JsonDataInvalidModel::class)
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
+    response   : 404,
     description: 'Data not found',
-    content: new Model(type: DataNotFoundModel::class)
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Tag(name: 'Register')]
 class RegisterController extends AbstractController
@@ -80,17 +80,17 @@ class RegisterController extends AbstractController
     #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to register user',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: RegisterQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: RegisterQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 201,
+                response   : 201,
                 description: 'Success',
             ),
         ]
@@ -110,15 +110,14 @@ class RegisterController extends AbstractController
         InstitutionRepository        $institutionRepository,
         UserPasswordRepository       $userPasswordRepository,
         TranslateService             $translateService,
-        UserSettingsRepository       $userSettingsRepository
-    ): Response
-    {
+        UserSettingsRepository       $userSettingsRepository,
+    ): Response {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
 
             $existingEmail = $userInformationRepository->findOneBy([
-                'email' => $registerQuery->getEmail()
+                'email' => $registerQuery->getEmail(),
             ]);
 
             if ($existingEmail !== null) {
@@ -128,7 +127,7 @@ class RegisterController extends AbstractController
             }
 
             $existingPhone = $userInformationRepository->findOneBy([
-                'phoneNumber' => $registerQuery->getPhoneNumber()
+                'phoneNumber' => $registerQuery->getPhoneNumber(),
             ]);
 
             if ($existingPhone !== null) {
@@ -138,11 +137,11 @@ class RegisterController extends AbstractController
             }
 
             $institution = $institutionRepository->findOneBy([
-                'name' => $_ENV['INSTITUTION_NAME']
+                'name' => $_ENV['INSTITUTION_NAME'],
             ]);
 
             $guest = $roleRepository->findOneBy([
-                'name' => 'Guest'
+                'name' => 'Guest',
             ]);
 
             if ($institution->getMaxUsers() < count($userRepository->getUsersByRole($guest))) {
@@ -162,7 +161,7 @@ class RegisterController extends AbstractController
                 $registerQuery->getEmail(),
                 $registerQuery->getPhoneNumber(),
                 $registerQuery->getFirstname(),
-                $registerQuery->getLastname()
+                $registerQuery->getLastname(),
             );
 
             $birthday = $additionalData['birthday'] ?? null;
@@ -184,7 +183,7 @@ class RegisterController extends AbstractController
             $proposedAudiobooksRepository->add($userProposedAudiobooks);
 
             $userRole = $roleRepository->findOneBy([
-                'name' => 'Guest'
+                'name' => 'Guest',
             ]);
 
             $newUser->addRole($userRole);
@@ -208,11 +207,11 @@ class RegisterController extends AbstractController
                     ->subject($translateService->getTranslation('AccountActivationCodeSubject'))
                     ->htmlTemplate('emails/register.html.twig')
                     ->context([
-                        'userName' => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
-                        'code' => $registerCodeGenerator->getBeforeGenerate(),
+                        'userName'  => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
+                        'code'      => $registerCodeGenerator->getBeforeGenerate(),
                         'userEmail' => $newUser->getUserInformation()->getEmail(),
-                        'url' => $_ENV['BACKEND_URL'],
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'url'       => $_ENV['BACKEND_URL'],
+                        'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -241,11 +240,11 @@ class RegisterController extends AbstractController
     #[Route('/api/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
     #[OA\Get(
         description: 'Method used to confirm user registration',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
             ),
         ]
@@ -258,14 +257,13 @@ class RegisterController extends AbstractController
         RoleRepository            $roleRepository,
         UserRepository            $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService
-    ): Response
-    {
+        TranslateService          $translateService,
+    ): Response {
         $userEmail = $request->get('email');
         $code = $request->get('code');
 
         $userInformation = $userInformationRepository->findOneBy([
-            'email' => $userEmail
+            'email' => $userEmail,
         ]);
 
         if ($userInformation === null) {
@@ -278,7 +276,7 @@ class RegisterController extends AbstractController
         $registerCodeGenerator = new RegisterCodeGenerator($code);
 
         $registerCode = $registerCodeRepository->findOneBy([
-            'code' => $registerCodeGenerator->generate()
+            'code' => $registerCodeGenerator->generate(),
         ]);
 
         if ($registerCode === null || !$registerCode->getActive() || $registerCode->getDateAccept() !== null || $registerCode->getUser() !== $user) {
@@ -293,7 +291,7 @@ class RegisterController extends AbstractController
         $registerCodeRepository->add($registerCode);
 
         $userRole = $roleRepository->findOneBy([
-            'name' => 'User'
+            'name' => 'User',
         ]);
 
         $user->addRole($userRole);
@@ -306,9 +304,9 @@ class RegisterController extends AbstractController
         return $this->render(
             'pages/registered.html.twig',
             [
-                'url' => $_ENV['FRONTEND_URL'],
-                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
-            ]
+                'url'  => $_ENV['FRONTEND_URL'],
+                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+            ],
         );
     }
 
@@ -329,17 +327,17 @@ class RegisterController extends AbstractController
     #[Route('/api/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to send registration code again',
-        security: [],
+        security   : [],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: RegisterConfirmSendQuery::class),
-                type: 'object'
+            content : new OA\JsonContent(
+                ref : new Model(type: RegisterConfirmSendQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
+                response   : 200,
                 description: 'Success',
             ),
         ]
@@ -352,15 +350,14 @@ class RegisterController extends AbstractController
         MailerInterface           $mailer,
         RegisterCodeRepository    $registerCodeRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService
-    ): Response
-    {
+        TranslateService          $translateService,
+    ): Response {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 
         if ($registerConfirmSendQuery instanceof RegisterConfirmSendQuery) {
 
             $userInfo = $userInformationRepository->findOneBy([
-                'email' => $registerConfirmSendQuery->getEmail()
+                'email' => $registerConfirmSendQuery->getEmail(),
             ]);
 
             if ($userInfo === null) {
@@ -392,11 +389,11 @@ class RegisterController extends AbstractController
                     ->subject($translateService->getTranslation('AccountActivationCodeSubject'))
                     ->htmlTemplate('emails/register.html.twig')
                     ->context([
-                        'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'code' => $registerCodeGenerator->getBeforeGenerate(),
+                        'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        'code'      => $registerCodeGenerator->getBeforeGenerate(),
                         'userEmail' => $user->getUserInformation()->getEmail(),
-                        'url' => $_ENV['BACKEND_URL'],
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate()
+                        'url'       => $_ENV['BACKEND_URL'],
+                        'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }

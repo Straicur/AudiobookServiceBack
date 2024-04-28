@@ -15,10 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * AddInstitutionCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:institution:add',
+    name       : 'audiobookservice:institution:add',
     description: 'Add user to service',
 )]
 class AddInstitutionCommand extends Command
@@ -27,8 +26,7 @@ class AddInstitutionCommand extends Command
 
     public function __construct(
         InstitutionRepository $institutionRepository,
-    )
-    {
+    ) {
         $this->institutionRepository = $institutionRepository;
 
         parent::__construct();
@@ -53,7 +51,6 @@ class AddInstitutionCommand extends Command
         $phoneNumber = $input->getArgument('phoneNumber');
         $maxAdmins = $input->getArgument('maxAdmins');
         $maxUsers = $input->getArgument('maxUsers');
-
 
         $io->text([
             'PhoneNumber:  ' . $phoneNumber,

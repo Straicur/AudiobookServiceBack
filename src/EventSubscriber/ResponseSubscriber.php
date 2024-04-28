@@ -25,8 +25,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         AuthenticationTokenRepository $authenticationTokenRepository,
         TechnicalBreakRepository      $technicalBreakRepository,
         LoggerInterface               $responseLogger,
-    )
-    {
+    ) {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->technicalBreakRepository = $technicalBreakRepository;
         $this->responseLogger = $responseLogger;
@@ -48,7 +47,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         }
 
         $technicalBreak = $this->technicalBreakRepository->findOneBy([
-            'active' => true
+            'active' => true,
         ]);
 
         if ($technicalBreak !== null) {
@@ -58,12 +57,12 @@ class ResponseSubscriber implements EventSubscriberInterface
         $headersIterator = $response->headers->getIterator();
 
         $loggerData = [
-            'requestUrl' => $request->getUri(),
+            'requestUrl'    => $request->getUri(),
             'requestMethod' => $request->getMethod(),
-            'user' => $authToken?->getUser()->getId(),
-            'statusCode' => $response->getStatusCode(),
-            'headers' => $headersIterator->getArrayCopy(),
-            'responseData' => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true) : null,
+            'user'          => $authToken?->getUser()->getId(),
+            'statusCode'    => $response->getStatusCode(),
+            'headers'       => $headersIterator->getArrayCopy(),
+            'responseData'  => $response->getStatusCode() > 299 ? json_decode($response->getContent(), true) : null,
         ];
 
         if ($response->getStatusCode() > 499) {
@@ -76,7 +75,7 @@ class ResponseSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::RESPONSE => 'onKernelResponse'
+            KernelEvents::RESPONSE => 'onKernelResponse',
         ];
     }
 }

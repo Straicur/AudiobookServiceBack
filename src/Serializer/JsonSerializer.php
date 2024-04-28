@@ -10,7 +10,6 @@ use Symfony\Component\Serializer\Serializer;
 
 /**
  * JsonSerializer
- *
  */
 class JsonSerializer implements SerializerInterface
 {

@@ -19,8 +19,8 @@ class AdminReportAcceptQuery
     #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
-        min: 1,
-        max: 8,
+        min              : 1,
+        max              : 8,
     )]
     private int $banPeriod;
 

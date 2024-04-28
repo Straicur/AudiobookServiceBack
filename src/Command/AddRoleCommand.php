@@ -15,10 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * AddRoleCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:roles:add',
+    name       : 'audiobookservice:roles:add',
     description: 'Add role to system',
 )]
 class AddRoleCommand extends Command

@@ -28,7 +28,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * AuthValidationSubscriber
- *
  */
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
@@ -43,9 +42,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         TechnicalBreakRepository      $technicalBreakRepository,
         UserRepository                $userRepository,
         LoggerInterface               $requestLogger,
-        TagAwareCacheInterface        $stockCache
-    )
-    {
+        TagAwareCacheInterface        $stockCache,
+    ) {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->technicalBreakRepository = $technicalBreakRepository;
         $this->userRepository = $userRepository;
@@ -92,12 +90,12 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         }
 
                         $loggedUserData = [
-                            'method' => $reflectionMethod->class . '::' . $reflectionMethod->name,
-                            'user_id' => $authToken->getUser()->getId(),
+                            'method'        => $reflectionMethod->class . '::' . $reflectionMethod->name,
+                            'user_id'       => $authToken->getUser()->getId(),
                             'token_auth_id' => $authToken->getId(),
-                            'user_data' => [
+                            'user_data'     => [
                                 'email' => $authToken->getUser()->getUserInformation()->getEmail(),
-                            ]
+                            ],
                         ];
 
                         $this->requestLogger->info('Logged user action', $loggedUserData);
@@ -130,7 +128,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                             $item->tag(StockCacheTags::ADMIN_TECHNICAL_BREAK->value);
 
                             return $this->technicalBreakRepository->findOneBy([
-                                'active' => true
+                                'active' => true,
                             ]);
                         });
 

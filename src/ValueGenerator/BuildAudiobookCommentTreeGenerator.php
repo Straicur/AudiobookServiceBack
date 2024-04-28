@@ -31,9 +31,8 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         User                               $user,
-        bool                               $admin
-    )
-    {
+        bool                               $admin,
+    ) {
         $this->elements = $elements;
         $this->audiobookUserCommentRepository = $audiobookUserCommentRepository;
         $this->audiobookUserCommentLikeRepository = $audiobookUserCommentLikeRepository;
@@ -45,10 +44,9 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
         array $elements,
         User  $user,
         bool  $admin,
-        ?Uuid $parentId = null
-    ): array
-    {
-        $branch = array();
+        ?Uuid $parentId = null,
+    ): array {
+        $branch = [];
 
         foreach ($elements as $element) {
 
@@ -56,12 +54,12 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
-                        'parent' => $element->getId()
+                        'parent' => $element->getId(),
                     ]);
                 } else {
                     $children = $this->audiobookUserCommentRepository->findBy([
-                        'parent' => $element->getId(),
-                        'deleted' => false
+                        'parent'  => $element->getId(),
+                        'deleted' => false,
                     ]);
                 }
 
@@ -70,7 +68,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 $commentLikes = $this->audiobookUserCommentLikeRepository->findBy([
                     'audiobookUserComment' => $element->getId(),
-                    'deleted' => false
+                    'deleted'              => false,
                 ]);
 
                 $userModel = new AudiobookCommentModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
@@ -80,7 +78,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     (string)$element->getId(),
                     $element->getComment(),
                     $element->getEdited(),
-                    $myComment
+                    $myComment,
                 );
 
                 if ($parentId !== null) {
@@ -90,7 +88,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 if ($admin) {
                     $child->setDeleted($element->getDeleted());
                 }
-
 
                 $userLike = null;
 

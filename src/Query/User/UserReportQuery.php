@@ -25,12 +25,12 @@ class UserReportQuery
             'fields' => [
                 'description' => new Assert\Optional([
                     new Assert\NotBlank(message: 'Description is empty'),
-                    new Assert\Type(type: 'string')
+                    new Assert\Type(type: 'string'),
                 ]),
-                'actionId' => new Assert\Optional([
+                'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Uuid()
-                ])
+                    new Assert\Uuid(),
+                ]),
             ],
         ]));
     }
@@ -40,8 +40,8 @@ class UserReportQuery
      */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'description', type: 'string', example: 'Desc', nullable: true),
-        new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true)
-    ], type: 'object')]
+        new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
+    ],            type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {

@@ -29,14 +29,14 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 
     private function buildTree(array $elements, ?Uuid $parentId = null): array
     {
-        $branch = array();
+        $branch = [];
 
         foreach ($elements as $element) {
 
             if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
 
                 $children = $this->categoryRepository->findBy([
-                    'parent' => $element->getId()
+                    'parent' => $element->getId(),
                 ]);
 
                 $audiobooks = $this->audiobookRepository->getCategoryAudiobooks($element);

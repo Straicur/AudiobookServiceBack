@@ -27,7 +27,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         /// step 2
         $content = [
             'cacheData' => [
-                'pools' => ['AdminCategory', 'AdminAudiobookComments', 'UserAudiobooks', 'UserAudiobookRating'],
+                'pools' => ['AdminCategory', 'AdminAudiobookComments', 'AudiobookComments', 'UserAudiobooks', 'UserAudiobookRating'],
                 'admin' => false,
                 'user' => false,
                 'all' => false,
