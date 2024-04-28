@@ -63,7 +63,7 @@ class AdminAudiobooksTest extends AbstractWebTest
                 'parts' => 1,
                 'age' => 5,
                 'order' => 8,
-                'year' => '23.04.2024'
+                'year' => (new DateTime())->format('d.m.Y')
             ]
         ];
 
