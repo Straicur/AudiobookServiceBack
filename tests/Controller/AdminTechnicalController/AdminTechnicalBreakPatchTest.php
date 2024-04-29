@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminTechnicalController;
 
 use App\Repository\TechnicalBreakRepository;
@@ -24,19 +26,19 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
         $this->assertInstanceOf(TechnicalBreakRepository::class, $technicalBreakRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         /// step 2
         $content = [
-            "technicalBreakId" => $technicalBreak->getId()
+            'technicalBreakId' => $technicalBreak->getId()
         ];
         
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/technical/break", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -44,7 +46,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
         $technicalBreakAfter = $technicalBreakRepository->findOneBy([
-            "id" => $technicalBreak->getId()
+            'id' => $technicalBreak->getId()
         ]);
 
         $this->assertFalse($technicalBreakAfter->getActive());
@@ -62,19 +64,19 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
     public function test_adminTechnicalBreakPatchIncorrectTechnicalBreakId(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            "technicalBreakId" => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
+            'technicalBreakId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/technical/break", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -88,8 +90,8 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -102,7 +104,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
     public function test_adminTechnicalBreakPatchEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
@@ -111,8 +113,8 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/technical/break", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -126,7 +128,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -139,19 +141,19 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
     public function test_adminTechnicalBreakPatchPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            "technicalBreakId" => $technicalBreak->getId()
+            'technicalBreakId' => $technicalBreak->getId()
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/technical/break", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -165,7 +167,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -178,17 +180,17 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
     public function test_adminTechnicalBreakPatchLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         /// step 2
         $content = [
-            "technicalBreakId" => $technicalBreak->getId()
+            'technicalBreakId' => $technicalBreak->getId()
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/technical/break", content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/break', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
@@ -202,6 +204,6 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

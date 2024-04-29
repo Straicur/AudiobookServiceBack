@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminUserController;
 
 use App\Enums\UserRoles;
@@ -28,19 +30,19 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $this->assertInstanceOf(RoleRepository::class, $roleRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest"], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123177", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123177', ['Guest', 'User'], true, 'zaq12wsx');
 
         /// step 2
         $content = [
-            "userId" => $user2->getId(),
-            "role" => UserRoles::USER
+            'userId' => $user2->getId(),
+            'role' => UserRoles::USER
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -48,7 +50,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
         /// step 5
         $userRole = $roleRepository->findOneBy([
-            "name" => "User"
+            'name' => 'User'
         ]);
         $this->assertTrue($userRepository->userHasRole($user2, $userRole));
     }
@@ -64,20 +66,20 @@ class AdminUserRoleAddTest extends AbstractWebTest
     public function test_adminUserRoleAddIncorrectAdminUser(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
         $content = [
-            "userId" => $user1->getId(),
-            "role" => UserRoles::USER->value
+            'userId' => $user1->getId(),
+            'role' => UserRoles::USER->value
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -91,8 +93,8 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -106,20 +108,20 @@ class AdminUserRoleAddTest extends AbstractWebTest
     public function test_adminUserRoleAddIncorrectUserId(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123127", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
         $content = [
-            "userId" => "66666c4e-16e6-1ecc-9890-a7e8b0073d3b",
-            "role" => UserRoles::USER->value
+            'userId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+            'role' => UserRoles::USER->value
         ];
 
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -133,8 +135,8 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -147,16 +149,16 @@ class AdminUserRoleAddTest extends AbstractWebTest
     public function test_adminUserRoleAddEmptyRequestData(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -170,7 +172,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -183,18 +185,18 @@ class AdminUserRoleAddTest extends AbstractWebTest
     public function test_adminUserRoleAddPermission(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
-            "userId" => $user2->getId(),
-            "role" => UserRoles::USER->value
+            'userId' => $user2->getId(),
+            'role' => UserRoles::USER->value
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
@@ -209,7 +211,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -222,16 +224,16 @@ class AdminUserRoleAddTest extends AbstractWebTest
     public function test_adminUserRoleAddLogOut(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User"], true, "zaq12wsx");
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
-            "userId" => $user2->getId(),
-            "role" => UserRoles::USER->value
+            'userId' => $user2->getId(),
+            'role' => UserRoles::USER->value
         ];
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/admin/user/role/add", content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/admin/user/role/add', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
@@ -245,6 +247,6 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

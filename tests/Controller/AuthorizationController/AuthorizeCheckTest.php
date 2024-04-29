@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AuthorizationController;
 
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * AuthorizeCheckTest
@@ -20,17 +23,17 @@ class AuthorizeCheckTest extends AbstractWebTest
     public function test_authorizeCheckCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@asuri.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@asuri.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            "email" => "test@asuri.pl",
-            "password" => "zaq12wsx"
+            'email' => 'test@asuri.pl',
+            'password' => 'zaq12wsx'
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/authorize/check", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/authorize/check', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseIsSuccessful();
@@ -46,17 +49,17 @@ class AuthorizeCheckTest extends AbstractWebTest
     public function test_authorizeCheckTokenExpired(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@asuri.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@asuri.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            "email" => "test@asuri.pl",
-            "password" => "zaq12wsx"
+            'email' => 'test@asuri.pl',
+            'password' => 'zaq12wsx'
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user, (new \DateTime("now"))->modify("-1 day"));
+        $token = $this->databaseMockManager->testFunc_loginUser($user, (new DateTime())->modify('-1 day'));
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/authorize/check", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/authorize/check', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 2
         self::assertResponseStatusCodeSame(401);
@@ -76,7 +79,7 @@ class AuthorizeCheckTest extends AbstractWebTest
     public function test_authorizeCheckLogOut(): void
     {
         /// step 1
-        $crawler = self::$webClient->request("POST", "/api/authorize/check");
+        $crawler = self::$webClient->request('POST', '/api/authorize/check');
         /// step 2
         self::assertResponseStatusCodeSame(401);
 

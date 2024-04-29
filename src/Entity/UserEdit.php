@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserEditRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +14,7 @@ class UserEdit
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -20,13 +22,13 @@ class UserEdit
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $edited;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $editableDate = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $editableDate = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $type;
 
     /**
@@ -73,12 +75,12 @@ class UserEdit
         return $this;
     }
 
-    public function getEditableDate(): ?\DateTime
+    public function getEditableDate(): ?DateTime
     {
         return $this->editableDate;
     }
 
-    public function setEditableDate(\DateTime $editableDate): self
+    public function setEditableDate(DateTime $editableDate): self
     {
         $this->editableDate = $editableDate;
 

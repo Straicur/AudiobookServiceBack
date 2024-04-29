@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -14,21 +16,21 @@ class User
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateCreate;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateCreate;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $banned;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $bannedTo = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $bannedTo = null;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist'])]
     private ?UserInformation $userInformation;
@@ -45,18 +47,18 @@ class User
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist'])]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $edited;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $editableDate = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $editableDate = null;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
     private Collection $notifications;
 
     public function __construct()
     {
-        $this->dateCreate = new \DateTime("now");
+        $this->dateCreate = new DateTime();
         $this->active = false;
         $this->banned = false;
         $this->userInformation = null;
@@ -85,18 +87,18 @@ class User
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateCreate(): \DateTime
+    public function getDateCreate(): DateTime
     {
         return $this->dateCreate;
     }
 
     /**
-     * @param \DateTime $dateCreate
+     * @param DateTime $dateCreate
      * @return User
      */
-    public function setDateCreate(\DateTime $dateCreate): User
+    public function setDateCreate(DateTime $dateCreate): User
     {
         $this->dateCreate = $dateCreate;
         return $this;
@@ -247,12 +249,12 @@ class User
         return $this;
     }
 
-    public function getEditableDate(): ?\DateTime
+    public function getEditableDate(): ?DateTime
     {
         return $this->editableDate;
     }
 
-    public function setEditableDate(\DateTime $editableDate): self
+    public function setEditableDate(DateTime $editableDate): self
     {
         $this->editableDate = $editableDate;
 
@@ -286,12 +288,12 @@ class User
         return $this;
     }
 
-    public function getBannedTo(): ?\DateTime
+    public function getBannedTo(): ?DateTime
     {
         return $this->bannedTo;
     }
 
-    public function setBannedTo(\DateTime $bannedTo): self
+    public function setBannedTo(DateTime $bannedTo): self
     {
         $this->bannedTo = $bannedTo;
 

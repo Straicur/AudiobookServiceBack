@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Builder\NotificationBuilder;
@@ -30,7 +32,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
  * UserProposedAudiobooksCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:proposed:audiobooks',
+    name       : 'audiobookservice:proposed:audiobooks',
     description: 'Command is generating new audiobooks proposed lists for users',
 )]
 class UserProposedAudiobooksCommand extends Command
@@ -72,7 +74,7 @@ class UserProposedAudiobooksCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $userRole = $this->roleRepository->findOneBy([
-            "name" => "User"
+            'name' => 'User',
         ]);
 
         $users = $this->userRepository->getUsersByRole($userRole);
@@ -134,8 +136,8 @@ class UserProposedAudiobooksCommand extends Command
                 foreach ($selectedCategories as $categoryIndex => $category) {
 
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
-                        "id" => $category,
-                        "active" => true
+                        'id'     => $category,
+                        'active' => true,
                     ]);
 
                     if ($databaseCategory !== null) {
@@ -162,7 +164,7 @@ class UserProposedAudiobooksCommand extends Command
                                 continue;
                             }
 
-                            if (!$this->myListRepository->getAudiobookINMyList($user, $audiobook)) {
+                            if (!$this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
                                 ++$audiobooksAdded;
                                 $proposedAudiobooks->addAudiobook($audiobook);
                             }
@@ -186,7 +188,7 @@ class UserProposedAudiobooksCommand extends Command
 
         $this->stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
 
-        $io->success("Proposed audiobooks added for users");
+        $io->success('Proposed audiobooks added for users');
 
         return Command::SUCCESS;
     }

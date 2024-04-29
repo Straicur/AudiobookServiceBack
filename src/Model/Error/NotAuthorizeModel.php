@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Error;
+
+use App\Model\ModelInterface;
 
 /**
  * NotAuthorizedModel
@@ -10,9 +14,9 @@ namespace App\Model\Error;
  */
 class NotAuthorizeModel implements ModelInterface
 {
-    private string $error = "User not authorized";
+    private string $error = 'User not authorized';
 
-    private string $description = "Authorization token could be NULL, invalid or expired";
+    private string $description = 'Authorization token could be NULL, invalid or expired';
 
     public function __construct()
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +30,7 @@ class TranslateService implements TranslateServiceInterface
 
     public function getTranslation(string $message): string
     {
-        if ($this->preferredLanguage == null) {
+        if ($this->preferredLanguage === null) {
             $this->preferredLanguage = $this->getLocate();
         }
 

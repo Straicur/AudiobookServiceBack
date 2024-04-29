@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Enums\UserEditType;
 use App\Repository\UserEditRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * UserSettingsEmailChangeChangeTest
@@ -27,27 +30,27 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
-        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("+1 day"));
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new DateTime())->modify('+1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/" . $user->getId()->__toString());
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
 
         /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
-            "id" => $user->getId()
+            'id' => $user->getId()
         ]);
         /// step 4
-        $this->assertSame($userAfter->getUserInformation()->getEmail(), "test2@cos.pl");
+        $this->assertSame($userAfter->getUserInformation()->getEmail(), 'test2@cos.pl');
         $this->assertTrue($userAfter->getEdited());
 
         $editAfter = $userEditRepository->findOneBy([
-            "id" => $userEdit->getId()
+            'id' => $userEdit->getId()
         ]);
 
         $this->assertNotNull($editAfter);
@@ -65,13 +68,13 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     public function test_userSettingsEmailChangeIncorrectEditableDate(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("-1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('-1 month'));
 
-        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("-1 day"));
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new DateTime())->modify('-1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/" . $user->getId()->__toString());
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
@@ -84,8 +87,8 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -98,13 +101,13 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     public function test_userSettingsEmailChangeIncorrectEditFlag(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", editableDate: (new \DateTime("Now"))->modify("-1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', editableDate: (new DateTime())->modify('-1 month'));
 
-        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL->value, (new \DateTime("Now"))->modify("-1 day"));
+        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL->value, (new DateTime())->modify('-1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/" . $user->getId()->__toString());
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
@@ -117,8 +120,8 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -131,11 +134,11 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     public function test_userSettingsEmailChangeIncorrectUserId(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/66666c4e-16e6-1ecc-9890-a7e8b0073d3b");
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/66666c4e-16e6-1ecc-9890-a7e8b0073d3b');
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
@@ -148,8 +151,8 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -162,13 +165,13 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     public function test_userSettingsEmailChangeIncorrectEmail(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123128", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change/test2@cos.pl/" . $user2->getId()->__toString());
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user2->getId()->__toString());
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
@@ -181,8 +184,8 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -195,11 +198,11 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     public function test_userSettingsEmailChangeEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx", edited: true, editableDate: (new \DateTime("Now"))->modify("+1 month"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/user/settings/email/change//");
+        $crawler = self::$webClient->request('GET', '/api/user/settings/email/change//');
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
@@ -212,8 +215,8 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
 }

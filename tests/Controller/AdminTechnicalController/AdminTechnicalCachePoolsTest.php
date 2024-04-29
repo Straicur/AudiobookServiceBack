@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminTechnicalController;
 
 use App\Tests\AbstractWebTest;
@@ -20,12 +22,12 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
     public function test_adminTechnicalCachePoolsCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/technical/cache/pools", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 4
@@ -38,8 +40,8 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("cachePools", $responseContent);
-        $this->assertCount(12, $responseContent["cachePools"]);
+        $this->assertArrayHasKey('cachePools', $responseContent);
+        $this->assertCount(12, $responseContent['cachePools']);
     }
 
     /**
@@ -52,13 +54,13 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
     public function test_adminTechnicalCachePoolsPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/technical/cache/pools", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -72,7 +74,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -85,10 +87,10 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
     public function test_adminTechnicalCachePoolsLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/technical/cache/pools");
+        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools');
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
@@ -102,6 +104,6 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

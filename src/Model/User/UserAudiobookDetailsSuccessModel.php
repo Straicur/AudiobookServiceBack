@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
+use DateTime;
 use OpenApi\Attributes as OA;
 
 class UserAudiobookDetailsSuccessModel implements ModelInterface
@@ -31,6 +34,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private int $comments;
     private bool $canRate = false;
     private bool $canComment = false;
+    private ?string $imgFile;
 
     /**
      * @param string $id
@@ -38,7 +42,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param string $author
      * @param string $version
      * @param string $album
-     * @param \DateTime $year
+     * @param DateTime $year
      * @param string $duration
      * @param int $parts
      * @param string $description
@@ -48,8 +52,26 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
      * @param int $comments
      * @param float $avgRating
      * @param int $ratingAmount
+     * @param string|null $imgFile
      */
-    public function __construct(string $id, string $title, string $author, string $version, string $album, \DateTime $year, string $duration, int $parts, string $description, AudiobookAgeRange $age, array $categories, bool $inList, int $comments, float $avgRating, int $ratingAmount)
+    public function __construct(
+        string            $id,
+        string            $title,
+        string            $author,
+        string            $version,
+        string            $album,
+        DateTime          $year,
+        string            $duration,
+        int               $parts,
+        string            $description,
+        AudiobookAgeRange $age,
+        array             $categories,
+        bool              $inList,
+        int               $comments,
+        float             $avgRating,
+        int               $ratingAmount,
+        ?string           $imgFile
+    )
     {
         $this->id = $id;
         $this->title = $title;
@@ -66,6 +88,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
         $this->comments = $comments;
         $this->avgRating = $avgRating;
         $this->ratingAmount = $ratingAmount;
+        $this->imgFile = $imgFile;
     }
 
     /**
@@ -157,9 +180,9 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @param \DateTime $year
+     * @param DateTime $year
      */
-    public function setYear(\DateTime $year): void
+    public function setYear(DateTime $year): void
     {
         $this->year = $year->getTimestamp() * 1000;
     }
@@ -223,7 +246,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     /**
      * @param AudiobookAgeRange $age
      */
-    #[OA\Property(type: "integer", enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
+    #[OA\Property(type: 'integer', enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
     public function setAge(AudiobookAgeRange $age): void
     {
         $this->age = $age->value;
@@ -331,9 +354,9 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     }
 
     /**
-     * @param bool $ratingAmount
+     * @param int $ratingAmount
      */
-    public function setRatingAmount(bool $ratingAmount): void
+    public function setRatingAmount(int $ratingAmount): void
     {
         $this->ratingAmount = $ratingAmount;
     }
@@ -344,6 +367,16 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function getRatingAmount(): int
     {
         return $this->ratingAmount;
+    }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(?string $imgFile): void
+    {
+        $this->imgFile = $imgFile;
     }
 
 }

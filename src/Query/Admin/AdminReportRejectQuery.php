@@ -8,20 +8,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminReportRejectQuery
 {
-    #[Assert\NotNull(message: "ReportId is null")]
-    #[Assert\NotBlank(message: "ReportId is blank")]
+    #[Assert\NotNull(message: 'ReportId is null')]
+    #[Assert\NotBlank(message: 'ReportId is blank')]
     #[Assert\Uuid]
     private Uuid $reportId;
 
-    #[Assert\NotNull(message: "Response is null")]
-    #[Assert\NotBlank(message: "Response is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Response is null')]
+    #[Assert\NotBlank(message: 'Response is empty')]
+    #[Assert\Type(type: 'string')]
     private string $response;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getReportId(): Uuid
     {
         return $this->reportId;

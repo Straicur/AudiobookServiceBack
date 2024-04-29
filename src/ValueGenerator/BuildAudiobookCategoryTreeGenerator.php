@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ValueGenerator;
 
 use App\Model\Admin\AdminCategoryModel;
@@ -27,19 +29,19 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 
     private function buildTree(array $elements, ?Uuid $parentId = null): array
     {
-        $branch = array();
+        $branch = [];
 
         foreach ($elements as $element) {
 
             if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
 
                 $children = $this->categoryRepository->findBy([
-                    "parent" => $element->getId()
+                    'parent' => $element->getId(),
                 ]);
 
                 $audiobooks = $this->audiobookRepository->getCategoryAudiobooks($element);
 
-                $child = new AdminCategoryModel($element->getId(), $element->getName(), $element->getActive(), $element->getCategoryKey(), count($audiobooks), $parentId);
+                $child = new AdminCategoryModel((string)$element->getId(), $element->getName(), $element->getActive(), $element->getCategoryKey(), count($audiobooks), (string)$parentId);
 
                 if (!empty($children)) {
 

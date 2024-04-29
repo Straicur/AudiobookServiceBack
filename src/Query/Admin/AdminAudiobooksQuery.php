@@ -4,20 +4,21 @@ namespace App\Query\Admin;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\AudiobookOrderSearch;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminAudiobooksQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
 
     protected array $searchData = [];
@@ -33,41 +34,41 @@ class AdminAudiobooksQuery
                         new Assert\Uuid(),
                     ]),
                 ]),
-                'author' => new Assert\Optional([
+                'author'     => new Assert\Optional([
                     new Assert\NotBlank(message: 'Author is empty'),
                     new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'title' => new Assert\Optional([
+                'title'      => new Assert\Optional([
                     new Assert\NotBlank(message: 'Title is empty'),
                     new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'album' => new Assert\Optional([
+                'album'      => new Assert\Optional([
                     new Assert\NotBlank(message: 'Album is empty'),
                     new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
-                'duration' => new Assert\Optional([
+                'duration'   => new Assert\Optional([
                     new Assert\NotBlank(message: 'Duration is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0)
+                    new Assert\GreaterThan(0),
                 ]),
-                'parts' => new Assert\Optional([
+                'parts'      => new Assert\Optional([
                     new Assert\NotBlank(message: 'Parts is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0)
+                    new Assert\GreaterThan(0),
                 ]),
-                'age' => new Assert\Optional([
+                'age'        => new Assert\Optional([
                     new Assert\NotBlank(message: 'Age is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(6)
+                    new Assert\LessThan(6),
                 ]),
-                'order' => new Assert\Optional([
+                'order'      => new Assert\Optional([
                     new Assert\NotBlank(message: 'Order is empty'),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(9)
+                    new Assert\LessThan(9),
                 ]),
-                'year' => new Assert\Optional([
+                'year'       => new Assert\Optional([
                     new Assert\NotBlank(message: 'Year is empty'),
                     new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
@@ -90,23 +91,23 @@ class AdminAudiobooksQuery
         new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ], type: 'object')]
+    ],            type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('age', $searchData)) {
-            if ($searchData["age"] != AudiobookAgeRange::FROM3TO7->value && $searchData["age"] != AudiobookAgeRange::FROM7TO12->value && $searchData["age"] != AudiobookAgeRange::FROM12TO16->value && $searchData["age"] != AudiobookAgeRange::FROM16TO18->value && $searchData["age"] != AudiobookAgeRange::ABOVE18->value) {
-                $searchData["age"] = AudiobookAgeRange::FROM12TO16->value;
+            if ($searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
+                $searchData['age'] = AudiobookAgeRange::FROM12TO16->value;
             }
         }
 
         if (array_key_exists('order', $searchData)) {
-            if ( $searchData["order"] != AudiobookOrderSearch::POPULAR->value && $searchData["order"] != AudiobookOrderSearch::LEST_POPULAR->value && $searchData["order"] != AudiobookOrderSearch::LATEST->value && $searchData["order"] != AudiobookOrderSearch::OLDEST->value && $searchData["order"] != AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData["order"] != AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData["order"] != AudiobookOrderSearch::TOP_RATED->value && $searchData["order"] != AudiobookOrderSearch::WORST_RATED->value) {
-                $searchData["order"] = AudiobookOrderSearch::POPULAR->value;
+            if ($searchData['order'] !== AudiobookOrderSearch::POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LATEST->value && $searchData['order'] !== AudiobookOrderSearch::OLDEST->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value && $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value) {
+                $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
             }
         }
 
         if (array_key_exists('year', $searchData)) {
-            $searchData['year'] = \DateTime::createFromFormat('d.m.Y', $searchData['year']);
+            $searchData['year'] = DateTime::createFromFormat('d.m.Y', $searchData['year']);
         }
 
         $this->searchData = $searchData;
@@ -123,7 +124,7 @@ class AdminAudiobooksQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -140,7 +141,7 @@ class AdminAudiobooksQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

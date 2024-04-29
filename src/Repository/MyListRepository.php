@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Audiobook;
@@ -55,7 +57,7 @@ class MyListRepository extends ServiceEntityRepository
      * @param Audiobook $audiobook
      * @return bool
      */
-    public function getAudiobookINMyList(User $user, Audiobook $audiobook): bool
+    public function getAudiobookInMyList(User $user, Audiobook $audiobook): bool
     {
         $qb = $this->createQueryBuilder('ml')
             ->innerJoin('ml.audiobooks', 'a', Join::WITH, 'a.id = :audiobook')

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceInterface

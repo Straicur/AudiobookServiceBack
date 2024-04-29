@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\UserParentalControlCode;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -54,14 +57,14 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
      */
     public function getUserParentalControlCodeFromLastWeakByUser(User $user): int
     {
-        $today = new \DateTime('NOW');
+        $today = new DateTime();
         $lastDate = clone $today;
         $lastDate->modify('-7 day');
 
         $qb = $this->createQueryBuilder('upcc')
             ->where('( :dateFrom <= upcc.dateAdd AND :dateTo >= upcc.dateAdd)')
-            ->andWhere("upcc.user = :user")
-            ->setParameter("user", $user->getId()->toBinary())
+            ->andWhere('upcc.user = :user')
+            ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate);
 
@@ -76,9 +79,9 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('upcc')
             ->update()
-            ->set("upcc.active", "false")
-            ->where("upcc.user = :user")
-            ->setParameter("user", $user->getId()->toBinary());
+            ->set('upcc.active', 'false')
+            ->where('upcc.user = :user')
+            ->setParameter('user', $user->getId()->toBinary());
 
         $qb->getQuery()->execute();
     }

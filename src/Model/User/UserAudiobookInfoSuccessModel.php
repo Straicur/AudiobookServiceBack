@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\User;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
+use DateTime;
 
 class UserAudiobookInfoSuccessModel implements ModelInterface
 {
@@ -13,9 +16,9 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     /**
      * @param int $part
      * @param int $endedTime
-     * @param \DateTime $watchingDate
+     * @param DateTime $watchingDate
      */
-    public function __construct(int $part, int $endedTime, \DateTime $watchingDate)
+    public function __construct(int $part, int $endedTime, DateTime $watchingDate)
     {
         $this->part = $part;
         $this->endedTime = $endedTime;
@@ -63,9 +66,9 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     }
 
     /**
-     * @param \DateTime $watchingDate
+     * @param DateTime $watchingDate
      */
-    public function setWatchingDate(\DateTime $watchingDate): void
+    public function setWatchingDate(DateTime $watchingDate): void
     {
         $this->watchingDate = $watchingDate->getTimestamp() * 1000;
     }

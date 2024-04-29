@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tool;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
 use App\Serializer\JsonSerializer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,17 +18,17 @@ class ResponseTool
     public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response
     {
         $headers = [
-            "Content-Type" => "application/json"
+            'Content-Type' => 'application/json',
         ];
 
         $serializeService = new JsonSerializer();
 
-        $serializedObject = $responseModel != null ? $serializeService->serialize($responseModel) : null;
+        $serializedObject = $responseModel !== null ? $serializeService->serialize($responseModel) : null;
 
-        if($serializedObject){
+        if ($serializedObject) {
             $headers['Content-Length'] = strlen($serializedObject);
         }
-        
+
         return new Response($serializedObject, $httpCode, $headers);
     }
 
@@ -36,7 +38,7 @@ class ResponseTool
 
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            basename($fileDir)
+            basename($fileDir),
         );
 
         if ($delete) {

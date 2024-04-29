@@ -9,41 +9,41 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminAudiobookReAddingQuery
 {
-    #[Assert\NotNull(message: "AudiobookId is null")]
-    #[Assert\NotBlank(message: "AudiobookId is blank")]
+    #[Assert\NotNull(message: 'AudiobookId is null')]
+    #[Assert\NotBlank(message: 'AudiobookId is blank')]
     #[Assert\Uuid]
     private Uuid $audiobookId;
 
-    #[Assert\NotNull(message: "HashName is null")]
-    #[Assert\NotBlank(message: "HashName is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'HashName is null')]
+    #[Assert\NotBlank(message: 'HashName is empty')]
+    #[Assert\Type(type: 'string')]
     private string $hashName;
 
-    #[Assert\NotNull(message: "FileName is null")]
-    #[Assert\NotBlank(message: "FileName is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'FileName is null')]
+    #[Assert\NotBlank(message: 'FileName is empty')]
+    #[Assert\Type(type: 'string')]
     private string $fileName;
 
-    #[Assert\NotNull(message: "Base64 is null")]
-    #[Assert\NotBlank(message: "Base64 is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Base64 is null')]
+    #[Assert\NotBlank(message: 'Base64 is empty')]
+    #[Assert\Type(type: 'string')]
     private string $base64;
 
-    #[Assert\NotNull(message: "Part is null")]
-    #[Assert\NotBlank(message: "Part is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Part is null')]
+    #[Assert\NotBlank(message: 'Part is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $part;
 
-    #[Assert\NotNull(message: "Parts is null")]
-    #[Assert\NotBlank(message: "Parts is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Parts is null')]
+    #[Assert\NotBlank(message: 'Parts is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $parts;
 
-    #[Assert\NotNull(message: "DeleteNotifications is null")]
-    #[Assert\Type(type: "boolean")]
+    #[Assert\NotNull(message: 'DeleteNotifications is null')]
+    #[Assert\Type(type: 'boolean')]
     private bool $deleteNotifications;
-    #[Assert\NotNull(message: "DeleteComments is null")]
-    #[Assert\Type(type: "boolean")]
+    #[Assert\NotNull(message: 'DeleteComments is null')]
+    #[Assert\Type(type: 'boolean')]
     private bool $deleteComments;
 
     protected array $additionalData = [];
@@ -54,18 +54,18 @@ class AdminAudiobookReAddingQuery
             'fields' => [
                 'categories' => new Assert\Optional([
                     new Assert\All(constraints: [
-                        new Assert\NotBlank(message: "Categories is empty"),
+                        new Assert\NotBlank(message: 'Categories is empty'),
                         new Assert\Regex(pattern: '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', message: 'Bad Uuid'),
                         new Assert\Uuid()
                     ])
                 ]),
                 'title' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Title is empty"),
-                    new Assert\Type(type: "string")
+                    new Assert\NotBlank(message: 'Title is empty'),
+                    new Assert\Type(type: 'string')
                 ]),
                 'author' => new Assert\Optional([
-                    new Assert\NotBlank(message: "Author is empty"),
-                    new Assert\Type(type: "string")
+                    new Assert\NotBlank(message: 'Author is empty'),
+                    new Assert\Type(type: 'string')
                 ]),
             ],
         ]));
@@ -74,13 +74,13 @@ class AdminAudiobookReAddingQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
-        new OA\Property(property: "categories", type: "array", nullable: true, attachables: [
-            new OA\Items(type: "string", example: "UUID"),
+    #[OA\Property(property: 'additionalData', properties: [
+        new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
+            new OA\Items(type: 'string', example: 'UUID'),
         ]),
-        new OA\Property(property: "title", type: "string", example: "Tytuł", nullable: true),
-        new OA\Property(property: "author", type: "string", example: "Autor", nullable: true),
-    ], type: "object")]
+        new OA\Property(property: 'title', type: 'string', example: 'Tytuł', nullable: true),
+        new OA\Property(property: 'author', type: 'string', example: 'Autor', nullable: true),
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         $this->additionalData = $additionalData;
@@ -97,7 +97,7 @@ class AdminAudiobookReAddingQuery
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;

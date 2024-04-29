@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Serializer;
 
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -8,7 +10,6 @@ use Symfony\Component\Serializer\Serializer;
 
 /**
  * JsonSerializer
- *
  */
 class JsonSerializer implements SerializerInterface
 {
@@ -28,11 +29,11 @@ class JsonSerializer implements SerializerInterface
 
     public function serialize(mixed $object): string
     {
-        return $this->serializer->serialize($object, "json");
+        return $this->serializer->serialize($object, 'json');
     }
 
     public function deserialize(mixed $data, string $className): mixed
     {
-        return $this->serializer->deserialize($data, $className, "json");
+        return $this->serializer->deserialize($data, $className, 'json');
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\TechnicalBreak;
 use App\Enums\TechnicalBreakOrder;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
@@ -53,11 +56,11 @@ class TechnicalBreakRepository extends ServiceEntityRepository
      * @param Uuid|null $userId
      * @param bool|null $active
      * @param int|null $order
-     * @param \DateTime|null $dateFrom
-     * @param \DateTime|null $dateTo
+     * @param DateTime|null $dateFrom
+     * @param DateTime|null $dateTo
      * @return TechnicalBreak[]
      */
-    public function getTechnicalBreakByPage(?Uuid $userId, ?bool $active, ?int $order, ?\DateTime $dateFrom, ?\DateTime $dateTo): array
+    public function getTechnicalBreakByPage(?Uuid $userId, ?bool $active, ?int $order, ?DateTime $dateFrom, ?DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('tb');
 
@@ -75,10 +78,10 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             $qb->andWhere('((tb.dateFrom > :dateFrom) AND (tb.dateFrom < :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateTo != null) {
+        } else if ($dateTo !== null) {
             $qb->andWhere('(tb.dateFrom < :dateTo)')
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateFrom != null) {
+        } else if ($dateFrom !== null) {
             $qb->andWhere('(tb.dateFrom > :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
@@ -87,17 +90,17 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             switch ($order) {
                 case TechnicalBreakOrder::LATEST->value:
                 {
-                    $qb->orderBy("tb.dateFrom", "DESC");
+                    $qb->orderBy('tb.dateFrom', 'DESC');
                     break;
                 }
                 case TechnicalBreakOrder::OLDEST->value:
                 {
-                    $qb->orderBy("tb.dateFrom", "ASC");
+                    $qb->orderBy('tb.dateFrom', 'ASC');
                     break;
                 }
                 case TechnicalBreakOrder::ACTIVE->value:
                 {
-                    $qb->orderBy("tb.active", "DESC");
+                    $qb->orderBy('tb.active', 'DESC');
                     break;
                 }
             }
@@ -111,7 +114,7 @@ class TechnicalBreakRepository extends ServiceEntityRepository
      */
     public function getNumberTechnicalBreakFromLastWeak(): int
     {
-        $today = new \DateTime('NOW');
+        $today = new DateTime();
         $lastDate = clone $today;
         $lastDate->modify('-7 day');
 

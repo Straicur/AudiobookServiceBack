@@ -2,35 +2,36 @@
 
 namespace App\Query\Common;
 
+use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use OpenApi\Attributes as OA;
 
 class RegisterQuery
 {
-    #[Assert\NotNull(message: "Email is null")]
-    #[Assert\NotBlank(message: "Email is empty")]
+    #[Assert\NotNull(message: 'Email is null')]
+    #[Assert\NotBlank(message: 'Email is empty')]
     #[Assert\Email(message: "It's not an email")]
     private string $email;
 
-    #[Assert\NotNull(message: "PhoneNumber is null")]
-    #[Assert\NotBlank(message: "Password is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'PhoneNumber is null')]
+    #[Assert\NotBlank(message: 'Password is empty')]
+    #[Assert\Type(type: 'string')]
     private string $phoneNumber;
 
-    #[Assert\NotNull(message: "Firstname is null")]
-    #[Assert\NotBlank(message: "Firstname is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Firstname is null')]
+    #[Assert\NotBlank(message: 'Firstname is empty')]
+    #[Assert\Type(type: 'string')]
     private string $firstname;
 
-    #[Assert\NotNull(message: "Lastname is null")]
-    #[Assert\NotBlank(message: "Lastname is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Lastname is null')]
+    #[Assert\NotBlank(message: 'Lastname is empty')]
+    #[Assert\Type(type: 'string')]
     private string $lastname;
 
-    #[Assert\NotNull(message: "Password is null")]
-    #[Assert\NotBlank(message: "Password is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Password is null')]
+    #[Assert\NotBlank(message: 'Password is empty')]
+    #[Assert\Type(type: 'string')]
     private string $password;
 
     protected array $additionalData = [];
@@ -50,13 +51,13 @@ class RegisterQuery
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
+    #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ], type: "object")]
+    ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('birthday', $additionalData)) {
-            $additionalData['birthday'] = \DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
+            $additionalData['birthday'] = DateTime::createFromFormat('d.m.Y', $additionalData['birthday']);
         }
 
         $this->additionalData = $additionalData;

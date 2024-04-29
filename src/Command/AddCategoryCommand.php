@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\AudiobookCategory;
@@ -14,10 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * AddCategoryCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:category:add',
+    name       : 'audiobookservice:category:add',
     description: 'Add user to service',
 )]
 class AddCategoryCommand extends Command
@@ -26,8 +27,7 @@ class AddCategoryCommand extends Command
 
     public function __construct(
         AudiobookCategoryRepository $audiobookCategoryRepository,
-    )
-    {
+    ) {
         $this->audiobookCategoryRepository = $audiobookCategoryRepository;
 
         parent::__construct();
@@ -48,33 +48,30 @@ class AddCategoryCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $name = $input->getArgument("name");
-        $parent = $input->getArgument("parent");
-
+        $name = $input->getArgument('name');
+        $parent = $input->getArgument('parent');
 
         $io->text([
-            "Name:  " . $name,
-            "Parent:  " . $parent,
+            'Name:  ' . $name,
+            'Parent:  ' . $parent,
         ]);
 
         $categoryKeyGenerator = new CategoryKeyGenerator();
 
         $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
 
-        if ($parent != null) {
+        if ($parent !== null) {
             $parentCategory = $this->audiobookCategoryRepository->findOneBy([
-                "name" => $parent
+                'name' => $parent,
             ]);
 
-            if ($parentCategory != null) {
+            if ($parentCategory !== null) {
                 $newAudiobookCategory->setParent($parentCategory);
             }
         }
         $newAudiobookCategory->setActive(true);
 
         $this->audiobookCategoryRepository->add($newAudiobookCategory);
-
-        $io = new SymfonyStyle($input, $output);
 
         $io->success('Success');
 

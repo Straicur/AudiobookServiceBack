@@ -14,7 +14,7 @@ class ProposedAudiobooks
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -22,7 +22,7 @@ class ProposedAudiobooks
     private Collection $audiobooks;
 
     #[ORM\OneToOne(inversedBy: 'proposedAudiobooks', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     public function __construct(User $user)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ValueGenerator;
 
 /**
@@ -9,7 +11,7 @@ class UserParentalControlCodeGenerator implements ValueGeneratorInterface
 {
     public function generate(): string
     {
-        $chars = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+        $chars = 'QWERTYUIOPASDFGHJKLZXCVBNM1234567890';
 
         mt_srand(time());
 

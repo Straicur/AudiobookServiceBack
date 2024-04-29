@@ -8,19 +8,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminUserNotificationDeleteQuery
 {
-    #[Assert\NotNull(message: "NotificationId is null")]
-    #[Assert\NotBlank(message: "NotificationId is blank")]
+    #[Assert\NotNull(message: 'NotificationId is null')]
+    #[Assert\NotBlank(message: 'NotificationId is blank')]
     #[Assert\Uuid]
     private Uuid $notificationId;
 
-    #[Assert\NotNull(message: "Delete is null")]
-    #[Assert\Type(type: "boolean")]
+    #[Assert\NotNull(message: 'Delete is null')]
+    #[Assert\Type(type: 'boolean')]
     private bool $delete;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getNotificationId(): Uuid
     {
         return $this->notificationId;

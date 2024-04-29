@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\RegisterCodeRepository;
 use App\ValueGenerator\RegisterCodeGenerator;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -13,20 +15,20 @@ class RegisterCode
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'string', length: 512)]
+    #[ORM\Column(type: Types::STRING, length: 512)]
     private string $code;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateAccept = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $dateAccept = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -40,7 +42,7 @@ class RegisterCode
     public function __construct(RegisterCodeGenerator $code, User $user)
     {
         $this->code = $code->generate();
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new DateTime();
         $this->active = true;
         $this->user = $user;
     }
@@ -63,24 +65,24 @@ class RegisterCode
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 
         return $this;
     }
 
-    public function getDateAccept(): ?\DateTime
+    public function getDateAccept(): ?DateTime
     {
         return $this->dateAccept;
     }
 
-    public function setDateAccept(\DateTime $dateAccept): self
+    public function setDateAccept(DateTime $dateAccept): self
     {
         $this->dateAccept = $dateAccept;
 

@@ -1,14 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception;
 
 use App\Model\Error\TechnicalBreakExceptionModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * TechnicalBreakException
- */
 class TechnicalBreakException extends \Exception implements ResponseExceptionInterface
 {
     public function getResponse(): Response

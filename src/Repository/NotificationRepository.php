@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enums\NotificationOrderSearch;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -56,7 +59,7 @@ class NotificationRepository extends ServiceEntityRepository
      */
     public function getNumberNotificationsFromLastWeak(): int
     {
-        $today = new \DateTime('NOW');
+        $today = new DateTime();
         $lastDate = clone $today;
         $lastDate->modify('-7 day');
 
@@ -82,7 +85,7 @@ class NotificationRepository extends ServiceEntityRepository
             ->innerJoin('n.users', 'u', Join::WITH, 'u.id = :user')
             ->where('n.deleted = false')
             ->setParameter('user', $user->getId()->toBinary())
-            ->orderBy("n.dateAdd", "DESC");
+            ->orderBy('n.dateAdd', 'DESC');
 
         return $qb->getQuery()->execute();
     }
@@ -99,8 +102,8 @@ class NotificationRepository extends ServiceEntityRepository
             ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
             ->where('n.deleted = false')
             ->setParameter('user', $user->getId()->toBinary())
-            ->having("count(nc.id) = 0")
-            ->orderBy('notifications', "DESC")
+            ->having('count(nc.id) = 0')
+            ->orderBy('notifications', 'DESC')
             ->groupBy('n');
 
         $query = $qb->getQuery();
@@ -119,11 +122,11 @@ class NotificationRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('n');
 
-        if ($text != null) {
+        if ($text !== null) {
             $qb->andWhere('n.metaData LIKE :text')
                 ->setParameter('text', $text);
         }
-        if ($type != null) {
+        if ($type !== null) {
             $qb->andWhere('n.type = :type')
                 ->setParameter('type', $type);
         }
@@ -131,18 +134,18 @@ class NotificationRepository extends ServiceEntityRepository
             $qb->andWhere('n.deleted = :deleted')
                 ->setParameter('deleted', $deleted);
         }
-        if ($order != null) {
-            switch ($order) {
-                case NotificationOrderSearch::LATEST->value:
-                {
-                    $qb->orderBy("n.dateAdd", "DESC");
-                    break;
-                }
-                case NotificationOrderSearch::OLDEST->value:
-                {
-                    $qb->orderBy("n.dateAdd", "ASC");
-                    break;
-                }
+
+        switch ($order) {
+            case NotificationOrderSearch::OLDEST->value:
+            {
+                $qb->orderBy('n.dateAdd', 'ASC');
+                break;
+            }
+            case NotificationOrderSearch::LATEST->value:
+            default:
+            {
+                $qb->orderBy('n.dateAdd', 'DESC');
+                break;
             }
         }
 
@@ -157,13 +160,13 @@ class NotificationRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('n')
             ->update()
-            ->set("n.deleted", "true")
-            ->set("n.dateDeleted", ":dateDeleted")
+            ->set('n.deleted', 'true')
+            ->set('n.dateDeleted', ':dateDeleted')
             ->where('n.actionId = :actionId')
-            ->andWhere("n.deleted = :deletedStatus")
-            ->setParameter("deletedStatus", false)
-            ->setParameter("dateDeleted", new \DateTime('Now'))
-            ->setParameter("actionId", $actionId->toBinary());
+            ->andWhere('n.deleted = :deletedStatus')
+            ->setParameter('deletedStatus', false)
+            ->setParameter('dateDeleted', new DateTime())
+            ->setParameter('actionId', $actionId->toBinary());
 
         $qb->getQuery()->execute();
     }

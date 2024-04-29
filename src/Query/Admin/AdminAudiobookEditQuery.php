@@ -10,59 +10,59 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminAudiobookEditQuery
 {
-    #[Assert\NotNull(message: "AudiobookId is null")]
-    #[Assert\NotBlank(message: "AudiobookId is blank")]
+    #[Assert\NotNull(message: 'AudiobookId is null')]
+    #[Assert\NotBlank(message: 'AudiobookId is blank')]
     #[Assert\Uuid]
     private Uuid $audiobookId;
 
-    #[Assert\NotNull(message: "Title is null")]
-    #[Assert\NotBlank(message: "Title is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Title is null')]
+    #[Assert\NotBlank(message: 'Title is empty')]
+    #[Assert\Type(type: 'string')]
     private string $title;
 
-    #[Assert\NotNull(message: "Author is null")]
-    #[Assert\NotBlank(message: "Author is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Author is null')]
+    #[Assert\NotBlank(message: 'Author is empty')]
+    #[Assert\Type(type: 'string')]
     private string $author;
 
-    #[Assert\NotNull(message: "Version is null")]
-    #[Assert\NotBlank(message: "Version is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Version is null')]
+    #[Assert\NotBlank(message: 'Version is empty')]
+    #[Assert\Type(type: 'string')]
     private string $version;
 
-    #[Assert\NotNull(message: "Album is null")]
-    #[Assert\NotBlank(message: "Album is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Album is null')]
+    #[Assert\NotBlank(message: 'Album is empty')]
+    #[Assert\Type(type: 'string')]
     private string $album;
 
-    #[Assert\NotNull(message: "Year is null")]
-    #[Assert\NotBlank(message: "Year is blank")]
-    #[Assert\Type(type: "datetime")]
-    private \DateTime $year;
+    #[Assert\NotNull(message: 'Year is null')]
+    #[Assert\NotBlank(message: 'Year is blank')]
+    #[Assert\Type(type: 'datetime')]
+    private DateTime $year;
 
-    #[Assert\NotNull(message: "Duration is null")]
-    #[Assert\NotBlank(message: "Duration is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Duration is null')]
+    #[Assert\NotBlank(message: 'Duration is empty')]
+    #[Assert\Type(type: 'string')]
     private string $duration;
 
-    #[Assert\NotNull(message: "Size is null")]
-    #[Assert\NotBlank(message: "Size is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Size is null')]
+    #[Assert\NotBlank(message: 'Size is empty')]
+    #[Assert\Type(type: 'string')]
     private string $size;
 
-    #[Assert\NotNull(message: "Parts is null")]
-    #[Assert\NotBlank(message: "Parts is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Parts is null')]
+    #[Assert\NotBlank(message: 'Parts is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $parts;
 
-    #[Assert\NotNull(message: "Description is null")]
-    #[Assert\NotBlank(message: "Description is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Description is null')]
+    #[Assert\NotBlank(message: 'Description is empty')]
+    #[Assert\Type(type: 'string')]
     private string $description;
 
-    #[Assert\NotNull(message: "Age is null")]
-    #[Assert\NotBlank(message: "Age is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Age is null')]
+    #[Assert\NotBlank(message: 'Age is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min: 1,
@@ -70,15 +70,15 @@ class AdminAudiobookEditQuery
     )]
     private int $age;
 
-    #[Assert\NotNull(message: "Encoded is null")]
-    #[Assert\NotBlank(message: "Encoded is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Encoded is null')]
+    #[Assert\NotBlank(message: 'Encoded is empty')]
+    #[Assert\Type(type: 'string')]
     private string $encoded;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
@@ -157,10 +157,10 @@ class AdminAudiobookEditQuery
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    #[OA\Property(property: "year", example: "d.m.Y")]
-    public function getYear(): \DateTime
+    #[OA\Property(property: 'year', example: 'd.m.Y')]
+    public function getYear(): DateTime
     {
         return $this->year;
     }

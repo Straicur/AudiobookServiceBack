@@ -7,20 +7,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserAudiobooksQuery
 {
-    #[Assert\NotNull(message: "Page is null")]
-    #[Assert\NotBlank(message: "Page is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Page is null')]
+    #[Assert\NotBlank(message: 'Page is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $page;
 
-    #[Assert\NotNull(message: "Limit is null")]
-    #[Assert\NotBlank(message: "Limit is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Limit is null')]
+    #[Assert\NotBlank(message: 'Limit is empty')]
+    #[Assert\Type(type: 'integer')]
     private int $limit;
 
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 0)]
+    #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
@@ -37,7 +37,7 @@ class UserAudiobooksQuery
     /**
      * @return int
      */
-    #[OA\Property(type: "integer", example: 10)]
+    #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;

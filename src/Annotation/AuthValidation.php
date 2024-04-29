@@ -2,8 +2,6 @@
 
 namespace App\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class AuthValidation
 {
@@ -15,7 +13,7 @@ class AuthValidation
      * @param bool $checkAuthToken
      * @param array $roles
      */
-    public function __construct(bool $checkAuthToken, array $roles = ["Guest"])
+    public function __construct(bool $checkAuthToken, array $roles = ['Guest'])
     {
         $this->checkAuthToken = $checkAuthToken;
         $this->roles = $roles;

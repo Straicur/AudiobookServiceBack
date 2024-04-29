@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\UserEdit;
 use App\Enums\UserEditType;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -59,7 +62,7 @@ class UserEditRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('ue');
 
-        $date = new \DateTime("Now");
+        $date = new DateTime();
 
         $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
             ->where('((ue.edited = false) AND (ue.editableDate IS NOT NULL AND ue.editableDate > :date))')
@@ -83,11 +86,11 @@ class UserEditRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('ue');
 
-        $date = new \DateTime("Now");
+        $date = new DateTime();
 
         $qb->update()
-            ->set("ue.edited", ":edited")
-            ->set("ue.editableDate", ":editableDate")
+            ->set('ue.edited', ':edited')
+            ->set('ue.editableDate', ':editableDate')
             ->where('ue.user = :user')
             ->andWhere('(ue.edited = false)')
             ->andWhere('ue.type = :type')

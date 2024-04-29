@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\User;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
+use DateTime;
 
 class UserSettingsGetSuccessModel implements ModelInterface
 {
@@ -118,9 +121,9 @@ class UserSettingsGetSuccessModel implements ModelInterface
     }
 
     /**
-     * @param \DateTime $editableDate
+     * @param DateTime $editableDate
      */
-    public function setEditableDate(\DateTime $editableDate): void
+    public function setEditableDate(DateTime $editableDate): void
     {
         $this->editableDate = $editableDate->getTimestamp() * 1000;
     }

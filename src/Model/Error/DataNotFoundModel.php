@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Error;
+
+use App\Model\ModelInterface;
 
 /**
  * DataNotFoundModel
@@ -8,7 +12,7 @@ namespace App\Model\Error;
  */
 class DataNotFoundModel implements ModelInterface
 {
-    private string $error = "Data not found";
+    private string $error = 'Data not found';
 
     private array $data;
 

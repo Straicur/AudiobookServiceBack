@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TechnicalBreakRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,18 +14,18 @@ class TechnicalBreak
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateFrom;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateFrom;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateTo = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $dateTo = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private User $user;
@@ -35,7 +37,7 @@ class TechnicalBreak
     public function __construct(bool $active, User $user)
     {
         $this->active = $active;
-        $this->dateFrom = new \DateTime('Now');
+        $this->dateFrom = new DateTime();
         $this->user = $user;
     }
 
@@ -56,24 +58,24 @@ class TechnicalBreak
         return $this;
     }
 
-    public function getDateFrom(): \DateTime
+    public function getDateFrom(): DateTime
     {
         return $this->dateFrom;
     }
 
-    public function setDateFrom(\DateTime $dateFrom): self
+    public function setDateFrom(DateTime $dateFrom): self
     {
         $this->dateFrom = $dateFrom;
 
         return $this;
     }
 
-    public function getDateTo(): ?\DateTime
+    public function getDateTo(): ?DateTime
     {
         return $this->dateTo;
     }
 
-    public function setDateTo(\DateTime $dateTo): self
+    public function setDateTo(DateTime $dateTo): self
     {
         $this->dateTo = $dateTo;
 

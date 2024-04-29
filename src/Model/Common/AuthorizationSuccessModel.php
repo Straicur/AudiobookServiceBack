@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Common;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
 
 /**
  * AuthorizationSuccessModel
@@ -11,17 +13,20 @@ use App\Model\Error\ModelInterface;
 class AuthorizationSuccessModel implements ModelInterface
 {
     private string $token;
-
     private AuthorizationRolesModel $roles;
+
+    private bool $isAdmin;
 
     /**
      * @param string $token
      * @param AuthorizationRolesModel $roles
+     * @param bool $isAdmin
      */
-    public function __construct(string $token, AuthorizationRolesModel $roles)
+    public function __construct(string $token, AuthorizationRolesModel $roles,bool $isAdmin)
     {
         $this->token = $token;
         $this->roles = $roles;
+        $this->isAdmin = $isAdmin;
     }
 
     /**
@@ -59,6 +64,16 @@ class AuthorizationSuccessModel implements ModelInterface
     public function setRoles(AuthorizationRolesModel $roles): void
     {
         $this->roles = $roles;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->isAdmin;
+    }
+
+    public function setIsAdmin(bool $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
     }
 
 }

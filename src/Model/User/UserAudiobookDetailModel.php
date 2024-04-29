@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
@@ -16,6 +18,7 @@ class UserAudiobookDetailModel
      * @var UserAudiobookCategoryModel[]
      */
     private array $categories = [];
+    private ?string $imgFile;
 
     /**
      * @param string $id
@@ -23,14 +26,16 @@ class UserAudiobookDetailModel
      * @param string $author
      * @param int $parts
      * @param AudiobookAgeRange $age
+     * @param string|null $imgFile
      */
-    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age)
+    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age, ?string $imgFile)
     {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
         $this->parts = $parts;
         $this->age = $age->value;
+        $this->imgFile = $imgFile;
     }
 
     /**
@@ -108,7 +113,7 @@ class UserAudiobookDetailModel
     /**
      * @param AudiobookAgeRange $age
      */
-    #[OA\Property(type: "integer", enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
+    #[OA\Property(type: 'integer', enum: [1 => 'FROM3TO7', 2 => 'FROM7TO12', 3 => 'FROM12TO16', 4 => 'FROM16TO18', 5 => 'ABOVE18'])]
     public function setAge(AudiobookAgeRange $age): void
     {
         $this->age = $age->value;
@@ -134,4 +139,15 @@ class UserAudiobookDetailModel
     {
         $this->categories[] = $category;
     }
+
+    public function getImgFile(): ?string
+    {
+        return $this->imgFile;
+    }
+
+    public function setImgFile(?string $imgFile): void
+    {
+        $this->imgFile = $imgFile;
+    }
+
 }

@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Enums\UserEditType;
 use App\Repository\UserEditRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * UserResetPasswordTest
@@ -28,25 +31,25 @@ class UserResetPasswordTest extends AbstractWebTest
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
-        $userEdit2 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new \DateTime("Now"))->modify("+1 day"));
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new DateTime())->modify('+1 day'));
+        $userEdit2 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new DateTime())->modify('+1 day'));
 
         /// step 2
         $content = [
-            "email" => $user->getUserInformation()->getEmail()
+            'email' => $user->getUserInformation()->getEmail()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
+        $crawler = self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
 
         /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
         /// step 5
         $userAfter = $userRepository->findOneBy([
-            "id" => $user->getId()
+            'id' => $user->getId()
         ]);
 
         $this->assertTrue($userAfter->getEdited());
@@ -54,7 +57,7 @@ class UserResetPasswordTest extends AbstractWebTest
 
         $this->assertCount(3, $userEditRepository->findAll());
         $this->assertCount(1, $userEditRepository->findBy([
-            "edited" => false
+            'edited' => false
         ]));
     }
 
@@ -69,16 +72,16 @@ class UserResetPasswordTest extends AbstractWebTest
     public function test_userResetPasswordIncorrectEmail(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
         $content = [
-            "email" => "test2@cos.pl"
+            'email' => 'test2@cos.pl'
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
+        $crawler = self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
@@ -91,8 +94,8 @@ class UserResetPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -105,13 +108,13 @@ class UserResetPasswordTest extends AbstractWebTest
     public function test_userResetPasswordEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/user/reset/password", content: json_encode($content));
+        $crawler = self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
@@ -124,6 +127,6 @@ class UserResetPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

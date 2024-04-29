@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Common;
 
 use App\Entity\NotificationCheck;
 use App\Enums\NotificationType;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 
@@ -101,7 +104,7 @@ class NotificationModel
     /**
      * @param NotificationType $notificationType
      */
-    #[OA\Property(type: "integer", enum: [0 => 'NORMAL'])]
+    #[OA\Property(type: 'integer', enum: [0 => 'NORMAL'])]
     public function setNotificationType(NotificationType $notificationType): void
     {
         $this->notificationType = $notificationType->value;
@@ -116,9 +119,9 @@ class NotificationModel
     }
 
     /**
-     * @param \DateTime|null $dateAdd
+     * @param DateTime|null $dateAdd
      */
-    public function setDateAdd(?\DateTime $dateAdd): void
+    public function setDateAdd(?DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd->getTimestamp() * 1000;
     }

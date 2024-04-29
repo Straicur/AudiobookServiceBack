@@ -6,8 +6,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserResetPasswordQuery
 {
-    #[Assert\NotNull(message: "Email is null")]
-    #[Assert\NotBlank(message: "Email is empty")]
+    #[Assert\NotNull(message: 'Email is null')]
+    #[Assert\NotBlank(message: 'Email is empty')]
     #[Assert\Email]
     private string $email;
 

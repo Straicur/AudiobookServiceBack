@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\AuthenticationTokenRepository;
 use App\ValueGenerator\ValueGeneratorInterface;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -13,22 +15,22 @@ class AuthenticationToken
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 512)]
+    #[ORM\Column(type: Types::STRING, length: 512)]
     private string $token;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateCreate;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateCreate;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateExpired;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateExpired;
 
     /**
      * @param User $user
@@ -38,8 +40,8 @@ class AuthenticationToken
     {
         $this->user = $user;
         $this->token = $tokenGenerator->generate();
-        $this->dateCreate = new \DateTime("now");
-        $this->dateExpired = (new \DateTime("now"))->modify("+4 hour");
+        $this->dateCreate = new DateTime();
+        $this->dateExpired = (new DateTime())->modify('+4 hour');
     }
 
     public function getId(): Uuid
@@ -71,24 +73,24 @@ class AuthenticationToken
         return $this;
     }
 
-    public function getDateCreate(): \DateTime
+    public function getDateCreate(): DateTime
     {
         return $this->dateCreate;
     }
 
-    public function setDateCreate(\DateTime $dateCreate): self
+    public function setDateCreate(DateTime $dateCreate): self
     {
         $this->dateCreate = $dateCreate;
 
         return $this;
     }
 
-    public function getDateExpired(): \DateTime
+    public function getDateExpired(): DateTime
     {
         return $this->dateExpired;
     }
 
-    public function setDateExpired(\DateTime $dateExpired): self
+    public function setDateExpired(DateTime $dateExpired): self
     {
         $this->dateExpired = $dateExpired;
 

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserPasswordRepository;
 use App\ValueGenerator\ValueGeneratorInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserPasswordRepository::class)]
@@ -11,10 +12,10 @@ class UserPassword
 {
     #[ORM\Id]
     #[ORM\OneToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\Column(type: 'string', length: 512)]
+    #[ORM\Column(type: Types::STRING, length: 512)]
     private string $password;
 
     /**

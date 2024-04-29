@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\MyList;
@@ -28,7 +30,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * AddAdminCommand
  */
 #[AsCommand(
-    name: 'audiobookservice:admin:add',
+    name       : 'audiobookservice:admin:add',
     description: 'Add user to service',
 )]
 class AddAdminCommand extends Command
@@ -57,9 +59,8 @@ class AddAdminCommand extends Command
         UserSettingsRepository       $userSettingsRepository,
         MyListRepository             $myListRepository,
         InstitutionRepository        $institutionRepository,
-        ProposedAudiobooksRepository $proposedAudiobooksRepository
-    )
-    {
+        ProposedAudiobooksRepository $proposedAudiobooksRepository,
+    ) {
         $this->userRepository = $userRepository;
         $this->userPasswordRepository = $userPasswordRepository;
         $this->roleRepository = $roleRepository;
@@ -91,51 +92,51 @@ class AddAdminCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $firstname = $input->getArgument("firstname");
-        $lastname = $input->getArgument("lastname");
-        $email = $input->getArgument("email");
-        $phone = $input->getArgument("phone");
-        $password = md5($input->getArgument("password"));
+        $firstname = $input->getArgument('firstname');
+        $lastname = $input->getArgument('lastname');
+        $email = $input->getArgument('email');
+        $phone = $input->getArgument('phone');
+        $password = md5($input->getArgument('password'));
 
         $institution = $this->institutionRepository->findOneBy([
-            "name" => $_ENV["INSTITUTION_NAME"]
+            'name' => $_ENV['INSTITUTION_NAME'],
         ]);
 
         $administrator = $this->roleRepository->findOneBy([
-            "name" => "Administrator"
+            'name' => 'Administrator',
         ]);
 
         if ($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator))) {
-            $io->info("To much admins");
+            $io->info('To much admins');
             return Command::FAILURE;
         }
 
         $existingEmail = $this->userInformationRepository->findOneBy([
-            "email" => $email
+            'email' => $email,
         ]);
 
         if ($existingEmail !== null) {
-            $io->error("Email exists");
+            $io->error('Email exists');
             return Command::FAILURE;
         }
 
         $existingPhone = $this->userInformationRepository->findOneBy([
-            "phoneNumber" => $phone
+            'phoneNumber' => $phone,
         ]);
 
         if ($existingPhone !== null) {
-            $io->error("PhoneNumber exists");
+            $io->error('PhoneNumber exists');
             return Command::FAILURE;
         }
 
         $passwordGenerator = new PasswordHashGenerator($password);
 
         $io->text([
-            "Firstname:    " . $firstname,
-            "Lastname:     " . $lastname,
-            "E-mail:       " . $email,
-            "Phone number: " . $phone,
-            "Password:     " . str_repeat("*", strlen($password)),
+            'Firstname:    ' . $firstname,
+            'Lastname:     ' . $lastname,
+            'E-mail:       ' . $email,
+            'Phone number: ' . $phone,
+            'Password:     ' . str_repeat('*', strlen($password)),
         ]);
 
         $userEntity = new User();
@@ -144,17 +145,17 @@ class AddAdminCommand extends Command
 
         $this->userRepository->add($userEntity, false);
 
-        $roles = ["Administrator", "User", "Guest"];
+        $roles = ['Administrator', 'User', 'Guest'];
 
         $roleEntities = $this->roleRepository->findBy([
-            "name" => $roles
+            'name' => $roles,
         ]);
 
         $isAdministrator = false;
 
         foreach ($roleEntities as $roleEntity) {
 
-            if ($roleEntity->getName() === "Administrator") {
+            if ($roleEntity->getName() === 'Administrator') {
                 $isAdministrator = true;
             }
 
@@ -184,13 +185,13 @@ class AddAdminCommand extends Command
         $userPasswordEntity = new UserPassword($userEntity, $passwordGenerator);
         $this->userPasswordRepository->add($userPasswordEntity);
 
-        $io->info("Database flushed");
+        $io->info('Database flushed');
 
         $io->text([
-            "UserEntity:            " . $userEntity->getId(),
-            "UserInformationEntity: " . $userInformationEntity->getUser()->getId(),
-            "UserSettingEntity:     " . $userSettingsEntity->getUser()->getId(),
-            "UserPasswordEntity:    " . $userPasswordEntity->getUser()->getId()
+            'UserEntity:            ' . $userEntity->getId(),
+            'UserInformationEntity: ' . $userInformationEntity->getUser()->getId(),
+            'UserSettingEntity:     ' . $userSettingsEntity->getUser()->getId(),
+            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId(),
         ]);
 
         $io->success('Admin user added');

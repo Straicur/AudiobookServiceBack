@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Admin;
 
-use App\Model\Error\ModelInterface;
+use App\Model\ModelInterface;
 
 class CacheModel implements ModelInterface
 {

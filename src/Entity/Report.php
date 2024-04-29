@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enums\ReportType;
 use App\Repository\ReportRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -13,31 +15,31 @@ class Report
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $type;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $accepted;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $denied;
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $actionId = null;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $ip = null;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $email = null;
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user = null;
@@ -50,7 +52,7 @@ class Report
         $this->type = $type->value;
         $this->accepted = false;
         $this->denied = false;
-        $this->dateAdd = new \DateTime();
+        $this->dateAdd = new DateTime();
     }
 
     public function getId(): Uuid
@@ -111,12 +113,12 @@ class Report
         $this->ip = $ip;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): void
+    public function setDateAdd(DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd;
     }

@@ -6,14 +6,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserSettingsPasswordQuery
 {
-    #[Assert\NotNull(message: "OldPassword is null")]
-    #[Assert\NotBlank(message: "OldPassword is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'OldPassword is null')]
+    #[Assert\NotBlank(message: 'OldPassword is empty')]
+    #[Assert\Type(type: 'string')]
     private string $oldPassword;
 
-    #[Assert\NotNull(message: "NewPassword is null")]
-    #[Assert\NotBlank(message: "NewPassword is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'NewPassword is null')]
+    #[Assert\NotBlank(message: 'NewPassword is empty')]
+    #[Assert\Type(type: 'string')]
     private string $newPassword;
 
     /**

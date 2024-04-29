@@ -6,9 +6,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminCategoryDetailQuery
 {
-    #[Assert\NotNull(message: "CategoryKey is null")]
-    #[Assert\NotBlank(message: "CategoryKey is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'CategoryKey is null')]
+    #[Assert\NotBlank(message: 'CategoryKey is empty')]
+    #[Assert\Type(type: 'string')]
     private string $categoryKey;
 
     /**

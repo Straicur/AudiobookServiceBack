@@ -21,7 +21,6 @@ PhoneNumberExists: PhoneNumber exists in system
 ToMuchUsers: To much users in system
 WrongCode: Wrong code
 ActiveOrBanned: User is not activated or is banned
-AudiobookInfoDontExists: Audiobook info dont exists
 AudiobookNotWatched: Audiobook must be listened to rate
 AudiobookNotListened: Audiobook is not listened
 AudiobookCommentLikeDontExists: Comment was not liked

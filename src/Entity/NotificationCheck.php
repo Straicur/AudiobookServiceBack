@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\NotificationCheckRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +14,7 @@ class NotificationCheck
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -24,8 +26,8 @@ class NotificationCheck
     #[ORM\JoinColumn(nullable: false)]
     private Notification $notification;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateWatched;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateWatched;
 
     /**
      * @param User $user
@@ -35,7 +37,7 @@ class NotificationCheck
     {
         $this->user = $user;
         $this->notification = $notification;
-        $this->dateWatched = new \DateTime("Now");
+        $this->dateWatched = new DateTime();
     }
 
     public function getId(): Uuid
@@ -67,12 +69,12 @@ class NotificationCheck
         return $this;
     }
 
-    public function getDateWatched(): \DateTime
+    public function getDateWatched(): DateTime
     {
         return $this->dateWatched;
     }
 
-    public function setDateWatched(\DateTime $dateWatched): self
+    public function setDateWatched(DateTime $dateWatched): self
     {
         $this->dateWatched = $dateWatched;
 

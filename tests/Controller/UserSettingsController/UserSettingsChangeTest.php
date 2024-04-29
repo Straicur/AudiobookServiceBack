@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Repository\UserRepository;
@@ -24,19 +26,19 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
         $content = [
-            "phoneNumber" => "+48124124124",
-            "firstName" => "Damian",
-            "lastName" => "Mos",
+            'phoneNumber' => '+48124124124',
+            'firstName' => 'Damian',
+            'lastName' => 'Mos',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -44,13 +46,13 @@ class UserSettingsChangeTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
         $userAfter = $userRepository->findOneBy([
-            "id" => $user->getId()
+            'id' => $user->getId()
         ]);
 
         /// step 5
         $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(), '+48123123123');
-        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), "Test");
-        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), "User");
+        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), 'Test');
+        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), 'User');
     }
 
     /**
@@ -65,19 +67,19 @@ class UserSettingsChangeTest extends AbstractWebTest
     public function test_userSettingsIncorrectPhoneNumber(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123121", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            "phoneNumber" => "+48123123121",
-            "firstName" => "Damian",
-            "lastName" => "Mos",
+            'phoneNumber' => '+48123123121',
+            'firstName' => 'Damian',
+            'lastName' => 'Mos',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -91,8 +93,8 @@ class UserSettingsChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -105,14 +107,14 @@ class UserSettingsChangeTest extends AbstractWebTest
     public function test_userSettingsChangeEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -126,7 +128,7 @@ class UserSettingsChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -139,18 +141,18 @@ class UserSettingsChangeTest extends AbstractWebTest
     public function test_userSettingsChangePermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [
-            "phoneNumber" => "+48124124124",
-            "firstName" => "Damian",
-            "lastName" => "Mos",
+            'phoneNumber' => '+48124124124',
+            'firstName' => 'Damian',
+            'lastName' => 'Mos',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -164,7 +166,7 @@ class UserSettingsChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -177,16 +179,16 @@ class UserSettingsChangeTest extends AbstractWebTest
     public function test_userSettingsChangeLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [
-            "phoneNumber" => "+48124124124",
-            "firstName" => "Damian",
-            "lastName" => "Mos",
+            'phoneNumber' => '+48124124124',
+            'firstName' => 'Damian',
+            'lastName' => 'Mos',
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/change", content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -199,6 +201,6 @@ class UserSettingsChangeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Enums\NotificationType;
 use App\Repository\NotificationRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -15,37 +17,37 @@ class Notification
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $type;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateAdd;
 
     #[ORM\Column(type: 'uuid', nullable: true)]
     private ?Uuid $actionId = null;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $metaData;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
     #[ORM\OneToMany(mappedBy: 'notification', targetEntity: NotificationCheck::class)]
     private Collection $notificationChecks;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateDeleted;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $dateDeleted;
 
     public function __construct()
     {
-        $this->dateAdd = new \DateTime('now');
+        $this->dateAdd = new DateTime();
         $this->users = new ArrayCollection();
         $this->deleted = false;
         $this->notificationChecks = new ArrayCollection();
@@ -77,12 +79,12 @@ class Notification
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 

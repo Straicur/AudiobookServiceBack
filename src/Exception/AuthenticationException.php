@@ -1,15 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception;
 
 use App\Model\Error\NotAuthorizeModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * AuthenticationException
- *
- */
 class AuthenticationException extends \Exception implements ResponseExceptionInterface
 {
     public function getResponse(): Response

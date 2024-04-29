@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminAudiobookCategoryController;
 
 use App\Tests\AbstractWebTest;
@@ -19,19 +21,19 @@ class AdminCategoriesTreeTest extends AbstractWebTest
     public function test_adminCategoriesTreeCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory("3", $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
+        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/admin/categories/tree', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 3
@@ -44,10 +46,10 @@ class AdminCategoriesTreeTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("categories", $responseContent);
-        $this->assertCount(5, $responseContent["categories"]);
+        $this->assertArrayHasKey('categories', $responseContent);
+        $this->assertCount(5, $responseContent['categories']);
 
-        $this->assertCount(2, $responseContent["categories"][0]["children"]);
+        $this->assertCount(2, $responseContent['categories'][0]['children']);
     }
 
     /**
@@ -60,18 +62,18 @@ class AdminCategoriesTreeTest extends AbstractWebTest
     public function test_adminCategoriesTreePermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory("3", $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
+        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('GET', '/api/admin/categories/tree', server: [
+            'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -85,7 +87,7 @@ class AdminCategoriesTreeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -98,16 +100,16 @@ class AdminCategoriesTreeTest extends AbstractWebTest
     public function test_adminCategoriesTreeLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory("1");
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory("2", $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory("3", $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory("4", $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory("5", $category2, true);
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
+        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         /// step 2
-        $crawler = self::$webClient->request("GET", "/api/admin/categories/tree");
+        $crawler = self::$webClient->request('GET', '/api/admin/categories/tree');
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
@@ -121,6 +123,6 @@ class AdminCategoriesTreeTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

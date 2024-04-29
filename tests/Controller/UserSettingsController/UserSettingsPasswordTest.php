@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\UserSettingsController;
 
 use App\Repository\UserPasswordRepository;
@@ -25,19 +27,19 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserPasswordRepository::class, $userPasswordRepository);
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $passwordGenerator2 = new PasswordHashGenerator("zaq12WSX");
+        $passwordGenerator2 = new PasswordHashGenerator('zaq12WSX');
         /// step 2
         $content = [
-            "oldPassword" => "zaq12wsx",
-            "newPassword" => "zaq12WSX",
+            'oldPassword' => 'zaq12wsx',
+            'newPassword' => 'zaq12WSX',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/password", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -45,7 +47,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
         /// step 5
         $userPassword = $userPasswordRepository->findOneBy([
-            "user" => $user->getId()
+            'user' => $user->getId()
         ]);
 
         $this->assertSame($userPassword->getPassword(), $passwordGenerator2->generate());
@@ -62,18 +64,18 @@ class UserSettingsPasswordTest extends AbstractWebTest
     public function test_userSettingsPasswordIncorrectPassword(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
         $content = [
-            "oldPassword" => "zaq12WSX",
-            "newPassword" => "zaq12Wsa",
+            'oldPassword' => 'zaq12WSX',
+            'newPassword' => 'zaq12Wsa',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/password", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
@@ -87,8 +89,8 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
-        $this->assertArrayHasKey("data", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**
@@ -101,14 +103,14 @@ class UserSettingsPasswordTest extends AbstractWebTest
     public function test_userSettingsPasswordEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/password", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -122,7 +124,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -135,17 +137,17 @@ class UserSettingsPasswordTest extends AbstractWebTest
     public function test_userSettingsPasswordPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [
-            "oldPassword" => "zaq12wsx",
-            "newPassword" => "zaq12WSX",
+            'oldPassword' => 'zaq12wsx',
+            'newPassword' => 'zaq12WSX',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/password", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -159,7 +161,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -172,15 +174,15 @@ class UserSettingsPasswordTest extends AbstractWebTest
     public function test_userSettingsPasswordLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [
-            "oldPassword" => "zaq12wsx",
-            "newPassword" => "zaq12WSX",
+            'oldPassword' => 'zaq12wsx',
+            'newPassword' => 'zaq12WSX',
         ];
 
         /// step 2
-        $crawler = self::$webClient->request("PATCH", "/api/user/settings/password", content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -193,6 +195,6 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

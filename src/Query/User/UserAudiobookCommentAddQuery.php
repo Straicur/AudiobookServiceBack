@@ -9,19 +9,19 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserAudiobookCommentAddQuery
 {
-    #[Assert\NotNull(message: "AudiobookId is null")]
-    #[Assert\NotBlank(message: "AudiobookId is blank")]
+    #[Assert\NotNull(message: 'AudiobookId is null')]
+    #[Assert\NotBlank(message: 'AudiobookId is blank')]
     #[Assert\Uuid]
     private Uuid $audiobookId;
 
-    #[Assert\NotNull(message: "CategoryKey is null")]
-    #[Assert\NotBlank(message: "CategoryKey is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'CategoryKey is null')]
+    #[Assert\NotBlank(message: 'CategoryKey is empty')]
+    #[Assert\Type(type: 'string')]
     private string $categoryKey;
 
-    #[Assert\NotNull(message: "Comment is null")]
-    #[Assert\NotBlank(message: "Comment is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'Comment is null')]
+    #[Assert\NotBlank(message: 'Comment is empty')]
+    #[Assert\Type(type: 'string')]
     private string $comment;
 
     protected array $additionalData = [];
@@ -31,24 +31,24 @@ class UserAudiobookCommentAddQuery
         $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
             'fields' => [
                 'parentId' => new Assert\Optional([
-                    new Assert\NotBlank(message: "ParentId is empty"),
+                    new Assert\NotBlank(message: 'ParentId is empty'),
                     new Assert\NotNull(),
-                    new Assert\Uuid()
-                ])
-            ]
+                    new Assert\Uuid(),
+                ]),
+            ],
         ]));
     }
 
     /**
      * @param array $additionalData
      */
-    #[OA\Property(property: "additionalData", properties: [
-        new OA\Property(property: "parentId", type: "string", example: "UUID", nullable: true),
-    ], type: "object")]
+    #[OA\Property(property: 'additionalData', properties: [
+        new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
+    ],            type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists("parentId", $additionalData)) {
-            $additionalData["parentId"] = Uuid::fromString($additionalData["parentId"]);
+        if (array_key_exists('parentId', $additionalData)) {
+            $additionalData['parentId'] = Uuid::fromString($additionalData['parentId']);
         }
 
         $this->additionalData = $additionalData;
@@ -65,7 +65,7 @@ class UserAudiobookCommentAddQuery
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;

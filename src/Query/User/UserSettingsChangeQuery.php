@@ -6,19 +6,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserSettingsChangeQuery
 {
-    #[Assert\NotNull(message: "PhoneNumber is null")]
-    #[Assert\NotBlank(message: "PhoneNumber is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'PhoneNumber is null')]
+    #[Assert\NotBlank(message: 'PhoneNumber is empty')]
+    #[Assert\Type(type: 'string')]
     private string $phoneNumber;
 
-    #[Assert\NotNull(message: "FirstName is null")]
-    #[Assert\NotBlank(message: "FirstName is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'FirstName is null')]
+    #[Assert\NotBlank(message: 'FirstName is empty')]
+    #[Assert\Type(type: 'string')]
     private string $firstName;
 
-    #[Assert\NotNull(message: "LastName is null")]
-    #[Assert\NotBlank(message: "LastName is empty")]
-    #[Assert\Type(type: "string")]
+    #[Assert\NotNull(message: 'LastName is null')]
+    #[Assert\NotBlank(message: 'LastName is empty')]
+    #[Assert\Type(type: 'string')]
     private string $lastName;
 
     /**

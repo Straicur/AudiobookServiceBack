@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventSubscriber;
 
 use App\Annotation\AuthValidation;
@@ -26,7 +28,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * AuthValidationSubscriber
- *
  */
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
@@ -41,9 +42,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         TechnicalBreakRepository      $technicalBreakRepository,
         UserRepository                $userRepository,
         LoggerInterface               $requestLogger,
-        TagAwareCacheInterface        $stockCache
-    )
-    {
+        TagAwareCacheInterface        $stockCache,
+    ) {
         $this->authenticationTokenRepository = $authenticationTokenRepository;
         $this->technicalBreakRepository = $technicalBreakRepository;
         $this->userRepository = $userRepository;
@@ -77,7 +77,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                     $authValidationAttribute = $methodAttributes[0]->newInstance();
 
                     if (($authValidationAttribute instanceof AuthValidation) && $authValidationAttribute->isCheckAuthToken()) {
-                        $authorizationHeaderField = $request->headers->get("authorization");
+                        $authorizationHeaderField = $request->headers->get('authorization');
 
                         if ($authorizationHeaderField === null) {
                             throw new AuthenticationException();
@@ -90,24 +90,24 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         }
 
                         $loggedUserData = [
-                            "method" => $reflectionMethod->class . "::" . $reflectionMethod->name,
-                            "user_id" => $authToken->getUser()->getId(),
-                            "token_auth_id" => $authToken->getId(),
-                            "user_data" => [
-                                "email" => $authToken->getUser()->getUserInformation()->getEmail(),
-                            ]
+                            'method'        => $reflectionMethod->class . '::' . $reflectionMethod->name,
+                            'user_id'       => $authToken->getUser()->getId(),
+                            'token_auth_id' => $authToken->getId(),
+                            'user_data'     => [
+                                'email' => $authToken->getUser()->getUserInformation()->getEmail(),
+                            ],
                         ];
 
-                        $this->requestLogger->info("Logged user action", $loggedUserData);
+                        $this->requestLogger->info('Logged user action', $loggedUserData);
 
                         $user = $authToken->getUser();
 
                         if ($user->isBanned()) {
-                            if ($user->getBannedTo() < new \DateTime('Now')) {
+                            if ($user->getBannedTo() < new DateTime()) {
                                 $user->setBanned(false);
                                 $this->userRepository->add($user);
                             } else {
-                                $authToken->setDateExpired(new \DateTime("now"));
+                                $authToken->setDateExpired(new DateTime());
                                 $this->authenticationTokenRepository->add($authToken);
 
                                 throw new PermissionException();
@@ -115,7 +115,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         }
 
                         $dateNew = clone $authToken->getDateExpired();
-                        $dateNew->modify("+2 second");
+                        $dateNew->modify('+2 second');
                         $authToken->setDateExpired($dateNew);
 
                         $this->authenticationTokenRepository->add($authToken);
@@ -128,11 +128,11 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                             $item->tag(StockCacheTags::ADMIN_TECHNICAL_BREAK->value);
 
                             return $this->technicalBreakRepository->findOneBy([
-                                "active" => true
+                                'active' => true,
                             ]);
                         });
 
-                        if (($_ENV["APP_ENV"] !== "test") && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
+                        if (($_ENV['APP_ENV'] !== 'test') && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
                             throw new TechnicalBreakException();
                         }
 
@@ -163,7 +163,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
      * @return int
      * @throws PermissionException
      */
-    private function checkRoles(User $user, array $roles): int
+    private function checkRoles(User $user, array $roles): bool
     {
         $userRoles = $user->getRoles();
 

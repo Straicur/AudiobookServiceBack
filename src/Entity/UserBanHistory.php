@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserBanHistoryRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +14,7 @@ class UserBanHistory
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -20,21 +22,21 @@ class UserBanHistory
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateFrom;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateFrom;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateTo;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateTo;
 
-    #[ORM\Column(type: 'integer',nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $type = null;
 
     /**
      * @param User $user
-     * @param \DateTime $dateFrom
-     * @param \DateTime $dateTo
+     * @param DateTime $dateFrom
+     * @param DateTime $dateTo
      */
-    public function __construct(User $user, \DateTime $dateFrom, \DateTime $dateTo)
+    public function __construct(User $user, DateTime $dateFrom, DateTime $dateTo)
     {
         $this->user = $user;
         $this->dateFrom = $dateFrom;
@@ -58,24 +60,24 @@ class UserBanHistory
         return $this;
     }
 
-    public function getDateFrom(): \DateTime
+    public function getDateFrom(): DateTime
     {
         return $this->dateFrom;
     }
 
-    public function setDateFrom(\DateTime $dateFrom): self
+    public function setDateFrom(DateTime $dateFrom): self
     {
         $this->dateFrom = $dateFrom;
 
         return $this;
     }
 
-    public function getDateTo(): \DateTime
+    public function getDateTo(): DateTime
     {
         return $this->dateTo;
     }
 
-    public function setDateTo(\DateTime $dateTo): self
+    public function setDateTo(DateTime $dateTo): self
     {
         $this->dateTo = $dateTo;
 

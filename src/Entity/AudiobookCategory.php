@@ -7,6 +7,7 @@ use App\ValueGenerator\ValueGeneratorInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -16,27 +17,27 @@ class AudiobookCategory
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'string', length: 50)]
+    #[ORM\Column(type: Types::STRING, length: 50)]
     private string $name;
 
     #[ORM\ManyToMany(targetEntity: Audiobook::class, mappedBy: 'categories')]
     private Collection $audiobooks;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     private string $categoryKey;
 
     #[ORM\ManyToOne(targetEntity: AudiobookCategory::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?AudiobookCategory $parent = null;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
     /**
@@ -49,7 +50,7 @@ class AudiobookCategory
         $this->active = false;
         $this->audiobooks = new ArrayCollection();
         $this->categoryKey = $categoryKeyGenerator->generate();
-        $this->dateAdd = new DateTime("Now");
+        $this->dateAdd = new DateTime();
     }
 
     public function getId(): Uuid

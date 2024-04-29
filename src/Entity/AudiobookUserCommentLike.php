@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookUserCommentLikeRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,21 +14,21 @@ class AudiobookUserCommentLike
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $liked;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $dateAdd;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $dateAdd;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
     #[ORM\ManyToOne(targetEntity: AudiobookUserComment::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private AudiobookUserComment $audiobookUserComment;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -41,7 +43,7 @@ class AudiobookUserCommentLike
     public function __construct(bool $liked, AudiobookUserComment $audiobookUserComment, User $user)
     {
         $this->liked = $liked;
-        $this->dateAdd = new \DateTime('Now');
+        $this->dateAdd = new DateTime();
         $this->deleted = false;
         $this->audiobookUserComment = $audiobookUserComment;
         $this->user = $user;
@@ -64,12 +66,12 @@ class AudiobookUserCommentLike
         return $this;
     }
 
-    public function getDateAdd(): \DateTime
+    public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function setDateAdd(DateTime $dateAdd): self
     {
         $this->dateAdd = $dateAdd;
 

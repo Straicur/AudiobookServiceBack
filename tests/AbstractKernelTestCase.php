@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -16,7 +18,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
     protected function setUp(): void
     {
         if (!self::$booted) {
-            self::bootKernel(["environment" => "test"]);
+            self::bootKernel(['environment' => 'test']);
         }
 
         if ($this->databaseMockManager === null) {
@@ -25,7 +27,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 
         $this->commandApplication = new Application(self::$kernel);
 
-        $this->entityManager = self::$kernel->getContainer()->get("doctrine.orm.entity_manager");
+        $this->entityManager = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
 
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();

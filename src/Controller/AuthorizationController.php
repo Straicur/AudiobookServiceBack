@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Exception\PermissionException;
@@ -24,6 +27,7 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -34,26 +38,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
-    response: 400,
-    description: "JSON Data Invalid",
-    content: new Model(type: JsonDataInvalidModel::class)
+    response   : 400,
+    description: 'JSON Data Invalid',
+    content    : new Model(type: JsonDataInvalidModel::class)
 )]
 #[OA\Response(
-    response: 404,
-    description: "Data not found",
-    content: new Model(type: DataNotFoundModel::class)
+    response   : 404,
+    description: 'Data not found',
+    content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Response(
-    response: 401,
-    description: "User not authorized",
-    content: new Model(type: NotAuthorizeModel::class)
+    response   : 401,
+    description: 'User not authorized',
+    content    : new Model(type: NotAuthorizeModel::class)
 )]
 #[OA\Response(
-    response: 403,
-    description: "User have no permission",
-    content: new Model(type: PermissionNotGrantedModel::class)
+    response   : 403,
+    description: 'User have no permission',
+    content    : new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: "Authorize")]
+#[OA\Tag(name: 'Authorize')]
 class AuthorizationController extends AbstractController
 {
     /**
@@ -71,22 +75,22 @@ class AuthorizationController extends AbstractController
      * @throws PermissionException
      * @throws \Exception
      */
-    #[Route("/api/authorize", name: "apiAuthorize", methods: ["POST"])]
+    #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
-        description: "Method used to authorize user credentials. Return authorized token",
-        security: [],
+        description: 'Method used to authorize user credentials. Return authorized token',
+        security   : [],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                ref: new Model(type: AuthorizeQuery::class),
-                type: "object"
+            content : new OA\JsonContent(
+                ref : new Model(type: AuthorizeQuery::class),
+                type: 'object',
             ),
         ),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
-                description: "Success",
-                content: new Model(type: AuthorizationSuccessModel::class)
+                response   : 200,
+                description: 'Success',
+                content    : new Model(type: AuthorizationSuccessModel::class),
             ),
         ]
     )]
@@ -98,9 +102,8 @@ class AuthorizationController extends AbstractController
         UserInformationRepository     $userInformationRepository,
         UserPasswordRepository        $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService              $translateService
-    ): Response
-    {
+        TranslateService              $translateService,
+    ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
@@ -108,29 +111,29 @@ class AuthorizationController extends AbstractController
             $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
 
             $userInformationEntity = $userInformationRepository->findOneBy([
-                "email" => $authenticationQuery->getEmail()
+                'email' => $authenticationQuery->getEmail(),
             ]);
 
-            if ($userInformationEntity == null) {
+            if ($userInformationEntity === null) {
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("EmailDontExists")]);
+                throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
             }
 
             if ($userInformationEntity->getUser()->isBanned()) {
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("UserBanned")]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserBanned')]);
             }
 
             if (!$userInformationEntity->getUser()->isActive()) {
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("ActivateAccount")]);
+                throw new DataNotFoundException([$translateService->getTranslation('ActivateAccount')]);
             }
 
             $roles = $userInformationEntity->getUser()->getRoles();
             $isUser = false;
 
             foreach ($roles as $role) {
-                if ($role->getName() === "User" || $role->getName() === "Administrator") {
+                if ($role->getName() === 'User' || $role->getName() === 'Administrator') {
                     $isUser = true;
                 }
             }
@@ -140,13 +143,13 @@ class AuthorizationController extends AbstractController
             }
 
             $passwordEntity = $userPasswordRepository->findOneBy([
-                "user" => $userInformationEntity->getUser(),
-                "password" => $passwordHashGenerator->generate()
+                'user'     => $userInformationEntity->getUser(),
+                'password' => $passwordHashGenerator->generate(),
             ]);
 
-            if ($passwordEntity == null) {
+            if ($passwordEntity === null) {
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation("NotActivePassword")]);
+                throw new DataNotFoundException([$translateService->getTranslation('NotActivePassword')]);
             }
 
             $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
@@ -154,21 +157,26 @@ class AuthorizationController extends AbstractController
             $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
             $authenticationTokenRepository->add($authenticationToken);
 
-            $usersLogger->info("LOGIN", [$userInformationEntity->getUser()->getId()->__toString()]);
+            $usersLogger->info('LOGIN', [$userInformationEntity->getUser()->getId()->__toString()]);
 
             $rolesModel = new AuthorizationRolesModel();
 
+            $isAdmin = false;
+
             foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
+
+                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value) {
+                    $isAdmin = true;
+                }
             }
 
-            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel);
-
+            $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel, $isAdmin);
 
             return ResponseTool::getResponse($responseModel);
         }
 
-        $endpointLogger->error("Invalid given Query");
+        $endpointLogger->error('Invalid given Query');
 
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
@@ -182,15 +190,15 @@ class AuthorizationController extends AbstractController
      * @return Response
      * @throws NonUniqueResultException
      */
-    #[Route("/api/logout", name: "apiLogout", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/logout', name: 'apiLogout', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Method used to logout user",
+        description: 'Method used to logout user',
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
-                description: "Success",
+                response   : 200,
+                description: 'Success',
             ),
         ]
     )]
@@ -199,20 +207,19 @@ class AuthorizationController extends AbstractController
         AuthenticationTokenRepository  $authenticationTokenRepository,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $usersLogger,
-    ): Response
-    {
+    ): Response {
         $user = $authorizedUserService->getAuthorizedUser();
 
-        $authorizationHeaderField = $request->headers->get("authorization");
+        $authorizationHeaderField = $request->headers->get('authorization');
 
         $authToken = $authenticationTokenRepository->findActiveToken($authorizationHeaderField);
 
-        if ($authToken != null) {
-            $authToken->setDateExpired(new \DateTime('NOW'));
+        if ($authToken !== null) {
+            $authToken->setDateExpired(new DateTime());
             $authenticationTokenRepository->add($authToken);
         }
 
-        $usersLogger->info("LOGOUT", [$user->getId()->__toString()]);
+        $usersLogger->info('LOGOUT', [$user->getId()->__toString()]);
 
         return ResponseTool::getResponse();
     }
@@ -223,16 +230,16 @@ class AuthorizationController extends AbstractController
      * @param LoggerInterface $usersLogger
      * @return Response
      */
-    #[Route("/api/authorize/check", name: "apiAuthorizeCheck", methods: ["POST"])]
-    #[AuthValidation(checkAuthToken: true, roles: ["Administrator", "User"])]
+    #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
-        description: "Method is checking if given token is authorized",
-        security: [],
+        description: 'Method is checking if given token is authorized',
+        security   : [],
         requestBody: new OA\RequestBody(),
-        responses: [
+        responses  : [
             new OA\Response(
-                response: 200,
-                description: "Success",
+                response   : 200,
+                description: 'Success',
             ),
         ]
     )]
@@ -240,8 +247,7 @@ class AuthorizationController extends AbstractController
         Request                 $request,
         RequestServiceInterface $requestServiceInterface,
         LoggerInterface         $usersLogger,
-    ): Response
-    {
+    ): Response {
         return ResponseTool::getResponse();
     }
 }

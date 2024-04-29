@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Tool;
 
 use App\Model\Error\NotAuthorizeModel;
@@ -9,8 +11,8 @@ use PHPUnit\Framework\TestCase;
 class ResponseToolTest extends TestCase
 {
     private static array $_HEADERS = [
-        "Content-Type" => [
-            "application/json"
+        'Content-Type' => [
+            'application/json'
         ]
     ];
 

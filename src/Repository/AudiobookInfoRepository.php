@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Audiobook;
@@ -7,10 +9,8 @@ use App\Entity\AudiobookInfo;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\UuidV6;
 
 /**
  * @extends ServiceEntityRepository<AudiobookInfo>
@@ -78,11 +78,11 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('ai');
 
         $qb->update()
-            ->set("ai.active", ":status")
+            ->set('ai.active', ':status')
             ->andWhere('ai.user = :user')
             ->andWhere('ai.audiobook = :audiobook')
             ->andWhere('ai.active = true')
-            ->setParameter("status", false)
+            ->setParameter('status', false)
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('audiobook', $audiobook->getId()->toBinary());
 

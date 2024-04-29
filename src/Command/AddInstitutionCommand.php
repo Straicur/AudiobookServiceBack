@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Institution;
@@ -13,10 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * AddInstitutionCommand
- *
  */
 #[AsCommand(
-    name: 'audiobookservice:institution:add',
+    name       : 'audiobookservice:institution:add',
     description: 'Add user to service',
 )]
 class AddInstitutionCommand extends Command
@@ -25,8 +26,7 @@ class AddInstitutionCommand extends Command
 
     public function __construct(
         InstitutionRepository $institutionRepository,
-    )
-    {
+    ) {
         $this->institutionRepository = $institutionRepository;
 
         parent::__construct();
@@ -48,22 +48,21 @@ class AddInstitutionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $phoneNumber = $input->getArgument("phoneNumber");
-        $maxAdmins = $input->getArgument("maxAdmins");
-        $maxUsers = $input->getArgument("maxUsers");
-
+        $phoneNumber = $input->getArgument('phoneNumber');
+        $maxAdmins = $input->getArgument('maxAdmins');
+        $maxUsers = $input->getArgument('maxUsers');
 
         $io->text([
-            "PhoneNumber:  " . $phoneNumber,
-            "MaxAdmins:    " . $maxAdmins,
-            "MaxUsers:     " . $maxUsers,
+            'PhoneNumber:  ' . $phoneNumber,
+            'MaxAdmins:    ' . $maxAdmins,
+            'MaxUsers:     ' . $maxUsers,
         ]);
 
         if (count($this->institutionRepository->findAll()) > 0) {
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV["INSTITUTION_NAME"], $_ENV["INSTITUTION_EMAIL"], $phoneNumber, $maxAdmins, $maxUsers));
+        $this->institutionRepository->add(new Institution($_ENV['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, $maxAdmins, $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

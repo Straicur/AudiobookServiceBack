@@ -9,26 +9,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminUserRoleAddQuery
 {
-    #[Assert\NotNull(message: "UserId is null")]
-    #[Assert\NotBlank(message: "UserId is blank")]
+    #[Assert\NotNull(message: 'UserId is null')]
+    #[Assert\NotBlank(message: 'UserId is blank')]
     #[Assert\Uuid]
     private Uuid $userId;
 
-
-    #[Assert\NotNull(message: "Role is null")]
-    #[Assert\NotBlank(message: "Role is empty")]
-    #[Assert\Type(type: "integer")]
+    #[Assert\NotNull(message: 'Role is null')]
+    #[Assert\NotBlank(message: 'Role is empty')]
+    #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
-        min: 1,
-        max: 3,
+        min              : 1,
+        max              : 3,
     )]
     private int $role;
 
     /**
      * @return Uuid
      */
-    #[OA\Property(type: "string", example: "60266c4e-16e6-1ecc-9890-a7e8b0073d3b")]
+    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getUserId(): Uuid
     {
         return $this->userId;

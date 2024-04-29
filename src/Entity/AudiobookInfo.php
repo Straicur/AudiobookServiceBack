@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AudiobookInfoRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +14,7 @@ class AudiobookInfo
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -21,22 +23,22 @@ class AudiobookInfo
     private User $user;
 
     #[ORM\ManyToOne(targetEntity: Audiobook::class, inversedBy: 'audiobookInfos')]
-    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Audiobook $audiobook;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $part;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $endedTime;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTime $watchingDate;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private DateTime $watchingDate;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $watched;
 
     /**
@@ -52,7 +54,7 @@ class AudiobookInfo
         $this->audiobook = $audiobook;
         $this->part = $part;
         $this->endedTime = $endedTime;
-        $this->watchingDate = new \DateTime('Now');
+        $this->watchingDate = new DateTime();
         $this->active = true;
         $this->watched = $watched;
     }
@@ -110,12 +112,12 @@ class AudiobookInfo
         return $this;
     }
 
-    public function getWatchingDate(): \DateTime
+    public function getWatchingDate(): DateTime
     {
         return $this->watchingDate;
     }
 
-    public function setWatchingDate(\DateTime $watchingDate): self
+    public function setWatchingDate(DateTime $watchingDate): self
     {
         $this->watchingDate = $watchingDate;
 

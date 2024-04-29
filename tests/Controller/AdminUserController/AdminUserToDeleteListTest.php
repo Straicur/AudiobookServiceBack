@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AdminUserController;
 
 use App\Tests\AbstractWebTest;
@@ -20,11 +22,11 @@ class AdminUserToDeleteListTest extends AbstractWebTest
     public function test_adminUserToDeleteListCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123128", ["Guest", "User",], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User",], true, "zaq12wsx", notActive: true);
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User",], true, "zaq12wsx", notActive: true);
-        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123125", ["Guest", "User",], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
+        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123125', ['Guest', 'User',], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user1);
         $this->databaseMockManager->testFunc_addUserDelete($user2);
@@ -32,14 +34,14 @@ class AdminUserToDeleteListTest extends AbstractWebTest
 
         /// step 2
         $content = [
-            "page" => 0,
-            "limit" => 10
+            'page' => 0,
+            'limit' => 10
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/admin/user/to/delete/list", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
@@ -52,11 +54,11 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey("users", $responseContent);
-        $this->assertArrayHasKey("page", $responseContent);
-        $this->assertArrayHasKey("limit", $responseContent);
-        $this->assertArrayHasKey("maxPage", $responseContent);
-        $this->assertCount(2, $responseContent["users"]);
+        $this->assertArrayHasKey('users', $responseContent);
+        $this->assertArrayHasKey('page', $responseContent);
+        $this->assertArrayHasKey('limit', $responseContent);
+        $this->assertArrayHasKey('maxPage', $responseContent);
+        $this->assertCount(2, $responseContent['users']);
     }
 
     /**
@@ -69,11 +71,11 @@ class AdminUserToDeleteListTest extends AbstractWebTest
     public function test_adminUserToDeleteListEmptyRequestData(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123128", ["Guest", "User",], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User",], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User",], true, "zaq12wsx");
-        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123125", ["Guest", "User",], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User',], true, 'zaq12wsx');
+        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123125', ['Guest', 'User',], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user1);
         $this->databaseMockManager->testFunc_addUserDelete($user2, true);
@@ -83,8 +85,8 @@ class AdminUserToDeleteListTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/to/delete/list", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
@@ -98,7 +100,7 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -111,25 +113,25 @@ class AdminUserToDeleteListTest extends AbstractWebTest
     public function test_adminUserToDeleteListPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123128", ["Guest", "User",], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User",], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User",], true, "zaq12wsx");
-        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123125", ["Guest", "User",], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User',], true, 'zaq12wsx');
+        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123125', ['Guest', 'User',], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user1);
         $this->databaseMockManager->testFunc_addUserDelete($user2, true);
         $this->databaseMockManager->testFunc_addUserDelete($user3, false, true);
 
         $content = [
-            "page" => 0,
-            "limit" => 10
+            'page' => 0,
+            'limit' => 10
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/to/delete/list", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
@@ -143,7 +145,7 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 
     /**
@@ -156,24 +158,24 @@ class AdminUserToDeleteListTest extends AbstractWebTest
     public function test_adminUserToDeleteListLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@cos.pl", "+48123123123", ["Guest", "User", "Administrator"], true, "zaq12wsx");
-        $user1 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test1@cos.pl", "+48123123128", ["Guest", "User",], true, "zaq12wsx");
-        $user2 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test2@cos.pl", "+48123123127", ["Guest", "User",], true, "zaq12wsx");
-        $user3 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test3@cos.pl", "+48123123126", ["Guest", "User",], true, "zaq12wsx");
-        $user4 = $this->databaseMockManager->testFunc_addUser("User", "Test", "test4@cos.pl", "+48123123125", ["Guest", "User",], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User',], true, 'zaq12wsx');
+        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123125', ['Guest', 'User',], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user1);
         $this->databaseMockManager->testFunc_addUserDelete($user2, true);
         $this->databaseMockManager->testFunc_addUserDelete($user3, false, true);
 
         $content = [
-            "page" => 0,
-            "limit" => 10
+            'page' => 0,
+            'limit' => 10
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request("POST", "/api/admin/user/to/delete/list", content: json_encode($content));
+        $crawler = self::$webClient->request('POST', '/api/admin/user/to/delete/list', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
@@ -186,6 +188,6 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $responseContent = json_decode($responseContent, true);
 
         $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey("error", $responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
     }
 }

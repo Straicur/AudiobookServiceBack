@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserDeleteRepository;
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -12,7 +14,7 @@ class UserDelete
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
@@ -20,13 +22,13 @@ class UserDelete
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $dateDeleted = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $dateDeleted = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $declined;
 
     /**
@@ -56,12 +58,12 @@ class UserDelete
         return $this;
     }
 
-    public function getDateDeleted(): ?\DateTime
+    public function getDateDeleted(): ?DateTime
     {
         return $this->dateDeleted;
     }
 
-    public function setDateDeleted(\DateTime $dateDeleted): self
+    public function setDateDeleted(DateTime $dateDeleted): self
     {
         $this->dateDeleted = $dateDeleted;
 

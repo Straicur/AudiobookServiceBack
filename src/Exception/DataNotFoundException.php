@@ -1,15 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception;
 
 use App\Model\Error\DataNotFoundModel;
 use App\Tool\ResponseTool;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * DataNotFoundException
- *
- */
 class DataNotFoundException extends \Exception implements ResponseExceptionInterface
 {
     private array $dataStrings = [];
@@ -19,7 +17,7 @@ class DataNotFoundException extends \Exception implements ResponseExceptionInter
      */
     public function __construct(array $dataStrings = [])
     {
-        parent::__construct("Data not found");
+        parent::__construct('Data not found');
 
         $this->dataStrings = $dataStrings;
     }

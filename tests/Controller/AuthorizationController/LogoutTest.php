@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Controller\AuthorizationController;
 
 use App\Tests\AbstractWebTest;
@@ -20,17 +22,17 @@ class LogoutTest extends AbstractWebTest
     public function test_logoutCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser("User", "Test", "test@asuri.pl", "+48123123123", ["Guest", "User"], true, "zaq12wsx");
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@asuri.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            "email" => "test@asuri.pl",
-            "password" => "zaq12wsx"
+            'email' => 'test@asuri.pl',
+            'password' => 'zaq12wsx'
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request("POST", "/api/logout", server: [
-            "HTTP_authorization" => $token->getToken()
+        $crawler = self::$webClient->request('POST', '/api/logout', server: [
+            'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseIsSuccessful();
@@ -46,7 +48,7 @@ class LogoutTest extends AbstractWebTest
     public function test_logoutLogOut(): void
     {
         /// step 1
-        $crawler = self::$webClient->request("POST", "/api/logout");
+        $crawler = self::$webClient->request('POST', '/api/logout');
         /// step 2
         self::assertResponseStatusCodeSame(401);
 

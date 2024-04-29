@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -20,7 +22,7 @@ abstract class AbstractWebTest extends WebTestCase
     protected function setUp(): void
     {
         if (self::$webClient === null) {
-            self::$webClient = static::createClient(["environment" => "test"]);
+            self::$webClient = static::createClient(['environment' => 'test']);
         }
 
         if ($this->databaseMockManager === null) {
@@ -30,7 +32,7 @@ abstract class AbstractWebTest extends WebTestCase
         self::$webClient->disableReboot();
         self::$webClient->enableProfiler();
 
-        $this->entityManager = self::$webClient->getContainer()->get("doctrine.orm.entity_manager");
+        $this->entityManager = self::$webClient->getContainer()->get('doctrine.orm.entity_manager');
 
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();
