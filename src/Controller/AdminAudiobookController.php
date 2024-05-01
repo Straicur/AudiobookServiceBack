@@ -550,6 +550,7 @@ class AdminAudiobookController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
 
             return ResponseTool::getResponse();
         }
@@ -1261,6 +1262,7 @@ class AdminAudiobookController extends AbstractController
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
         }

@@ -142,7 +142,7 @@ class UserAudiobookController extends AbstractController
 
             $successModel = $stockCache->get(CacheKeys::USER_AUDIOBOOKS->value . $user->getId() . '_' . $userAudiobooksQuery->getPage() . $userAudiobooksQuery->getLimit(), function (ItemInterface $item) use ($user, $userAudiobooksQuery, $audiobookCategoryRepository, $audiobookRepository) {
                 $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-                $item->tag(StockCacheTags::USER_AUDIOBOOKS->value);
+                $item->tag(StockCacheTags::USER_AUDIOBOOKS->value . $user->getId());
 
                 $minResult = $userAudiobooksQuery->getPage() * $userAudiobooksQuery->getLimit();
                 $maxResult = $userAudiobooksQuery->getLimit() + $minResult;
@@ -412,7 +412,7 @@ class UserAudiobookController extends AbstractController
             $user = $authorizedUserService->getAuthorizedUser();
             $successModel = $stockCache->get(CacheKeys::USER_AUDIOBOOK->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($audiobookUserCommentRepository, $audiobookInfoRepository, $user, $listRepository, $audiobook, $audiobookRatingRepository, $audiobookCategoryRepository) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
-                $item->tag(StockCacheTags::USER_AUDIOBOOKS->value);
+                $item->tag(StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId());
 
             $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
@@ -595,6 +595,7 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository            $audiobookRepository,
         MyListRepository               $myListRepository,
         TranslateService               $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
 
@@ -619,6 +620,7 @@ class UserAudiobookController extends AbstractController
             }
 
             $myListRepository->add($myList);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId()]);
 
             return ResponseTool::getResponse();
         }
@@ -1016,7 +1018,7 @@ class UserAudiobookController extends AbstractController
 
             $audiobookUserCommentRepository->add($audiobookComment);
             $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
-            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -1114,7 +1116,6 @@ class UserAudiobookController extends AbstractController
 
             $audiobookUserCommentRepository->add($audiobookComment);
             $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
-            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
 

@@ -346,6 +346,7 @@ class AdminTechnicalController extends AbstractController
                     $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]);
                     $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
                     $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value]);
                     $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_RATING->value]);
                     $stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
                     $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
@@ -362,6 +363,7 @@ class AdminTechnicalController extends AbstractController
                             StockCacheTags::USER_AUDIOBOOK_PART->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]),
                             StockCacheTags::USER_NOTIFICATIONS->value => $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]),
                             StockCacheTags::USER_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]),
+                            StockCacheTags::USER_AUDIOBOOK_DETAIL->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value]),
                             StockCacheTags::USER_AUDIOBOOK_RATING->value => $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_RATING->value]),
                             StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value => $stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]),
                             default =>
@@ -399,12 +401,7 @@ class AdminTechnicalController extends AbstractController
             ),
         ]
     )]
-    public function adminTechnicalCachePools(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository,
-    ): Response {
+    public function adminTechnicalCachePools(): Response {
         $successModel = new AdminTechnicalCachePoolsModel();
 
         foreach (StockCacheTags::cases() as $case) {
