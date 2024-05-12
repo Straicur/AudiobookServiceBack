@@ -31,7 +31,7 @@ class LogoutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/logout', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/logout', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -48,7 +48,7 @@ class LogoutTest extends AbstractWebTest
     public function test_logoutLogOut(): void
     {
         /// step 1
-        $crawler = self::$webClient->request('POST', '/api/logout');
+        $crawler = self::$webClient->request('PATCH', '/api/logout');
         /// step 2
         self::assertResponseStatusCodeSame(401);
 

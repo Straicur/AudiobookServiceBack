@@ -190,7 +190,7 @@ class AuthorizationController extends AbstractController
      * @return Response
      * @throws NonUniqueResultException
      */
-    #[Route('/api/logout', name: 'apiLogout', methods: ['POST'])]
+    #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
         description: 'Method used to logout user',
