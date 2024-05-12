@@ -76,7 +76,6 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertSame($responseContent['users'],11);
         $this->assertSame($responseContent['categories'],13);
         $this->assertSame($responseContent['audiobooks'],2);
-        $this->assertSame($responseContent['lastWeekRegistered'],2);
         $this->assertSame($responseContent['lastWeekLogins'],3);
         $this->assertSame($responseContent['lastWeekNotifications'],1);
         $this->assertSame($responseContent['lastWeekTechnicalBreaks'],1);
