@@ -334,22 +334,22 @@ class AdminTechnicalController extends AbstractController
             }
 
             if (array_key_exists('admin', $cacheData) && $cacheData['admin']) {
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
-                $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_STATISTICS->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_ROLES->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
+                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value,
+                    StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                    StockCacheTags::ADMIN_AUDIOBOOK->value,
+                    StockCacheTags::AUDIOBOOK_COMMENTS->value,
+                    StockCacheTags::ADMIN_STATISTICS->value,
+                    StockCacheTags::ADMIN_ROLES->value,
+                    StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
             } else {
                 if (array_key_exists('user', $cacheData) && $cacheData['user']) {
-                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value]);
-                    $stockCache->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
-                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
-                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value]);
-                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_RATING->value]);
-                    $stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
-                    $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
+                    $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_PART->value,
+                        StockCacheTags::USER_NOTIFICATIONS->value,
+                        StockCacheTags::USER_AUDIOBOOKS->value,
+                        StockCacheTags::USER_AUDIOBOOK_DETAIL->value,
+                        StockCacheTags::USER_AUDIOBOOK_RATING->value,
+                        StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
+                        StockCacheTags::AUDIOBOOK_COMMENTS->value]);
                 }
                 if (array_key_exists('pools', $cacheData) && !empty($cacheData['pools'])) {
                     foreach ($cacheData['pools'] as $pool) {

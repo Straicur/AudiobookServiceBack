@@ -9,7 +9,6 @@ use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddQuery;
 use App\Query\Admin\AdminAudiobookReAddingQuery;
 use FilesystemIterator;
-use Psr\Log\LoggerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -26,13 +25,11 @@ class AudiobookService implements AudiobookServiceInterface
     /**
      * @param AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService
      * @param TranslateService $translateService
-     * @param LoggerInterface $usersLogger
      */
-    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService, TranslateService $translateService, LoggerInterface $usersLogger)
+    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService, TranslateService $translateService)
     {
         $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
         $this->translateService = $translateService;
-        $this->usersLogger = $usersLogger;
     }
 
     public function configure(AdminAudiobookAddQuery|AdminAudiobookReAddingQuery $query): void

@@ -354,9 +354,9 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                StockCacheTags::ADMIN_CATEGORY->value,
+                StockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -437,9 +437,9 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookCategoryRepository->add($category);
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                StockCacheTags::ADMIN_CATEGORY->value,
+                StockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
