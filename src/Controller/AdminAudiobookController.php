@@ -284,193 +284,198 @@ class AdminAudiobookController extends AbstractController
             $audiobookService->configure($adminAudiobookAddQuery);
             $audiobookService->checkAndAddFile();
 
-            if ($audiobookService->lastFile()) {
-                $audiobookService->combineFiles();
-                $folderDir = $audiobookService->unzip();
+            try {
+                if ($audiobookService->lastFile()) {
+                    $audiobookService->combineFiles();
+                    $folderDir = $audiobookService->unzip();
 
-                $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
+                    $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
 
-                if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
-                } elseif (array_key_exists('id3v1', $ID3JsonData)) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
-                } else {
-                    $ID3JsonFileData = $ID3JsonData;
-                }
-
-                if (array_key_exists('version', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['version']) > 0) {
-                        $version = $ID3JsonFileData['version'][0];
+                    if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
+                        $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
+                    } elseif (array_key_exists('id3v1', $ID3JsonData)) {
+                        $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
                     } else {
-                        $version = $ID3JsonFileData['version'];
-                    }
-                } else {
-                    $version = '1';
-                }
-
-                if (array_key_exists('album', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['album']) > 0) {
-                        $album = $ID3JsonFileData['album'][0];
-                    } else {
-                        $album = $ID3JsonFileData['album'];
-                    }
-                } else {
-                    $album = 'album';
-                }
-
-                if (array_key_exists('artist', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['artist']) > 0) {
-                        $author = $ID3JsonFileData['artist'][0];
-                    } else {
-                        $author = $ID3JsonFileData['artist'];
-                    }
-                } else {
-                    $author = 'author';
-                }
-
-                if (array_key_exists('year', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['year']) > 0) {
-                        $year = '01.01.' . $ID3JsonFileData['year'][0];
-                    } else {
-                        $year = '01.01.' . $ID3JsonFileData['year'];
+                        $ID3JsonFileData = $ID3JsonData;
                     }
 
-                    if (DateTime::createFromFormat('d.m.Y', $year)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $year);
+                    if (array_key_exists('version', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['version']) > 0) {
+                            $version = $ID3JsonFileData['version'][0];
+                        } else {
+                            $version = $ID3JsonFileData['version'];
+                        }
+                    } else {
+                        $version = '1';
+                    }
+
+                    if (array_key_exists('album', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['album']) > 0) {
+                            $album = $ID3JsonFileData['album'][0];
+                        } else {
+                            $album = $ID3JsonFileData['album'];
+                        }
+                    } else {
+                        $album = 'album';
+                    }
+
+                    if (array_key_exists('artist', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['artist']) > 0) {
+                            $author = $ID3JsonFileData['artist'][0];
+                        } else {
+                            $author = $ID3JsonFileData['artist'];
+                        }
+                    } else {
+                        $author = 'author';
+                    }
+
+                    if (array_key_exists('year', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['year']) > 0) {
+                            $year = '01.01.' . $ID3JsonFileData['year'][0];
+                        } else {
+                            $year = '01.01.' . $ID3JsonFileData['year'];
+                        }
+
+                        if (DateTime::createFromFormat('d.m.Y', $year)) {
+                            $year = DateTime::createFromFormat('d.m.Y', $year);
+                        } else {
+                            $year = new DateTime();
+                        }
                     } else {
                         $year = new DateTime();
                     }
-                } else {
-                    $year = new DateTime();
-                }
 
-                if (array_key_exists('encoded', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['encoded']) > 0) {
-                        $encoded = $ID3JsonFileData['encoded'][0];
+                    if (array_key_exists('encoded', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['encoded']) > 0) {
+                            $encoded = $ID3JsonFileData['encoded'][0];
+                        } else {
+                            $encoded = $ID3JsonFileData['encoded'];
+                        }
                     } else {
-                        $encoded = $ID3JsonFileData['encoded'];
+                        $encoded = "";
                     }
-                } else {
-                    $encoded = "";
-                }
 
-                if (array_key_exists('comment', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['comment']) > 0) {
-                        $description = $ID3JsonFileData['comment'][0];
+                    if (array_key_exists('comment', $ID3JsonFileData)) {
+                        if (count($ID3JsonFileData['comment']) > 0) {
+                            $description = $ID3JsonFileData['comment'][0];
+                        } else {
+                            $description = $ID3JsonFileData['comment'];
+                        }
                     } else {
-                        $description = $ID3JsonFileData['comment'];
+                        $description = 'desc';
                     }
-                } else {
-                    $description = 'desc';
-                }
 
-                if (array_key_exists('duration', $ID3JsonData)) {
-                    $duration = $ID3JsonData['duration'];
-                } else {
-                    $duration = 0;
-                }
+                    if (array_key_exists('duration', $ID3JsonData)) {
+                        $duration = $ID3JsonData['duration'];
+                    } else {
+                        $duration = 0;
+                    }
 
-                if (array_key_exists('size', $ID3JsonData)) {
-                    $size = $ID3JsonData['size'];
-                } else {
-                    $size = '1';
-                }
+                    if (array_key_exists('size', $ID3JsonData)) {
+                        $size = $ID3JsonData['size'];
+                    } else {
+                        $size = '1';
+                    }
 
-                if (array_key_exists('parts', $ID3JsonData)) {
-                    $parts = $ID3JsonData['parts'];
-                } else {
-                    $parts = '1';
-                }
+                    if (array_key_exists('parts', $ID3JsonData)) {
+                        $parts = $ID3JsonData['parts'];
+                    } else {
+                        $parts = '1';
+                    }
 
-                if (array_key_exists('title', $ID3JsonData)) {
-                    $title = $ID3JsonData['title'];
-                } else {
-                    $title = 'title';
-                }
+                    if (array_key_exists('title', $ID3JsonData)) {
+                        $title = $ID3JsonData['title'];
+                    } else {
+                        $title = 'title';
+                    }
 
-                if (array_key_exists('imgFileDir', $ID3JsonData)) {
-                    $img = $ID3JsonData['imgFileDir'];
-                } else {
-                    $img = 'imgFileDir';
-                }
+                    if (array_key_exists('imgFileDir', $ID3JsonData)) {
+                        $img = $ID3JsonData['imgFileDir'];
+                    } else {
+                        $img = 'imgFileDir';
+                    }
 
-                $additionalData = $adminAudiobookAddQuery->getAdditionalData();
+                    $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
-                if (array_key_exists('title', $additionalData)) {
-                    $title = $additionalData['title'];
-                }
-                if (array_key_exists('author', $additionalData)) {
-                    $author = $additionalData['author'];
-                }
+                    if (array_key_exists('title', $additionalData)) {
+                        $title = $additionalData['title'];
+                    }
+                    if (array_key_exists('author', $additionalData)) {
+                        $author = $additionalData['author'];
+                    }
 
-                $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::ABOVE18, $folderDir);
+                    $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::ABOVE18, $folderDir);
 
-                if ($encoded !== "") {
-                    $newAudiobook->setEncoded($encoded);
-                }
+                    if ($encoded !== "") {
+                        $newAudiobook->setEncoded($encoded);
+                    }
 
-                if ($img !== "") {
-                    $newAudiobook->setImgFile($img);
-                    $newAudiobook->setImgFileChangeDate();
-                }
+                    if ($img !== "") {
+                        $newAudiobook->setImgFile($img);
+                        $newAudiobook->setImgFileChangeDate();
+                    }
 
-                $audiobookCategories = [];
+                    $audiobookCategories = [];
 
-                if (array_key_exists('categories', $additionalData)) {
+                    if (array_key_exists('categories', $additionalData)) {
 
-                    $categories = $additionalData['categories'];
+                        $categories = $additionalData['categories'];
 
-                    foreach ($categories as $category) {
+                        foreach ($categories as $category) {
 
-                        $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            'id' => Uuid::fromString($category),
-                        ]);
+                            $audiobookCategory = $audiobookCategoryRepository->findOneBy([
+                                'id' => Uuid::fromString($category),
+                            ]);
 
-                        if ($audiobookCategory !== null) {
-                            $newAudiobook->addCategory($audiobookCategory);
+                            if ($audiobookCategory !== null) {
+                                $newAudiobook->addCategory($audiobookCategory);
 
-                            $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                (string)$audiobookCategory->getId(),
-                                $audiobookCategory->getName(),
-                                $audiobookCategory->getActive(),
-                                $audiobookCategory->getCategoryKey(),
-                            );
+                                $audiobookCategories[] = new AudiobookDetailCategoryModel(
+                                    (string)$audiobookCategory->getId(),
+                                    $audiobookCategory->getName(),
+                                    $audiobookCategory->getActive(),
+                                    $audiobookCategory->getCategoryKey(),
+                                );
+                            }
                         }
                     }
+
+                    $audiobookRepository->add($newAudiobook);
+
+                    $successModel = new AdminAudiobookDetailsSuccessModel(
+                        (string)$newAudiobook->getId(),
+                        $newAudiobook->getTitle(),
+                        $newAudiobook->getAuthor(),
+                        $newAudiobook->getVersion(),
+                        $newAudiobook->getAlbum(),
+                        $newAudiobook->getYear(),
+                        $newAudiobook->getDuration(),
+                        $newAudiobook->getSize(),
+                        $newAudiobook->getParts(),
+                        $newAudiobook->getDescription(),
+                        $newAudiobook->getAge(),
+                        $newAudiobook->getActive(),
+                        $newAudiobook->getAvgRating(),
+                        $audiobookCategories,
+                        count($audiobookRatingRepository->findBy([
+                            'audiobook' => $newAudiobook->getId(),
+                        ])),
+                        $newAudiobook->getImgFile(),
+                    );
+
+                    if ($newAudiobook->getEncoded() !== null) {
+                        $successModel->setEncoded($newAudiobook->getEncoded());
+                    }
+
+                    $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value,
+                        StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                        StockCacheTags::ADMIN_CATEGORY->value]);
+
+                    return ResponseTool::getResponse($successModel, 201);
                 }
-
-                $audiobookRepository->add($newAudiobook);
-
-                $successModel = new AdminAudiobookDetailsSuccessModel(
-                    (string)$newAudiobook->getId(),
-                    $newAudiobook->getTitle(),
-                    $newAudiobook->getAuthor(),
-                    $newAudiobook->getVersion(),
-                    $newAudiobook->getAlbum(),
-                    $newAudiobook->getYear(),
-                    $newAudiobook->getDuration(),
-                    $newAudiobook->getSize(),
-                    $newAudiobook->getParts(),
-                    $newAudiobook->getDescription(),
-                    $newAudiobook->getAge(),
-                    $newAudiobook->getActive(),
-                    $newAudiobook->getAvgRating(),
-                    $audiobookCategories,
-                    count($audiobookRatingRepository->findBy([
-                        'audiobook' => $newAudiobook->getId(),
-                    ])),
-                    $newAudiobook->getImgFile(),
-                );
-
-                if ($newAudiobook->getEncoded() !== null) {
-                    $successModel->setEncoded($newAudiobook->getEncoded());
-                }
-
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
-
-                return ResponseTool::getResponse($successModel, 201);
+            } catch (\Throwable $e) {
+                $usersLogger->error($e->getMessage());
+                return ResponseTool::getResponse(httpCode: 500);
             }
 
             return ResponseTool::getResponse(httpCode: 201);
@@ -549,8 +554,7 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
-            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value, StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
 
             return ResponseTool::getResponse();
         }
@@ -625,9 +629,9 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookService->removeFolder($audiobook->getFileName());
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value,
+                StockCacheTags::ADMIN_CATEGORY->value,
+                StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
         }
@@ -1261,8 +1265,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setActive($adminAudiobookActiveQuery->isActive());
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
-            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value, StockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
         }

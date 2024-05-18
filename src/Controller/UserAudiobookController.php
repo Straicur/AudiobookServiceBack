@@ -1017,8 +1017,8 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookUserCommentRepository->add($audiobookComment);
-            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
-            $stockCache->invalidateTags([StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
+            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value,
+                StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
