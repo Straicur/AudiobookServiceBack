@@ -289,9 +289,7 @@ class UserSettingsController extends AbstractController
         $userEmail = $request->get('email');
         $userId = $request->get('id');
 
-        $user = $userRepository->findOneBy([
-            'id' => $userId,
-        ]);
+        $user = $userRepository->find($userId);
 
         if ($user === null) {
             $endpointLogger->error('User dont exist');
@@ -661,9 +659,7 @@ class UserSettingsController extends AbstractController
 
         if ($userResetPasswordConfirmQuery instanceof UserResetPasswordConfirmQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $userResetPasswordConfirmQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($userResetPasswordConfirmQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');

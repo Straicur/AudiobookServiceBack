@@ -103,9 +103,7 @@ class AudiobookController extends AbstractController
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $audiobookPartQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($audiobookPartQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -211,9 +209,7 @@ class AudiobookController extends AbstractController
             foreach ($audiobookCoversQuery->getAudiobooks() as $audiobookId) {
                 $audiobook = null;
                 if ($audiobookId) {
-                    $audiobook = $audiobookRepository->findOneBy([
-                        'id' => $audiobookId,
-                    ]);
+                    $audiobook = $audiobookRepository->find($audiobookId);
                 }
 
                 $imgUrl = "";

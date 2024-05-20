@@ -143,9 +143,7 @@ class AdminTechnicalController extends AbstractController
 
         if ($adminTechnicalBreakPatchQuery instanceof AdminTechnicalBreakPatchQuery) {
 
-            $technicalBreak = $technicalBreakRepository->findOneBy([
-                'id' => $adminTechnicalBreakPatchQuery->getTechnicalBreakId(),
-            ]);
+            $technicalBreak = $technicalBreakRepository->find($adminTechnicalBreakPatchQuery->getTechnicalBreakId());
 
             if ($technicalBreak === null) {
                 $endpointLogger->error('TechnicalBreak dont exist');

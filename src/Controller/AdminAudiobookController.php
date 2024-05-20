@@ -140,9 +140,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookDetailsQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookDetailsQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -423,9 +421,7 @@ class AdminAudiobookController extends AbstractController
 
                         foreach ($categories as $category) {
 
-                            $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                                'id' => Uuid::fromString($category),
-                            ]);
+                            $audiobookCategory = $audiobookCategoryRepository->find(Uuid::fromString($category));
 
                             if ($audiobookCategory !== null) {
                                 $newAudiobook->addCategory($audiobookCategory);
@@ -530,9 +526,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookEditQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookEditQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -612,9 +606,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookDeleteQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookDeleteQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -682,9 +674,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookZipQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookZipQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -782,9 +772,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookReAddingQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookReAddingQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -955,9 +943,7 @@ class AdminAudiobookController extends AbstractController
                     }
                     foreach ($categories as $category) {
 
-                        $audiobookCategory = $audiobookCategoryRepository->findOneBy([
-                            'id' => $category,
-                        ]);
+                        $audiobookCategory = $audiobookCategoryRepository->find($category);
 
                         if ($audiobookCategory !== null) {
                             $audiobook->addCategory($audiobookCategory);
@@ -1201,9 +1187,7 @@ class AdminAudiobookController extends AbstractController
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
 
         if ($adminAudiobookActiveQuery instanceof AdminAudiobookActiveQuery) {
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookActiveQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookActiveQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -1235,9 +1219,7 @@ class AdminAudiobookController extends AbstractController
                             $usersIds = $audiobookInfoRepository->getUsersWhereAudiobookInAudiobookInfo($audiobook);
 
                             foreach ($usersIds as $id) {
-                                $user = $userRepository->findOneBy([
-                                    'id' => $id,
-                                ]);
+                                $user = $userRepository->find($id);
 
                                 if ($user !== null) {
                                     $users[] = $user;
@@ -1319,9 +1301,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminAudiobookChangeCoverQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminAudiobookChangeCoverQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -1411,9 +1391,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
 
-            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $adminAudiobookCommentDeleteQuery->getAudiobookCommentId(),
-            ]);
+            $audiobookComment = $audiobookUserCommentRepository->find($adminAudiobookCommentDeleteQuery->getAudiobookCommentId());
 
             if ($audiobookComment === null) {
                 $endpointLogger->error('Audiobook comment dont exist');
@@ -1484,9 +1462,7 @@ class AdminAudiobookController extends AbstractController
 
         if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $audiobookCommentGetQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($audiobookCommentGetQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');

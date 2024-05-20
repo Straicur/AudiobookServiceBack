@@ -23,6 +23,7 @@ WrongCode: Wrong code
 ActiveOrBanned: User is not activated or is banned
 AudiobookNotWatched: Audiobook must be listened to rate
 AudiobookNotListened: Audiobook is not listened
+ToManyUserComments: You posted too many comments in a short period of time
 AudiobookCommentLikeDontExists: Comment was not liked
 UserPasswordDontExists: User password dont exists
 Hello: Hello

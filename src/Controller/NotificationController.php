@@ -196,9 +196,7 @@ class NotificationController extends AbstractController
 
         if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
 
-            $notification = $notificationRepository->findOneBy([
-                'id' => $systemNotificationActivateQuery->getNotificationId(),
-            ]);
+            $notification = $notificationRepository->find($systemNotificationActivateQuery->getNotificationId());
 
             if ($notification === null) {
                 throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);

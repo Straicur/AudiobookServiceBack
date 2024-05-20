@@ -185,9 +185,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserRoleAddQuery instanceof AdminUserRoleAddQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserRoleAddQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserRoleAddQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -278,9 +276,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserRoleRemoveQuery instanceof AdminUserRoleRemoveQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserRoleRemoveQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserRoleRemoveQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -371,9 +367,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserActivateQuery instanceof AdminUserActivateQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserActivateQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserActivateQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -445,9 +439,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserBanQuery instanceof AdminUserBanQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserBanQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserBanQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -516,9 +508,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserChangePasswordQuery instanceof AdminUserChangePasswordQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserChangePasswordQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserChangePasswordQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -592,9 +582,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserChangePhoneQuery instanceof AdminUserChangePhoneQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserChangePhoneQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserChangePhoneQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -811,9 +799,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
 
-            $user = $userRepository->findOneBy([
-                'id' => $adminUserDeleteQuery->getUserId(),
-            ]);
+            $user = $userRepository->find($adminUserDeleteQuery->getUserId());
 
             if ($user === null) {
                 $endpointLogger->error('User dont exist');
@@ -1438,9 +1424,7 @@ class AdminUserController extends AbstractController
                         throw new InvalidJsonDataException($translateService);
                     }
 
-                    $user = $userRepository->findOneBy([
-                        'id' => $additionalData['userId'],
-                    ]);
+                    $user = $userRepository->find($additionalData['userId']);
 
                     if ($user === null) {
                         $endpointLogger->error('User dont exist');
@@ -1514,9 +1498,7 @@ class AdminUserController extends AbstractController
                         throw new InvalidJsonDataException($translateService);
                     }
 
-                    $audiobook = $audiobookRepository->findOneBy([
-                        'id' => $additionalData['actionId'],
-                    ]);
+                    $audiobook = $audiobookRepository->find($additionalData['actionId']);
 
                     if ($audiobook === null) {
                         $endpointLogger->error('Audiobook dont exist');
@@ -1604,9 +1586,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
 
-            $notification = $notificationRepository->findOneBy([
-                'id' => $adminUserNotificationPatchQuery->getNotificationId(),
-            ]);
+            $notification = $notificationRepository->find($adminUserNotificationPatchQuery->getNotificationId());
 
             if ($notification === null) {
                 $endpointLogger->error('Notification dont exist');
@@ -1694,9 +1674,7 @@ class AdminUserController extends AbstractController
 
         if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
 
-            $notification = $notificationRepository->findOneBy([
-                'id' => $adminUserNotificationDeleteQuery->getNotificationId(),
-            ]);
+            $notification = $notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
 
             if ($notification === null) {
                 $endpointLogger->error('Notification dont exist');
