@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\AudiobookUserComment;
+use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -53,14 +54,31 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
     /**
      * @return AudiobookUserComment[]
      */
-    public function getParentCommentKids(AudiobookUserComment $parent): array
+    public function getUserLastCommentsByMinutes(User $user, string $minutes): array
     {
         $qb = $this->createQueryBuilder('c')
-            ->innerJoin('c.parent', 'cp', Join::WITH, 'cp.id = :parent')
             ->where('c.deleted = false')
-            ->setParameter('parent', $parent->getId()->toBinary());
+            ->andWhere('c.user = :user')
+            ->andWhere('c.dateAdd >= :dateAdd')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('dateAdd', (new DateTime())->modify('-' . $minutes . ' minutes'));
 
         return $qb->getQuery()->execute();
+    }
+
+    public function setLastUserLastCommentsByMinutesToDeleted(User $user, string $minutes): void
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->update()
+            ->set('c.deleted', true)
+            ->where('c.deleted = false')
+            ->andWhere('c.user = :user')
+            ->andWhere('c.dateAdd < :dateAdd')
+            ->setParameter('user', $user->getId()->toBinary())
+            ->setParameter('dateAdd', (new DateTime())->modify('-' . $minutes . ' minutes'));
+
+        $qb->getQuery()->execute();
     }
 //    /**
 //     * @return AudiobookUserComment[] Returns an array of AudiobookUserComment objects

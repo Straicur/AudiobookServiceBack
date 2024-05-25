@@ -123,9 +123,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             if (array_key_exists('parentId', $additionalData) && $additionalData['parentId'] !== "") {
 
-                $parentAudiobookCategory = $audiobookCategoryRepository->findOneBy([
-                    'id' => $additionalData['parentId'],
-                ]);
+                $parentAudiobookCategory = $audiobookCategoryRepository->find($additionalData['parentId']);
 
                 if ($parentAudiobookCategory === null) {
                     $endpointLogger->error('AudiobookCategory dont exist');
@@ -191,9 +189,7 @@ class AdminAudiobookCategoryController extends AbstractController
         $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
 
         if ($adminCategoryEditQuery instanceof AdminCategoryEditQuery) {
-            $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryEditQuery->getCategoryId(),
-            ]);
+            $category = $audiobookCategoryRepository->find($adminCategoryEditQuery->getCategoryId());
 
             if ($category === null) {
                 $endpointLogger->error('AudiobookCategory dont exist');
@@ -261,9 +257,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryRemoveQuery instanceof AdminCategoryRemoveQuery) {
 
-            $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryRemoveQuery->getCategoryId(),
-            ]);
+            $category = $audiobookCategoryRepository->find($adminCategoryRemoveQuery->getCategoryId());
 
             if ($category === null) {
                 $endpointLogger->error('AudiobookCategory dont exist');
@@ -330,9 +324,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryAddAudiobookQuery instanceof AdminCategoryAddAudiobookQuery) {
 
-            $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryAddAudiobookQuery->getCategoryId(),
-            ]);
+            $category = $audiobookCategoryRepository->find($adminCategoryAddAudiobookQuery->getCategoryId());
 
             if ($category === null) {
                 $endpointLogger->error('AudiobookCategory dont exist');
@@ -340,9 +332,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminCategoryAddAudiobookQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminCategoryAddAudiobookQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -412,9 +402,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryRemoveAudiobookQuery instanceof AdminCategoryRemoveAudiobookQuery) {
 
-            $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryRemoveAudiobookQuery->getCategoryId(),
-            ]);
+            $category = $audiobookCategoryRepository->find($adminCategoryRemoveAudiobookQuery->getCategoryId());
 
             if ($category === null) {
                 $endpointLogger->error('AudiobookCategory dont exist');
@@ -422,9 +410,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $audiobook = $audiobookRepository->findOneBy([
-                'id' => $adminCategoryRemoveAudiobookQuery->getAudiobookId(),
-            ]);
+            $audiobook = $audiobookRepository->find($adminCategoryRemoveAudiobookQuery->getAudiobookId());
 
             if ($audiobook === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -699,9 +685,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
         if ($adminCategoryActiveQuery instanceof AdminCategoryActiveQuery) {
 
-            $category = $audiobookCategoryRepository->findOneBy([
-                'id' => $adminCategoryActiveQuery->getCategoryId(),
-            ]);
+            $category = $audiobookCategoryRepository->find($adminCategoryActiveQuery->getCategoryId());
 
             if ($category === null) {
                 $endpointLogger->error('AudiobookCategory dont exist');

@@ -9,6 +9,7 @@ use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
 use App\Entity\AudiobookUserCommentLike;
+use App\Enums\BanPeriodRage;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
@@ -51,6 +52,7 @@ use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
@@ -970,6 +972,7 @@ class UserAudiobookController extends AbstractController
         AudiobookInfoRepository        $audiobookInfoRepository,
         TranslateService               $translateService,
         TagAwareCacheInterface         $stockCache,
+        UserRepository $userRepository,
     ): Response {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
 
@@ -997,15 +1000,27 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotListened')]);
             }
 
+            $lastUserComments = count($audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
+
+            if ($lastUserComments > 40) {
+                $user->setBanned(true);
+                $user->setBannedTo((new DateTime())->modify(BanPeriodRage::HOUR_DAY_BAN->value));
+                $userRepository->add($user);
+
+                $audiobookUserCommentRepository->setLastUserLastCommentsByMinutesToDeleted($user, '20');
+
+                $endpointLogger->error('User got banned for to many comments in short period');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('ToManyUserComments')]);
+            }
+
             $audiobookComment = new AudiobookUserComment($userAudiobookCommentAddQuery->getComment(), $audiobook, $user);
 
             $additionalData = $userAudiobookCommentAddQuery->getAdditionalData();
 
             if (array_key_exists('parentId', $additionalData)) {
 
-                $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
-                    'id' => $additionalData['parentId'],
-                ]);
+                $audiobookParentComment = $audiobookUserCommentRepository->find($additionalData['parentId']);
 
                 if ($audiobookParentComment === null || $audiobookParentComment->getParent() !== null) {
                     $endpointLogger->error('Audiobook Parent Comment dont exist');
@@ -1101,9 +1116,7 @@ class UserAudiobookController extends AbstractController
 
             if (array_key_exists('parentId', $additionalData)) {
 
-                $audiobookParentComment = $audiobookUserCommentRepository->findOneBy([
-                    'id' => $additionalData['parentId'],
-                ]);
+                $audiobookParentComment = $audiobookUserCommentRepository->find($additionalData['parentId']);
 
                 if ($audiobookParentComment === null) {
                     $endpointLogger->error('Audiobook Parent Comment dont exist');
@@ -1174,9 +1187,7 @@ class UserAudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $comment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $userAudiobookCommentLikeAddQuery->getCommentId(),
-            ]);
+            $comment = $audiobookUserCommentRepository->find($userAudiobookCommentLikeAddQuery->getCommentId());
 
             if ($comment === null) {
                 $endpointLogger->error('Audiobook dont exist');
@@ -1256,9 +1267,7 @@ class UserAudiobookController extends AbstractController
 
             $user = $authorizedUserService->getAuthorizedUser();
 
-            $comment = $audiobookUserCommentRepository->findOneBy([
-                'id' => $userAudiobookCommentLikeDeleteQuery->getCommentId(),
-            ]);
+            $comment = $audiobookUserCommentRepository->find($userAudiobookCommentLikeDeleteQuery->getCommentId());
 
             if ($comment === null) {
                 $endpointLogger->error('Audiobook dont exist');

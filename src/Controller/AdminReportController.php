@@ -127,9 +127,7 @@ class AdminReportController extends AbstractController
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
-            $report = $reportRepository->findOneBy([
-                'id' => $adminReportAcceptQuery->getReportId(),
-            ]);
+            $report = $reportRepository->find($adminReportAcceptQuery->getReportId());
 
             if ($report === null) {
                 $endpointLogger->error('Cant find report');
@@ -138,9 +136,7 @@ class AdminReportController extends AbstractController
             }
 
             if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
-                $comment = $commentRepository->findOneBy([
-                    'id' => $report->getActionId(),
-                ]);
+                $comment = $commentRepository->find($report->getActionId());
 
                 if ($comment !== null) {
                     $user = $comment->getUser();
@@ -280,9 +276,7 @@ class AdminReportController extends AbstractController
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
         if ($adminReportRejectQuery instanceof AdminReportRejectQuery) {
-            $report = $reportRepository->findOneBy([
-                'id' => $adminReportRejectQuery->getReportId(),
-            ]);
+            $report = $reportRepository->find($adminReportRejectQuery->getReportId());
 
             if ($report === null) {
                 $endpointLogger->error('Cant find report');
