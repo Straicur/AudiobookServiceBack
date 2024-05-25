@@ -1002,7 +1002,7 @@ class UserAudiobookController extends AbstractController
 
             $lastUserComments = count($audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
 
-            if ($lastUserComments > 40) {
+            if ($lastUserComments > $_ENV['INSTITUTION_USER_COMMENTS_LIMIT']) {
                 $user->setBanned(true);
                 $user->setBannedTo((new DateTime())->modify(BanPeriodRage::HOUR_DAY_BAN->value));
                 $userRepository->add($user);
