@@ -12,7 +12,6 @@ use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
 use App\Entity\AudiobookUserCommentLike;
 use App\Entity\AuthenticationToken;
-use App\Entity\Institution;
 use App\Entity\MyList;
 use App\Entity\Notification;
 use App\Entity\NotificationCheck;
@@ -40,7 +39,6 @@ use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\AuthenticationTokenRepository;
-use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
@@ -200,13 +198,6 @@ class DatabaseMockManager
         $registerCodeRepository->add($newRegisterCode);
 
         return $newRegisterCode;
-    }
-
-    public function testFunc_getInstitution(): Institution
-    {
-        return $this->getService(InstitutionRepository::class)->findOneBy([
-            'name' => $_ENV['INSTITUTION_NAME']
-        ]);
     }
 
     /**

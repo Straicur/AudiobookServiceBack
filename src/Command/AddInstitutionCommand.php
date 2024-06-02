@@ -62,7 +62,7 @@ class AddInstitutionCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int)$maxAdmins, (int)$maxUsers));
+        $this->institutionRepository->add(new Institution(zz['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int)$maxAdmins, (int)$maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');
