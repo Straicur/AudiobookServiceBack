@@ -17,6 +17,7 @@ use App\Repository\AuthenticationTokenRepository;
 use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
