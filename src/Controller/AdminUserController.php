@@ -581,7 +581,6 @@ class AdminUserController extends AbstractController
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
         if ($adminUserChangePhoneQuery instanceof AdminUserChangePhoneQuery) {
-
             $user = $userRepository->find($adminUserChangePhoneQuery->getUserId());
 
             if ($user === null) {
@@ -595,6 +594,7 @@ class AdminUserController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
             }
+
             $duplicatedNumber = $userInformationRepository->findOneBy([
                 'phoneNumber' => $adminUserChangePhoneQuery->getNewPhone(),
             ]);
