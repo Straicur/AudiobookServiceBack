@@ -286,8 +286,9 @@ class AdminAudiobookController extends AbstractController
                 if ($audiobookService->lastFile()) {
                     $audiobookService->combineFiles();
                     $folderDir = $audiobookService->unzip();
-
                     $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
+
+                    $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
                     if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
                         $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
@@ -327,7 +328,7 @@ class AdminAudiobookController extends AbstractController
                         $author = 'author';
                     }
 
-                    if (array_key_exists('year', $ID3JsonFileData)) {
+                    if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['year']) > 0) {
                             $year = '01.01.' . $ID3JsonFileData['year'][0];
                         } else {
@@ -340,7 +341,7 @@ class AdminAudiobookController extends AbstractController
                             $year = new DateTime();
                         }
                     } else {
-                        $year = new DateTime();
+                        $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
                     }
 
                     if (array_key_exists('encoded', $ID3JsonFileData)) {
@@ -393,16 +394,27 @@ class AdminAudiobookController extends AbstractController
                         $img = 'imgFileDir';
                     }
 
-                    $additionalData = $adminAudiobookAddQuery->getAdditionalData();
-
                     if (array_key_exists('title', $additionalData)) {
                         $title = $additionalData['title'];
                     }
+
                     if (array_key_exists('author', $additionalData)) {
                         $author = $additionalData['author'];
                     }
 
-                    $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, AudiobookAgeRange::ABOVE18, $folderDir);
+                    $age = null;
+
+                    if (array_key_exists('age', $additionalData)) {
+                        $age = match ($additionalData['age']) {
+                            1 => AudiobookAgeRange::FROM3TO7,
+                            2 => AudiobookAgeRange::FROM7TO12,
+                            3 => AudiobookAgeRange::FROM12TO16,
+                            4 => AudiobookAgeRange::FROM16TO18,
+                            5 => AudiobookAgeRange::ABOVE18,
+                        };
+                    }
+
+                    $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age ?? AudiobookAgeRange::ABOVE18, $folderDir);
 
                     if ($encoded !== "") {
                         $newAudiobook->setEncoded($encoded);
