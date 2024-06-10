@@ -54,7 +54,9 @@ class AdminAudiobookAddTest extends AbstractWebTest
                     $category1->getId()
                 ],
                 'title' => 'tytul',
-                'author' => 'author'
+                'author' => 'author',
+                'age' => 2,
+                'year' => '27.11.2022'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);

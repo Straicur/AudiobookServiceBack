@@ -59,7 +59,9 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                     $category1->getId()
                 ],
                 'title' => 'tytul',
-                'author' => 'author'
+                'author' => 'author',
+                'age' => 2,
+                'year' => '27.11.2022'
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -96,7 +98,9 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                     $category2->getId()
                 ],
                 'title' => 'tytul2',
-                'author' => 'author2'
+                'author' => 'author2',
+                'age' => 2,
+                'year' => '27.11.2022'
             ]
         ];
         /// step 3

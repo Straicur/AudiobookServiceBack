@@ -67,6 +67,14 @@ class AdminAudiobookReAddingQuery
                     new Assert\NotBlank(message: 'Author is empty'),
                     new Assert\Type(type: 'string')
                 ]),
+                'year' => new Assert\Optional([
+                    new Assert\NotBlank(message: 'Year is empty'),
+                    new Assert\Type(type: 'string'),
+                ]),
+                'age'  => new Assert\Optional([
+                    new Assert\NotBlank(message: 'Age is empty'),
+                    new Assert\Type(type: 'integer'),
+                ]),
             ],
         ]));
     }
@@ -80,6 +88,8 @@ class AdminAudiobookReAddingQuery
         ]),
         new OA\Property(property: 'title', type: 'string', example: 'Tytuł', nullable: true),
         new OA\Property(property: 'author', type: 'string', example: 'Autor', nullable: true),
+        new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
+        new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
     ], type: 'object')]
     public function setAdditionalData(array $additionalData): void
     {
