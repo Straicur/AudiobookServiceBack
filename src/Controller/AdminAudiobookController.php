@@ -800,8 +800,9 @@ class AdminAudiobookController extends AbstractController
 
                 $audiobookService->combineFiles();
                 $folderDir = $audiobookService->unzip($audiobook->getFileName());
-
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
+
+                $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
 
                 if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
                     $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
@@ -841,7 +842,7 @@ class AdminAudiobookController extends AbstractController
                     $author = 'author';
                 }
 
-                if (array_key_exists('year', $ID3JsonFileData)) {
+                if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['year']) > 0) {
                         $year = '01.01.' . $ID3JsonFileData['year'][0];
                     } else {
@@ -854,7 +855,7 @@ class AdminAudiobookController extends AbstractController
                         $year = new DateTime();
                     }
                 } else {
-                    $year = new DateTime();
+                    $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
                 }
 
                 if (array_key_exists('encoded', $ID3JsonFileData)) {
@@ -907,13 +908,22 @@ class AdminAudiobookController extends AbstractController
                     $img = 'imgFileDir';
                 }
 
-                $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
-
                 if (array_key_exists('title', $additionalData)) {
                     $title = $additionalData['title'];
                 }
                 if (array_key_exists('author', $additionalData)) {
                     $author = $additionalData['author'];
+                }
+                $age = null;
+
+                if (array_key_exists('age', $additionalData)) {
+                    $age = match ($additionalData['age']) {
+                        1 => AudiobookAgeRange::FROM3TO7,
+                        2 => AudiobookAgeRange::FROM7TO12,
+                        3 => AudiobookAgeRange::FROM12TO16,
+                        4 => AudiobookAgeRange::FROM16TO18,
+                        5 => AudiobookAgeRange::ABOVE18,
+                    };
                 }
 
                 $audiobook->setActive(false);
@@ -926,7 +936,7 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->setSize($size);
                 $audiobook->setParts($parts);
                 $audiobook->setDescription($description);
-                $audiobook->setAge(AudiobookAgeRange::ABOVE18);
+                $audiobook->setAge($age ?? AudiobookAgeRange::ABOVE18);
                 $audiobook->setFileName($folderDir);
 
                 if ($encoded !== "") {
