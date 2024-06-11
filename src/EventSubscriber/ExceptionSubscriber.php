@@ -43,7 +43,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 'responseData' => json_decode($exception->getResponse()->getContent(), true),
             ];
 
-            $this->responseLogger->info('ResponseException', $loggingContext);
+            $this->responseLogger->error('ResponseException', $loggingContext);
 
             $event->setResponse($exception->getResponse());
         } else {
@@ -60,7 +60,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 {
                     $notFoundException = new DataNotFoundException([$exception->getMessage()]);
 
-                    $this->responseLogger->info('NotFoundHttpException', $loggingContext);
+                    $this->responseLogger->error('NotFoundHttpException', $loggingContext);
                     $event->setResponse($notFoundException->getResponse());
                     break;
                 }
@@ -68,7 +68,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 {
                     $notFoundException = new CacheException();
 
-                    $this->responseLogger->info('InvalidArgumentException', $loggingContext);
+                    $this->responseLogger->error('InvalidArgumentException', $loggingContext);
                     $event->setResponse($notFoundException->getResponse());
                     break;
                 }
