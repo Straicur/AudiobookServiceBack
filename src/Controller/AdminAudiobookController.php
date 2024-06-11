@@ -340,8 +340,11 @@ class AdminAudiobookController extends AbstractController
                         } else {
                             $year = new DateTime();
                         }
-                    } else {
+                        $usersLogger->error("TU1");
+                    } elseif (array_key_exists('year', $additionalData)) {
                         $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
+                    } else {
+                        $year = new DateTime();
                     }
 
                     if (array_key_exists('encoded', $ID3JsonFileData)) {
@@ -854,8 +857,10 @@ class AdminAudiobookController extends AbstractController
                     } else {
                         $year = new DateTime();
                     }
-                } else {
+                } elseif (array_key_exists('year', $additionalData)) {
                     $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
+                } else {
+                    $year = new DateTime();
                 }
 
                 if (array_key_exists('encoded', $ID3JsonFileData)) {
