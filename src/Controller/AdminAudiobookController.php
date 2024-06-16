@@ -1387,7 +1387,7 @@ class AdminAudiobookController extends AbstractController
      * @throws InvalidArgumentException
      * @throws InvalidJsonDataException
      */
-    #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['DELETE'])]
+    #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
         description: 'Endpoint is deleting given comment',
@@ -1426,7 +1426,7 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
             }
 
-            $audiobookComment->setDeleted(true);
+            $audiobookComment->setDeleted(!$audiobookComment->getDeleted());
 
             $audiobookUserCommentRepository->add($audiobookComment);
 
