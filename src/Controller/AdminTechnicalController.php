@@ -386,7 +386,7 @@ class AdminTechnicalController extends AbstractController
      * @param TechnicalBreakRepository $technicalBreakRepository
      * @return Response
      */
-    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['POST'])]
+    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
         description: 'Endpoint is used to clear cache pools by admin',

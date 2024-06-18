@@ -26,7 +26,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools', server: [
+        $crawler = self::$webClient->request('GET', '/api/admin/technical/cache/pools', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -59,7 +59,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools', server: [
+        $crawler = self::$webClient->request('GET', '/api/admin/technical/cache/pools', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
@@ -90,7 +90,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/cache/pools');
+        $crawler = self::$webClient->request('GET', '/api/admin/technical/cache/pools');
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
