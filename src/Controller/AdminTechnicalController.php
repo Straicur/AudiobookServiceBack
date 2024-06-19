@@ -327,7 +327,7 @@ class AdminTechnicalController extends AbstractController
                 $output = new BufferedOutput();
                 $application->run(new ArrayInput([
                     'command' => 'cache:pool:clear',
-                    'pools'   => ['stock_cache'],
+                    '--all' => true,
                 ]), $output);
             }
 
