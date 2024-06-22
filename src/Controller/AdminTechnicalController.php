@@ -327,7 +327,7 @@ class AdminTechnicalController extends AbstractController
                 $output = new BufferedOutput();
                 $application->run(new ArrayInput([
                     'command' => 'cache:pool:clear',
-                    'pools'   => ['stock_cache'],
+                    '--all' => true,
                 ]), $output);
             }
 
@@ -386,7 +386,7 @@ class AdminTechnicalController extends AbstractController
      * @param TechnicalBreakRepository $technicalBreakRepository
      * @return Response
      */
-    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['POST'])]
+    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
         description: 'Endpoint is used to clear cache pools by admin',
