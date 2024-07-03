@@ -1196,7 +1196,7 @@ class AdminUserController extends AbstractController
 
             $userDelete->setDeclined(true);
 
-            $userDeleteRepository->add($userDelete, false);
+            $userDeleteRepository->add($userDelete);
 
             $user->setActive(true);
 
