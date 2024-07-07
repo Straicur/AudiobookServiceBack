@@ -41,9 +41,6 @@ class AdminAudiobookActiveQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'type', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
@@ -57,42 +54,27 @@ class AdminAudiobookActiveQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return bool
-     */
     public function isActive(): bool
     {
         return $this->active;
     }
 
-    /**
-     * @param bool $active
-     */
     public function setActive(bool $active): void
     {
         $this->active = $active;

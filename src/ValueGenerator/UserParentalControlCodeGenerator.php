@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\ValueGenerator;
 
-/**
- * UserParentalControlCodeGenerator
- */
 class UserParentalControlCodeGenerator implements ValueGeneratorInterface
 {
     public function generate(): string

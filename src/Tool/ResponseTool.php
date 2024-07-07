@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
-/**
- * ResponseTool
- */
 class ResponseTool
 {
     public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response

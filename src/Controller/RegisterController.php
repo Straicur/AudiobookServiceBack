@@ -56,27 +56,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Register')]
 class RegisterController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param LoggerInterface $endpointLogger
-     * @param LoggerInterface $usersLogger
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param MailerInterface $mailer
-     * @param RoleRepository $roleRepository
-     * @param MyListRepository $myListRepository
-     * @param ProposedAudiobooksRepository $proposedAudiobooksRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param TranslateService $translateService
-     * @param UserSettingsRepository $userSettingsRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to register user',
@@ -225,18 +204,6 @@ class RegisterController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param LoggerInterface $usersLogger
-     * @param LoggerInterface $endpointLogger
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param RoleRepository $roleRepository
-     * @param UserRepository $userRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     */
     #[Route('/api/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
     #[OA\Get(
         description: 'Method used to confirm user registration',
@@ -310,20 +277,6 @@ class RegisterController extends AbstractController
         );
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param LoggerInterface $endpointLogger
-     * @param LoggerInterface $usersLogger
-     * @param MailerInterface $mailer
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to send registration code again',

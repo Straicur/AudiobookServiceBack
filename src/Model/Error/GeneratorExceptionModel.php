@@ -16,17 +16,11 @@ class GeneratorExceptionModel implements ModelInterface
     {
     }
 
-    /**
-     * @return string
-     */
     public function getError(): string
     {
         return $this->error;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;

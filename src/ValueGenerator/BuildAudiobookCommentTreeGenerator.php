@@ -19,13 +19,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     private User $user;
     private bool $admin;
 
-    /**
-     * @param array $elements
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-     * @param User $user
-     * @param bool $admin
-     */
     public function __construct(
         array                              $elements,
         AudiobookUserCommentRepository     $audiobookUserCommentRepository,
@@ -135,48 +128,33 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     }
 
     /**
-     * @return array
+     * @return AudiobookCommentsModel[]
      */
     private function getElements(): array
     {
         return $this->elements;
     }
 
-    /**
-     * @param array $elements
-     */
     private function setElements(array $elements): void
     {
         $this->elements = $elements;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     */
     public function setUser(User $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return bool
-     */
     public function isAdmin(): bool
     {
         return $this->admin;
     }
 
-    /**
-     * @param bool $admin
-     */
     public function setAdmin(bool $admin): void
     {
         $this->admin = $admin;

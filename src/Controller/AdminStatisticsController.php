@@ -59,21 +59,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminStatistics')]
 class AdminStatisticsController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param NotificationRepository $notificationRepository
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -138,17 +123,6 @@ class AdminStatisticsController extends AbstractController
         return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(

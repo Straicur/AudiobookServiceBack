@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * UserOrderSearch
- */
 enum UserOrderSearch: int
 {
     case LATEST = 1;

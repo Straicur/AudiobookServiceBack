@@ -18,34 +18,22 @@ class AudiobookPartQuery
     #[Assert\Type(type: 'integer')]
     private int $part;
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return int
-     */
     public function getPart(): int
     {
         return $this->part;
     }
 
-    /**
-     * @param int $part
-     */
     public function setPart(int $part): void
     {
         $this->part = $part;

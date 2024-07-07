@@ -71,19 +71,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminAudiobookCategory')]
 class AdminAudiobookCategoryController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -146,19 +133,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -211,20 +185,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param NotificationRepository $notificationRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -278,20 +238,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -356,20 +302,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -435,19 +367,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -542,17 +461,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -591,16 +499,6 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/categories', name: 'adminCategories', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -641,19 +539,6 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -707,19 +592,6 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(

@@ -31,15 +31,12 @@ class AdminCategoriesSuccessModel implements ModelInterface
         return $this->categories;
     }
 
-    /**
-     * @param array $categories
-     */
     public function setCategories(array $categories): void
     {
         $this->categories = $categories;
     }
 
-    public function addCategory(AdminCategoryModel $category)
+    public function addCategory(AdminCategoryModel $category): void
     {
         $this->categories[] = $category;
     }

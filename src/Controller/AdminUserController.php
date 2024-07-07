@@ -95,12 +95,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminUser')]
 class AdminUserController extends AbstractController
 {
-    /**
-     * @param RoleRepository $roleRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -142,18 +136,6 @@ class AdminUserController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -233,18 +215,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -324,18 +294,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -398,17 +356,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -465,18 +412,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -539,18 +474,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -619,17 +542,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/users', name: 'adminUsers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -753,20 +665,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -847,17 +745,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -941,17 +828,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -1033,19 +909,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1122,24 +985,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1234,16 +1079,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -1329,25 +1164,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param AudiobookCategoryRepository $categoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     */
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -1537,22 +1353,6 @@ class AdminUserController extends AbstractController
 
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param UserRepository $userRepository
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     */
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1633,17 +1433,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(

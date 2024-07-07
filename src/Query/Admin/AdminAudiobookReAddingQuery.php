@@ -7,7 +7,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class AdminAudiobookReAddingQuery
+class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
 {
     #[Assert\NotNull(message: 'AudiobookId is null')]
     #[Assert\NotBlank(message: 'AudiobookId is blank')]
@@ -79,9 +79,7 @@ class AdminAudiobookReAddingQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
+    
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'UUID'),
@@ -96,106 +94,67 @@ class AdminAudiobookReAddingQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return string
-     */
     public function getHashName(): string
     {
         return $this->hashName;
     }
 
-    /**
-     * @param string $hashName
-     */
     public function setHashName(string $hashName): void
     {
         $this->hashName = $hashName;
     }
 
-    /**
-     * @return string
-     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    /**
-     * @param string $fileName
-     */
     public function setFileName(string $fileName): void
     {
         $this->fileName = preg_replace('/\s+/', '_', $fileName);
     }
 
-    /**
-     * @return string
-     */
     public function getBase64(): string
     {
         return $this->base64;
     }
 
-    /**
-     * @param string $base64
-     */
     public function setBase64(string $base64): void
     {
         $this->base64 = $base64;
     }
 
-    /**
-     * @return int
-     */
     public function getPart(): int
     {
         return $this->part;
     }
 
-    /**
-     * @param int $part
-     */
     public function setPart(int $part): void
     {
         $this->part = $part;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getParts(): int
     {
         return $this->parts;
     }
 
-    /**
-     * @param int $parts
-     */
     public function setParts(int $parts): void
     {
         $this->parts = $parts;

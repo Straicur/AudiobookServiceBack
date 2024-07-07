@@ -33,9 +33,6 @@ class AdminTechnicalCacheClearQuery
         ]));
     }
 
-    /**
-     * @param string[] $cacheData
-     */
     #[OA\Property(property: 'cacheData', properties: [
         new OA\Property(property: 'pools', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'Admin...'),
@@ -49,9 +46,6 @@ class AdminTechnicalCacheClearQuery
         $this->cacheData = $cacheData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getCacheData(): array
     {
         return $this->cacheData;

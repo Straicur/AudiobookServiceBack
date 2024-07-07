@@ -28,17 +28,11 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
         self::$authorizedUser = $user;
     }
 
-    /**
-     * @param AuthenticationToken|null $authenticationToken
-     */
     public static function setAuthenticationToken(?AuthenticationToken $authenticationToken): void
     {
         self::$authenticationToken = $authenticationToken;
     }
 
-    /**
-     * @throws AuthenticationException
-     */
     public static function getAuthorizedUser(): User
     {
         if (self::$authorizedUser === null) {

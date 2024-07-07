@@ -6,7 +6,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class  AdminAudiobookAddQuery
+class  AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
 {
     #[Assert\NotNull(message: 'HashName is null')]
     #[Assert\NotBlank(message: 'HashName is empty')]
@@ -66,9 +66,7 @@ class  AdminAudiobookAddQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
+    
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'UUID'),
@@ -83,89 +81,57 @@ class  AdminAudiobookAddQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
+    
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return string
-     */
     public function getHashName(): string
     {
         return $this->hashName;
     }
 
-    /**
-     * @param string $hashName
-     */
     public function setHashName(string $hashName): void
     {
         $this->hashName = $hashName;
     }
 
-    /**
-     * @return string
-     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    /**
-     * @param string $fileName
-     */
     public function setFileName(string $fileName): void
     {
         $this->fileName = preg_replace('/\s+/', '_', $fileName);
     }
 
-    /**
-     * @return string
-     */
     public function getBase64(): string
     {
         return $this->base64;
     }
 
-    /**
-     * @param string $base64
-     */
     public function setBase64(string $base64): void
     {
         $this->base64 = $base64;
     }
 
-    /**
-     * @return int
-     */
     public function getPart(): int
     {
         return $this->part;
     }
 
-    /**
-     * @param int $part
-     */
     public function setPart(int $part): void
     {
         $this->part = $part;
     }
 
-    /**
-     * @return int
-     */
     public function getParts(): int
     {
         return $this->parts;
     }
 
-    /**
-     * @param int $parts
-     */
     public function setParts(int $parts): void
     {
         $this->parts = $parts;

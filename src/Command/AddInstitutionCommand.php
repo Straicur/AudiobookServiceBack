@@ -13,22 +13,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * AddInstitutionCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:institution:add',
     description: 'Add user to service',
 )]
 class AddInstitutionCommand extends Command
 {
-    private InstitutionRepository $institutionRepository;
-
     public function __construct(
-        InstitutionRepository $institutionRepository,
+        private readonly InstitutionRepository $institutionRepository,
     ) {
-        $this->institutionRepository = $institutionRepository;
-
         parent::__construct();
     }
 
@@ -39,11 +32,6 @@ class AddInstitutionCommand extends Command
         $this->addArgument('maxUsers', InputArgument::REQUIRED, 'Institution max number of users');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

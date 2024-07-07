@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * UserAudiobookActivationType
- */
 enum UserAudiobookActivationType: int
 {
     case ALL = 1;

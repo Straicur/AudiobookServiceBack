@@ -114,7 +114,7 @@ class UserSettingsController extends AbstractController
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
         if ($userSettingsPasswordQuery instanceof UserSettingsPasswordQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userPassword = $userPasswordRepository->findOneBy([
                 'user' => $user->getId(),
@@ -190,7 +190,7 @@ class UserSettingsController extends AbstractController
 
         if ($userSettingsEmailQuery instanceof UserSettingsEmailQuery) {
 
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userOldEmail = $userInformationRepository->findOneBy([
                 'email' => $userSettingsEmailQuery->getOldEmail(),
@@ -373,7 +373,7 @@ class UserSettingsController extends AbstractController
         MailerInterface                $mailer,
         TranslateService               $translateService,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $userInDelete = $userDeleteRepository->userInList($user);
 
@@ -453,7 +453,7 @@ class UserSettingsController extends AbstractController
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
         if ($userSettingsChangeQuery instanceof UserSettingsChangeQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userInformation = $user->getUserInformation();
 
@@ -510,7 +510,7 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $userInformation = $user->getUserInformation();
 
@@ -522,21 +522,6 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param MailerInterface $mailer
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface'
-     */
     #[Route('/api/user/reset/password', name: 'userResetPassword', methods: ['POST'])]
     #[OA\Post(
         description: 'Endpoint is sending reset password email',
@@ -615,19 +600,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/user/reset/password/confirm', name: 'userResetPasswordConfirm', methods: ['PATCH'])]
     #[OA\Patch(
         description: 'Endpoint is changing user password',
@@ -699,17 +671,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param UserParentalControlCodeRepository $controlCodeRepository
-     * @param UserRepository $userRepository
-     * @return Response
-     * @throws DataNotFoundException
-     */
     #[Route('/api/user/parent/control', name: 'userParentControlPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Put(
@@ -732,7 +693,7 @@ class UserSettingsController extends AbstractController
         UserParentalControlCodeRepository $controlCodeRepository,
         UserRepository                    $userRepository,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
 
@@ -771,18 +732,6 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @param UserParentalControlCodeRepository $controlCodeRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/user/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Patch(
@@ -813,7 +762,7 @@ class UserSettingsController extends AbstractController
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
         if ($userParentControlPatchQuery instanceof UserParentControlPatchQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $controlCode = $controlCodeRepository->findOneBy([
                 'code'   => $userParentControlPatchQuery->getSmsCode(),

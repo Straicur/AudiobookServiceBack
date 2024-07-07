@@ -19,9 +19,6 @@ class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceIn
         return $this->ID3->analyze($this->fileName);
     }
 
-    /**
-     * @param string $fileName
-     */
     public function setFileName(string $fileName): void
     {
         $this->fileName = $fileName;

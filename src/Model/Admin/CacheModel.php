@@ -10,9 +10,6 @@ class CacheModel implements ModelInterface
 {
     private string $value;
 
-    /**
-     * @param string $value
-     */
     public function __construct(string $value)
     {
         $this->value = $value;

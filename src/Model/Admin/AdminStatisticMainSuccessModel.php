@@ -36,97 +36,61 @@ class AdminStatisticMainSuccessModel implements ModelInterface
         $this->lastWeekTechnicalBreaks = $lastWeekTechnicalBreaks;
     }
 
-    /**
-     * @return int
-     */
     public function getUsers(): int
     {
         return $this->users;
     }
 
-    /**
-     * @param int $users
-     */
     public function setUsers(int $users): void
     {
         $this->users = $users;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getCategories(): int
     {
         return $this->categories;
     }
 
-    /**
-     * @param int $categories
-     */
     public function setCategories(int $categories): void
     {
         $this->categories = $categories;
     }
 
-    /**
-     * @return int
-     */
     public function getAudiobooks(): int
     {
         return $this->audiobooks;
     }
 
-    /**
-     * @param int $audiobooks
-     */
     public function setAudiobooks(int $audiobooks): void
     {
         $this->audiobooks = $audiobooks;
     }
 
-    /**
-     * @return int
-     */
     public function getLastWeekRegistered(): int
     {
         return $this->lastWeekRegistered;
     }
 
-    /**
-     * @param int $lastWeekRegistered
-     */
     public function setLastWeekRegistered(int $lastWeekRegistered): void
     {
         $this->lastWeekRegistered = $lastWeekRegistered;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getLastWeekLogins(): int
     {
         return $this->lastWeekLogins;
     }
 
-    /**
-     * @param int $lastWeekLogins
-     */
     public function setLastWeekLogins(int $lastWeekLogins): void
     {
         $this->lastWeekLogins = $lastWeekLogins;
     }
-
-    /**
-     * @return int
-     */
+    
     public function getLastWeekNotifications(): int
     {
         return $this->lastWeekNotifications;
     }
 
-    /**
-     * @param int $lastWeekNotifications
-     */
     public function setLastWeekNotifications(int $lastWeekNotifications): void
     {
         $this->lastWeekNotifications = $lastWeekNotifications;

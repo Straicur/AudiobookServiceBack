@@ -12,22 +12,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * CalculateAudiobooksRatingCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:calculate:rating',
     description: 'Calculate audiobooks rating',
 )]
 class CalculateAudiobooksRatingCommand extends Command
 {
-    private AudiobookRepository $audiobookRepository;
-    private AudiobookRatingRepository $ratingRepository;
-
-    public function __construct(AudiobookRepository $audiobookRepository, AudiobookRatingRepository $ratingRepository)
+    public function __construct(
+        private readonly AudiobookRepository       $audiobookRepository,
+        private readonly AudiobookRatingRepository $ratingRepository,
+    )
     {
-        $this->audiobookRepository = $audiobookRepository;
-        $this->ratingRepository = $ratingRepository;
         parent::__construct();
     }
 

@@ -27,9 +27,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * AuthValidationSubscriber
- */
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
     private AuthenticationTokenRepository $authenticationTokenRepository;
@@ -52,14 +49,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         $this->stockCache = $stockCache;
     }
 
-    /**
-     * @param ControllerEvent $event
-     * @return void
-     * @throws AuthenticationException
-     * @throws PermissionException
-     * @throws TechnicalBreakException
-     * @throws DataNotFoundException
-     */
     public function onControllerCall(ControllerEvent $event): void
     {
         $controller = $event->getController();
@@ -158,12 +147,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param User $user
-     * @param string[] $roles
-     * @return int
-     * @throws PermissionException
-     */
     private function checkRoles(User $user, array $roles): bool
     {
         $userRoles = $user->getRoles();

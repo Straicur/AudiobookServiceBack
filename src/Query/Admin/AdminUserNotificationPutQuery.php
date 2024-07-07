@@ -61,9 +61,6 @@ class AdminUserNotificationPutQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
@@ -83,17 +80,11 @@ class AdminUserNotificationPutQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return NotificationType
-     */
     public function getNotificationType(): NotificationType
     {
         return match ($this->notificationType) {
@@ -104,17 +95,11 @@ class AdminUserNotificationPutQuery
         };
     }
 
-    /**
-     * @param int $notificationType
-     */
     public function setNotificationType(int $notificationType): void
     {
         $this->notificationType = $notificationType;
     }
 
-    /**
-     * @return NotificationUserType
-     */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
@@ -123,9 +108,6 @@ class AdminUserNotificationPutQuery
         };
     }
 
-    /**
-     * @param int $notificationUserType
-     */
     public function setNotificationUserType(int $notificationUserType): void
     {
         $this->notificationUserType = $notificationUserType;

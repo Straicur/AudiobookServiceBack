@@ -8,23 +8,13 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-/**
- * JsonSerializer
- */
 class JsonSerializer implements SerializerInterface
 {
-    private array $encoders;
-
-    private array $normalizers;
-
     private Serializer $serializer;
 
     public function __construct()
     {
-        $this->encoders = [new JsonEncoder()];
-        $this->normalizers = [new ObjectNormalizer()];
-
-        $this->serializer = new Serializer($this->normalizers, $this->encoders);
+        $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     public function serialize(mixed $object): string

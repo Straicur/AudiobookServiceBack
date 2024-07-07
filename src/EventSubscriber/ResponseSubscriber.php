@@ -12,9 +12,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-/**
- * ResponseSubscriber
- */
 class ResponseSubscriber implements EventSubscriberInterface
 {
     private AuthenticationTokenRepository $authenticationTokenRepository;
@@ -31,9 +28,6 @@ class ResponseSubscriber implements EventSubscriberInterface
         $this->responseLogger = $responseLogger;
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function onKernelResponse(ResponseEvent $event): void
     {
         $request = $event->getRequest();

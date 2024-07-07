@@ -31,7 +31,7 @@ class AdminUserNotificationDeleteQuery
      */
     public function setNotificationId(string $notificationId): void
     {
-        $this->notificationId = Uuid::fromString($notificationId);;
+        $this->notificationId = Uuid::fromString($notificationId);
     }
 
     /**

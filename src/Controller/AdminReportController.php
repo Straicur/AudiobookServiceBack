@@ -72,26 +72,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminReport')]
 class AdminReportController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param AudiobookUserCommentRepository $commentRepository
-     * @param UserRepository $userRepository
-     * @param UserBanHistoryRepository $banHistoryRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/report/admin/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -227,23 +207,6 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/report/admin/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -323,17 +286,6 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(

@@ -24,9 +24,6 @@ class RequestService implements RequestServiceInterface
         $this->serializer = new JsonSerializer();
     }
 
-    /**
-     * @throws InvalidJsonDataException
-     */
     public function getRequestBodyContent(Request $request, string $className): object
     {
         $bodyContent = $request->getContent();

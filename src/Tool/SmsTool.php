@@ -11,13 +11,6 @@ use Vonage\SMS\Message\SMS;
 
 class SmsTool
 {
-    /**
-     * @param string $phone
-     * @param string $content
-     * @return bool
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     */
     public function sendSms(string $phone, string $content): bool
     {
         if ($_ENV['APP_ENV'] !== 'test') {

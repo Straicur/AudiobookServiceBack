@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * TechnicalBreakOrder
- */
 enum TechnicalBreakOrder: int
 {
     case LATEST = 1;

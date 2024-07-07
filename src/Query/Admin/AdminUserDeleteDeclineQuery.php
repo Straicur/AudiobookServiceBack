@@ -27,7 +27,7 @@ class AdminUserDeleteDeclineQuery
      */
     public function setUserId(string $userId): void
     {
-        $this->userId = Uuid::fromString($userId);;
+        $this->userId = Uuid::fromString($userId);
     }
 
 }

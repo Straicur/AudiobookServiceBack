@@ -14,9 +14,6 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-/**
- * AuthValidationSubscriber
- */
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     private LoggerInterface $responseLogger;
@@ -27,10 +24,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $this->responseLogger = $responseLogger;
     }
 
-    /**
-     * @param ExceptionEvent $event
-     * @return void
-     */
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();

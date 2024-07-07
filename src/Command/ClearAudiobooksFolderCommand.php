@@ -11,9 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * ClearAudiobooksFolderCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:clear:audiobooks',
     description: 'Clear audiobooks folder',
@@ -25,11 +22,6 @@ class ClearAudiobooksFolderCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

@@ -6,12 +6,6 @@ namespace App\Model\Error;
 
 use App\Model\ModelInterface;
 
-/**
- * NotAuthorizedModel
- *
- * Model which contains all fields returned in response when user authentication requirements are not passed
- *
- */
 class NotAuthorizeModel implements ModelInterface
 {
     private string $error = 'User not authorized';
@@ -22,17 +16,11 @@ class NotAuthorizeModel implements ModelInterface
     {
     }
 
-    /**
-     * @return string
-     */
     public function getError(): string
     {
         return $this->error;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;

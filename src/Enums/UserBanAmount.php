@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * UserBanAmount
- */
 enum UserBanAmount: int
 {
     case NONE = 0;

@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * UserRoles
- */
 enum UserRoles: int
 {
     case GUEST = 1;

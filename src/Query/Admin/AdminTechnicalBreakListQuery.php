@@ -53,9 +53,6 @@ class AdminTechnicalBreakListQuery
         ]));
     }
 
-    /**
-     * @param string[] $searchData
-     */
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'userId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'active', type: 'boolean', example: true, nullable: true),
@@ -69,10 +66,8 @@ class AdminTechnicalBreakListQuery
             $searchData['userId'] = Uuid::fromString($searchData['userId']);
         }
 
-        if (array_key_exists('order', $searchData)) {
-            if ($searchData['order'] !== TechnicalBreakOrder::LATEST->value && $searchData['order'] !== TechnicalBreakOrder::OLDEST->value && $searchData['order'] !== TechnicalBreakOrder::ACTIVE->value) {
-                $searchData['order'] = TechnicalBreakOrder::ACTIVE->value;
-            }
+        if (array_key_exists('order', $searchData) && $searchData['order'] !== TechnicalBreakOrder::LATEST->value && $searchData['order'] !== TechnicalBreakOrder::OLDEST->value && $searchData['order'] !== TechnicalBreakOrder::ACTIVE->value) {
+            $searchData['order'] = TechnicalBreakOrder::ACTIVE->value;
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
@@ -85,43 +80,28 @@ class AdminTechnicalBreakListQuery
         $this->searchData = $searchData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getSearchData(): array
     {
         return $this->searchData;
     }
-
-    /**
-     * @return int
-     */
+    
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @param int $page
-     */
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
-
-    /**
-     * @return int
-     */
+    
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
-
-    /**
-     * @param int $limit
-     */
+    
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;

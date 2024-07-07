@@ -15,11 +15,6 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
     private readonly AudiobookCategoryRepository $categoryRepository;
     private readonly AudiobookRepository $audiobookRepository;
 
-    /**
-     * @param array $elements
-     * @param AudiobookCategoryRepository $categoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     */
     public function __construct(array $elements, AudiobookCategoryRepository $categoryRepository, AudiobookRepository $audiobookRepository)
     {
         $this->elements = $elements;
@@ -65,16 +60,13 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
     }
 
     /**
-     * @return array
+     * @return AdminCategoryModel[]
      */
     private function getElements(): array
     {
         return $this->elements;
     }
 
-    /**
-     * @param array $elements
-     */
     private function setElements(array $elements): void
     {
         $this->elements = $elements;

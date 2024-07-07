@@ -23,50 +23,32 @@ class  AdminAudiobookChangeCoverQuery
     #[Assert\Uuid]
     private Uuid $audiobookId;
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return string
-     */
     public function getBase64(): string
     {
         return $this->base64;
     }
 
-    /**
-     * @param string $base64
-     */
     public function setBase64(string $base64): void
     {
         $this->base64 = $base64;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;

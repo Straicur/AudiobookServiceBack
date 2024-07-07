@@ -11,17 +11,11 @@ class AdminCategoryDetailQuery
     #[Assert\Type(type: 'string')]
     private string $categoryKey;
 
-    /**
-     * @return string
-     */
     public function getCategoryKey(): string
     {
         return $this->categoryKey;
     }
 
-    /**
-     * @param string $categoryKey
-     */
     public function setCategoryKey(string $categoryKey): void
     {
         $this->categoryKey = $categoryKey;

@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * NotificationOrderSearch
- */
 enum NotificationOrderSearch: int
 {
     case LATEST = 1;

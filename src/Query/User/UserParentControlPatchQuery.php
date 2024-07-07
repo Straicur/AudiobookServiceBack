@@ -28,9 +28,6 @@ class UserParentControlPatchQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
     ],            type    : 'object')]
@@ -43,9 +40,7 @@ class UserParentControlPatchQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
+    
     public function getAdditionalData(): array
     {
         return $this->additionalData;

@@ -8,24 +8,15 @@ use App\Entity\User;
 use App\Exception\GeneratorException;
 use DateTime;
 
-/**
- * AuthTokenGenerator
- */
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
     private readonly User $userEntity;
 
-    /**
-     * @param User $userEntity
-     */
     public function __construct(User $userEntity)
     {
         $this->userEntity = $userEntity;
     }
 
-    /**
-     * @throws GeneratorException
-     */
     public function generate(): string
     {
         try {

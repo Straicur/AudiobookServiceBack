@@ -35,9 +35,6 @@ class UserReportQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'description', type: 'string', example: 'Desc', nullable: true),
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
@@ -51,9 +48,7 @@ class UserReportQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
+    
     public function getAdditionalData(): array
     {
         return $this->additionalData;

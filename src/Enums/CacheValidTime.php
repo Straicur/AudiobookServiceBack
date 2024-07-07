@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * CacheValidTime
- */
 enum CacheValidTime: int
 {
     case DAY = 86400;

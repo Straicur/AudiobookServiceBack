@@ -58,19 +58,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'Audiobook')]
 class AudiobookController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -164,16 +151,6 @@ class AudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(

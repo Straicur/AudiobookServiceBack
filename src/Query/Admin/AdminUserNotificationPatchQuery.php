@@ -61,9 +61,6 @@ class AdminUserNotificationPatchQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
@@ -72,52 +69,34 @@ class AdminUserNotificationPatchQuery
     {
         $this->additionalData = $additionalData;
     }
-
-    /**
-     * @return string[]
-     */
+    
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getNotificationId(): Uuid
     {
         return $this->notificationId;
     }
 
-    /**
-     * @param string $notificationId
-     */
     public function setNotificationId(string $notificationId): void
     {
-        $this->notificationId = Uuid::fromString($notificationId);;
+        $this->notificationId = Uuid::fromString($notificationId);
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getActionId(): Uuid
     {
         return $this->actionId;
     }
 
-    /**
-     * @param string $actionId
-     */
     public function setActionId(string $actionId): void
     {
         $this->actionId = Uuid::fromString($actionId);
     }
 
-    /**
-     * @return NotificationType
-     */
     public function getNotificationType(): NotificationType
     {
         return match ($this->notificationType) {
@@ -129,17 +108,11 @@ class AdminUserNotificationPatchQuery
         };
     }
 
-    /**
-     * @param int $notificationType
-     */
     public function setNotificationType(int $notificationType): void
     {
         $this->notificationType = $notificationType;
     }
 
-    /**
-     * @return NotificationUserType
-     */
     public function getNotificationUserType(): NotificationUserType
     {
         return match ($this->notificationUserType) {
@@ -148,9 +121,6 @@ class AdminUserNotificationPatchQuery
         };
     }
 
-    /**
-     * @param int $notificationUserType
-     */
     public function setNotificationUserType(int $notificationUserType): void
     {
         $this->notificationUserType = $notificationUserType;

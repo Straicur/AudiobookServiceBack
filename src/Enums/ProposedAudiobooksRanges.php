@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * ProposedAudiobooksRanges
- */
 enum ProposedAudiobooksRanges: int
 {
     case RANDOM_LIMIT = 1;

@@ -13,21 +13,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * AddRoleCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:roles:add',
     description: 'Add role to system',
 )]
 class AddRoleCommand extends Command
 {
-    private RoleRepository $roleRepository;
-
-    public function __construct(RoleRepository $roleRepository)
+    public function __construct(private readonly RoleRepository $roleRepository)
     {
-        $this->roleRepository = $roleRepository;
-
         parent::__construct();
     }
 

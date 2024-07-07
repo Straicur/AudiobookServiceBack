@@ -48,9 +48,6 @@ class UserAudiobookCommentEditQuery
         ]));
     }
 
-    /**
-     * @param array $additionalData
-     */
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
     ],            type    : 'object')]
@@ -63,91 +60,59 @@ class UserAudiobookCommentEditQuery
         $this->additionalData = $additionalData;
     }
 
-    /**
-     * @return string[]
-     */
+    
     public function getAdditionalData(): array
     {
         return $this->additionalData;
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return string
-     */
     public function getCategoryKey(): string
     {
         return $this->categoryKey;
     }
 
-    /**
-     * @param string $categoryKey
-     */
     public function setCategoryKey(string $categoryKey): void
     {
         $this->categoryKey = $categoryKey;
     }
 
-    /**
-     * @return string
-     */
     public function getComment(): string
     {
         return $this->comment;
     }
 
-    /**
-     * @param string $comment
-     */
     public function setComment(string $comment): void
     {
         $this->comment = $comment;
     }
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookCommentId(): Uuid
     {
         return $this->audiobookCommentId;
     }
 
-    /**
-     * @param string $audiobookCommentId
-     */
     public function setAudiobookCommentId(string $audiobookCommentId): void
     {
-        $this->audiobookCommentId = Uuid::fromString($audiobookCommentId);;
+        $this->audiobookCommentId = Uuid::fromString($audiobookCommentId);
     }
 
-    /**
-     * @return bool
-     */
     public function isDeleted(): bool
     {
         return $this->deleted;
     }
 
-    /**
-     * @param bool $deleted
-     */
     public function setDeleted(bool $deleted): void
     {
         $this->deleted = $deleted;
