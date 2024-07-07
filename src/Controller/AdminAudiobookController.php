@@ -15,10 +15,8 @@ use App\Enums\NotificationUserType;
 use App\Enums\StockCacheTags;
 use App\Enums\UserAudiobookActivationType;
 use App\Enums\UserRolesNames;
-use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\NotificationException;
 use App\Model\Admin\AdminAudiobookDetailsSuccessModel;
 use App\Model\Admin\AdminAudiobooksSuccessModel;
 use App\Model\Admin\AdminCategoryAudiobookModel;
@@ -57,7 +55,6 @@ use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +63,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Throwable;
 use ZipArchive;
 
 #[OA\Response(
@@ -113,7 +111,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookDetails(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
@@ -170,7 +167,7 @@ class AdminAudiobookController extends AbstractController
                             $audiobook->setImgFileChangeDate();
                             $audiobookRepository->add($audiobook);
                         }
-                    } catch (\Throwable) {
+                    } catch (Throwable) {
                         $audiobook->setImgFile(null);
                         $audiobook->setImgFileChangeDate();
                         $audiobookRepository->add($audiobook);
@@ -235,7 +232,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookAdd(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $usersLogger,
         AudiobookService               $audiobookService,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
@@ -452,7 +448,7 @@ class AdminAudiobookController extends AbstractController
 
                     return ResponseTool::getResponse($successModel, 201);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $usersLogger->error($e->getMessage());
                 return ResponseTool::getResponse(httpCode: 500);
             }
@@ -486,7 +482,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookEdit(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -549,7 +544,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookDelete(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookService               $audiobookService,
         AudiobookRepository            $audiobookRepository,
@@ -609,7 +603,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookZip(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -682,7 +675,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookReAdding(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookService               $audiobookService,
@@ -967,7 +959,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobooks(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -1083,7 +1074,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookActive(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -1187,7 +1177,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookChangeCover(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -1264,7 +1253,6 @@ class AdminAudiobookController extends AbstractController
     public function adminAudiobookCommentDelete(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         TranslateService               $translateService,

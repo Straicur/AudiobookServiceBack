@@ -62,7 +62,6 @@ use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -273,10 +272,7 @@ class UserAudiobookController extends AbstractController
         ]
     )]
     public function userProposedAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
         TagAwareCacheInterface         $stockCache,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
@@ -573,10 +569,7 @@ class UserAudiobookController extends AbstractController
         ]
     )]
     public function userMyListAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
@@ -789,7 +782,6 @@ class UserAudiobookController extends AbstractController
     public function userAudiobookRatingGet(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,

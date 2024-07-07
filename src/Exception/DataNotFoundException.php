@@ -6,11 +6,12 @@ namespace App\Exception;
 
 use App\Model\Error\DataNotFoundModel;
 use App\Tool\ResponseTool;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class DataNotFoundException extends \Exception implements ResponseExceptionInterface
+class DataNotFoundException extends Exception implements ResponseExceptionInterface
 {
-    private array $dataStrings = [];
+    private array $dataStrings;
 
     /**
      * @param string[] $dataStrings

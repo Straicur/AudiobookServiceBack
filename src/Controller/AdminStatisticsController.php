@@ -22,15 +22,10 @@ use App\Repository\AuthenticationTokenRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
-use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -73,10 +68,6 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticMain(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
@@ -137,10 +128,6 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticBestAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TagAwareCacheInterface         $stockCache,

@@ -20,13 +20,11 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Common\AudiobookCoversQuery;
 use App\Query\Common\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Throwable;
 
 #[OA\Response(
     response   : 400,
@@ -80,7 +79,6 @@ class AudiobookController extends AbstractController
     public function audiobookPart(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,
@@ -105,7 +103,7 @@ class AudiobookController extends AbstractController
 
                 try {
                     $handle = opendir($audiobook->getFileName());
-                } catch (\Exception) {
+                } catch (Throwable) {
                     $handle = false;
                 }
 
@@ -173,7 +171,6 @@ class AudiobookController extends AbstractController
     public function audiobookCovers(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookRepository            $audiobookRepository,
         TranslateService               $translateService,

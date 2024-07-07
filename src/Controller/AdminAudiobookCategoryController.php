@@ -31,7 +31,6 @@ use App\Query\Admin\AdminCategoryRemoveQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -39,7 +38,6 @@ use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,7 +90,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryAdd(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
@@ -154,7 +151,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryEdit(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
@@ -206,7 +202,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryRemove(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
@@ -259,7 +254,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryAddAudiobook(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
@@ -323,7 +317,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryRemoveAudiobook(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
@@ -389,7 +382,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryAudiobooks(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
@@ -475,10 +467,6 @@ class AdminAudiobookCategoryController extends AbstractController
         ]
     )]
     public function adminCategoriesTree(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         AudiobookRepository            $audiobookRepository,
         TagAwareCacheInterface         $stockCache,
@@ -513,10 +501,6 @@ class AdminAudiobookCategoryController extends AbstractController
         ]
     )]
     public function adminCategories(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TagAwareCacheInterface         $stockCache,
     ): Response {
@@ -560,7 +544,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryActive(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,
@@ -614,7 +597,6 @@ class AdminAudiobookCategoryController extends AbstractController
     public function adminCategoryDetail(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         AudiobookCategoryRepository    $audiobookCategoryRepository,
         TranslateService               $translateService,

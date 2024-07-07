@@ -7,10 +7,11 @@ namespace App\Exception;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class InvalidJsonDataException extends \Exception implements ResponseExceptionInterface
+class InvalidJsonDataException extends Exception implements ResponseExceptionInterface
 {
     protected $message;
 

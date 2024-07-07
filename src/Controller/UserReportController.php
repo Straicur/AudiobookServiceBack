@@ -71,7 +71,6 @@ class UserReportController extends AbstractController
     public function report(
         Request                 $request,
         RequestServiceInterface $requestService,
-        LoggerInterface         $usersLogger,
         LoggerInterface         $endpointLogger,
         TranslateService        $translateService,
         ReportRepository        $reportRepository,

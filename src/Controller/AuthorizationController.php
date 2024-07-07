@@ -21,15 +21,12 @@ use App\Query\Common\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
-use App\Service\AuthorizedUserService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
-use DateTime;
-use Doctrine\ORM\NonUniqueResultException;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -205,11 +202,8 @@ class AuthorizationController extends AbstractController
             ),
         ]
     )]
-    public function authorizeCheck(
-        Request                 $request,
-        RequestServiceInterface $requestServiceInterface,
-        LoggerInterface         $usersLogger,
-    ): Response {
+    public function authorizeCheck(): Response
+    {
         return ResponseTool::getResponse();
     }
 }

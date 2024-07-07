@@ -21,6 +21,7 @@ use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -134,7 +135,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                     }
                 }
 
-            } catch (\ReflectionException|NonUniqueResultException|InvalidArgumentException) {
+            } catch (ReflectionException|NonUniqueResultException|InvalidArgumentException) {
                 throw new DataNotFoundException();
             }
         }

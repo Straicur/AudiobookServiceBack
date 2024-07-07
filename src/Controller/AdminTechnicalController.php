@@ -28,7 +28,6 @@ use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -76,8 +75,6 @@ class AdminTechnicalController extends AbstractController
         ]
     )]
     public function adminTechnicalBreakPut(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         TechnicalBreakRepository       $technicalBreakRepository,
         TagAwareCacheInterface         $stockCache,
@@ -167,7 +164,6 @@ class AdminTechnicalController extends AbstractController
     public function adminTechnicalBreakList(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         TechnicalBreakRepository       $technicalBreakRepository,
         TranslateService               $translateService,
@@ -263,7 +259,6 @@ class AdminTechnicalController extends AbstractController
     public function adminTechnicalCacheClear(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         TagAwareCacheInterface         $stockCache,
         LoggerInterface                $endpointLogger,
         TranslateService               $translateService,

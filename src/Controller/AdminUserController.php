@@ -16,7 +16,6 @@ use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\NotificationException;
 use App\Model\Admin\AdminSystemRoleModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
 use App\Model\Admin\AdminUserDeleteModel;
@@ -52,7 +51,6 @@ use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -60,13 +58,11 @@ use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -157,7 +153,6 @@ class AdminUserController extends AbstractController
     public function adminUserRoleAdd(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
@@ -236,7 +231,6 @@ class AdminUserController extends AbstractController
     public function adminUserRoleRemove(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
@@ -315,7 +309,6 @@ class AdminUserController extends AbstractController
     public function adminUserActivate(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         RoleRepository                 $roleRepository,
@@ -377,7 +370,6 @@ class AdminUserController extends AbstractController
     public function adminUserBan(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         TranslateService               $translateService,
@@ -433,7 +425,6 @@ class AdminUserController extends AbstractController
     public function adminUserChangePassword(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserPasswordRepository         $userPasswordRepository,
@@ -495,7 +486,6 @@ class AdminUserController extends AbstractController
     public function adminUserChangePhone(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserInformationRepository      $userInformationRepository,
@@ -564,7 +554,6 @@ class AdminUserController extends AbstractController
     public function adminUsers(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
@@ -686,7 +675,6 @@ class AdminUserController extends AbstractController
     public function adminUserDelete(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
@@ -767,7 +755,6 @@ class AdminUserController extends AbstractController
     public function adminUserDeleteList(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
@@ -850,7 +837,6 @@ class AdminUserController extends AbstractController
     public function adminUserToDeleteList(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
@@ -930,7 +916,6 @@ class AdminUserController extends AbstractController
     public function adminUserDeleteAccept(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserDeleteRepository           $userDeleteRepository,
         MailerInterface                $mailer,
@@ -1006,7 +991,6 @@ class AdminUserController extends AbstractController
     public function adminUserDeleteDecline(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         UserRepository                 $userRepository,
         UserDeleteRepository           $userDeleteRepository,
@@ -1101,7 +1085,6 @@ class AdminUserController extends AbstractController
     public function adminUserNotifications(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
         TranslateService               $translateService,
@@ -1185,7 +1168,6 @@ class AdminUserController extends AbstractController
     public function adminUserNotificationPut(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
         UserRepository                 $userRepository,
@@ -1374,7 +1356,6 @@ class AdminUserController extends AbstractController
     public function adminUserNotificationPatch(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         UserRepository                 $userRepository,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
@@ -1454,7 +1435,6 @@ class AdminUserController extends AbstractController
     public function adminUserNotificationDelete(
         Request                        $request,
         RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface                $endpointLogger,
         NotificationRepository         $notificationRepository,
         TranslateService               $translateService,

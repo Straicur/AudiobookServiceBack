@@ -11,6 +11,7 @@ use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
 use ZipArchive;
 
 class AudiobookService implements AudiobookServiceInterface
@@ -252,7 +253,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         try {
             $it = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
-        } catch (\UnexpectedValueException) {
+        } catch (Throwable) {
         }
 
         if ($it) {

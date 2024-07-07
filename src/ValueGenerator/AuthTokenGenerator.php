@@ -7,6 +7,7 @@ namespace App\ValueGenerator;
 use App\Entity\User;
 use App\Exception\GeneratorException;
 use DateTime;
+use Throwable;
 
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
@@ -27,7 +28,7 @@ class AuthTokenGenerator implements ValueGeneratorInterface
             $tokenToHash = $userId . '-' . $dateNow . '#' . $randomValue;
 
             return hash('sha512', $tokenToHash);
-        } catch (\Exception) {
+        } catch (Throwable) {
             throw new GeneratorException();
         }
     }

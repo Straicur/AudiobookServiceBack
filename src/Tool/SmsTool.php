@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tool;
 
-use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
