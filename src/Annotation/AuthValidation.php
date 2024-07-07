@@ -25,7 +25,7 @@ class AuthValidation
         $this->checkAuthToken = $checkAuthToken;
     }
 
-    
+
     public function getRoles(): array
     {
         return $this->roles;

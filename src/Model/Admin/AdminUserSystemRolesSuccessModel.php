@@ -8,7 +8,6 @@ use App\Model\ModelInterface;
 
 class AdminUserSystemRolesSuccessModel implements ModelInterface
 {
-
     private array $roles = [];
 
     /**

@@ -48,5 +48,4 @@ class AdminUserRoleAddQuery
     {
         $this->role = $role;
     }
-
 }

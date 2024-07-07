@@ -89,7 +89,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         return count($res) > 0 ? $res[0] : null;
     }
 
-    
+
     public function getNumberOfAuthenticationTokensFromLast7Days(): int
     {
         $today = new DateTime();

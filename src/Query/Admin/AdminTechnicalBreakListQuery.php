@@ -59,7 +59,7 @@ class AdminTechnicalBreakListQuery
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'dateFrom', type: 'datetime', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'dateTo', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('userId', $searchData) && Uuid::isValid($searchData['userId'])) {
@@ -84,7 +84,7 @@ class AdminTechnicalBreakListQuery
     {
         return $this->searchData;
     }
-    
+
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
@@ -95,16 +95,15 @@ class AdminTechnicalBreakListQuery
     {
         $this->page = $page;
     }
-    
+
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

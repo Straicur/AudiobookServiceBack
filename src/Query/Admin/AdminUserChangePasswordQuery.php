@@ -38,5 +38,4 @@ class AdminUserChangePasswordQuery
     {
         $this->newPassword = $newPassword;
     }
-
 }

@@ -78,19 +78,18 @@ class AuthorizationController extends AbstractController
         ]
     )]
     public function login(
-        Request                       $request,
-        RequestServiceInterface       $requestServiceInterface,
-        LoggerInterface               $usersLogger,
-        LoggerInterface               $endpointLogger,
-        UserInformationRepository     $userInformationRepository,
-        UserPasswordRepository        $userPasswordRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        LoggerInterface $usersLogger,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserPasswordRepository $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService              $translateService,
+        TranslateService $translateService,
     ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
-
             $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
 
             $userInformationEntity = $userInformationRepository->findOneBy([
@@ -179,7 +178,7 @@ class AuthorizationController extends AbstractController
     )]
     public function logout(
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $usersLogger,
+        LoggerInterface $usersLogger,
     ): Response {
         $authorizedUserService::unAuthorizeUser();
         $user = $authorizedUserService::getAuthorizedUser();

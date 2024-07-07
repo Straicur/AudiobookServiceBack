@@ -19,10 +19,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CalculateAudiobooksRatingCommand extends Command
 {
     public function __construct(
-        private readonly AudiobookRepository       $audiobookRepository,
+        private readonly AudiobookRepository $audiobookRepository,
         private readonly AudiobookRatingRepository $ratingRepository,
-    )
-    {
+    ) {
         parent::__construct();
     }
 

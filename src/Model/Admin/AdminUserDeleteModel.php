@@ -107,5 +107,4 @@ class AdminUserDeleteModel
     {
         $this->dateDeleted = $dateDeleted->getTimestamp() * 1000;
     }
-
 }

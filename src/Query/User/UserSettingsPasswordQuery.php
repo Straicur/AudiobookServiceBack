@@ -35,5 +35,4 @@ class UserSettingsPasswordQuery
     {
         $this->newPassword = $newPassword;
     }
-
 }

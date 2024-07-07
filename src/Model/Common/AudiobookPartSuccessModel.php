@@ -10,7 +10,7 @@ class AudiobookPartSuccessModel implements ModelInterface
 {
     private string $url;
 
-    public function __construct( string $url)
+    public function __construct(string $url)
     {
         $this->url = $url;
     }

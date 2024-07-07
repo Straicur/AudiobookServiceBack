@@ -91,12 +91,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsPassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
@@ -148,20 +148,19 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsEmail(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        MailerInterface                $mailer,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
 
         if ($userSettingsEmailQuery instanceof UserSettingsEmailQuery) {
-
             $user = $authorizedUserService::getAuthorizedUser();
 
             $userOldEmail = $userInformationRepository->findOneBy([
@@ -237,12 +236,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsEmailChange(
-        Request                        $request,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $userId = $request->get('id');
@@ -307,14 +306,14 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsDelete(
-        Request                        $request,
+        Request $request,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserDeleteRepository           $userDeleteRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        UserRepository                 $userRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserDeleteRepository $userDeleteRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
@@ -375,12 +374,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsChange(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
@@ -462,19 +461,18 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userResetPassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        MailerInterface                $mailer,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        MailerInterface $mailer,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
 
         if ($userResetPasswordQuery instanceof UserResetPasswordQuery) {
-
             $userInformation = $userInformationRepository->findOneBy([
                 'email' => $userResetPasswordQuery->getEmail(),
             ]);
@@ -539,18 +537,17 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userResetPasswordConfirm(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserPasswordRepository $userPasswordRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
 
         if ($userResetPasswordConfirmQuery instanceof UserResetPasswordConfirmQuery) {
-
             $user = $userRepository->find($userResetPasswordConfirmQuery->getUserId());
 
             if ($user === null) {
@@ -605,12 +602,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userParentControlPut(
-        Request                           $request,
-        AuthorizedUserServiceInterface    $authorizedUserService,
-        LoggerInterface                   $endpointLogger,
-        TranslateService                  $translateService,
+        Request $request,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
-        UserRepository                    $userRepository,
+        UserRepository $userRepository,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
@@ -670,12 +667,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userParentControlPatch(
-        Request                           $request,
-        RequestServiceInterface           $requestService,
-        AuthorizedUserServiceInterface    $authorizedUserService,
-        LoggerInterface                   $endpointLogger,
-        UserInformationRepository         $userInformationRepository,
-        TranslateService                  $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
     ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);

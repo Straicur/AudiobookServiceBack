@@ -35,5 +35,4 @@ class UserSettingsEmailQuery
     {
         $this->oldEmail = $oldEmail;
     }
-
 }

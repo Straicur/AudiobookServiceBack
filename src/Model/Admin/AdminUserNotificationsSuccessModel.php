@@ -48,7 +48,7 @@ class AdminUserNotificationsSuccessModel implements ModelInterface
     {
         $this->systemNotifications[] = $systemNotificationModel;
     }
-    
+
     public function getMaxPage(): int
     {
         return $this->maxPage;
@@ -73,7 +73,7 @@ class AdminUserNotificationsSuccessModel implements ModelInterface
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;

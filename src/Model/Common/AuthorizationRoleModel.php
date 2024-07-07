@@ -22,5 +22,4 @@ class AuthorizationRoleModel
     {
         $this->name = $name;
     }
-
 }

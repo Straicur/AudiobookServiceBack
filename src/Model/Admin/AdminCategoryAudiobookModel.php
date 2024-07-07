@@ -74,7 +74,7 @@ class AdminCategoryAudiobookModel
     {
         $this->year = $year->getTimestamp() * 1000;
     }
-    
+
     public function getDuration(): int
     {
         return $this->duration;
@@ -104,7 +104,7 @@ class AdminCategoryAudiobookModel
     {
         $this->parts = $parts;
     }
-    
+
     public function getAge(): int
     {
         return $this->age;
@@ -135,5 +135,4 @@ class AdminCategoryAudiobookModel
     {
         $this->avgRating = $avgRating;
     }
-
 }

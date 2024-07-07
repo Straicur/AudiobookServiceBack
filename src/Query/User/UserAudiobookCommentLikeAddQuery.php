@@ -37,5 +37,4 @@ class UserAudiobookCommentLikeAddQuery
     {
         $this->like = $like;
     }
-
 }

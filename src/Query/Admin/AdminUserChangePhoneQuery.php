@@ -38,5 +38,4 @@ class AdminUserChangePhoneQuery
     {
         $this->newPhone = $newPhone;
     }
-
 }

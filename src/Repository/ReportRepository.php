@@ -147,10 +147,10 @@ class ReportRepository extends ServiceEntityRepository
             $qb->andWhere('((r.dateAdd > :dateFrom) AND (r.dateAdd < :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateTo !== null) {
+        } elseif ($dateTo !== null) {
             $qb->andWhere('(r.dateAdd < :dateTo)')
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateFrom !== null) {
+        } elseif ($dateFrom !== null) {
             $qb->andWhere('(r.dateAdd > :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }

@@ -39,7 +39,7 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     {
         $this->endedTime = $endedTime;
     }
-    
+
     public function getWatchingDate(): int
     {
         return $this->watchingDate;
@@ -49,6 +49,4 @@ class UserAudiobookInfoSuccessModel implements ModelInterface
     {
         $this->watchingDate = $watchingDate->getTimestamp() * 1000;
     }
-
-
 }

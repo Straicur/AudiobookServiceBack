@@ -77,17 +77,16 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookPart(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
-
             $audiobook = $audiobookRepository->find($audiobookPartQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -110,7 +109,6 @@ class AudiobookController extends AbstractController
                 if ($handle) {
                     while (false !== ($entry = readdir($handle))) {
                         if ($entry !== '.' && $entry !== '..') {
-
                             $file_parts = pathinfo($entry);
 
                             if ($file_parts['extension'] === 'mp3') {
@@ -169,11 +167,11 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookCovers(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 

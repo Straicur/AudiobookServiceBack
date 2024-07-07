@@ -48,5 +48,4 @@ class AdminUserRoleRemoveQuery
     {
         $this->role = $role;
     }
-
 }

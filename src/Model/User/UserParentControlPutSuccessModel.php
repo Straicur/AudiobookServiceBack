@@ -24,5 +24,4 @@ class UserParentControlPutSuccessModel implements ModelInterface
     {
         $this->smsCode = $smsCode;
     }
-
 }

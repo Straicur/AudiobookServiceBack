@@ -54,7 +54,7 @@ class AdminReportListSuccessModel implements ModelInterface
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
@@ -69,5 +69,4 @@ class AdminReportListSuccessModel implements ModelInterface
     {
         $this->maxPage = $maxPage;
     }
-
 }

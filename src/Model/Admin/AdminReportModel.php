@@ -130,5 +130,4 @@ class AdminReportModel
     {
         $this->user = $user;
     }
-
 }

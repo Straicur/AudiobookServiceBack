@@ -105,7 +105,7 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserSystemRoles(
-        RoleRepository         $roleRepository,
+        RoleRepository $roleRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $successModel = $stockCache->get(CacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
@@ -151,17 +151,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserRoleAdd(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
 
         if ($adminUserRoleAddQuery instanceof AdminUserRoleAddQuery) {
-
             $user = $userRepository->find($adminUserRoleAddQuery->getUserId());
 
             if ($user === null) {
@@ -197,7 +196,6 @@ class AdminUserController extends AbstractController
                     ]);
                     $user->addRole($adminRole);
                     break;
-
             }
 
             $userRepository->add($user);
@@ -229,17 +227,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserRoleRemove(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
 
         if ($adminUserRoleRemoveQuery instanceof AdminUserRoleRemoveQuery) {
-
             $user = $userRepository->find($adminUserRoleRemoveQuery->getUserId());
 
             if ($user === null) {
@@ -275,7 +272,6 @@ class AdminUserController extends AbstractController
                     ]);
                     $user->removeRole($adminRole);
                     break;
-
             }
 
             $userRepository->add($user);
@@ -307,17 +303,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserActivate(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
 
         if ($adminUserActivateQuery instanceof AdminUserActivateQuery) {
-
             $user = $userRepository->find($adminUserActivateQuery->getUserId());
 
             if ($user === null) {
@@ -368,16 +363,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserBan(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
 
         if ($adminUserBanQuery instanceof AdminUserBanQuery) {
-
             $user = $userRepository->find($adminUserBanQuery->getUserId());
 
             if ($user === null) {
@@ -423,17 +417,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserChangePassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
 
         if ($adminUserChangePasswordQuery instanceof AdminUserChangePasswordQuery) {
-
             $user = $userRepository->find($adminUserChangePasswordQuery->getUserId());
 
             if ($user === null) {
@@ -484,12 +477,12 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserChangePhone(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
@@ -552,17 +545,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUsers(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
         if ($adminUsersQuery instanceof AdminUsersQuery) {
-
             $successModel = new AdminUsersSuccessModel();
 
             $usersSearchData = $adminUsersQuery->getSearchData();
@@ -610,7 +602,6 @@ class AdminUserController extends AbstractController
                 if ($userRepository->userIsAdmin($user)) {
                     ++$maxResult;
                 } elseif ($index < $maxResult) {
-
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
 
                     $userModel = new AdminUserModel(
@@ -673,18 +664,17 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
 
         if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
-
             $user = $userRepository->find($adminUserDeleteQuery->getUserId());
 
             if ($user === null) {
@@ -753,17 +743,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
-
             $successModel = new AdminUserDeleteListSuccessModel();
 
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
@@ -774,7 +763,6 @@ class AdminUserController extends AbstractController
             ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
-
                 $user = $userDelete->getUser();
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
@@ -835,17 +823,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserToDeleteList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
-
             $successModel = new AdminUserDeleteListSuccessModel();
 
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
@@ -854,7 +841,6 @@ class AdminUserController extends AbstractController
             $allDeleteUsers = $userDeleteRepository->getUsersToDelete();
 
             foreach ($allDeleteUsers as $index => $userDelete) {
-
                 $user = $userDelete->getUser();
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
@@ -914,17 +900,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteAccept(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
 
         if ($adminUserDeleteAcceptQuery instanceof AdminUserDeleteAcceptQuery) {
-
             $userDelete = $userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteAcceptQuery->getUserId(),
             ]);
@@ -989,20 +974,19 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteDecline(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
 
         if ($adminUserDeleteDeclineQuery instanceof AdminUserDeleteDeclineQuery) {
-
             $userDelete = $userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteDeclineQuery->getUserId(),
             ]);
@@ -1083,16 +1067,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotifications(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
-
             $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
 
             $text = null;
@@ -1166,27 +1149,25 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationPut(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        AudiobookRepository            $audiobookRepository,
-        InstitutionRepository          $institutionRepository,
-        AudiobookCategoryRepository    $categoryRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        AudiobookRepository $audiobookRepository,
+        InstitutionRepository $institutionRepository,
+        AudiobookCategoryRepository $categoryRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
-
             $additionalData = $adminUserNotificationPutQuery->getAdditionalData();
 
             switch ($adminUserNotificationPutQuery->getNotificationType()) {
                 case NotificationType::NORMAL:
-
                     $userRole = $roleRepository->findOneBy([
                         'name' => UserRolesNames::USER->value,
                     ]);
@@ -1332,7 +1313,6 @@ class AdminUserController extends AbstractController
         $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
-
     }
 
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
@@ -1354,19 +1334,18 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationPatch(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        UserRepository                 $userRepository,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        UserRepository $userRepository,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
-
             $notification = $notificationRepository->find($adminUserNotificationPatchQuery->getNotificationId());
 
             if ($notification === null) {
@@ -1433,16 +1412,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
         if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
-
             $notification = $notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
 
             if ($notification === null) {

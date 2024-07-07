@@ -121,6 +121,5 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         }
 
         return $results;
-
     }
 }

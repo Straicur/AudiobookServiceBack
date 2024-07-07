@@ -20,5 +20,4 @@ class UserResetPasswordQuery
     {
         $this->email = $email;
     }
-
 }

@@ -20,5 +20,4 @@ class AdminCategoryDetailQuery
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

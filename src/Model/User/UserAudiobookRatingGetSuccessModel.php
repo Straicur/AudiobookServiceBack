@@ -15,7 +15,7 @@ class UserAudiobookRatingGetSuccessModel implements ModelInterface
         $this->ratingPercent = $ratingPercent;
     }
 
-    
+
     public function getRatingPercent(): int
     {
         return $this->ratingPercent;
@@ -25,5 +25,4 @@ class UserAudiobookRatingGetSuccessModel implements ModelInterface
     {
         $this->ratingPercent = $ratingPercent;
     }
-
 }

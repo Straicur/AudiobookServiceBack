@@ -20,9 +20,8 @@ class RemoveNotUsedAudiobooksCommand extends Command
 {
     public function __construct(
         private readonly AudiobookRepository $audiobookRepository,
-        private readonly AudiobookService    $audiobookService,
-    )
-    {
+        private readonly AudiobookService $audiobookService,
+    ) {
         parent::__construct();
     }
 
@@ -31,7 +30,6 @@ class RemoveNotUsedAudiobooksCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         foreach (glob(rtrim($_ENV['MAIN_DIR'], '/') . '/*', GLOB_NOSORT) as $each) {
-
             $isInRepo = $this->audiobookRepository->findOneBy([
                 'fileName' => $each,
             ]);

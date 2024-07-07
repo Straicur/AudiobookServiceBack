@@ -60,5 +60,4 @@ class UserCategoryModel
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

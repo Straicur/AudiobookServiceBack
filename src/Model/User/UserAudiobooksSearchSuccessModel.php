@@ -30,5 +30,4 @@ class UserAudiobooksSearchSuccessModel implements ModelInterface
     {
         $this->audiobooks[] = $audiobook;
     }
-
 }

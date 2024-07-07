@@ -37,5 +37,4 @@ class AdminUserBanQuery
     {
         $this->banned = $banned;
     }
-
 }

@@ -71,5 +71,4 @@ class AdminTechnicalBreakModel
     {
         $this->user = $user;
     }
-
 }

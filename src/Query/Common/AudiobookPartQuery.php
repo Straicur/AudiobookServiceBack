@@ -38,5 +38,4 @@ class AudiobookPartQuery
     {
         $this->part = $part;
     }
-
 }

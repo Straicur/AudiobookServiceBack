@@ -54,7 +54,7 @@ class NotificationRepository extends ServiceEntityRepository
         }
     }
 
-    
+
     public function getNumberNotificationsFromLastWeak(): int
     {
         $today = new DateTime();

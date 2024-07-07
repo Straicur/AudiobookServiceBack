@@ -69,11 +69,11 @@ class UserReportController extends AbstractController
         ]
     )]
     public function report(
-        Request                 $request,
+        Request $request,
         RequestServiceInterface $requestService,
-        LoggerInterface         $endpointLogger,
-        TranslateService        $translateService,
-        ReportRepository        $reportRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
     ): Response {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
@@ -138,12 +138,12 @@ class UserReportController extends AbstractController
         ]
     )]
     public function apiReportUser(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
     ): Response {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 

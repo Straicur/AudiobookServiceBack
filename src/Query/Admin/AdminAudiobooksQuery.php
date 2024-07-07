@@ -88,7 +88,7 @@ class AdminAudiobooksQuery
         new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('age', $searchData) && $searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
@@ -121,16 +121,15 @@ class AdminAudiobooksQuery
     {
         $this->page = $page;
     }
-    
+
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

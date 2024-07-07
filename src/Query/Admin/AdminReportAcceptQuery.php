@@ -53,5 +53,4 @@ class AdminReportAcceptQuery
     {
         $this->reportId = Uuid::fromString($reportId);
     }
-
 }

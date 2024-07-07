@@ -40,7 +40,7 @@ class AdminTechnicalCacheClearQuery
         new OA\Property(property: 'admin', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'user', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'all', type: 'boolean', example: true, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setCacheData(array $cacheData): void
     {
         $this->cacheData = $cacheData;
@@ -50,5 +50,4 @@ class AdminTechnicalCacheClearQuery
     {
         return $this->cacheData;
     }
-
 }

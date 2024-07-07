@@ -20,5 +20,4 @@ class RegisterConfirmSendQuery
     {
         $this->email = $email;
     }
-
 }

@@ -18,5 +18,4 @@ class TechnicalBreakExceptionModel implements ModelInterface
     {
         return $this->error;
     }
-
 }

@@ -109,19 +109,18 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookDetails(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookDetailsQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -230,15 +229,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookAdd(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $usersLogger,
-        AudiobookService               $audiobookService,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $usersLogger,
+        AudiobookService $audiobookService,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRepository $audiobookRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
@@ -395,11 +394,9 @@ class AdminAudiobookController extends AbstractController
                     $audiobookCategories = [];
 
                     if (array_key_exists('categories', $additionalData)) {
-
                         $categories = $additionalData['categories'];
 
                         foreach ($categories as $category) {
-
                             $audiobookCategory = $audiobookCategoryRepository->find(Uuid::fromString($category));
 
                             if ($audiobookCategory !== null) {
@@ -480,17 +477,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookEdit(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
 
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookEditQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -542,19 +538,18 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookService               $audiobookService,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookService $audiobookService,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookDeleteQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -601,16 +596,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookZip(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookZipQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -621,7 +615,7 @@ class AdminAudiobookController extends AbstractController
 
             $zipFile = $audiobook->getFileName() . '.zip';
 
-            $zip = new ZipArchive;
+            $zip = new ZipArchive();
 
             if (file_exists($zipFile)) {
                 unlink($zipFile);
@@ -673,22 +667,21 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookReAdding(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookService               $audiobookService,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        AudiobookService $audiobookService,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
-        TagAwareCacheInterface         $stockCache,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookReAddingQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -702,7 +695,6 @@ class AdminAudiobookController extends AbstractController
             $audiobookService->checkAndAddFile();
 
             if ($audiobookService->lastFile()) {
-
                 $audiobookService->combineFiles();
                 $folderDir = $audiobookService->unzip($audiobook->getFileName());
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
@@ -862,7 +854,6 @@ class AdminAudiobookController extends AbstractController
                 $audiobookCategories = [];
 
                 if (array_key_exists('categories', $additionalData)) {
-
                     $categories = [];
 
                     if (!empty($additionalData['categories'])) {
@@ -871,7 +862,6 @@ class AdminAudiobookController extends AbstractController
                         }
                     }
                     foreach ($categories as $category) {
-
                         $audiobookCategory = $audiobookCategoryRepository->find($category);
 
                         if ($audiobookCategory !== null) {
@@ -957,16 +947,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
-
             $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
 
             $categories = null;
@@ -1072,16 +1061,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookActive(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
+        AudiobookInfoRepository $audiobookInfoRepository,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
 
@@ -1175,17 +1164,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookChangeCover(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
 
         if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookChangeCoverQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -1206,7 +1194,6 @@ class AdminAudiobookController extends AbstractController
                 if ($entry !== '.' && $entry !== '..') {
                     $file_parts = pathinfo($entry);
                     if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
-
                         $img = $audiobook->getFileName() . '/' . $file_parts['basename'];
                         if (file_exists($img)) {
                             unlink($img);
@@ -1251,17 +1238,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookCommentDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
 
         if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
-
             $audiobookComment = $audiobookUserCommentRepository->find($adminAudiobookCommentDeleteQuery->getAudiobookCommentId());
 
             if ($audiobookComment === null) {
@@ -1304,20 +1290,19 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookCommentGet(
-        Request                            $request,
-        RequestServiceInterface            $requestService,
-        AuthorizedUserServiceInterface     $authorizedUserService,
-        LoggerInterface                    $endpointLogger,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookRepository                $audiobookRepository,
-        TranslateService                   $translateService,
-        TagAwareCacheInterface             $stockCache,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);
 
         if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {
-
             $audiobook = $audiobookRepository->find($audiobookCommentGetQuery->getAudiobookId());
 
             if ($audiobook === null) {

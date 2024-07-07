@@ -33,17 +33,16 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class UserProposedAudiobooksCommand extends Command
 {
     public function __construct(
-        private readonly RoleRepository               $roleRepository,
-        private readonly UserRepository               $userRepository,
-        private readonly MyListRepository             $myListRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly MyListRepository $myListRepository,
         private readonly ProposedAudiobooksRepository $proposedAudiobooksRepository,
-        private readonly AudiobookInfoRepository      $audiobookInfoRepository,
-        private readonly AudiobookCategoryRepository  $audiobookCategoryRepository,
-        private readonly AudiobookRepository          $audiobookRepository,
-        private readonly NotificationRepository       $notificationRepository,
-        private readonly TagAwareCacheInterface       $stockCache,
-    )
-    {
+        private readonly AudiobookInfoRepository $audiobookInfoRepository,
+        private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
+        private readonly AudiobookRepository $audiobookRepository,
+        private readonly NotificationRepository $notificationRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+    ) {
         parent::__construct();
     }
 
@@ -69,7 +68,6 @@ class UserProposedAudiobooksCommand extends Command
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
             if (count($myList->getAudiobooks()) + count($audiobookInfos) >= 10) {
-
                 $userWantedCategories = [];
 
                 foreach ($myList->getAudiobooks() as $audiobook) {
@@ -112,7 +110,6 @@ class UserProposedAudiobooksCommand extends Command
                 }
 
                 foreach ($selectedCategories as $categoryIndex => $category) {
-
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
                         'id'     => $category,
                         'active' => true,

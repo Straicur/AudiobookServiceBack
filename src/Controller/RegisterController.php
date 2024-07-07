@@ -74,26 +74,25 @@ class RegisterController extends AbstractController
         ]
     )]
     public function register(
-        Request                      $request,
-        RequestServiceInterface      $requestServiceInterface,
-        UserInformationRepository    $userInformationRepository,
-        UserRepository               $userRepository,
-        LoggerInterface              $endpointLogger,
-        LoggerInterface              $usersLogger,
-        RegisterCodeRepository       $registerCodeRepository,
-        MailerInterface              $mailer,
-        RoleRepository               $roleRepository,
-        MyListRepository             $myListRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        LoggerInterface $endpointLogger,
+        LoggerInterface $usersLogger,
+        RegisterCodeRepository $registerCodeRepository,
+        MailerInterface $mailer,
+        RoleRepository $roleRepository,
+        MyListRepository $myListRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
-        InstitutionRepository        $institutionRepository,
-        UserPasswordRepository       $userPasswordRepository,
-        TranslateService             $translateService,
-        UserSettingsRepository       $userSettingsRepository,
+        InstitutionRepository $institutionRepository,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
+        UserSettingsRepository $userSettingsRepository,
     ): Response {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
-
             $existingEmail = $userInformationRepository->findOneBy([
                 'email' => $registerQuery->getEmail(),
             ]);
@@ -216,14 +215,14 @@ class RegisterController extends AbstractController
         ]
     )]
     public function registerConfirm(
-        Request                   $request,
-        LoggerInterface           $usersLogger,
-        LoggerInterface           $endpointLogger,
-        RegisterCodeRepository    $registerCodeRepository,
-        RoleRepository            $roleRepository,
-        UserRepository            $userRepository,
+        Request $request,
+        LoggerInterface $usersLogger,
+        LoggerInterface $endpointLogger,
+        RegisterCodeRepository $registerCodeRepository,
+        RoleRepository $roleRepository,
+        UserRepository $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService,
+        TranslateService $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $code = $request->get('code');
@@ -295,19 +294,18 @@ class RegisterController extends AbstractController
         ]
     )]
     public function registerCodeSend(
-        Request                   $request,
-        RequestServiceInterface   $requestServiceInterface,
-        LoggerInterface           $endpointLogger,
-        LoggerInterface           $usersLogger,
-        MailerInterface           $mailer,
-        RegisterCodeRepository    $registerCodeRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        LoggerInterface $endpointLogger,
+        LoggerInterface $usersLogger,
+        MailerInterface $mailer,
+        RegisterCodeRepository $registerCodeRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService,
+        TranslateService $translateService,
     ): Response {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 
         if ($registerConfirmSendQuery instanceof RegisterConfirmSendQuery) {
-
             $userInfo = $userInformationRepository->findOneBy([
                 'email' => $registerConfirmSendQuery->getEmail(),
             ]);

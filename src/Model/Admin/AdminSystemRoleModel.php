@@ -34,5 +34,4 @@ class AdminSystemRoleModel
     {
         $this->type = $type;
     }
-
 }

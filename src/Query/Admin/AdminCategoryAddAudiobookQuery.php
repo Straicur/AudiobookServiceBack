@@ -39,5 +39,4 @@ class AdminCategoryAddAudiobookQuery
     {
         $this->audiobookId = Uuid::fromString($audiobookId);
     }
-
 }

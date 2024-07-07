@@ -38,5 +38,4 @@ class AdminCategoryEditQuery
     {
         $this->categoryId = Uuid::fromString($categoryId);
     }
-
 }

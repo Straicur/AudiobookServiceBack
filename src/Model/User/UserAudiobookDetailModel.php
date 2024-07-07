@@ -59,7 +59,7 @@ class UserAudiobookDetailModel
     {
         $this->author = $author;
     }
-    
+
     public function getParts(): int
     {
         return $this->parts;
@@ -108,5 +108,4 @@ class UserAudiobookDetailModel
     {
         $this->imgFile = $imgFile;
     }
-
 }

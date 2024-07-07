@@ -23,5 +23,4 @@ class AdminUserActivateQuery
     {
         $this->userId = Uuid::fromString($userId);
     }
-
 }

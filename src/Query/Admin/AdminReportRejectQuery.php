@@ -38,5 +38,4 @@ class AdminReportRejectQuery
     {
         $this->response = $response;
     }
-
 }

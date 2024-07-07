@@ -39,5 +39,4 @@ class AdminCategoryRemoveAudiobookQuery
     {
         $this->audiobookId = Uuid::fromString($audiobookId);
     }
-
 }

@@ -22,10 +22,8 @@ class AudiobookService implements AudiobookServiceInterface
 
     public function __construct(
         private readonly AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService,
-        private readonly TranslateService               $translateService,
-    )
-    {
-
+        private readonly TranslateService $translateService,
+    ) {
     }
 
     public function configure(AdminAudiobookAddFileInterface $query): void
@@ -45,7 +43,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $this->checkOrCreateAudiobookFolder($fsObject);
 
-        if ($size >= $_ENV['INSTITUTION_VOLUMEN']) {
+        if ($size >= (int)$_ENV['INSTITUTION_VOLUMEN']) {
             $this->removeFolder($this->whole_dir_path);
             throw new DataNotFoundException([$this->translateService->getTranslation('SystemVolumen')]);
         }
@@ -119,7 +117,6 @@ class AudiobookService implements AudiobookServiceInterface
         sort($result);
 
         foreach ($result as $file) {
-
             $fileDir = $this->whole_dir_path . '/' . $this->query->getHashName() . $file;
 
             $partFile = fopen($fileDir, 'rb');
@@ -142,7 +139,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $file = $this->whole_zip_path . '.zip';
 
-        $zip = new ZipArchive;
+        $zip = new ZipArchive();
 
         $zip->open($file);
 
@@ -166,7 +163,6 @@ class AudiobookService implements AudiobookServiceInterface
 
         if ($handle = opendir($_ENV['MAIN_DIR'])) {
             while (false !== ($entry = readdir($handle))) {
-
                 if (str_contains($entry, $this->query->getFileName())) {
                     ++$amountOfSameFolders;
                 }
@@ -197,7 +193,6 @@ class AudiobookService implements AudiobookServiceInterface
                     if ($file_parts['extension'] === 'mp3') {
                         $mp3file = $entry;
                         if ($mp3file !== '') {
-
                             $parts++;
 
                             $mp3Dir = $folderDir . '/' . $mp3file;
@@ -257,8 +252,10 @@ class AudiobookService implements AudiobookServiceInterface
         }
 
         if ($it) {
-            $files = new RecursiveIteratorIterator($it,
-                RecursiveIteratorIterator::CHILD_FIRST);
+            $files = new RecursiveIteratorIterator(
+                $it,
+                RecursiveIteratorIterator::CHILD_FIRST
+            );
 
             foreach ($files as $file) {
                 if ($file->isDir()) {

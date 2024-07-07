@@ -66,7 +66,7 @@ class AdminUserNotificationPutQuery
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'userId', type: 'string', example: 'UUID', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('actionId', $additionalData)) {
@@ -112,5 +112,4 @@ class AdminUserNotificationPutQuery
     {
         $this->notificationUserType = $notificationUserType;
     }
-
 }

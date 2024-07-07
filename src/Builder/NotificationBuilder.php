@@ -145,7 +145,6 @@ class NotificationBuilder
         if (!$this->checkMetadata($keys)) {
             throw $exception;
         }
-
     }
 
     private function checkMetadata(array $keys): bool

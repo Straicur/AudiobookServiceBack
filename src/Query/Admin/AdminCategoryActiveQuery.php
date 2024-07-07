@@ -37,5 +37,4 @@ class AdminCategoryActiveQuery
     {
         $this->active = $active;
     }
-
 }

@@ -23,5 +23,4 @@ class AdminTechnicalBreakPatchQuery
     {
         $this->technicalBreakId = Uuid::fromString($technicalBreakId);
     }
-
 }

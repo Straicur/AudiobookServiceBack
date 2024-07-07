@@ -27,12 +27,12 @@ class AdminCategoryAudiobooksQuery
     {
         return $this->page;
     }
-    
+
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
-    
+
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
@@ -53,5 +53,4 @@ class AdminCategoryAudiobooksQuery
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

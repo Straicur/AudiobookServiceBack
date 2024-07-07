@@ -41,7 +41,7 @@ class UserAudiobookCommentAddQuery
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('parentId', $additionalData)) {
@@ -51,7 +51,7 @@ class UserAudiobookCommentAddQuery
         $this->additionalData = $additionalData;
     }
 
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -87,5 +87,4 @@ class UserAudiobookCommentAddQuery
     {
         $this->comment = $comment;
     }
-
 }

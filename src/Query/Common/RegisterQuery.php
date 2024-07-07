@@ -60,7 +60,7 @@ class RegisterQuery
         $this->additionalData = $additionalData;
     }
 
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -115,5 +115,4 @@ class RegisterQuery
     {
         $this->password = $password;
     }
-
 }

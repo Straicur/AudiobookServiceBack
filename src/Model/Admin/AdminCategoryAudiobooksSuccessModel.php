@@ -23,12 +23,12 @@ class AdminCategoryAudiobooksSuccessModel implements ModelInterface
     {
         return $this->page;
     }
-    
+
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
-    
+
     public function getLimit(): int
     {
         return $this->limit;
@@ -38,7 +38,7 @@ class AdminCategoryAudiobooksSuccessModel implements ModelInterface
     {
         $this->limit = $limit;
     }
-    
+
     public function getMaxPage(): int
     {
         return $this->maxPage;

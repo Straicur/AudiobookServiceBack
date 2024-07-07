@@ -6,7 +6,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class  AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
+class AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
 {
     #[Assert\NotNull(message: 'HashName is null')]
     #[Assert\NotBlank(message: 'HashName is empty')]
@@ -66,7 +66,7 @@ class  AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
         ]));
     }
 
-    
+
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'UUID'),
@@ -81,7 +81,7 @@ class  AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
         $this->additionalData = $additionalData;
     }
 
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -136,5 +136,4 @@ class  AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
     {
         $this->parts = $parts;
     }
-
 }

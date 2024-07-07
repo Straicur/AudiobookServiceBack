@@ -64,7 +64,7 @@ class AdminUsersQuery
         new OA\Property(property: 'active', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'banned', type: 'boolean', example: false, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('order', $searchData) && $searchData['order'] !== UserOrderSearch::LATEST->value && $searchData['order'] !== UserOrderSearch::OLDEST->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value) {
@@ -74,7 +74,7 @@ class AdminUsersQuery
         $this->searchData = $searchData;
     }
 
-    
+
     public function getSearchData(): array
     {
         return $this->searchData;
@@ -101,5 +101,4 @@ class AdminUsersQuery
     {
         $this->limit = $limit;
     }
-
 }

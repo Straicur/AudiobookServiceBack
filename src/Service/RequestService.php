@@ -18,8 +18,7 @@ class RequestService implements RequestServiceInterface
     public function __construct(
         private readonly ValidatorInterface $validator,
         private readonly TranslateService $translateService
-)
-    {
+    ) {
         $this->serializer = new JsonSerializer();
     }
 

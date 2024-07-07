@@ -13,7 +13,7 @@ class AuthorizationSuccessModel implements ModelInterface
 
     private bool $isAdmin;
 
-    public function __construct(string $token, AuthorizationRolesModel $roles,bool $isAdmin)
+    public function __construct(string $token, AuthorizationRolesModel $roles, bool $isAdmin)
     {
         $this->token = $token;
         $this->roles = $roles;
@@ -49,5 +49,4 @@ class AuthorizationSuccessModel implements ModelInterface
     {
         $this->isAdmin = $isAdmin;
     }
-
 }

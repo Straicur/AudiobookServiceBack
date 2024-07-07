@@ -80,18 +80,17 @@ class NotificationController extends AbstractController
     )]
     public function notifications(
         AuthorizedUserServiceInterface $authorizedUserService,
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        NotificationRepository         $notificationRepository,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        NotificationCheckRepository    $checkRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        NotificationRepository $notificationRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        NotificationCheckRepository $checkRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
 
         if ($systemNotificationQuery instanceof SystemNotificationQuery) {
-
             $user = $authorizedUserService::getAuthorizedUser();
 
             $systemNotificationSuccessModel = $stockCache->get(CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(), function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
@@ -111,7 +110,6 @@ class NotificationController extends AbstractController
                     }
 
                     if ($index < $maxResult) {
-
                         $notificationCheck = $checkRepository->findOneBy([
                             'user'         => $user->getId(),
                             'notification' => $notification->getId(),
@@ -159,17 +157,16 @@ class NotificationController extends AbstractController
     )]
     public function notificationActivate(
         AuthorizedUserServiceInterface $authorizedUserService,
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        NotificationRepository         $notificationRepository,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        NotificationCheckRepository    $checkRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        NotificationRepository $notificationRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        NotificationCheckRepository $checkRepository,
     ): Response {
         $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);
 
         if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
-
             $notification = $notificationRepository->find($systemNotificationActivateQuery->getNotificationId());
 
             if ($notification === null) {
@@ -211,7 +208,7 @@ class NotificationController extends AbstractController
     )]
     public function newNotifications(
         AuthorizedUserServiceInterface $authorizedUserService,
-        NotificationRepository         $notificationRepository,
+        NotificationRepository $notificationRepository,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 

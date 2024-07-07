@@ -16,7 +16,7 @@ class AdminAudiobooksNewQuery
     #[Assert\NotBlank(message: 'Limit is empty')]
     #[Assert\Type(type: 'integer')]
     private int $limit;
-    
+
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
@@ -38,5 +38,4 @@ class AdminAudiobooksNewQuery
     {
         $this->limit = $limit;
     }
-
 }

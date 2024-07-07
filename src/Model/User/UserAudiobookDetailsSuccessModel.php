@@ -37,24 +37,23 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private ?string $imgFile;
 
     public function __construct(
-        string            $id,
-        string            $title,
-        string            $author,
-        string            $version,
-        string            $album,
-        DateTime          $year,
-        string            $duration,
-        int               $parts,
-        string            $description,
+        string $id,
+        string $title,
+        string $author,
+        string $version,
+        string $album,
+        DateTime $year,
+        string $duration,
+        int $parts,
+        string $description,
         AudiobookAgeRange $age,
-        array             $categories,
-        bool              $inList,
-        int               $comments,
-        float             $avgRating,
-        int               $ratingAmount,
-        ?string           $imgFile
-    )
-    {
+        array $categories,
+        bool $inList,
+        int $comments,
+        float $avgRating,
+        int $ratingAmount,
+        ?string $imgFile
+    ) {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
@@ -261,5 +260,4 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     {
         $this->imgFile = $imgFile;
     }
-
 }

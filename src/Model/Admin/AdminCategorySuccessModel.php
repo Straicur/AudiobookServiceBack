@@ -72,5 +72,4 @@ class AdminCategorySuccessModel implements ModelInterface
     {
         $this->parentCategoryId = $parentCategoryId;
     }
-
 }

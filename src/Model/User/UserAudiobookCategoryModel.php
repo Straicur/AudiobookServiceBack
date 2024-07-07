@@ -34,5 +34,4 @@ class UserAudiobookCategoryModel
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

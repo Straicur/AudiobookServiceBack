@@ -157,7 +157,7 @@ class UserRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    
+
     public function newUsersFromLastWeak(): int
     {
         $today = new DateTime();

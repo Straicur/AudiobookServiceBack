@@ -29,5 +29,4 @@ class AdminUserDeleteQuery
     {
         $this->userId = Uuid::fromString($userId);
     }
-
 }

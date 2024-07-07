@@ -24,5 +24,4 @@ class NewNotificationsSuccessModel implements ModelInterface
     {
         $this->newNotifications = $newNotifications;
     }
-
 }

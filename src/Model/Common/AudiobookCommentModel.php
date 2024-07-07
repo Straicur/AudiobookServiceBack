@@ -50,5 +50,4 @@ class AudiobookCommentModel
     {
         $this->name = $name;
     }
-
 }

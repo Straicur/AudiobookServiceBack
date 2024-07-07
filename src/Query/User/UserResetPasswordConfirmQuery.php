@@ -38,5 +38,4 @@ class UserResetPasswordConfirmQuery
     {
         $this->password = $password;
     }
-
 }

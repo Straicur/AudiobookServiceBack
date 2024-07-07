@@ -6,7 +6,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class  AdminAudiobookChangeCoverQuery
+class AdminAudiobookChangeCoverQuery
 {
     #[Assert\NotNull(message: 'Type is null')]
     #[Assert\NotBlank(message: 'Type is empty')]
@@ -53,5 +53,4 @@ class  AdminAudiobookChangeCoverQuery
     {
         $this->type = $type;
     }
-
 }

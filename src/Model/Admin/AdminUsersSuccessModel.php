@@ -28,12 +28,12 @@ class AdminUsersSuccessModel implements ModelInterface
     {
         $this->page = $page;
     }
-    
+
     public function getLimit(): int
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
@@ -69,5 +69,4 @@ class AdminUsersSuccessModel implements ModelInterface
     {
         $this->users[] = $user;
     }
-
 }

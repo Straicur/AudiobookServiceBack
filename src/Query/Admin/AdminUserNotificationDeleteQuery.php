@@ -49,5 +49,4 @@ class AdminUserNotificationDeleteQuery
     {
         $this->delete = $delete;
     }
-
 }

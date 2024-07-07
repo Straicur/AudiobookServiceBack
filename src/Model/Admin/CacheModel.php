@@ -24,5 +24,4 @@ class CacheModel implements ModelInterface
     {
         $this->value = $value;
     }
-
 }

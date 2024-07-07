@@ -26,7 +26,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof ResponseExceptionInterface) {
-
             $loggingContext = [
                 'statusCode' => $exception->getResponse()->getStatusCode(),
                 'file' => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
@@ -72,5 +71,4 @@ class ExceptionSubscriber implements EventSubscriberInterface
             KernelEvents::EXCEPTION => 'onKernelException',
         ];
     }
-
 }

@@ -28,10 +28,10 @@ class AdminCategoryAddQuery
             ],
         ]));
     }
-    
+
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('parentId', $additionalData)) {
@@ -40,7 +40,7 @@ class AdminCategoryAddQuery
 
         $this->additionalData = $additionalData;
     }
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -55,5 +55,4 @@ class AdminCategoryAddQuery
     {
         $this->name = $name;
     }
-
 }

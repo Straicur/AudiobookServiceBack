@@ -35,24 +35,23 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     private array $categories;
 
     public function __construct(
-        string            $id,
-        string            $title,
-        string            $author,
-        string            $version,
-        string            $album,
-        DateTime          $year,
-        int               $duration,
-        string            $size,
-        int               $parts,
-        string            $description,
+        string $id,
+        string $title,
+        string $author,
+        string $version,
+        string $album,
+        DateTime $year,
+        int $duration,
+        string $size,
+        int $parts,
+        string $description,
         AudiobookAgeRange $age,
-        bool              $active,
-        float             $avgRating,
-        array             $categories,
-        int               $ratingAmount,
-        ?string           $imgFile
-    )
-    {
+        bool $active,
+        float $avgRating,
+        array $categories,
+        int $ratingAmount,
+        ?string $imgFile
+    ) {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;
@@ -120,7 +119,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     {
         $this->album = $album;
     }
-    
+
     public function getYear(): int
     {
         return $this->year;
@@ -180,7 +179,7 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     {
         $this->description = $description;
     }
-    
+
     public function getAge(): int
     {
         return $this->age;
@@ -249,5 +248,4 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
     {
         $this->imgFile = $imgFile;
     }
-
 }

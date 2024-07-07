@@ -90,7 +90,7 @@ class AdminReportListQuery
         new OA\Property(property: 'dateFrom', type: 'datetime', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'dateTo', type: 'datetime', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('actionId', $searchData) && Uuid::isValid($searchData['actionId'])) {
@@ -120,13 +120,13 @@ class AdminReportListQuery
     {
         return $this->searchData;
     }
-    
+
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
     }
-    
+
     public function setPage(int $page): void
     {
         $this->page = $page;
@@ -137,10 +137,9 @@ class AdminReportListQuery
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

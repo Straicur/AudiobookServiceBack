@@ -205,5 +205,4 @@ class AdminAudiobookEditQuery
     {
         $this->encoded = $encoded;
     }
-
 }

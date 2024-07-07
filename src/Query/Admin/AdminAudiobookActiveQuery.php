@@ -44,7 +44,7 @@ class AdminAudiobookActiveQuery
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'type', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('type', $additionalData) && $additionalData['type'] !== UserAudiobookActivationType::ALL->value && $additionalData['type'] !== UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value && $additionalData['type'] !== UserAudiobookActivationType::MY_LIST_RELATED->value && $additionalData['type'] !== UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value) {
@@ -79,5 +79,4 @@ class AdminAudiobookActiveQuery
     {
         $this->active = $active;
     }
-
 }

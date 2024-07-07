@@ -78,10 +78,10 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             $qb->andWhere('((tb.dateFrom > :dateFrom) AND (tb.dateFrom < :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateTo !== null) {
+        } elseif ($dateTo !== null) {
             $qb->andWhere('(tb.dateFrom < :dateTo)')
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateFrom !== null) {
+        } elseif ($dateFrom !== null) {
             $qb->andWhere('(tb.dateFrom > :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
@@ -109,7 +109,7 @@ class TechnicalBreakRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    
+
     public function getNumberTechnicalBreakFromLastWeak(): int
     {
         $today = new DateTime();

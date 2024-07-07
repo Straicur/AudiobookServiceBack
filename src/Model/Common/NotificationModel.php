@@ -121,5 +121,4 @@ class NotificationModel
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

@@ -64,12 +64,12 @@ class AdminUserNotificationPatchQuery
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         $this->additionalData = $additionalData;
     }
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -125,5 +125,4 @@ class AdminUserNotificationPatchQuery
     {
         $this->notificationUserType = $notificationUserType;
     }
-
 }

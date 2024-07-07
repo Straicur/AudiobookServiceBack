@@ -52,7 +52,7 @@ class AdminUserNotificationsQuery
         new OA\Property(property: 'type', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'deleted', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('order', $searchData) && $searchData['order'] !== NotificationOrderSearch::LATEST->value && $searchData['order'] !== NotificationOrderSearch::OLDEST->value) {
@@ -62,13 +62,13 @@ class AdminUserNotificationsQuery
         $this->searchData = $searchData;
     }
 
-    
+
     public function getSearchData(): array
     {
         return $this->searchData;
     }
 
-    
+
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
@@ -81,17 +81,16 @@ class AdminUserNotificationsQuery
         $this->page = $page;
     }
 
-    
+
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

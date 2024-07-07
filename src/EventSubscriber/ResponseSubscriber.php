@@ -6,7 +6,6 @@ namespace App\EventSubscriber;
 
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\TechnicalBreakRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -15,9 +14,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ResponseSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-       private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-       private readonly TechnicalBreakRepository      $technicalBreakRepository,
-       private readonly LoggerInterface               $responseLogger,
+        private readonly AuthenticationTokenRepository $authenticationTokenRepository,
+        private readonly TechnicalBreakRepository $technicalBreakRepository,
+        private readonly LoggerInterface $responseLogger,
     ) {
     }
 

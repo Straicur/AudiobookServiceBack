@@ -36,3 +36,7 @@ install: installTest tests
 	./scripts/INSTALL.sh
 installNoTest: installTest
 	./scripts/INSTALL.sh
+lint:
+	./vendor/bin/phpcs --standard=ruleset.xml ./src
+lint-fix:
+	./vendor/bin/phpcbf --standard=ruleset.xml ./src

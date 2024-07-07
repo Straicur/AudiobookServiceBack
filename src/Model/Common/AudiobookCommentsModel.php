@@ -149,5 +149,4 @@ class AudiobookCommentsModel
     {
         $this->parentId = $parentId;
     }
-
 }

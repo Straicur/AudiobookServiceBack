@@ -60,5 +60,4 @@ class AudiobookDetailCategoryModel
     {
         $this->categoryKey = $categoryKey;
     }
-
 }

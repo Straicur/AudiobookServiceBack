@@ -100,7 +100,7 @@ class AdminUserModel
     {
         $this->dateCreated = $dateCreated->getTimestamp() * 1000;
     }
-    
+
     public function getRoles(): array
     {
         return $this->roles;
@@ -125,5 +125,4 @@ class AdminUserModel
     {
         $this->deleted = $deleted;
     }
-
 }

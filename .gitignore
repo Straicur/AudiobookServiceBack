@@ -14,3 +14,7 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 /a.log
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

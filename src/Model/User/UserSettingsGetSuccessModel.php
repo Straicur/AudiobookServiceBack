@@ -84,5 +84,4 @@ class UserSettingsGetSuccessModel implements ModelInterface
     {
         $this->editableDate = $editableDate->getTimestamp() * 1000;
     }
-
 }

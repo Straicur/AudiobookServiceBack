@@ -32,10 +32,10 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-        private readonly TechnicalBreakRepository      $technicalBreakRepository,
-        private readonly UserRepository                $userRepository,
-        private readonly LoggerInterface               $requestLogger,
-        private readonly TagAwareCacheInterface        $stockCache,
+        private readonly TechnicalBreakRepository $technicalBreakRepository,
+        private readonly UserRepository $userRepository,
+        private readonly LoggerInterface $requestLogger,
+        private readonly TagAwareCacheInterface $stockCache,
     ) {
     }
 
@@ -123,8 +123,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         }
                     }
                 }
-
-            } catch (ReflectionException|NonUniqueResultException|InvalidArgumentException) {
+            } catch (ReflectionException | NonUniqueResultException | InvalidArgumentException) {
                 throw new DataNotFoundException();
             }
         }

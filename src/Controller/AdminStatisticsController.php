@@ -68,13 +68,13 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticMain(
-        UserRepository                 $userRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        NotificationRepository         $notificationRepository,
-        TechnicalBreakRepository       $technicalBreakRepository,
-        TagAwareCacheInterface         $stockCache,
+        UserRepository $userRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRepository $audiobookRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        NotificationRepository $notificationRepository,
+        TechnicalBreakRepository $technicalBreakRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         [$users,
             $categories,
@@ -83,33 +83,33 @@ class AdminStatisticsController extends AbstractController
             $lastWeekLogins,
             $lastWeekNotifications,
             $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
-            $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-            $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
+                $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
+                $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
-            $users = count($userRepository->findBy([
+                $users = count($userRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $categories = count($audiobookCategoryRepository->findBy([
+                $categories = count($audiobookCategoryRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $audiobooks = count($audiobookRepository->findBy([
+                $audiobooks = count($audiobookRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
-            $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-            $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
-            $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
-            return [$users,
+                $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
+                $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
+                $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
+                $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
+                return [$users,
                 $categories,
                 $audiobooks,
                 $lastWeekRegistered,
                 $lastWeekLogins,
                 $lastWeekNotifications,
                 $lastWeekSystemBreaks];
-        });
+            });
 
         return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }
@@ -128,9 +128,9 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticBestAudiobooks(
-        AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        TagAwareCacheInterface         $stockCache,
+        AudiobookRepository $audiobookRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 

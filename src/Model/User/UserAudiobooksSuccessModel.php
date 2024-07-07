@@ -66,5 +66,4 @@ class UserAudiobooksSuccessModel implements ModelInterface
     {
         $this->maxPage = $maxPage;
     }
-
 }

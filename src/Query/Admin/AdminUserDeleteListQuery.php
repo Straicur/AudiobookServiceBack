@@ -38,5 +38,4 @@ class AdminUserDeleteListQuery
     {
         $this->limit = $limit;
     }
-
 }

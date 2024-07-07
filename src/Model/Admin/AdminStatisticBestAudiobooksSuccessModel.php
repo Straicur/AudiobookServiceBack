@@ -48,5 +48,4 @@ class AdminStatisticBestAudiobooksSuccessModel implements ModelInterface
     {
         $this->thirdAudiobook = $thirdAudiobook;
     }
-
 }

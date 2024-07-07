@@ -87,17 +87,17 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportAccept(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
-        UserRepository                 $userRepository,
-        UserBanHistoryRepository       $banHistoryRepository,
-        TagAwareCacheInterface         $stockCache,
+        UserRepository $userRepository,
+        UserBanHistoryRepository $banHistoryRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
@@ -221,14 +221,14 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportReject(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
@@ -300,12 +300,12 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        UserDeleteRepository           $userDeleteRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        UserDeleteRepository $userDeleteRepository,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
@@ -391,7 +391,6 @@ class AdminReportController extends AbstractController
                         $reportModel->setIp($report->getIp());
                     }
                     if ($report->getUser()) {
-
                         $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());
 
                         $reportModel->setUser(
@@ -424,5 +423,4 @@ class AdminReportController extends AbstractController
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
-
 }

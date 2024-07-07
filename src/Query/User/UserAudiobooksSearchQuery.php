@@ -20,5 +20,4 @@ class UserAudiobooksSearchQuery
     {
         $this->title = $title;
     }
-
 }

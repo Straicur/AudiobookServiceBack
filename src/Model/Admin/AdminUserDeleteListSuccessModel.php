@@ -23,7 +23,7 @@ class AdminUserDeleteListSuccessModel implements ModelInterface
     {
         return $this->page;
     }
-    
+
     public function setPage(int $page): void
     {
         $this->page = $page;
@@ -33,7 +33,7 @@ class AdminUserDeleteListSuccessModel implements ModelInterface
     {
         return $this->limit;
     }
-    
+
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;

@@ -14,26 +14,24 @@ use Symfony\Component\Uid\Uuid;
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
     public function __construct(
-        private array                                       $elements,
-        private readonly AudiobookUserCommentRepository     $audiobookUserCommentRepository,
+        private array $elements,
+        private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository,
         private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        private User                                        $user,
-        private bool                                        $admin,
+        private User $user,
+        private bool $admin,
     ) {
     }
 
     private function buildTree(
         array $elements,
-        User  $user,
-        bool  $admin,
+        User $user,
+        bool $admin,
         ?Uuid $parentId = null,
     ): array {
         $branch = [];
 
         foreach ($elements as $element) {
-
             if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
-
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
                         'parent' => $element->getId(),
@@ -79,7 +77,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
                         $likes = +1;
-
                     } else {
                         $unlikes = +1;
                     }
@@ -96,7 +93,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 }
 
                 if (!empty($children)) {
-
                     $children = $this->buildTree($children, $user, $admin, $element->getId());
 
                     foreach ($children as $parentChild) {

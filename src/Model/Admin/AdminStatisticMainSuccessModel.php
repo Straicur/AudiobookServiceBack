@@ -45,7 +45,7 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     {
         $this->users = $users;
     }
-    
+
     public function getCategories(): int
     {
         return $this->categories;
@@ -75,7 +75,7 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     {
         $this->lastWeekRegistered = $lastWeekRegistered;
     }
-    
+
     public function getLastWeekLogins(): int
     {
         return $this->lastWeekLogins;
@@ -85,7 +85,7 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     {
         $this->lastWeekLogins = $lastWeekLogins;
     }
-    
+
     public function getLastWeekNotifications(): int
     {
         return $this->lastWeekNotifications;
@@ -105,5 +105,4 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     {
         $this->lastWeekTechnicalBreaks = $lastWeekTechnicalBreaks;
     }
-
 }

@@ -50,5 +50,4 @@ class UserSettingsChangeQuery
     {
         $this->lastName = $lastName;
     }
-
 }

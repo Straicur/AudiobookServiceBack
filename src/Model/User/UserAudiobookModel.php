@@ -86,5 +86,4 @@ class UserAudiobookModel
     {
         $this->imgFile = $imgFile;
     }
-
 }

@@ -89,7 +89,6 @@ class AudiobookRepository extends ServiceEntityRepository
         }
 
         if ($duration !== null) {
-
             $durationLow = $duration - 600;
             $durationHigh = $duration + 600;
 

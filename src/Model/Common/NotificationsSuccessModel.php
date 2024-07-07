@@ -83,5 +83,4 @@ class NotificationsSuccessModel implements ModelInterface
     {
         $this->limit = $limit;
     }
-
 }

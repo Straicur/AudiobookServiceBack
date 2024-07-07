@@ -96,7 +96,7 @@ class AdminAudiobookDetailsModel
     {
         $this->album = $album;
     }
-    
+
     public function getYear(): int
     {
         return $this->year;
@@ -116,7 +116,7 @@ class AdminAudiobookDetailsModel
     {
         $this->encoded = $encoded;
     }
-    
+
     public function getDuration(): int
     {
         return $this->duration;

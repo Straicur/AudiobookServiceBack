@@ -107,6 +107,7 @@
     "fakerphp/faker": "*",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-master",
+    "squizlabs/php_codesniffer": "*",
     "symfony/browser-kit": "6.4.*",
     "symfony/css-selector": "6.4.*",
     "symfony/debug-bundle": "6.4.*",

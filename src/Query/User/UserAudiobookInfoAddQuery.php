@@ -82,5 +82,4 @@ class UserAudiobookInfoAddQuery
     {
         $this->watched = $watched;
     }
-
 }

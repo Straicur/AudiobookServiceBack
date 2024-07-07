@@ -49,7 +49,7 @@ class UserNotAuthorizedUserReportQuery
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'description', type: 'string', example: 'Desc', nullable: true),
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
         if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {
@@ -59,7 +59,7 @@ class UserNotAuthorizedUserReportQuery
         $this->additionalData = $additionalData;
     }
 
-    
+
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -101,5 +101,4 @@ class UserNotAuthorizedUserReportQuery
     {
         $this->email = $email;
     }
-
 }

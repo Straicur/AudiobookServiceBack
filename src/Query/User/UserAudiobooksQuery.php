@@ -38,5 +38,4 @@ class UserAudiobooksQuery
     {
         $this->limit = $limit;
     }
-
 }

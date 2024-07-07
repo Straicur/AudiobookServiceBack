@@ -23,5 +23,4 @@ class AdminCategoryRemoveQuery
     {
         $this->categoryId = Uuid::fromString($categoryId);
     }
-
 }

@@ -79,7 +79,7 @@ class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
         ]));
     }
 
-    
+
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'UUID'),
@@ -149,7 +149,7 @@ class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
     {
         $this->part = $part;
     }
-    
+
     public function getParts(): int
     {
         return $this->parts;
@@ -179,5 +179,4 @@ class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
     {
         $this->deleteComments = $deleteComments;
     }
-
 }
