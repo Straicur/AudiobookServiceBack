@@ -39,7 +39,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -56,27 +55,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Register')]
 class RegisterController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param LoggerInterface $endpointLogger
-     * @param LoggerInterface $usersLogger
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param MailerInterface $mailer
-     * @param RoleRepository $roleRepository
-     * @param MyListRepository $myListRepository
-     * @param ProposedAudiobooksRepository $proposedAudiobooksRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param TranslateService $translateService
-     * @param UserSettingsRepository $userSettingsRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to register user',
@@ -96,26 +74,25 @@ class RegisterController extends AbstractController
         ]
     )]
     public function register(
-        Request                      $request,
-        RequestServiceInterface      $requestServiceInterface,
-        UserInformationRepository    $userInformationRepository,
-        UserRepository               $userRepository,
-        LoggerInterface              $endpointLogger,
-        LoggerInterface              $usersLogger,
-        RegisterCodeRepository       $registerCodeRepository,
-        MailerInterface              $mailer,
-        RoleRepository               $roleRepository,
-        MyListRepository             $myListRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        LoggerInterface $endpointLogger,
+        LoggerInterface $usersLogger,
+        RegisterCodeRepository $registerCodeRepository,
+        MailerInterface $mailer,
+        RoleRepository $roleRepository,
+        MyListRepository $myListRepository,
         ProposedAudiobooksRepository $proposedAudiobooksRepository,
-        InstitutionRepository        $institutionRepository,
-        UserPasswordRepository       $userPasswordRepository,
-        TranslateService             $translateService,
-        UserSettingsRepository       $userSettingsRepository,
+        InstitutionRepository $institutionRepository,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
+        UserSettingsRepository $userSettingsRepository,
     ): Response {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
-
             $existingEmail = $userInformationRepository->findOneBy([
                 'email' => $registerQuery->getEmail(),
             ]);
@@ -225,18 +202,6 @@ class RegisterController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param LoggerInterface $usersLogger
-     * @param LoggerInterface $endpointLogger
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param RoleRepository $roleRepository
-     * @param UserRepository $userRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     */
     #[Route('/api/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
     #[OA\Get(
         description: 'Method used to confirm user registration',
@@ -250,14 +215,14 @@ class RegisterController extends AbstractController
         ]
     )]
     public function registerConfirm(
-        Request                   $request,
-        LoggerInterface           $usersLogger,
-        LoggerInterface           $endpointLogger,
-        RegisterCodeRepository    $registerCodeRepository,
-        RoleRepository            $roleRepository,
-        UserRepository            $userRepository,
+        Request $request,
+        LoggerInterface $usersLogger,
+        LoggerInterface $endpointLogger,
+        RegisterCodeRepository $registerCodeRepository,
+        RoleRepository $roleRepository,
+        UserRepository $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService,
+        TranslateService $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $code = $request->get('code');
@@ -310,20 +275,6 @@ class RegisterController extends AbstractController
         );
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param LoggerInterface $endpointLogger
-     * @param LoggerInterface $usersLogger
-     * @param MailerInterface $mailer
-     * @param RegisterCodeRepository $registerCodeRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to send registration code again',
@@ -343,19 +294,18 @@ class RegisterController extends AbstractController
         ]
     )]
     public function registerCodeSend(
-        Request                   $request,
-        RequestServiceInterface   $requestServiceInterface,
-        LoggerInterface           $endpointLogger,
-        LoggerInterface           $usersLogger,
-        MailerInterface           $mailer,
-        RegisterCodeRepository    $registerCodeRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        LoggerInterface $endpointLogger,
+        LoggerInterface $usersLogger,
+        MailerInterface $mailer,
+        RegisterCodeRepository $registerCodeRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService          $translateService,
+        TranslateService $translateService,
     ): Response {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 
         if ($registerConfirmSendQuery instanceof RegisterConfirmSendQuery) {
-
             $userInfo = $userInformationRepository->findOneBy([
                 'email' => $registerConfirmSendQuery->getEmail(),
             ]);

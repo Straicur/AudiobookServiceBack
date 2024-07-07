@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * BanPeriodRage
- */
 enum BanPeriodRage: string
 {
     case SYSTEM = '';

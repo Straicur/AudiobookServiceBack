@@ -14,7 +14,6 @@ use App\Enums\ReportType;
 use App\Enums\UserBanAmount;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\NotificationException;
 use App\Model\Admin\AdminReportListSuccessModel;
 use App\Model\Admin\AdminReportModel;
 use App\Model\Admin\AdminUserModel;
@@ -31,20 +30,17 @@ use App\Repository\ReportRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -72,26 +68,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminReport')]
 class AdminReportController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param AudiobookUserCommentRepository $commentRepository
-     * @param UserRepository $userRepository
-     * @param UserBanHistoryRepository $banHistoryRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/report/admin/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -111,18 +87,17 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportAccept(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
-        UserRepository                 $userRepository,
-        UserBanHistoryRepository       $banHistoryRepository,
-        TagAwareCacheInterface         $stockCache,
+        UserRepository $userRepository,
+        UserBanHistoryRepository $banHistoryRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
@@ -173,7 +148,7 @@ class AdminReportController extends AbstractController
                     $userRepository->add($user);
                     $banHistoryRepository->add(new UserBanHistory($user, new DateTime(), $banPeriod));
 
-                    if ($user->getUserInformation()->getEmail() && $_ENV['APP_ENV'] !== 'test') {
+                    if ($_ENV['APP_ENV'] !== 'test' && $user->getUserInformation()->getEmail()) {
                         $email = (new TemplatedEmail())
                             ->from($_ENV['INSTITUTION_EMAIL'])
                             ->to($report->getEmail())
@@ -207,7 +182,7 @@ class AdminReportController extends AbstractController
                 $notificationRepository->add($notification);
             }
 
-            if ($report->getIp() && $report->getEmail() && $_ENV['APP_ENV'] !== 'test') {
+            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail()) {
                 $email = (new TemplatedEmail())
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($report->getEmail())
@@ -227,23 +202,6 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/report/admin/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -263,15 +221,14 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportReject(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
@@ -302,7 +259,7 @@ class AdminReportController extends AbstractController
                 $notificationRepository->add($notification);
             }
 
-            if ($report->getIp() && $report->getEmail() && $_ENV['APP_ENV'] !== 'test') {
+            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail()) {
                 $email = (new TemplatedEmail())
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($report->getEmail())
@@ -323,17 +280,6 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -354,13 +300,12 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
-        UserDeleteRepository           $userDeleteRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        UserDeleteRepository $userDeleteRepository,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
@@ -446,7 +391,6 @@ class AdminReportController extends AbstractController
                         $reportModel->setIp($report->getIp());
                     }
                     if ($report->getUser()) {
-
                         $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());
 
                         $reportModel->setUser(
@@ -479,5 +423,4 @@ class AdminReportController extends AbstractController
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
     }
-
 }

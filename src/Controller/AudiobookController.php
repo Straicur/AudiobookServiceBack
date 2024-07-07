@@ -20,13 +20,11 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Common\AudiobookCoversQuery;
 use App\Query\Common\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Throwable;
 
 #[OA\Response(
     response   : 400,
@@ -58,19 +57,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'Audiobook')]
 class AudiobookController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -91,18 +77,16 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookPart(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
-
             $audiobook = $audiobookRepository->find($audiobookPartQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -118,14 +102,13 @@ class AudiobookController extends AbstractController
 
                 try {
                     $handle = opendir($audiobook->getFileName());
-                } catch (\Exception) {
+                } catch (Throwable) {
                     $handle = false;
                 }
 
                 if ($handle) {
                     while (false !== ($entry = readdir($handle))) {
                         if ($entry !== '.' && $entry !== '..') {
-
                             $file_parts = pathinfo($entry);
 
                             if ($file_parts['extension'] === 'mp3') {
@@ -164,16 +147,6 @@ class AudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -194,12 +167,11 @@ class AudiobookController extends AbstractController
         ]
     )]
     public function audiobookCovers(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 

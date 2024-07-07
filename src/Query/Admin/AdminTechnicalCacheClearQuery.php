@@ -33,9 +33,6 @@ class AdminTechnicalCacheClearQuery
         ]));
     }
 
-    /**
-     * @param string[] $cacheData
-     */
     #[OA\Property(property: 'cacheData', properties: [
         new OA\Property(property: 'pools', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'Admin...'),
@@ -43,18 +40,14 @@ class AdminTechnicalCacheClearQuery
         new OA\Property(property: 'admin', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'user', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'all', type: 'boolean', example: true, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setCacheData(array $cacheData): void
     {
         $this->cacheData = $cacheData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getCacheData(): array
     {
         return $this->cacheData;
     }
-
 }

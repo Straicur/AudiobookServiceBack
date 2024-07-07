@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * AudiobookOrderSearch
- */
 enum AudiobookOrderSearch: int
 {
     case POPULAR = 1;

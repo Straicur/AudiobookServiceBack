@@ -50,17 +50,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'UserReport')]
 class UserReportController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param LoggerInterface $usersLogger
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/report', name: 'apiReport', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to report for not logged users',
@@ -80,12 +69,11 @@ class UserReportController extends AbstractController
         ]
     )]
     public function report(
-        Request                 $request,
+        Request $request,
         RequestServiceInterface $requestService,
-        LoggerInterface         $usersLogger,
-        LoggerInterface         $endpointLogger,
-        TranslateService        $translateService,
-        ReportRepository        $reportRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
     ): Response {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
@@ -131,17 +119,6 @@ class UserReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param ReportRepository $reportRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/report/user', name: 'apiUserReport', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Put(
@@ -161,17 +138,17 @@ class UserReportController extends AbstractController
         ]
     )]
     public function apiReportUser(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        ReportRepository               $reportRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
     ): Response {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
             $amountOfReports = $reportRepository->loggedUserReportsCount($user);
 
             if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {

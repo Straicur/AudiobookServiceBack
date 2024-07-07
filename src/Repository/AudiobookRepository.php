@@ -89,7 +89,6 @@ class AudiobookRepository extends ServiceEntityRepository
         }
 
         if ($duration !== null) {
-
             $durationLow = $duration - 600;
             $durationHigh = $duration + 600;
 
@@ -273,28 +272,4 @@ class AudiobookRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
-//    /**
-//     * @return Audiobook[] Returns an array of Audiobook objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Audiobook
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

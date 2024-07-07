@@ -9,13 +9,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TranslateService implements TranslateServiceInterface
 {
-    private TranslatorInterface $translator;
-
     private ?string $preferredLanguage = null;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function setPreferredLanguage(Request $request): void

@@ -22,15 +22,10 @@ use App\Repository\AuthenticationTokenRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
-use App\Service\RequestServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -59,21 +54,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminStatistics')]
 class AdminStatisticsController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param NotificationRepository $notificationRepository
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -88,17 +68,13 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticMain(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        NotificationRepository         $notificationRepository,
-        TechnicalBreakRepository       $technicalBreakRepository,
-        TagAwareCacheInterface         $stockCache,
+        UserRepository $userRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRepository $audiobookRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        NotificationRepository $notificationRepository,
+        TechnicalBreakRepository $technicalBreakRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         [$users,
             $categories,
@@ -107,48 +83,37 @@ class AdminStatisticsController extends AbstractController
             $lastWeekLogins,
             $lastWeekNotifications,
             $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
-            $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-            $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
+                $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
+                $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
 
-            $users = count($userRepository->findBy([
+                $users = count($userRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $categories = count($audiobookCategoryRepository->findBy([
+                $categories = count($audiobookCategoryRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $audiobooks = count($audiobookRepository->findBy([
+                $audiobooks = count($audiobookRepository->findBy([
                 'active' => true,
-            ]));
+                ]));
 
-            $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
-            $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-            $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
-            $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
-            return [$users,
+                $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
+                $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
+                $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
+                $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
+                return [$users,
                 $categories,
                 $audiobooks,
                 $lastWeekRegistered,
                 $lastWeekLogins,
                 $lastWeekNotifications,
                 $lastWeekSystemBreaks];
-        });
+            });
 
         return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -163,13 +128,9 @@ class AdminStatisticsController extends AbstractController
         ]
     )]
     public function adminStatisticBestAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        TagAwareCacheInterface         $stockCache,
+        AudiobookRepository $audiobookRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $topAudiobooks = $audiobookRepository->getBestAudiobooks();
 

@@ -28,7 +28,6 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,19 +59,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'Notification')]
 class NotificationController extends AbstractController
 {
-    /**
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param NotificationRepository $notificationRepository
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param NotificationCheckRepository $checkRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/notifications', name: 'notifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -94,19 +80,18 @@ class NotificationController extends AbstractController
     )]
     public function notifications(
         AuthorizedUserServiceInterface $authorizedUserService,
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        NotificationRepository         $notificationRepository,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        NotificationCheckRepository    $checkRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        NotificationRepository $notificationRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        NotificationCheckRepository $checkRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $systemNotificationQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationQuery::class);
 
         if ($systemNotificationQuery instanceof SystemNotificationQuery) {
-
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $systemNotificationSuccessModel = $stockCache->get(CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(), function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
                 $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
@@ -125,7 +110,6 @@ class NotificationController extends AbstractController
                     }
 
                     if ($index < $maxResult) {
-
                         $notificationCheck = $checkRepository->findOneBy([
                             'user'         => $user->getId(),
                             'notification' => $notification->getId(),
@@ -153,18 +137,6 @@ class NotificationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param NotificationRepository $notificationRepository
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param NotificationCheckRepository $checkRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/notification/activate', name: 'notificationActivate', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Put(
@@ -185,24 +157,23 @@ class NotificationController extends AbstractController
     )]
     public function notificationActivate(
         AuthorizedUserServiceInterface $authorizedUserService,
-        Request                        $request,
-        RequestServiceInterface        $requestServiceInterface,
-        NotificationRepository         $notificationRepository,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        NotificationCheckRepository    $checkRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        NotificationRepository $notificationRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        NotificationCheckRepository $checkRepository,
     ): Response {
         $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);
 
         if ($systemNotificationActivateQuery instanceof SystemNotificationActivateQuery) {
-
             $notification = $notificationRepository->find($systemNotificationActivateQuery->getNotificationId());
 
             if ($notification === null) {
                 throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);
             }
 
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $notificationCheck = $checkRepository->findOneBy([
                 'user'         => $user->getId(),
@@ -222,11 +193,6 @@ class NotificationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param NotificationRepository $notificationRepository
-     * @return Response
-     */
     #[Route('/api/new/notifications', name: 'newNotifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -242,9 +208,9 @@ class NotificationController extends AbstractController
     )]
     public function newNotifications(
         AuthorizedUserServiceInterface $authorizedUserService,
-        NotificationRepository         $notificationRepository,
+        NotificationRepository $notificationRepository,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $systemNotificationSuccessModel = new NewNotificationsSuccessModel(
             $notificationRepository->getUserActiveNotifications($user),

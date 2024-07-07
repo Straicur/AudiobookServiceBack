@@ -21,9 +21,6 @@ class UserMyListAudiobooksSuccessModel implements ModelInterface
         return $this->audiobooks;
     }
 
-    /**
-     * @param array $audiobooks
-     */
     public function setAudiobooks(array $audiobooks): void
     {
         $this->audiobooks = $audiobooks;

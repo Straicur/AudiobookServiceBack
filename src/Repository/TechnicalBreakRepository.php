@@ -78,10 +78,10 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             $qb->andWhere('((tb.dateFrom > :dateFrom) AND (tb.dateFrom < :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateTo !== null) {
+        } elseif ($dateTo !== null) {
             $qb->andWhere('(tb.dateFrom < :dateTo)')
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateFrom !== null) {
+        } elseif ($dateFrom !== null) {
             $qb->andWhere('(tb.dateFrom > :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
@@ -109,9 +109,7 @@ class TechnicalBreakRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @return int
-     */
+
     public function getNumberTechnicalBreakFromLastWeak(): int
     {
         $today = new DateTime();
@@ -125,28 +123,4 @@ class TechnicalBreakRepository extends ServiceEntityRepository
 
         return count($qb->getQuery()->execute());
     }
-//    /**
-//     * @return TechnicalBreak[] Returns an array of TechnicalBreak objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?TechnicalBreak
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

@@ -67,5 +67,4 @@ class AdminTechnicalBreakSuccessModel implements ModelInterface
     {
         $this->maxPage = $maxPage;
     }
-
 }

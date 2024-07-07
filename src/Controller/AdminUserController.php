@@ -16,7 +16,6 @@ use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\NotificationException;
 use App\Model\Admin\AdminSystemRoleModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
 use App\Model\Admin\AdminUserDeleteModel;
@@ -52,7 +51,6 @@ use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
-use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -60,13 +58,11 @@ use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -95,12 +91,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminUser')]
 class AdminUserController extends AbstractController
 {
-    /**
-     * @param RoleRepository $roleRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Get(
@@ -115,7 +105,7 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserSystemRoles(
-        RoleRepository         $roleRepository,
+        RoleRepository $roleRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $successModel = $stockCache->get(CacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
@@ -142,18 +132,6 @@ class AdminUserController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -173,18 +151,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserRoleAdd(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
 
         if ($adminUserRoleAddQuery instanceof AdminUserRoleAddQuery) {
-
             $user = $userRepository->find($adminUserRoleAddQuery->getUserId());
 
             if ($user === null) {
@@ -220,7 +196,6 @@ class AdminUserController extends AbstractController
                     ]);
                     $user->addRole($adminRole);
                     break;
-
             }
 
             $userRepository->add($user);
@@ -233,18 +208,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -264,18 +227,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserRoleRemove(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
 
         if ($adminUserRoleRemoveQuery instanceof AdminUserRoleRemoveQuery) {
-
             $user = $userRepository->find($adminUserRoleRemoveQuery->getUserId());
 
             if ($user === null) {
@@ -311,7 +272,6 @@ class AdminUserController extends AbstractController
                     ]);
                     $user->removeRole($adminRole);
                     break;
-
             }
 
             $userRepository->add($user);
@@ -324,18 +284,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -355,18 +303,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserActivate(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
 
         if ($adminUserActivateQuery instanceof AdminUserActivateQuery) {
-
             $user = $userRepository->find($adminUserActivateQuery->getUserId());
 
             if ($user === null) {
@@ -398,17 +344,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -428,17 +363,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserBan(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
 
         if ($adminUserBanQuery instanceof AdminUserBanQuery) {
-
             $user = $userRepository->find($adminUserBanQuery->getUserId());
 
             if ($user === null) {
@@ -465,18 +398,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -496,18 +417,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserChangePassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
 
         if ($adminUserChangePasswordQuery instanceof AdminUserChangePasswordQuery) {
-
             $user = $userRepository->find($adminUserChangePasswordQuery->getUserId());
 
             if ($user === null) {
@@ -539,18 +458,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -570,13 +477,12 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserChangePhone(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
@@ -619,17 +525,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/users', name: 'adminUsers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -650,18 +545,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUsers(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
         if ($adminUsersQuery instanceof AdminUsersQuery) {
-
             $successModel = new AdminUsersSuccessModel();
 
             $usersSearchData = $adminUsersQuery->getSearchData();
@@ -709,7 +602,6 @@ class AdminUserController extends AbstractController
                 if ($userRepository->userIsAdmin($user)) {
                     ++$maxResult;
                 } elseif ($index < $maxResult) {
-
                     $userDeleted = $userDeleteRepository->userInToDeleteList($user);
 
                     $userModel = new AdminUserModel(
@@ -753,20 +645,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -786,19 +664,17 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
 
         if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
-
             $user = $userRepository->find($adminUserDeleteQuery->getUserId());
 
             if ($user === null) {
@@ -847,17 +723,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -878,18 +743,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
-
             $successModel = new AdminUserDeleteListSuccessModel();
 
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
@@ -900,7 +763,6 @@ class AdminUserController extends AbstractController
             ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
-
                 $user = $userDelete->getUser();
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
@@ -941,17 +803,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -972,18 +823,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserToDeleteList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
-
             $successModel = new AdminUserDeleteListSuccessModel();
 
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
@@ -992,7 +841,6 @@ class AdminUserController extends AbstractController
             $allDeleteUsers = $userDeleteRepository->getUsersToDelete();
 
             foreach ($allDeleteUsers as $index => $userDelete) {
-
                 $user = $userDelete->getUser();
 
                 if ($index < $minResult || $userRepository->userIsAdmin($user)) {
@@ -1033,19 +881,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1065,18 +900,16 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteAccept(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
 
         if ($adminUserDeleteAcceptQuery instanceof AdminUserDeleteAcceptQuery) {
-
             $userDelete = $userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteAcceptQuery->getUserId(),
             ]);
@@ -1122,24 +955,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param MailerInterface $mailer
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/admin/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1159,21 +974,19 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserDeleteDecline(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserDeleteRepository           $userDeleteRepository,
-        MailerInterface                $mailer,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserDeleteRepository $userDeleteRepository,
+        MailerInterface $mailer,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
 
         if ($adminUserDeleteDeclineQuery instanceof AdminUserDeleteDeclineQuery) {
-
             $userDelete = $userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteDeclineQuery->getUserId(),
             ]);
@@ -1196,7 +1009,7 @@ class AdminUserController extends AbstractController
 
             $userDelete->setDeclined(true);
 
-            $userDeleteRepository->add($userDelete, false);
+            $userDeleteRepository->add($userDelete);
 
             $user->setActive(true);
 
@@ -1234,16 +1047,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -1264,17 +1067,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotifications(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
-
             $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
 
             $text = null;
@@ -1329,25 +1130,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param AudiobookCategoryRepository $categoryRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     */
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -1367,28 +1149,25 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationPut(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        AudiobookRepository            $audiobookRepository,
-        InstitutionRepository          $institutionRepository,
-        AudiobookCategoryRepository    $categoryRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        AudiobookRepository $audiobookRepository,
+        InstitutionRepository $institutionRepository,
+        AudiobookCategoryRepository $categoryRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
-
             $additionalData = $adminUserNotificationPutQuery->getAdditionalData();
 
             switch ($adminUserNotificationPutQuery->getNotificationType()) {
                 case NotificationType::NORMAL:
-
                     $userRole = $roleRepository->findOneBy([
                         'name' => UserRolesNames::USER->value,
                     ]);
@@ -1534,25 +1313,8 @@ class AdminUserController extends AbstractController
         $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
-
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param UserRepository $userRepository
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param RoleRepository $roleRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     */
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1572,20 +1334,18 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationPatch(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        UserRepository                 $userRepository,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        RoleRepository                 $roleRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        UserRepository $userRepository,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        RoleRepository $roleRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
-
             $notification = $notificationRepository->find($adminUserNotificationPatchQuery->getNotificationId());
 
             if ($notification === null) {
@@ -1633,17 +1393,6 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param NotificationRepository $notificationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1663,17 +1412,15 @@ class AdminUserController extends AbstractController
         ]
     )]
     public function adminUserNotificationDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        NotificationRepository         $notificationRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        NotificationRepository $notificationRepository,
+        TranslateService $translateService,
     ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
         if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
-
             $notification = $notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
 
             if ($notification === null) {

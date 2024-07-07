@@ -16,36 +16,23 @@ class UserSettingsEmailQuery
     #[Assert\Email]
     private string $oldEmail;
 
-    /**
-     * @return string
-     */
     public function getNewEmail(): string
     {
         return $this->newEmail;
     }
 
-    /**
-     * @param string $newEmail
-     */
     public function setNewEmail(string $newEmail): void
     {
         $this->newEmail = $newEmail;
     }
 
-    /**
-     * @return string
-     */
     public function getOldEmail(): string
     {
         return $this->oldEmail;
     }
 
-    /**
-     * @param string $oldEmail
-     */
     public function setOldEmail(string $oldEmail): void
     {
         $this->oldEmail = $oldEmail;
     }
-
 }

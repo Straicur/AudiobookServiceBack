@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * ProposedAudiobookCategoriesRanges
- */
 enum ProposedAudiobookCategoriesRanges: int
 {
     case MOST_WANTED = 0;

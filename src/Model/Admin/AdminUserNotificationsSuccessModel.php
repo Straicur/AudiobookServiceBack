@@ -20,12 +20,6 @@ class AdminUserNotificationsSuccessModel implements ModelInterface
 
     private int $maxPage;
 
-    /**
-     * @param NotificationModel[] $systemNotifications
-     * @param int $page
-     * @param int $limit
-     * @param int $maxPage
-     */
     public function __construct(array $systemNotifications, int $page, int $limit, int $maxPage)
     {
         $this->systemNotifications = $systemNotifications;
@@ -55,49 +49,31 @@ class AdminUserNotificationsSuccessModel implements ModelInterface
         $this->systemNotifications[] = $systemNotificationModel;
     }
 
-    /**
-     * @return int
-     */
     public function getMaxPage(): int
     {
         return $this->maxPage;
     }
 
-    /**
-     * @param int $maxPage
-     */
     public function setMaxPage(int $maxPage): void
     {
         $this->maxPage = $maxPage;
     }
 
-    /**
-     * @return int
-     */
     public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @param int $page
-     */
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
 
-    /**
-     * @return int
-     */
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param int $limit
-     */
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;

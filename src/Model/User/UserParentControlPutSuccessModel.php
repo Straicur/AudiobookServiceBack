@@ -10,9 +10,6 @@ class UserParentControlPutSuccessModel implements ModelInterface
 {
     private string $smsCode;
 
-    /**
-     * @param string $smsCode
-     */
     public function __construct(string $smsCode)
     {
         $this->smsCode = $smsCode;
@@ -27,5 +24,4 @@ class UserParentControlPutSuccessModel implements ModelInterface
     {
         $this->smsCode = $smsCode;
     }
-
 }

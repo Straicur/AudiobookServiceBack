@@ -6,9 +6,10 @@ namespace App\Exception;
 
 use App\Model\Error\ServiceUnavailableModel;
 use App\Tool\ResponseTool;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class NotificationException extends \Exception implements ResponseExceptionInterface
+class NotificationException extends Exception implements ResponseExceptionInterface
 {
     private string $serviceName;
 

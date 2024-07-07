@@ -28,7 +28,6 @@ use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -63,15 +62,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminTechnical')]
 class AdminTechnicalController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -85,13 +75,11 @@ class AdminTechnicalController extends AbstractController
         ]
     )]
     public function adminTechnicalBreakPut(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository,
-        TagAwareCacheInterface         $stockCache,
+        TechnicalBreakRepository $technicalBreakRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
         $technicalBreakRepository->add(new TechnicalBreak(true, $user));
 
         $stockCache->invalidateTags([StockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
@@ -99,19 +87,6 @@ class AdminTechnicalController extends AbstractController
         return ResponseTool::getResponse(httpCode: 201);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -131,18 +106,17 @@ class AdminTechnicalController extends AbstractController
         ]
     )]
     public function adminTechnicalBreakPatch(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository       $technicalBreakRepository,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        TechnicalBreakRepository $technicalBreakRepository,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
 
         if ($adminTechnicalBreakPatchQuery instanceof AdminTechnicalBreakPatchQuery) {
-
             $technicalBreak = $technicalBreakRepository->find($adminTechnicalBreakPatchQuery->getTechnicalBreakId());
 
             if ($technicalBreak === null) {
@@ -151,7 +125,7 @@ class AdminTechnicalController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('TechnicalBreakDontExists')]);
             }
 
-            $technicalBreak->setUser($authorizedUserService->getAuthorizedUser());
+            $technicalBreak->setUser($authorizedUserService::getAuthorizedUser());
             $technicalBreak->setDateTo(new DateTime());
             $technicalBreak->setActive(false);
 
@@ -167,16 +141,6 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/technical/break/list', name: 'adminTechnicalBreakList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -197,17 +161,15 @@ class AdminTechnicalController extends AbstractController
         ]
     )]
     public function adminTechnicalBreakList(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        TechnicalBreakRepository       $technicalBreakRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TechnicalBreakRepository $technicalBreakRepository,
+        TranslateService $translateService,
     ): Response {
         $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
         if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
-
             $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
 
             $userId = null;
@@ -274,19 +236,6 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param TagAwareCacheInterface $stockCache
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param KernelInterface $kernel
-     * @return Response
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     * @throws \Exception
-     */
     #[Route('/api/admin/technical/cache/clear', name: 'adminTechnicalCacheClear', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -306,18 +255,16 @@ class AdminTechnicalController extends AbstractController
         ]
     )]
     public function adminTechnicalCacheClear(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        TagAwareCacheInterface         $stockCache,
-        LoggerInterface                $endpointLogger,
-        TranslateService               $translateService,
-        KernelInterface                $kernel,
+        Request $request,
+        RequestServiceInterface $requestService,
+        TagAwareCacheInterface $stockCache,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        KernelInterface $kernel,
     ): Response {
         $adminTechnicalCacheClearQuery = $requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);
 
         if ($adminTechnicalCacheClearQuery instanceof AdminTechnicalCacheClearQuery) {
-
             $cacheData = $adminTechnicalCacheClearQuery->getCacheData();
 
             if (array_key_exists('all', $cacheData) && $cacheData['all']) {
@@ -379,13 +326,6 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param TechnicalBreakRepository $technicalBreakRepository
-     * @return Response
-     */
     #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -399,7 +339,8 @@ class AdminTechnicalController extends AbstractController
             ),
         ]
     )]
-    public function adminTechnicalCachePools(): Response {
+    public function adminTechnicalCachePools(): Response
+    {
         $successModel = new AdminTechnicalCachePoolsModel();
 
         foreach (StockCacheTags::cases() as $case) {

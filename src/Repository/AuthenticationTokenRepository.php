@@ -89,9 +89,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         return count($res) > 0 ? $res[0] : null;
     }
 
-    /**
-     * @return int
-     */
+
     public function getNumberOfAuthenticationTokensFromLast7Days(): int
     {
         $today = new DateTime();
@@ -109,29 +107,4 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
 
         return count($result);
     }
-
-//    /**
-//     * @return AuthenticationToken[] Returns an array of AuthenticationToken objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?AuthenticationToken
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

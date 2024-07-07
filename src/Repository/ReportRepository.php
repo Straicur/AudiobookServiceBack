@@ -147,10 +147,10 @@ class ReportRepository extends ServiceEntityRepository
             $qb->andWhere('((r.dateAdd > :dateFrom) AND (r.dateAdd < :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateTo !== null) {
+        } elseif ($dateTo !== null) {
             $qb->andWhere('(r.dateAdd < :dateTo)')
                 ->setParameter('dateTo', $dateTo);
-        } else if ($dateFrom !== null) {
+        } elseif ($dateFrom !== null) {
             $qb->andWhere('(r.dateAdd > :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
@@ -172,28 +172,4 @@ class ReportRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
-//    /**
-//     * @return Report[] Returns an array of Report objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Report
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

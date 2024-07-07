@@ -21,9 +21,6 @@ class UserAudiobooksSearchSuccessModel implements ModelInterface
         return $this->audiobooks;
     }
 
-    /**
-     * @param array $audiobooks
-     */
     public function setAudiobooks(array $audiobooks): void
     {
         $this->audiobooks = $audiobooks;
@@ -33,5 +30,4 @@ class UserAudiobooksSearchSuccessModel implements ModelInterface
     {
         $this->audiobooks[] = $audiobook;
     }
-
 }

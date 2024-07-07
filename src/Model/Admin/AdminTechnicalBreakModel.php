@@ -14,12 +14,6 @@ class AdminTechnicalBreakModel
     public ?int $dateTo = null;
     public string $user;
 
-    /**
-     * @param string $id
-     * @param bool $active
-     * @param DateTime $dateFrom
-     * @param string $user
-     */
     public function __construct(string $id, bool $active, DateTime $dateFrom, string $user)
     {
         $this->id = $id;
@@ -77,5 +71,4 @@ class AdminTechnicalBreakModel
     {
         $this->user = $user;
     }
-
 }

@@ -26,50 +26,22 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * AddAdminCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:admin:add',
     description: 'Add user to service',
 )]
 class AddAdminCommand extends Command
 {
-    private UserRepository $userRepository;
-
-    private RoleRepository $roleRepository;
-
-    private UserInformationRepository $userInformationRepository;
-
-    private UserPasswordRepository $userPasswordRepository;
-
-    private UserSettingsRepository $userSettingsRepository;
-
-    private MyListRepository $myListRepository;
-
-    private InstitutionRepository $institutionRepository;
-
-    private ProposedAudiobooksRepository $proposedAudiobooksRepository;
-
     public function __construct(
-        UserRepository               $userRepository,
-        RoleRepository               $roleRepository,
-        UserInformationRepository    $userInformationRepository,
-        UserPasswordRepository       $userPasswordRepository,
-        UserSettingsRepository       $userSettingsRepository,
-        MyListRepository             $myListRepository,
-        InstitutionRepository        $institutionRepository,
-        ProposedAudiobooksRepository $proposedAudiobooksRepository,
+        private readonly UserRepository            $userRepository,
+        private readonly RoleRepository            $roleRepository,
+        private readonly UserInformationRepository $userInformationRepository,
+        private readonly UserPasswordRepository    $userPasswordRepository,
+        private readonly UserSettingsRepository    $userSettingsRepository,
+        private readonly MyListRepository          $myListRepository,
+        private readonly InstitutionRepository     $institutionRepository,
+        private readonly ProposedAudiobooksRepository $proposedAudiobooksRepository,
     ) {
-        $this->userRepository = $userRepository;
-        $this->userPasswordRepository = $userPasswordRepository;
-        $this->roleRepository = $roleRepository;
-        $this->userInformationRepository = $userInformationRepository;
-        $this->userSettingsRepository = $userSettingsRepository;
-        $this->myListRepository = $myListRepository;
-        $this->institutionRepository = $institutionRepository;
-        $this->proposedAudiobooksRepository = $proposedAudiobooksRepository;
-
         parent::__construct();
     }
 
@@ -82,12 +54,6 @@ class AddAdminCommand extends Command
         $this->addArgument('password', InputArgument::REQUIRED, 'User password');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws \Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -154,7 +120,6 @@ class AddAdminCommand extends Command
         $isAdministrator = false;
 
         foreach ($roleEntities as $roleEntity) {
-
             if ($roleEntity->getName() === 'Administrator') {
                 $isAdministrator = true;
             }

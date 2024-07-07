@@ -40,16 +40,14 @@ use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Vonage\Client\Exception\Exception;
+use Throwable;
 
 #[OA\Response(
     response   : 400,
@@ -74,17 +72,6 @@ use Vonage\Client\Exception\Exception;
 #[OA\Tag(name: 'User')]
 class UserSettingsController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/user/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Patch(
@@ -104,17 +91,17 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsPassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserPasswordRepository         $userPasswordRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserPasswordRepository $userPasswordRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
         if ($userSettingsPasswordQuery instanceof UserSettingsPasswordQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userPassword = $userPasswordRepository->findOneBy([
                 'user' => $user->getId(),
@@ -142,21 +129,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param MailerInterface $mailer
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/user/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Post(
@@ -176,21 +148,20 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsEmail(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        MailerInterface                $mailer,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
 
         if ($userSettingsEmailQuery instanceof UserSettingsEmailQuery) {
-
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userOldEmail = $userInformationRepository->findOneBy([
                 'email' => $userSettingsEmailQuery->getOldEmail(),
@@ -253,18 +224,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     */
     #[Route('/api/user/settings/email/change/{email}/{id}', name: 'userSettingsEmailChange', methods: ['GET'])]
     #[OA\Get(
         description: 'Endpoint is sending confirmation email to change user email',
@@ -277,14 +236,12 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsEmailChange(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $userId = $request->get('id');
@@ -336,20 +293,6 @@ class UserSettingsController extends AbstractController
         );
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserDeleteRepository $userDeleteRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param UserRepository $userRepository
-     * @param MailerInterface $mailer
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws TransportExceptionInterface
-     */
     #[Route('/api/user/settings/delete', name: 'userSettingsDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Patch(
@@ -363,17 +306,16 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserDeleteRepository           $userDeleteRepository,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
-        UserRepository                 $userRepository,
-        MailerInterface                $mailer,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserDeleteRepository $userDeleteRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        TranslateService $translateService,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $userInDelete = $userDeleteRepository->userInList($user);
 
@@ -413,17 +355,6 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse();
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     * @throws DataNotFoundException
-     */
     #[Route('/api/user/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Patch(
@@ -443,17 +374,17 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsChange(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
+        Request $request,
+        RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserInformationRepository      $userInformationRepository,
-        TranslateService               $translateService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
     ): Response {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
         if ($userSettingsChangeQuery instanceof UserSettingsChangeQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $userInformation = $user->getUserInformation();
 
@@ -484,13 +415,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @return Response
-     */
     #[Route('/api/user/settings', name: 'userSettingsGet', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Get(
@@ -505,12 +429,9 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userSettingsGet(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $userInformation = $user->getUserInformation();
 
@@ -522,21 +443,6 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param MailerInterface $mailer
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserRepository $userRepository
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws TransportExceptionInterface'
-     */
     #[Route('/api/user/reset/password', name: 'userResetPassword', methods: ['POST'])]
     #[OA\Post(
         description: 'Endpoint is sending reset password email',
@@ -555,20 +461,18 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userResetPassword(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        MailerInterface                $mailer,
-        UserInformationRepository      $userInformationRepository,
-        UserRepository                 $userRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        MailerInterface $mailer,
+        UserInformationRepository $userInformationRepository,
+        UserRepository $userRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
 
         if ($userResetPasswordQuery instanceof UserResetPasswordQuery) {
-
             $userInformation = $userInformationRepository->findOneBy([
                 'email' => $userResetPasswordQuery->getEmail(),
             ]);
@@ -615,19 +519,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserRepository $userRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param UserEditRepository $editRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/user/reset/password/confirm', name: 'userResetPasswordConfirm', methods: ['PATCH'])]
     #[OA\Patch(
         description: 'Endpoint is changing user password',
@@ -646,19 +537,17 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userResetPasswordConfirm(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        UserRepository                 $userRepository,
-        UserPasswordRepository         $userPasswordRepository,
-        UserEditRepository             $editRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserPasswordRepository $userPasswordRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
     ): Response {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
 
         if ($userResetPasswordConfirmQuery instanceof UserResetPasswordConfirmQuery) {
-
             $user = $userRepository->find($userResetPasswordConfirmQuery->getUserId());
 
             if ($user === null) {
@@ -699,17 +588,6 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param TranslateService $translateService
-     * @param UserParentalControlCodeRepository $controlCodeRepository
-     * @param UserRepository $userRepository
-     * @return Response
-     * @throws DataNotFoundException
-     */
     #[Route('/api/user/parent/control', name: 'userParentControlPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Put(
@@ -724,15 +602,14 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userParentControlPut(
-        Request                           $request,
-        RequestServiceInterface           $requestService,
-        AuthorizedUserServiceInterface    $authorizedUserService,
-        LoggerInterface                   $endpointLogger,
-        TranslateService                  $translateService,
+        Request $request,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
-        UserRepository                    $userRepository,
+        UserRepository $userRepository,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
 
@@ -754,7 +631,7 @@ class UserSettingsController extends AbstractController
 
         try {
             $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation('SmsCodeContent') . ': ' . $newUserParentalControlCode->getCode() . ' ');
-        } catch (Exception|ClientExceptionInterface $e) {
+        } catch (Throwable $e) {
             $endpointLogger->error($e->getMessage());
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation('SmsCodeError')]);
@@ -771,18 +648,6 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param TranslateService $translateService
-     * @param UserParentalControlCodeRepository $controlCodeRepository
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/user/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['User'])]
     #[OA\Patch(
@@ -802,18 +667,18 @@ class UserSettingsController extends AbstractController
         ]
     )]
     public function userParentControlPatch(
-        Request                           $request,
-        RequestServiceInterface           $requestService,
-        AuthorizedUserServiceInterface    $authorizedUserService,
-        LoggerInterface                   $endpointLogger,
-        UserInformationRepository         $userInformationRepository,
-        TranslateService                  $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
     ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
         if ($userParentControlPatchQuery instanceof UserParentControlPatchQuery) {
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $controlCode = $controlCodeRepository->findOneBy([
                 'code'   => $userParentControlPatchQuery->getSmsCode(),

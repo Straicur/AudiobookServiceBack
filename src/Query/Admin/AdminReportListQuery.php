@@ -78,9 +78,6 @@ class AdminReportListQuery
         ]));
     }
 
-    /**
-     * @param string[] $searchData
-     */
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'description', type: 'string', example: 'description', nullable: true),
@@ -93,24 +90,19 @@ class AdminReportListQuery
         new OA\Property(property: 'dateFrom', type: 'datetime', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'dateTo', type: 'datetime', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
         if (array_key_exists('actionId', $searchData) && Uuid::isValid($searchData['actionId'])) {
             $searchData['actionId'] = Uuid::fromString($searchData['actionId']);
         }
 
-        if (array_key_exists('type', $searchData)) {
-            if ($searchData['type'] !== ReportType::COMMENT->value && $searchData['type'] !== ReportType::AUDIOBOOK_PROBLEM->value && $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value && $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value
-            ) {
-                $searchData['type'] = ReportType::COMMENT->value;
-            }
+        if (array_key_exists('type', $searchData) && $searchData['type'] !== ReportType::COMMENT->value && $searchData['type'] !== ReportType::AUDIOBOOK_PROBLEM->value && $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value && $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value) {
+            $searchData['type'] = ReportType::COMMENT->value;
         }
 
-        if (array_key_exists('order', $searchData)) {
-            if ($searchData['order'] !== ReportOrderSearch::OLDEST->value && $searchData['order'] !== ReportOrderSearch::LATEST->value) {
-                $searchData['order'] = ReportType::COMMENT->value;
-            }
+        if (array_key_exists('order', $searchData) && $searchData['order'] !== ReportOrderSearch::OLDEST->value && $searchData['order'] !== ReportOrderSearch::LATEST->value) {
+            $searchData['order'] = ReportType::COMMENT->value;
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
@@ -124,46 +116,30 @@ class AdminReportListQuery
         $this->searchData = $searchData;
     }
 
-    /**
-     * @return array
-     */
     public function getSearchData(): array
     {
         return $this->searchData;
     }
 
-    /**
-     * @return int
-     */
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @param int $page
-     */
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
 
-    /**
-     * @return int
-     */
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param int $limit
-     */
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tool;
 
-use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
 
 class SmsTool
 {
-    /**
-     * @param string $phone
-     * @param string $content
-     * @return bool
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     */
     public function sendSms(string $phone, string $content): bool
     {
         if ($_ENV['APP_ENV'] !== 'test') {

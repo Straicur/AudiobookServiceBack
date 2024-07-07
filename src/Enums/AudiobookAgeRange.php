@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * AudiobookAgeRange
- */
 enum AudiobookAgeRange: int
 {
     case FROM3TO7 = 1;

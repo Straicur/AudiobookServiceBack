@@ -21,45 +21,24 @@ use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * AuthValidationSubscriber
- */
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
-    private AuthenticationTokenRepository $authenticationTokenRepository;
-    private TechnicalBreakRepository $technicalBreakRepository;
-    private UserRepository $userRepository;
-    private LoggerInterface $requestLogger;
-    private TagAwareCacheInterface $stockCache;
-
     public function __construct(
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        TechnicalBreakRepository      $technicalBreakRepository,
-        UserRepository                $userRepository,
-        LoggerInterface               $requestLogger,
-        TagAwareCacheInterface        $stockCache,
+        private readonly AuthenticationTokenRepository $authenticationTokenRepository,
+        private readonly TechnicalBreakRepository $technicalBreakRepository,
+        private readonly UserRepository $userRepository,
+        private readonly LoggerInterface $requestLogger,
+        private readonly TagAwareCacheInterface $stockCache,
     ) {
-        $this->authenticationTokenRepository = $authenticationTokenRepository;
-        $this->technicalBreakRepository = $technicalBreakRepository;
-        $this->userRepository = $userRepository;
-        $this->requestLogger = $requestLogger;
-        $this->stockCache = $stockCache;
     }
 
-    /**
-     * @param ControllerEvent $event
-     * @return void
-     * @throws AuthenticationException
-     * @throws PermissionException
-     * @throws TechnicalBreakException
-     * @throws DataNotFoundException
-     */
     public function onControllerCall(ControllerEvent $event): void
     {
         $controller = $event->getController();
@@ -144,8 +123,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         }
                     }
                 }
-
-            } catch (\ReflectionException|NonUniqueResultException|InvalidArgumentException) {
+            } catch (ReflectionException | NonUniqueResultException | InvalidArgumentException) {
                 throw new DataNotFoundException();
             }
         }
@@ -158,12 +136,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param User $user
-     * @param string[] $roles
-     * @return int
-     * @throws PermissionException
-     */
     private function checkRoles(User $user, array $roles): bool
     {
         $userRoles = $user->getRoles();

@@ -27,8 +27,6 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
-use DateTime;
-use Doctrine\ORM\NonUniqueResultException;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -60,21 +58,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Authorize')]
 class AuthorizationController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param LoggerInterface $usersLogger
-     * @param LoggerInterface $endpointLogger
-     * @param UserInformationRepository $userInformationRepository
-     * @param UserPasswordRepository $userPasswordRepository
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws PermissionException
-     * @throws \Exception
-     */
     #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to authorize user credentials. Return authorized token',
@@ -95,19 +78,18 @@ class AuthorizationController extends AbstractController
         ]
     )]
     public function login(
-        Request                       $request,
-        RequestServiceInterface       $requestServiceInterface,
-        LoggerInterface               $usersLogger,
-        LoggerInterface               $endpointLogger,
-        UserInformationRepository     $userInformationRepository,
-        UserPasswordRepository        $userPasswordRepository,
+        Request $request,
+        RequestServiceInterface $requestServiceInterface,
+        LoggerInterface $usersLogger,
+        LoggerInterface $endpointLogger,
+        UserInformationRepository $userInformationRepository,
+        UserPasswordRepository $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService              $translateService,
+        TranslateService $translateService,
     ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
-
             $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
 
             $userInformationEntity = $userInformationRepository->findOneBy([
@@ -182,14 +164,6 @@ class AuthorizationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param AuthenticationTokenRepository $authenticationTokenRepository
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $usersLogger
-     * @return Response
-     * @throws NonUniqueResultException
-     */
     #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -203,33 +177,17 @@ class AuthorizationController extends AbstractController
         ]
     )]
     public function logout(
-        Request                        $request,
-        AuthenticationTokenRepository  $authenticationTokenRepository,
         AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $usersLogger,
+        LoggerInterface $usersLogger,
     ): Response {
-        $user = $authorizedUserService->getAuthorizedUser();
-
-        $authorizationHeaderField = $request->headers->get('authorization');
-
-        $authToken = $authenticationTokenRepository->findActiveToken($authorizationHeaderField);
-
-        if ($authToken !== null) {
-            $authToken->setDateExpired(new DateTime());
-            $authenticationTokenRepository->add($authToken);
-        }
+        $authorizedUserService::unAuthorizeUser();
+        $user = $authorizedUserService::getAuthorizedUser();
 
         $usersLogger->info('LOGOUT', [$user->getId()->__toString()]);
 
         return ResponseTool::getResponse();
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestServiceInterface
-     * @param LoggerInterface $usersLogger
-     * @return Response
-     */
     #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
     #[OA\Post(
@@ -243,11 +201,8 @@ class AuthorizationController extends AbstractController
             ),
         ]
     )]
-    public function authorizeCheck(
-        Request                 $request,
-        RequestServiceInterface $requestServiceInterface,
-        LoggerInterface         $usersLogger,
-    ): Response {
+    public function authorizeCheck(): Response
+    {
         return ResponseTool::getResponse();
     }
 }

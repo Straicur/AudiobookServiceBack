@@ -14,22 +14,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * AddCategoryCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:category:add',
     description: 'Add user to service',
 )]
 class AddCategoryCommand extends Command
 {
-    private AudiobookCategoryRepository $audiobookCategoryRepository;
-
     public function __construct(
-        AudiobookCategoryRepository $audiobookCategoryRepository,
+        private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
     ) {
-        $this->audiobookCategoryRepository = $audiobookCategoryRepository;
-
         parent::__construct();
     }
 
@@ -39,11 +32,6 @@ class AddCategoryCommand extends Command
         $this->addArgument('parent', InputArgument::OPTIONAL, 'Category parent name');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

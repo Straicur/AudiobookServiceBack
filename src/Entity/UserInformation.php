@@ -152,5 +152,4 @@ class UserInformation
 
         return $this;
     }
-
 }

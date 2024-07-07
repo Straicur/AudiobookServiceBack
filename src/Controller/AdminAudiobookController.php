@@ -15,10 +15,8 @@ use App\Enums\NotificationUserType;
 use App\Enums\StockCacheTags;
 use App\Enums\UserAudiobookActivationType;
 use App\Enums\UserRolesNames;
-use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\NotificationException;
 use App\Model\Admin\AdminAudiobookDetailsSuccessModel;
 use App\Model\Admin\AdminAudiobooksSuccessModel;
 use App\Model\Admin\AdminCategoryAudiobookModel;
@@ -57,7 +55,6 @@ use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +63,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Throwable;
 use ZipArchive;
 
 #[OA\Response(
@@ -91,21 +89,6 @@ use ZipArchive;
 #[OA\Tag(name: 'AdminAudiobook')]
 class AdminAudiobookController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRatingRepository $audiobookRatingRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -126,20 +109,18 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookDetails(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
 
         if ($adminAudiobookDetailsQuery instanceof AdminAudiobookDetailsQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookDetailsQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -185,7 +166,7 @@ class AdminAudiobookController extends AbstractController
                             $audiobook->setImgFileChangeDate();
                             $audiobookRepository->add($audiobook);
                         }
-                    } catch (\Throwable) {
+                    } catch (Throwable) {
                         $audiobook->setImgFile(null);
                         $audiobook->setImgFileChangeDate();
                         $audiobookRepository->add($audiobook);
@@ -228,23 +209,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $usersLogger
-     * @param AudiobookService $audiobookService
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookRatingRepository $audiobookRatingRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws AudiobookConfigServiceException
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Put(
@@ -265,16 +229,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookAdd(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $usersLogger,
-        AudiobookService               $audiobookService,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $usersLogger,
+        AudiobookService $audiobookService,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRepository $audiobookRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
@@ -431,11 +394,9 @@ class AdminAudiobookController extends AbstractController
                     $audiobookCategories = [];
 
                     if (array_key_exists('categories', $additionalData)) {
-
                         $categories = $additionalData['categories'];
 
                         foreach ($categories as $category) {
-
                             $audiobookCategory = $audiobookCategoryRepository->find(Uuid::fromString($category));
 
                             if ($audiobookCategory !== null) {
@@ -484,7 +445,7 @@ class AdminAudiobookController extends AbstractController
 
                     return ResponseTool::getResponse($successModel, 201);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $usersLogger->error($e->getMessage());
                 return ResponseTool::getResponse(httpCode: 500);
             }
@@ -497,19 +458,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/admin/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -529,18 +477,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookEdit(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
 
         if ($adminAudiobookEditQuery instanceof AdminAudiobookEditQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookEditQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -573,21 +519,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookService $audiobookService
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param NotificationRepository $notificationRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -607,20 +538,18 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookService               $audiobookService,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookService $audiobookService,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDeleteQuery::class);
 
         if ($adminAudiobookDeleteQuery instanceof AdminAudiobookDeleteQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookDeleteQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -648,17 +577,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -678,17 +596,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookZip(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
         if ($adminAudiobookZipQuery instanceof AdminAudiobookZipQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookZipQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -699,7 +615,7 @@ class AdminAudiobookController extends AbstractController
 
             $zipFile = $audiobook->getFileName() . '.zip';
 
-            $zip = new ZipArchive;
+            $zip = new ZipArchive();
 
             if (file_exists($zipFile)) {
                 unlink($zipFile);
@@ -731,25 +647,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param AudiobookService $audiobookService
-     * @param AudiobookCategoryRepository $audiobookCategoryRepository
-     * @param AudiobookRatingRepository $audiobookRatingRepository
-     * @param TranslateService $translateService
-     * @param NotificationRepository $notificationRepository
-     * @param AudiobookUserCommentRepository $commentRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws AudiobookConfigServiceException
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -770,23 +667,21 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookReAdding(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        AudiobookService               $audiobookService,
-        AudiobookCategoryRepository    $audiobookCategoryRepository,
-        AudiobookRatingRepository      $audiobookRatingRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        AudiobookService $audiobookService,
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookRatingRepository $audiobookRatingRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
-        TagAwareCacheInterface         $stockCache,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
         if ($adminAudiobookReAddingQuery instanceof AdminAudiobookReAddingQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookReAddingQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -800,7 +695,6 @@ class AdminAudiobookController extends AbstractController
             $audiobookService->checkAndAddFile();
 
             if ($audiobookService->lastFile()) {
-
                 $audiobookService->combineFiles();
                 $folderDir = $audiobookService->unzip($audiobook->getFileName());
                 $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
@@ -960,7 +854,6 @@ class AdminAudiobookController extends AbstractController
                 $audiobookCategories = [];
 
                 if (array_key_exists('categories', $additionalData)) {
-
                     $categories = [];
 
                     if (!empty($additionalData['categories'])) {
@@ -969,7 +862,6 @@ class AdminAudiobookController extends AbstractController
                         }
                     }
                     foreach ($categories as $category) {
-
                         $audiobookCategory = $audiobookCategoryRepository->find($category);
 
                         if ($audiobookCategory !== null) {
@@ -1035,16 +927,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @return Response
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -1065,17 +947,15 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobooks(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
     ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
-
             $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
 
             $categories = null;
@@ -1162,24 +1042,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param NotificationRepository $notificationRepository
-     * @param AudiobookInfoRepository $audiobookInfoRepository
-     * @param UserRepository $userRepository
-     * @param RoleRepository $roleRepository
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     * @throws NotificationException
-     */
     #[Route('/api/admin/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1199,17 +1061,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookActive(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        NotificationRepository         $notificationRepository,
-        AudiobookInfoRepository        $audiobookInfoRepository,
-        UserRepository                 $userRepository,
-        RoleRepository                 $roleRepository,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        NotificationRepository $notificationRepository,
+        AudiobookInfoRepository $audiobookInfoRepository,
+        UserRepository $userRepository,
+        RoleRepository $roleRepository,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookActiveQuery = $requestService->getRequestBodyContent($request, AdminAudiobookActiveQuery::class);
 
@@ -1284,19 +1145,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Patch(
@@ -1316,18 +1164,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookChangeCover(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
-        AudiobookRepository            $audiobookRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
 
         if ($adminAudiobookChangeCoverQuery instanceof AdminAudiobookChangeCoverQuery) {
-
             $audiobook = $audiobookRepository->find($adminAudiobookChangeCoverQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -1348,7 +1194,6 @@ class AdminAudiobookController extends AbstractController
                 if ($entry !== '.' && $entry !== '..') {
                     $file_parts = pathinfo($entry);
                     if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
-
                         $img = $audiobook->getFileName() . '/' . $file_parts['basename'];
                         if (file_exists($img)) {
                             unlink($img);
@@ -1374,19 +1219,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Delete(
@@ -1406,18 +1238,16 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookCommentDelete(
-        Request                        $request,
-        RequestServiceInterface        $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface                $endpointLogger,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService               $translateService,
-        TagAwareCacheInterface         $stockCache,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
 
         if ($adminAudiobookCommentDeleteQuery instanceof AdminAudiobookCommentDeleteQuery) {
-
             $audiobookComment = $audiobookUserCommentRepository->find($adminAudiobookCommentDeleteQuery->getAudiobookCommentId());
 
             if ($audiobookComment === null) {
@@ -1440,21 +1270,6 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    /**
-     * @param Request $request
-     * @param RequestServiceInterface $requestService
-     * @param AuthorizedUserServiceInterface $authorizedUserService
-     * @param LoggerInterface $endpointLogger
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-     * @param AudiobookRepository $audiobookRepository
-     * @param TranslateService $translateService
-     * @param TagAwareCacheInterface $stockCache
-     * @return Response
-     * @throws DataNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidJsonDataException
-     */
     #[Route('/api/admin/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
     #[OA\Post(
@@ -1475,20 +1290,19 @@ class AdminAudiobookController extends AbstractController
         ]
     )]
     public function adminAudiobookCommentGet(
-        Request                            $request,
-        RequestServiceInterface            $requestService,
-        AuthorizedUserServiceInterface     $authorizedUserService,
-        LoggerInterface                    $endpointLogger,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookRepository                $audiobookRepository,
-        TranslateService                   $translateService,
-        TagAwareCacheInterface             $stockCache,
+        AudiobookRepository $audiobookRepository,
+        TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);
 
         if ($audiobookCommentGetQuery instanceof AdminAudiobookCommentGetQuery) {
-
             $audiobook = $audiobookRepository->find($audiobookCommentGetQuery->getAudiobookId());
 
             if ($audiobook === null) {
@@ -1497,7 +1311,7 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $user = $authorizedUserService->getAuthorizedUser();
+            $user = $authorizedUserService::getAuthorizedUser();
 
             $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK_COMMENTS->value . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository) {
                 $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);

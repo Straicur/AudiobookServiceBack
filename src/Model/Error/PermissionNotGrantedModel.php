@@ -6,9 +6,6 @@ namespace App\Model\Error;
 
 use App\Model\ModelInterface;
 
-/**
- * PermissionNotGrantedModel
- */
 class PermissionNotGrantedModel implements ModelInterface
 {
     private string $error = 'Permission not granted';
@@ -19,17 +16,11 @@ class PermissionNotGrantedModel implements ModelInterface
     {
     }
 
-    /**
-     * @return string
-     */
     public function getError(): string
     {
         return $this->error;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;

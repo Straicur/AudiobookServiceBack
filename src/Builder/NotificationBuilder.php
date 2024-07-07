@@ -12,20 +12,13 @@ use App\Enums\NotificationUserType;
 use App\Enums\StockCacheTags;
 use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
-use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class NotificationBuilder
 {
-    /**
-     * @var Notification
-     */
     private Notification $notification;
 
-    /**
-     * @var array
-     */
     private array $metaData = [];
 
     public function __construct(?Notification $notification = null)
@@ -37,10 +30,6 @@ class NotificationBuilder
         }
     }
 
-    /**
-     * @param NotificationType $notificationType
-     * @return $this
-     */
     public function setType(NotificationType $notificationType): static
     {
         $this->notification->setType($notificationType);
@@ -48,10 +37,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @param Uuid $id
-     * @return $this
-     */
     public function setAction(Uuid $id): static
     {
         $this->notification->setActionId($id);
@@ -59,10 +44,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
     public function addUser(User $user): static
     {
         $this->notification->addUser($user);
@@ -70,10 +51,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @param NotificationUserType $type
-     * @return $this
-     */
     public function setUserAction(NotificationUserType $type): static
     {
         $this->metaData['user'] = $type->value;
@@ -81,10 +58,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @param string $text
-     * @return $this
-     */
     public function setText(string $text): static
     {
         $this->metaData['text'] = $text;
@@ -92,10 +65,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @param string $text
-     * @return $this
-     */
     public function setCategoryKey(string $text): static
     {
         $this->metaData['categoryKey'] = $text;
@@ -103,10 +72,6 @@ class NotificationBuilder
         return $this;
     }
 
-    /**
-     * @throws NotificationException
-     * @throws InvalidArgumentException
-     */
     public function build(?TagAwareCacheInterface $stockCache = null): Notification
     {
         $this->checkRequirements();
@@ -118,11 +83,6 @@ class NotificationBuilder
         return $this->notification;
     }
 
-    /**
-     * @param Notification $notification
-     * @param NotificationCheck|null $notificationCheck
-     * @return NotificationModel
-     */
     public static function read(Notification $notification, ?NotificationCheck $notificationCheck = null): NotificationModel
     {
         $notificationModel = new NotificationModel((string)$notification->getId(), $notification->getType(), null, null, null);
@@ -162,9 +122,6 @@ class NotificationBuilder
         return $notificationModel;
     }
 
-    /**
-     * @throws NotificationException
-     */
     private function checkRequirements(): void
     {
         $exception = new NotificationException(Notification::class);
@@ -188,13 +145,8 @@ class NotificationBuilder
         if (!$this->checkMetadata($keys)) {
             throw $exception;
         }
-
     }
 
-    /**
-     * @param array $keys
-     * @return bool
-     */
     private function checkMetadata(array $keys): bool
     {
         foreach ($keys as $key) {

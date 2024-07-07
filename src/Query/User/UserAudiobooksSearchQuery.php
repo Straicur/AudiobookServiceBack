@@ -11,20 +11,13 @@ class UserAudiobooksSearchQuery
     #[Assert\Type(type: 'string')]
     private string $title;
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = $title;
     }
-
 }

@@ -6,9 +6,6 @@ namespace App\Model\Error;
 
 use App\Model\ModelInterface;
 
-/**
- * TechnicalBreakExceptionModel
- */
 class TechnicalBreakExceptionModel implements ModelInterface
 {
     private string $error = 'Technical Break';
@@ -17,12 +14,8 @@ class TechnicalBreakExceptionModel implements ModelInterface
     {
     }
 
-    /**
-     * @return string
-     */
     public function getError(): string
     {
         return $this->error;
     }
-
 }

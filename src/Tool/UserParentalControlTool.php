@@ -10,10 +10,6 @@ use DateTime;
 
 class UserParentalControlTool
 {
-    /**
-     * @param User $user
-     * @return AudiobookAgeRange|null
-     */
     public function getUserAudiobookAgeValue(User $user): ?AudiobookAgeRange
     {
         $birthday = $user->getUserInformation()->getBirthday();

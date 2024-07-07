@@ -4,16 +4,10 @@ declare(strict_types=1);
 
 namespace App\ValueGenerator;
 
-/**
- * RegisterCodeGenerator
- */
 class RegisterCodeGenerator implements ValueGeneratorInterface
 {
     private string $registerCode;
 
-    /**
-     * @throws \Exception
-     */
     public function __construct(string $registerCode = null)
     {
         if ($registerCode === null) {

@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-/**
- * ReportType
- */
 enum ReportType: int
 {
     case COMMENT = 1;

@@ -13,45 +13,25 @@ use Symfony\Component\Uid\Uuid;
 
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
-    private array $elements;
-    private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository;
-    private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository;
-    private User $user;
-    private bool $admin;
-
-    /**
-     * @param array $elements
-     * @param AudiobookUserCommentRepository $audiobookUserCommentRepository
-     * @param AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository
-     * @param User $user
-     * @param bool $admin
-     */
     public function __construct(
-        array                              $elements,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        User                               $user,
-        bool                               $admin,
+        private array $elements,
+        private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        private User $user,
+        private bool $admin,
     ) {
-        $this->elements = $elements;
-        $this->audiobookUserCommentRepository = $audiobookUserCommentRepository;
-        $this->audiobookUserCommentLikeRepository = $audiobookUserCommentLikeRepository;
-        $this->user = $user;
-        $this->admin = $admin;
     }
 
     private function buildTree(
         array $elements,
-        User  $user,
-        bool  $admin,
+        User $user,
+        bool $admin,
         ?Uuid $parentId = null,
     ): array {
         $branch = [];
 
         foreach ($elements as $element) {
-
             if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
-
                 if ($admin) {
                     $children = $this->audiobookUserCommentRepository->findBy([
                         'parent' => $element->getId(),
@@ -97,7 +77,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 foreach ($commentLikes as $commentLike) {
                     if ($commentLike->getLiked()) {
                         $likes = +1;
-
                     } else {
                         $unlikes = +1;
                     }
@@ -114,7 +93,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                 }
 
                 if (!empty($children)) {
-
                     $children = $this->buildTree($children, $user, $admin, $element->getId());
 
                     foreach ($children as $parentChild) {
@@ -135,48 +113,33 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     }
 
     /**
-     * @return array
+     * @return AudiobookCommentsModel[]
      */
     private function getElements(): array
     {
         return $this->elements;
     }
 
-    /**
-     * @param array $elements
-     */
     private function setElements(array $elements): void
     {
         $this->elements = $elements;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     */
     public function setUser(User $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return bool
-     */
     public function isAdmin(): bool
     {
         return $this->admin;
     }
 
-    /**
-     * @param bool $admin
-     */
     public function setAdmin(bool $admin): void
     {
         $this->admin = $admin;

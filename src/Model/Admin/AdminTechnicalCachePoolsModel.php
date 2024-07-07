@@ -18,15 +18,12 @@ class AdminTechnicalCachePoolsModel implements ModelInterface
         return $this->cachePools;
     }
 
-    /**
-     * @param array $cachePools
-     */
     public function setCachePools(array $cachePools): void
     {
         $this->cachePools = $cachePools;
     }
 
-    public function addCachePool(CacheModel $cachePool)
+    public function addCachePool(CacheModel $cachePool): void
     {
         $this->cachePools[] = $cachePool;
     }

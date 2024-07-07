@@ -7,25 +7,14 @@ namespace App\ValueGenerator;
 use App\Entity\User;
 use App\Exception\GeneratorException;
 use DateTime;
+use Throwable;
 
-/**
- * AuthTokenGenerator
- */
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
-    private readonly User $userEntity;
-
-    /**
-     * @param User $userEntity
-     */
-    public function __construct(User $userEntity)
+    public function __construct(private readonly User $userEntity)
     {
-        $this->userEntity = $userEntity;
     }
 
-    /**
-     * @throws GeneratorException
-     */
     public function generate(): string
     {
         try {
@@ -36,7 +25,7 @@ class AuthTokenGenerator implements ValueGeneratorInterface
             $tokenToHash = $userId . '-' . $dateNow . '#' . $randomValue;
 
             return hash('sha512', $tokenToHash);
-        } catch (\Exception) {
+        } catch (Throwable) {
             throw new GeneratorException();
         }
     }

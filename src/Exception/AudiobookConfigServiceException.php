@@ -6,9 +6,10 @@ namespace App\Exception;
 
 use App\Model\Error\AudiobookConfigServiceModel;
 use App\Tool\ResponseTool;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class AudiobookConfigServiceException extends \Exception implements ResponseExceptionInterface
+class AudiobookConfigServiceException extends Exception implements ResponseExceptionInterface
 {
     public function getResponse(): Response
     {

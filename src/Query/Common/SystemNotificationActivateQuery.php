@@ -13,18 +13,12 @@ class SystemNotificationActivateQuery
     #[Assert\Uuid]
     private Uuid $notificationId;
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getNotificationId(): Uuid
     {
         return $this->notificationId;
     }
 
-    /**
-     * @param string $notificationId
-     */
     public function setNotificationId(string $notificationId): void
     {
         $this->notificationId = Uuid::fromString($notificationId);

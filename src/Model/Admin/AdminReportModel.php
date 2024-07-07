@@ -21,13 +21,6 @@ class AdminReportModel
     private ?string $ip = null;
     private ?AdminUserModel $user = null;
 
-    /**
-     * @param string $id
-     * @param ReportType $type
-     * @param DateTime $dateAdd
-     * @param bool $accepted
-     * @param bool $denied
-     */
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
         $this->id = $id;
@@ -137,5 +130,4 @@ class AdminReportModel
     {
         $this->user = $user;
     }
-
 }

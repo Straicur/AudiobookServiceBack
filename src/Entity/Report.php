@@ -168,5 +168,4 @@ class Report
     {
         $this->email = $email;
     }
-
 }

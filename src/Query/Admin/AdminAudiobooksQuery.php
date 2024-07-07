@@ -76,9 +76,6 @@ class AdminAudiobooksQuery
         ]));
     }
 
-    /**
-     * @param string[] $searchData
-     */
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
             new OA\Items(type: 'string', example: 'UUID'),
@@ -91,19 +88,15 @@ class AdminAudiobooksQuery
         new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
-    ],            type    : 'object')]
+    ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('age', $searchData)) {
-            if ($searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
-                $searchData['age'] = AudiobookAgeRange::FROM12TO16->value;
-            }
+        if (array_key_exists('age', $searchData) && $searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
+            $searchData['age'] = AudiobookAgeRange::FROM12TO16->value;
         }
 
-        if (array_key_exists('order', $searchData)) {
-            if ($searchData['order'] !== AudiobookOrderSearch::POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LATEST->value && $searchData['order'] !== AudiobookOrderSearch::OLDEST->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value && $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value) {
-                $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
-            }
+        if (array_key_exists('order', $searchData) && $searchData['order'] !== AudiobookOrderSearch::POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LATEST->value && $searchData['order'] !== AudiobookOrderSearch::OLDEST->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value && $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value) {
+            $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
         }
 
         if (array_key_exists('year', $searchData)) {
@@ -113,46 +106,30 @@ class AdminAudiobooksQuery
         $this->searchData = $searchData;
     }
 
-    /**
-     * @return string[]
-     */
     public function getSearchData(): array
     {
         return $this->searchData;
     }
 
-    /**
-     * @return int
-     */
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @param int $page
-     */
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
 
-    /**
-     * @return int
-     */
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param int $limit
-     */
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
-
 }

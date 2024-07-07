@@ -84,163 +84,102 @@ class AdminAudiobookEditQuery
         return $this->audiobookId;
     }
 
-    /**
-     * @param string $audiobookId
-     */
     public function setAudiobookId(string $audiobookId): void
     {
-        $this->audiobookId = Uuid::fromString($audiobookId);;
+        $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @return string
-     */
     public function getAuthor(): string
     {
         return $this->author;
     }
 
-    /**
-     * @param string $author
-     */
     public function setAuthor(string $author): void
     {
         $this->author = $author;
     }
 
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return $this->version;
     }
 
-    /**
-     * @param string $version
-     */
     public function setVersion(string $version): void
     {
         $this->version = $version;
     }
 
-    /**
-     * @return string
-     */
     public function getAlbum(): string
     {
         return $this->album;
     }
 
-    /**
-     * @param string $album
-     */
     public function setAlbum(string $album): void
     {
         $this->album = $album;
     }
 
-    /**
-     * @return DateTime
-     */
     #[OA\Property(property: 'year', example: 'd.m.Y')]
     public function getYear(): DateTime
     {
         return $this->year;
     }
 
-    /**
-     * @param string $year
-     */
-
     public function setYear(string $year): void
     {
         $this->year = DateTime::createFromFormat('d.m.Y', $year);
     }
 
-    /**
-     * @return string
-     */
     public function getDuration(): string
     {
         return $this->duration;
     }
 
-    /**
-     * @param string $duration
-     */
     public function setDuration(string $duration): void
     {
         $this->duration = $duration;
     }
 
-    /**
-     * @return string
-     */
     public function getSize(): string
     {
         return $this->size;
     }
 
-    /**
-     * @param string $size
-     */
     public function setSize(string $size): void
     {
         $this->size = $size;
     }
 
-    /**
-     * @return int
-     */
     public function getParts(): int
     {
         return $this->parts;
     }
 
-    /**
-     * @param int $parts
-     */
     public function setParts(int $parts): void
     {
         $this->parts = $parts;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
     public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return AudiobookAgeRange
-     */
     public function getAge(): AudiobookAgeRange
     {
         return match ($this->age) {
@@ -252,28 +191,18 @@ class AdminAudiobookEditQuery
         };
     }
 
-    /**
-     * @param int $age
-     */
     public function setAge(int $age): void
     {
         $this->age = $age;
     }
 
-    /**
-     * @return string
-     */
     public function getEncoded(): string
     {
         return $this->encoded;
     }
 
-    /**
-     * @param string $encoded
-     */
     public function setEncoded(string $encoded): void
     {
         $this->encoded = $encoded;
     }
-
 }

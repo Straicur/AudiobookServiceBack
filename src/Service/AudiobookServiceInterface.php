@@ -20,5 +20,4 @@ interface AudiobookServiceInterface
     public function createAudiobookJsonData(string $folderDir): array;
 
     public function removeFolder(string $dir): bool;
-
 }

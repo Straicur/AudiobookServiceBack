@@ -10,7 +10,6 @@ use App\Enums\NotificationUserType;
 use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
 use App\Enums\StockCacheTags;
-use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRepository;
@@ -20,7 +19,6 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tool\UserParentalControlTool;
-use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,47 +26,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-/**
- * UserProposedAudiobooksCommand
- */
 #[AsCommand(
     name       : 'audiobookservice:proposed:audiobooks',
     description: 'Command is generating new audiobooks proposed lists for users',
 )]
 class UserProposedAudiobooksCommand extends Command
 {
-    private RoleRepository $roleRepository;
-    private UserRepository $userRepository;
-    private MyListRepository $myListRepository;
-    private ProposedAudiobooksRepository $proposedAudiobooksRepository;
-    private AudiobookInfoRepository $audiobookInfoRepository;
-    private AudiobookCategoryRepository $audiobookCategoryRepository;
-    private AudiobookRepository $audiobookRepository;
-    private NotificationRepository $notificationRepository;
-    private TagAwareCacheInterface $stockCache;
-
-    public function __construct(RoleRepository $roleRepository, UserRepository $userRepository, MyListRepository $myListRepository, ProposedAudiobooksRepository $proposedAudiobooksRepository, AudiobookInfoRepository $audiobookInfoRepository, AudiobookCategoryRepository $audiobookCategoryRepository, AudiobookRepository $audiobookRepository, NotificationRepository $notificationRepository, TagAwareCacheInterface $stockCache)
-    {
-        $this->roleRepository = $roleRepository;
-        $this->userRepository = $userRepository;
-        $this->myListRepository = $myListRepository;
-        $this->proposedAudiobooksRepository = $proposedAudiobooksRepository;
-        $this->audiobookInfoRepository = $audiobookInfoRepository;
-        $this->audiobookCategoryRepository = $audiobookCategoryRepository;
-        $this->audiobookRepository = $audiobookRepository;
-        $this->notificationRepository = $notificationRepository;
-        $this->stockCache = $stockCache;
-
+    public function __construct(
+        private readonly RoleRepository $roleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly MyListRepository $myListRepository,
+        private readonly ProposedAudiobooksRepository $proposedAudiobooksRepository,
+        private readonly AudiobookInfoRepository $audiobookInfoRepository,
+        private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
+        private readonly AudiobookRepository $audiobookRepository,
+        private readonly NotificationRepository $notificationRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+    ) {
         parent::__construct();
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws NotificationException
-     * @throws InvalidArgumentException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -91,7 +68,6 @@ class UserProposedAudiobooksCommand extends Command
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
             if (count($myList->getAudiobooks()) + count($audiobookInfos) >= 10) {
-
                 $userWantedCategories = [];
 
                 foreach ($myList->getAudiobooks() as $audiobook) {
@@ -134,7 +110,6 @@ class UserProposedAudiobooksCommand extends Command
                 }
 
                 foreach ($selectedCategories as $categoryIndex => $category) {
-
                     $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
                         'id'     => $category,
                         'active' => true,
