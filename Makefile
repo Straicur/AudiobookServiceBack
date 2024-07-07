@@ -12,6 +12,9 @@ start:
 	@echo '	serverStart     - migrate database'
 	@echo '	serverStop      - migrate database'
 	@echo '	entity          - create entity'
+	@echo '	clearStock      - clear given stock'
+	@echo '	lint      		- phpcs'
+	@echo '	lint-fix        - phpcbf'
 clearStock:
 	symfony console  cache:pool:clear stock_cache
 unitTests:
