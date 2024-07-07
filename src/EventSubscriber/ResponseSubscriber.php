@@ -14,18 +14,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ResponseSubscriber implements EventSubscriberInterface
 {
-    private AuthenticationTokenRepository $authenticationTokenRepository;
-    private TechnicalBreakRepository $technicalBreakRepository;
-    private LoggerInterface $responseLogger;
-
     public function __construct(
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        TechnicalBreakRepository      $technicalBreakRepository,
-        LoggerInterface               $responseLogger,
+       private readonly AuthenticationTokenRepository $authenticationTokenRepository,
+       private readonly TechnicalBreakRepository      $technicalBreakRepository,
+       private readonly LoggerInterface               $responseLogger,
     ) {
-        $this->authenticationTokenRepository = $authenticationTokenRepository;
-        $this->technicalBreakRepository = $technicalBreakRepository;
-        $this->responseLogger = $responseLogger;
     }
 
     public function onKernelResponse(ResponseEvent $event): void

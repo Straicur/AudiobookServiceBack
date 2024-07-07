@@ -30,24 +30,13 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
-    private AuthenticationTokenRepository $authenticationTokenRepository;
-    private TechnicalBreakRepository $technicalBreakRepository;
-    private UserRepository $userRepository;
-    private LoggerInterface $requestLogger;
-    private TagAwareCacheInterface $stockCache;
-
     public function __construct(
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        TechnicalBreakRepository      $technicalBreakRepository,
-        UserRepository                $userRepository,
-        LoggerInterface               $requestLogger,
-        TagAwareCacheInterface        $stockCache,
+        private readonly AuthenticationTokenRepository $authenticationTokenRepository,
+        private readonly TechnicalBreakRepository      $technicalBreakRepository,
+        private readonly UserRepository                $userRepository,
+        private readonly LoggerInterface               $requestLogger,
+        private readonly TagAwareCacheInterface        $stockCache,
     ) {
-        $this->authenticationTokenRepository = $authenticationTokenRepository;
-        $this->technicalBreakRepository = $technicalBreakRepository;
-        $this->userRepository = $userRepository;
-        $this->requestLogger = $requestLogger;
-        $this->stockCache = $stockCache;
     }
 
     public function onControllerCall(ControllerEvent $event): void

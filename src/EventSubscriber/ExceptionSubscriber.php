@@ -16,12 +16,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
-    private LoggerInterface $responseLogger;
-
     public function __construct(
-        LoggerInterface $responseLogger,
+        private readonly LoggerInterface $responseLogger,
     ) {
-        $this->responseLogger = $responseLogger;
     }
 
     public function onKernelException(ExceptionEvent $event): void

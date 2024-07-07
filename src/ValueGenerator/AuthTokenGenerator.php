@@ -11,11 +11,8 @@ use Throwable;
 
 class AuthTokenGenerator implements ValueGeneratorInterface
 {
-    private readonly User $userEntity;
-
-    public function __construct(User $userEntity)
+    public function __construct(private readonly User $userEntity)
     {
-        $this->userEntity = $userEntity;
     }
 
     public function generate(): string

@@ -13,24 +13,13 @@ use Symfony\Component\Uid\Uuid;
 
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
-    private array $elements;
-    private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository;
-    private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository;
-    private User $user;
-    private bool $admin;
-
     public function __construct(
-        array                              $elements,
-        AudiobookUserCommentRepository     $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        User                               $user,
-        bool                               $admin,
+        private array                                       $elements,
+        private readonly AudiobookUserCommentRepository     $audiobookUserCommentRepository,
+        private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        private User                                        $user,
+        private bool                                        $admin,
     ) {
-        $this->elements = $elements;
-        $this->audiobookUserCommentRepository = $audiobookUserCommentRepository;
-        $this->audiobookUserCommentLikeRepository = $audiobookUserCommentLikeRepository;
-        $this->user = $user;
-        $this->admin = $admin;
     }
 
     private function buildTree(

@@ -13,15 +13,13 @@ use Throwable;
 
 class RequestService implements RequestServiceInterface
 {
-    private readonly ValidatorInterface $validator;
-
     private readonly SerializerInterface $serializer;
-    private TranslateService $translateService;
 
-    public function __construct(ValidatorInterface $validator, TranslateService $translateService)
+    public function __construct(
+        private readonly ValidatorInterface $validator,
+        private readonly TranslateService $translateService
+)
     {
-        $this->validator = $validator;
-        $this->translateService = $translateService;
         $this->serializer = new JsonSerializer();
     }
 

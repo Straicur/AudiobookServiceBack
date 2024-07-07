@@ -11,15 +11,14 @@ use Symfony\Component\Uid\Uuid;
 
 class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
-    private array $elements;
-    private readonly AudiobookCategoryRepository $categoryRepository;
-    private readonly AudiobookRepository $audiobookRepository;
 
-    public function __construct(array $elements, AudiobookCategoryRepository $categoryRepository, AudiobookRepository $audiobookRepository)
+    public function __construct(
+        private array                                $elements,
+        private readonly AudiobookCategoryRepository $categoryRepository,
+        private readonly AudiobookRepository         $audiobookRepository,
+    )
     {
-        $this->elements = $elements;
-        $this->categoryRepository = $categoryRepository;
-        $this->audiobookRepository = $audiobookRepository;
+
     }
 
     private function buildTree(array $elements, ?Uuid $parentId = null): array

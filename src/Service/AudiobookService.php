@@ -16,16 +16,16 @@ use ZipArchive;
 
 class AudiobookService implements AudiobookServiceInterface
 {
-    private AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService;
     private AdminAudiobookAddFileInterface|null $query = null;
     private string $whole_dir_path = '';
     private string $whole_zip_path = '';
-    private TranslateService $translateService;
 
-    public function __construct(AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService, TranslateService $translateService)
+    public function __construct(
+        private readonly AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService,
+        private readonly TranslateService               $translateService,
+    )
     {
-        $this->audiobooksID3TagsReaderService = $audiobooksID3TagsReaderService;
-        $this->translateService = $translateService;
+
     }
 
     public function configure(AdminAudiobookAddFileInterface $query): void
