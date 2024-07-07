@@ -32,9 +32,9 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
      */
     public function add(AudiobookCategory $entity, bool $flush = true): void
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -45,9 +45,9 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
      */
     public function remove(AudiobookCategory $entity, bool $flush = true): void
     {
-        $this->_em->remove($entity);
+        $this->getEntityManager()->remove($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -63,8 +63,8 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
             $this->removeCategoryAndChildren($childCategory);
         }
 
-        $this->_em->remove($category);
-        $this->_em->flush();
+        $this->getEntityManager()->remove($category);
+        $this->getEntityManager()->flush();
     }
 
     /**
