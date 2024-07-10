@@ -47,7 +47,13 @@ class AdminAudiobookActiveQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists('type', $additionalData) && $additionalData['type'] !== UserAudiobookActivationType::ALL->value && $additionalData['type'] !== UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value && $additionalData['type'] !== UserAudiobookActivationType::MY_LIST_RELATED->value && $additionalData['type'] !== UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value) {
+        if (
+            array_key_exists('type', $additionalData) &&
+            $additionalData['type'] !== UserAudiobookActivationType::ALL->value &&
+            $additionalData['type'] !== UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value &&
+            $additionalData['type'] !== UserAudiobookActivationType::MY_LIST_RELATED->value &&
+            $additionalData['type'] !== UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value
+        ) {
             $additionalData['type'] = UserAudiobookActivationType::ALL->value;
         }
 

@@ -95,8 +95,19 @@ class Audiobook
      * @param AudiobookAgeRange $age
      * @param string $fileName
      */
-    public function __construct(string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName)
-    {
+    public function __construct(
+        string $title,
+        string $author,
+        string $version,
+        string $album,
+        DateTime $year,
+        int $duration,
+        string $size,
+        int $parts,
+        string $description,
+        AudiobookAgeRange $age,
+        string $fileName
+    ) {
         $this->title = $title;
         $this->author = $author;
         $this->version = $version;

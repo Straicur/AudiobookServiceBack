@@ -67,7 +67,13 @@ class AdminUsersQuery
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('order', $searchData) && $searchData['order'] !== UserOrderSearch::LATEST->value && $searchData['order'] !== UserOrderSearch::OLDEST->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value) {
+        if (
+            array_key_exists('order', $searchData) &&
+            $searchData['order'] !== UserOrderSearch::LATEST->value &&
+            $searchData['order'] !== UserOrderSearch::OLDEST->value &&
+            $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value &&
+            $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value
+        ) {
             $searchData['order'] = UserOrderSearch::LATEST->value;
         }
 

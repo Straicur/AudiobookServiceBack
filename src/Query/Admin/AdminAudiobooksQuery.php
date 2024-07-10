@@ -91,11 +91,28 @@ class AdminAudiobooksQuery
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('age', $searchData) && $searchData['age'] !== AudiobookAgeRange::FROM3TO7->value && $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value && $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value && $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value && $searchData['age'] !== AudiobookAgeRange::ABOVE18->value) {
+        if (
+            array_key_exists('age', $searchData) &&
+            $searchData['age'] !== AudiobookAgeRange::FROM3TO7->value &&
+            $searchData['age'] !== AudiobookAgeRange::FROM7TO12->value &&
+            $searchData['age'] !== AudiobookAgeRange::FROM12TO16->value &&
+            $searchData['age'] !== AudiobookAgeRange::FROM16TO18->value &&
+            $searchData['age'] !== AudiobookAgeRange::ABOVE18->value
+        ) {
             $searchData['age'] = AudiobookAgeRange::FROM12TO16->value;
         }
 
-        if (array_key_exists('order', $searchData) && $searchData['order'] !== AudiobookOrderSearch::POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value && $searchData['order'] !== AudiobookOrderSearch::LATEST->value && $searchData['order'] !== AudiobookOrderSearch::OLDEST->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value && $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value && $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value && $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value) {
+        if (
+            array_key_exists('order', $searchData) &&
+            $searchData['order'] !== AudiobookOrderSearch::POPULAR->value &&
+            $searchData['order'] !== AudiobookOrderSearch::LEST_POPULAR->value &&
+            $searchData['order'] !== AudiobookOrderSearch::LATEST->value &&
+            $searchData['order'] !== AudiobookOrderSearch::OLDEST->value &&
+            $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_ASC->value &&
+            $searchData['order'] !== AudiobookOrderSearch::ALPHABETICAL_DESC->value &&
+            $searchData['order'] !== AudiobookOrderSearch::TOP_RATED->value &&
+            $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value
+        ) {
             $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
         }
 

@@ -51,7 +51,10 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     'deleted'              => false,
                 ]);
 
-                $userModel = new AudiobookCommentModel($audiobookParentUser->getUserInformation()->getEmail(), $audiobookParentUser->getUserInformation()->getFirstname());
+                $userModel = new AudiobookCommentModel(
+                    $audiobookParentUser->getUserInformation()->getEmail(),
+                    $audiobookParentUser->getUserInformation()->getFirstname()
+                );
 
                 $child = new AudiobookCommentsModel(
                     $userModel,

@@ -187,8 +187,15 @@ class UserRepository extends ServiceEntityRepository
      * @param int|null $order
      * @return User[]
      */
-    public function searchUsers(string $email = null, string $phoneNumber = null, string $firstname = null, string $lastname = null, bool $active = null, bool $banned = null, int $order = null): array
-    {
+    public function searchUsers(
+        string $email = null,
+        string $phoneNumber = null,
+        string $firstname = null,
+        string $lastname = null,
+        bool $active = null,
+        bool $banned = null,
+        int $order = null
+    ): array {
         $qb = $this->createQueryBuilder('u');
 
         $qb->leftJoin('u.userInformation', 'ui');

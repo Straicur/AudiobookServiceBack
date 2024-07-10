@@ -93,41 +93,44 @@ class NotificationController extends AbstractController
         if ($systemNotificationQuery instanceof SystemNotificationQuery) {
             $user = $authorizedUserService::getAuthorizedUser();
 
-            $systemNotificationSuccessModel = $stockCache->get(CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(), function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
-                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                $item->tag(StockCacheTags::USER_NOTIFICATIONS->value);
+            $systemNotificationSuccessModel = $stockCache->get(
+                CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(),
+                function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
+                    $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
+                    $item->tag(StockCacheTags::USER_NOTIFICATIONS->value);
 
-                $userSystemNotifications = $notificationRepository->getUserNotifications($user);
+                    $userSystemNotifications = $notificationRepository->getUserNotifications($user);
 
-                $systemNotifications = [];
+                    $systemNotifications = [];
 
-                $minResult = $systemNotificationQuery->getPage() * $systemNotificationQuery->getLimit();
-                $maxResult = $systemNotificationQuery->getLimit() + $minResult;
+                    $minResult = $systemNotificationQuery->getPage() * $systemNotificationQuery->getLimit();
+                    $maxResult = $systemNotificationQuery->getLimit() + $minResult;
 
-                foreach ($userSystemNotifications as $index => $notification) {
-                    if ($index < $minResult) {
-                        continue;
-                    }
+                    foreach ($userSystemNotifications as $index => $notification) {
+                        if ($index < $minResult) {
+                            continue;
+                        }
 
-                    if ($index < $maxResult) {
-                        $notificationCheck = $checkRepository->findOneBy([
+                        if ($index < $maxResult) {
+                            $notificationCheck = $checkRepository->findOneBy([
                             'user'         => $user->getId(),
                             'notification' => $notification->getId(),
-                        ]);
+                            ]);
 
-                        $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
-                    } else {
-                        break;
+                            $systemNotifications[] = NotificationBuilder::read($notification, $notificationCheck);
+                        } else {
+                            break;
+                        }
                     }
-                }
 
-                return new NotificationsSuccessModel(
-                    $systemNotifications,
-                    $systemNotificationQuery->getPage(),
-                    $systemNotificationQuery->getLimit(),
-                    (int)ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
-                );
-            });
+                    return new NotificationsSuccessModel(
+                        $systemNotifications,
+                        $systemNotificationQuery->getPage(),
+                        $systemNotificationQuery->getLimit(),
+                        (int)ceil(count($userSystemNotifications) / $systemNotificationQuery->getLimit()),
+                    );
+                }
+            );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         }

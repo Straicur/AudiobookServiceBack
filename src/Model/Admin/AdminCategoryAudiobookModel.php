@@ -21,8 +21,18 @@ class AdminCategoryAudiobookModel
     private bool $active;
     private float $avgRating;
 
-    public function __construct(string $id, string $title, string $author, DateTime $year, int $duration, string $size, int $parts, float $avgRating, AudiobookAgeRange $age, bool $active)
-    {
+    public function __construct(
+        string $id,
+        string $title,
+        string $author,
+        DateTime $year,
+        int $duration,
+        string $size,
+        int $parts,
+        float $avgRating,
+        AudiobookAgeRange $age,
+        bool $active
+    ) {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;

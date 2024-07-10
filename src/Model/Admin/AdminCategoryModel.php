@@ -18,8 +18,14 @@ class AdminCategoryModel
      */
     private array $children = [];
 
-    public function __construct(string $id, string $name, bool $active, string $categoryKey, ?int $audiobooks = null, ?string $parentCategoryKey = null)
-    {
+    public function __construct(
+        string $id,
+        string $name,
+        bool $active,
+        string $categoryKey,
+        ?int $audiobooks = null,
+        ?string $parentCategoryKey = null
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
