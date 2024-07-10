@@ -55,7 +55,11 @@ class AdminUserNotificationsQuery
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('order', $searchData) && $searchData['order'] !== NotificationOrderSearch::LATEST->value && $searchData['order'] !== NotificationOrderSearch::OLDEST->value) {
+        if (
+            array_key_exists('order', $searchData) &&
+            $searchData['order'] !== NotificationOrderSearch::LATEST->value &&
+            $searchData['order'] !== NotificationOrderSearch::OLDEST->value
+        ) {
             $searchData['order'] = NotificationOrderSearch::LATEST->value;
         }
 

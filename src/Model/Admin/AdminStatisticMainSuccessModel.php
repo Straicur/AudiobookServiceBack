@@ -25,8 +25,15 @@ class AdminStatisticMainSuccessModel implements ModelInterface
      * @param int $lastWeekNotifications
      * @param int $lastWeekTechnicalBreaks
      */
-    public function __construct(int $users, int $categories, int $audiobooks, int $lastWeekRegistered, int $lastWeekLogins, int $lastWeekNotifications, int $lastWeekTechnicalBreaks)
-    {
+    public function __construct(
+        int $users,
+        int $categories,
+        int $audiobooks,
+        int $lastWeekRegistered,
+        int $lastWeekLogins,
+        int $lastWeekNotifications,
+        int $lastWeekTechnicalBreaks
+    ) {
         $this->users = $users;
         $this->categories = $categories;
         $this->audiobooks = $audiobooks;

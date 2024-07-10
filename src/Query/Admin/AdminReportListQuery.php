@@ -97,11 +97,23 @@ class AdminReportListQuery
             $searchData['actionId'] = Uuid::fromString($searchData['actionId']);
         }
 
-        if (array_key_exists('type', $searchData) && $searchData['type'] !== ReportType::COMMENT->value && $searchData['type'] !== ReportType::AUDIOBOOK_PROBLEM->value && $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value && $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value && $searchData['type'] !== ReportType::USER_PROBLEM->value) {
+        if (
+            array_key_exists('type', $searchData) &&
+            $searchData['type'] !== ReportType::COMMENT->value &&
+            $searchData['type'] !== ReportType::AUDIOBOOK_PROBLEM->value &&
+            $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value &&
+            $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value &&
+            $searchData['type'] !== ReportType::USER_PROBLEM->value &&
+            $searchData['type'] !== ReportType::SETTINGS_PROBLEM->value
+        ) {
             $searchData['type'] = ReportType::COMMENT->value;
         }
 
-        if (array_key_exists('order', $searchData) && $searchData['order'] !== ReportOrderSearch::OLDEST->value && $searchData['order'] !== ReportOrderSearch::LATEST->value) {
+        if (
+            array_key_exists('order', $searchData) &&
+            $searchData['order'] !== ReportOrderSearch::OLDEST->value &&
+            $searchData['order'] !== ReportOrderSearch::LATEST->value
+        ) {
             $searchData['order'] = ReportType::COMMENT->value;
         }
 

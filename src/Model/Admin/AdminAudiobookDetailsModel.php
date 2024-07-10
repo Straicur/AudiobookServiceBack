@@ -30,8 +30,21 @@ class AdminAudiobookDetailsModel
      */
     private array $categories;
 
-    public function __construct(string $id, string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, bool $active, array $categories)
-    {
+    public function __construct(
+        string $id,
+        string $title,
+        string $author,
+        string $version,
+        string $album,
+        DateTime $year,
+        int $duration,
+        string $size,
+        int $parts,
+        string $description,
+        AudiobookAgeRange $age,
+        bool $active,
+        array $categories
+    ) {
         $this->id = $id;
         $this->title = $title;
         $this->author = $author;

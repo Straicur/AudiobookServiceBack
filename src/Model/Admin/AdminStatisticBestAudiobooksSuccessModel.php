@@ -12,8 +12,11 @@ class AdminStatisticBestAudiobooksSuccessModel implements ModelInterface
     private ?AdminAudiobookDetailsModel $secondAudiobook;
     private ?AdminAudiobookDetailsModel $thirdAudiobook;
 
-    public function __construct(?AdminAudiobookDetailsModel $firstAudiobook = null, ?AdminAudiobookDetailsModel $secondAudiobook = null, ?AdminAudiobookDetailsModel $thirdAudiobook = null)
-    {
+    public function __construct(
+        ?AdminAudiobookDetailsModel $firstAudiobook = null,
+        ?AdminAudiobookDetailsModel $secondAudiobook = null,
+        ?AdminAudiobookDetailsModel $thirdAudiobook = null
+    ) {
         $this->firstAudiobook = $firstAudiobook;
         $this->secondAudiobook = $secondAudiobook;
         $this->thirdAudiobook = $thirdAudiobook;

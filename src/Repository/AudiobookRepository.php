@@ -67,8 +67,17 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param int|null $order
      * @return Audiobook[]
      */
-    public function getAudiobooksByPage(?array $categories = null, ?string $author = null, ?string $title = null, ?string $album = null, ?int $duration = null, ?int $age = null, ?DateTime $year = null, ?int $parts = null, ?int $order = null): array
-    {
+    public function getAudiobooksByPage(
+        ?array $categories = null,
+        ?string $author = null,
+        ?string $title = null,
+        ?string $album = null,
+        ?int $duration = null,
+        ?int $age = null,
+        ?DateTime $year = null,
+        ?int $parts = null,
+        ?int $order = null,
+    ): array {
         $qb = $this->createQueryBuilder('a');
 
         if ($categories !== null) {

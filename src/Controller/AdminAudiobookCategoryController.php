@@ -611,7 +611,13 @@ class AdminAudiobookCategoryController extends AbstractController
                 $item->expiresAfter(CacheValidTime::DAY->value);
                 $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
 
-                return new AdminCategorySuccessModel((string)$category->getId(), $category->getName(), $category->getActive(), $category->getParent()?->getName(), (string)$category->getParent()?->getId());
+                return new AdminCategorySuccessModel(
+                    (string)$category->getId(),
+                    $category->getName(),
+                    $category->getActive(),
+                    $category->getParent()?->getName(),
+                    (string)$category->getParent()?->getId()
+                );
             });
 
             return ResponseTool::getResponse($successModel);

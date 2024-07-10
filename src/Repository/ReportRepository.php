@@ -100,8 +100,19 @@ class ReportRepository extends ServiceEntityRepository
      * @param int|null $order
      * @return Report[]
      */
-    public function getReportsByPage(string $actionId = null, string $desc = null, string $email = null, string $ip = null, int $type = null, bool $user = null, bool $accepted = null, bool $denied = null, DateTime $dateFrom = null, DateTime $dateTo = null, int $order = null): array
-    {
+    public function getReportsByPage(
+        string $actionId = null,
+        string $desc = null,
+        string $email = null,
+        string $ip = null,
+        int $type = null,
+        bool $user = null,
+        bool $accepted = null,
+        bool $denied = null,
+        DateTime $dateFrom = null,
+        DateTime $dateTo = null,
+        int $order = null
+    ): array {
         $qb = $this->createQueryBuilder('r');
 
         if ($actionId !== null) {
