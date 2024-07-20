@@ -674,6 +674,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookService $audiobookService,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
+        AudiobookInfoRepository $audiobookInfoRepository,
         TranslateService $translateService,
         NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
@@ -902,6 +903,14 @@ class AdminAudiobookController extends AbstractController
 
                 if ($audiobook->getEncoded() !== null) {
                     $successModel->setEncoded($audiobook->getEncoded());
+                }
+
+                $audiobookInfos = $audiobookInfoRepository->findBy([
+                    'audiobook' => $audiobook->getId(),
+                ]);
+
+                foreach ($audiobookInfos as $audiobookInfo) {
+                    $audiobookInfoRepository->remove($audiobookInfo);
                 }
 
                 if ($adminAudiobookReAddingQuery->isDeleteNotifications()) {

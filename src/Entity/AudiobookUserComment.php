@@ -29,7 +29,7 @@ class AudiobookUserComment
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['remove'])]
+    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['remove','persist'])]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?AudiobookUserComment $parent = null;
 
