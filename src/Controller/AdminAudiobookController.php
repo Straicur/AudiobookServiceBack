@@ -1261,6 +1261,7 @@ class AdminAudiobookController extends AbstractController
             $audiobookUserCommentRepository->add($audiobookComment);
 
             $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
+            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
