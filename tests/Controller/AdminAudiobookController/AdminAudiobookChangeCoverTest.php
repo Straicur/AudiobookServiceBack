@@ -13,7 +13,7 @@ use App\Tests\AbstractWebTest;
  */
 class AdminAudiobookChangeCoverTest extends AbstractWebTest
 {
-    private const base64OnePartFile = __DIR__ . '/onePartFile.txt';
+    private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
     private const base64ImgFile = __DIR__ . '/imgFile.txt';
     /**
      * step 1 - Preparing data
@@ -36,8 +36,8 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        $fileBase = fopen(self::base64OnePartFile, 'rb');
-        $readData = fread($fileBase, filesize(self::base64OnePartFile,));
+        $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
+        $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE,));
 
         /// step 2
         $content = [
