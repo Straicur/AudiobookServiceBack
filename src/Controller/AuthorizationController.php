@@ -115,7 +115,7 @@ class AuthorizationController extends AbstractController
             $isUser = false;
 
             foreach ($roles as $role) {
-                if ($role->getName() === 'User' || $role->getName() === 'Administrator') {
+                if ($role->getName() !== UserRolesNames::GUEST->value) {
                     $isUser = true;
                 }
             }
@@ -148,7 +148,7 @@ class AuthorizationController extends AbstractController
             foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
 
-                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value) {
+                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value || $role->getName() === UserRolesNames::RECRUITER->value) {
                     $isAdmin = true;
                 }
             }
