@@ -9,6 +9,7 @@ use App\Entity\AudiobookCategory;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminCategoriesSuccessModel;
@@ -70,7 +71,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminAudiobookCategoryController extends AbstractController
 {
     #[Route('/api/admin/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding new category',
         requestBody: new OA\RequestBody(
@@ -129,7 +130,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given category',
         requestBody: new OA\RequestBody(
@@ -180,7 +181,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is removing given category',
         requestBody: new OA\RequestBody(
@@ -231,7 +232,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding audiobook to given category',
         requestBody: new OA\RequestBody(
@@ -293,7 +294,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is removing audiobook from given category',
         requestBody: new OA\RequestBody(
@@ -356,7 +357,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning all audiobooks in given category',
         requestBody: new OA\RequestBody(
@@ -448,7 +449,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system as a tree',
         requestBody: new OA\RequestBody(),
@@ -482,7 +483,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/categories', name: 'adminCategories', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system',
         requestBody: new OA\RequestBody(),
@@ -518,7 +519,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given category',
         requestBody: new OA\RequestBody(
@@ -569,7 +570,7 @@ class AdminAudiobookCategoryController extends AbstractController
     }
 
     #[Route('/api/admin/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning category details',
         requestBody: new OA\RequestBody(

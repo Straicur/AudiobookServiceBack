@@ -8,6 +8,7 @@ use App\Annotation\AuthValidation;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\AudiobookCoverModel;
@@ -58,7 +59,7 @@ use Throwable;
 class AudiobookController extends AbstractController
 {
     #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning specific part of audiobook',
         requestBody: new OA\RequestBody(
@@ -148,7 +149,7 @@ class AudiobookController extends AbstractController
     }
 
     #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning covers paths for given audiobooks',
         requestBody: new OA\RequestBody(

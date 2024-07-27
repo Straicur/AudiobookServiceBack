@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
@@ -136,6 +137,9 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param UserRolesNames[] $roles
+     */
     private function checkRoles(User $user, array $roles): bool
     {
         $userRoles = $user->getRoles();
@@ -144,7 +148,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
         foreach ($userRoles as $userRole) {
             foreach ($roles as $role) {
-                if ($userRole->getName() === $role) {
+                if ($userRole->getName() === $role->value) {
                     $foundRole = true;
                     break;
                 }

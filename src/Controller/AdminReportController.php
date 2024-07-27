@@ -12,6 +12,7 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanAmount;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminReportListSuccessModel;
@@ -69,7 +70,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminReportController extends AbstractController
 {
     #[Route('/api/report/admin/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
         requestBody: new OA\RequestBody(
@@ -203,7 +204,7 @@ class AdminReportController extends AbstractController
     }
 
     #[Route('/api/report/admin/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',
         requestBody: new OA\RequestBody(
@@ -281,7 +282,7 @@ class AdminReportController extends AbstractController
     }
 
     #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get report list',
         requestBody: new OA\RequestBody(

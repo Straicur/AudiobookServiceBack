@@ -33,13 +33,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class AddAdminCommand extends Command
 {
     public function __construct(
-        private readonly UserRepository            $userRepository,
-        private readonly RoleRepository            $roleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
         private readonly UserInformationRepository $userInformationRepository,
-        private readonly UserPasswordRepository    $userPasswordRepository,
-        private readonly UserSettingsRepository    $userSettingsRepository,
-        private readonly MyListRepository          $myListRepository,
-        private readonly InstitutionRepository     $institutionRepository,
+        private readonly UserPasswordRepository $userPasswordRepository,
+        private readonly UserSettingsRepository $userSettingsRepository,
+        private readonly MyListRepository $myListRepository,
+        private readonly InstitutionRepository $institutionRepository,
         private readonly ProposedAudiobooksRepository $proposedAudiobooksRepository,
     ) {
         parent::__construct();

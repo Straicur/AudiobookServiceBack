@@ -2,6 +2,8 @@
 
 namespace App\Annotation;
 
+use App\Enums\UserRolesNames;
+
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class AuthValidation
 {
@@ -9,7 +11,7 @@ class AuthValidation
 
     private array $roles;
 
-    public function __construct(bool $checkAuthToken, array $roles = ['Guest'])
+    public function __construct(bool $checkAuthToken, array $roles = [UserRolesNames::GUEST])
     {
         $this->checkAuthToken = $checkAuthToken;
         $this->roles = $roles;

@@ -9,7 +9,7 @@ symfony console doctrine:database:drop --force
 symfony console doctrine:database:create
 echo | symfony console doctrine:migrations:migrate
 
-roles=("Administrator" "User" "Guest")
+roles=("Administrator" "User" "Guest" "Recruiter")
 
 for i in "${roles[@]}"; do
   symfony console audiobookservice:roles:add "$i"
@@ -24,6 +24,7 @@ symfony console audiobookservice:users:create "Krystian" "Jakiś" "mosinskidamia
 symfony console audiobookservice:users:create "Marcin" "Gogo" "mosinskidamian13@gmail.com" "980921225" "zaq12wsx" "User"
 symfony console audiobookservice:users:create "Michał" "Bobski" "mosinskidamian14@gmail.com" "980921226" "zaq12wsx" "User"
 symfony console audiobookservice:users:create "Kamil" "Kwiatkowski" "mosinskidamian15@gmail.com" "980921227" "zaq12wsx" "Guest"
+symfony console audiobookservice:users:create "Kamil" "Rekruter" "recq@gmail.com" "980921228" "zaq12wsx" "User" "Guest" "Recruiter"
 
 symfony console audiobookservice:category:add "Anglojęzyczne"
 symfony console audiobookservice:category:add "Polskie"

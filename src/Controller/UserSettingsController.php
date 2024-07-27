@@ -9,6 +9,7 @@ use App\Entity\UserDelete;
 use App\Entity\UserEdit;
 use App\Entity\UserParentalControlCode;
 use App\Enums\UserEditType;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
@@ -73,7 +74,7 @@ use Throwable;
 class UserSettingsController extends AbstractController
 {
     #[Route('/api/user/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing password of logged user',
         requestBody: new OA\RequestBody(
@@ -130,7 +131,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is sending confirmation email to change user email',
         requestBody: new OA\RequestBody(
@@ -294,7 +295,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/settings/delete', name: 'userSettingsDelete', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is setting user account to not active',
         requestBody: new OA\RequestBody(),
@@ -356,7 +357,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing given user informations',
         requestBody: new OA\RequestBody(
@@ -416,7 +417,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/settings', name: 'userSettingsGet', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning logged user informations',
         requestBody: new OA\RequestBody(),
@@ -589,7 +590,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/parent/control', name: 'userParentControlPut', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is creating a sms code for changing parent control settings',
         requestBody: new OA\RequestBody(),
@@ -649,7 +650,7 @@ class UserSettingsController extends AbstractController
     }
 
     #[Route('/api/user/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing parent control settings',
         requestBody: new OA\RequestBody(

@@ -13,6 +13,7 @@ use App\Enums\BanPeriodRage;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\AudiobookCommentsSuccessModel;
@@ -94,7 +95,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class UserAudiobookController extends AbstractController
 {
     #[Route('/api/user/audiobooks', name: 'userAudiobooks', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of categories with audiobooks',
         requestBody: new OA\RequestBody(
@@ -194,7 +195,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobooks/search', name: 'userAudiobooksSearch', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of audiobooks by title',
         requestBody: new OA\RequestBody(
@@ -264,7 +265,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/proposed/audiobooks', name: 'userProposedAudiobooks', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of proposed audiobooks',
         requestBody: new OA\RequestBody(),
@@ -321,7 +322,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning details of given audiobook',
         requestBody: new OA\RequestBody(
@@ -449,7 +450,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/info', name: 'userAudiobookInfo', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning last information about last played part and time of given audiobook',
         requestBody: new OA\RequestBody(
@@ -517,7 +518,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/like', name: 'userAudiobookLike', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is adding/deleting audiobook from my list',
         requestBody: new OA\RequestBody(
@@ -580,7 +581,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/myList/audiobooks', name: 'userMyListAudiobooks', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of audiobooks from my list',
         requestBody: new OA\RequestBody(),
@@ -627,7 +628,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/info/add', name: 'userAudiobookInfoAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding new info about given audiobook',
         requestBody: new OA\RequestBody(
@@ -707,7 +708,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/rating/add', name: 'userAudiobookRatingAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding/editing user audiobook rating',
         requestBody: new OA\RequestBody(
@@ -781,7 +782,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/rating/get', name: 'userAudiobookRatingGet', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is getting audiobook overall rating',
         requestBody: new OA\RequestBody(
@@ -826,7 +827,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/comment/add', name: 'userAudiobookCommentAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding comment for given audiobook',
         requestBody: new OA\RequestBody(
@@ -925,7 +926,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/comment/edit', name: 'userAudiobookCommentEdit', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is editing given comment',
         requestBody: new OA\RequestBody(
@@ -1009,7 +1010,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/comment/like/add', name: 'userAudiobookCommentLikeAdd', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is adding/editing user audiobook comment like',
         requestBody: new OA\RequestBody(
@@ -1075,7 +1076,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/comment/like/delete', name: 'userAudiobookCommentLikeDelete', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Delete(
         description: 'Endpoint is adding/editing user audiobook comment like',
         requestBody: new OA\RequestBody(
@@ -1141,7 +1142,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/audiobook/comment/get', name: 'userAudiobookCommentGet', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning comments for given audiobook for user',
         requestBody: new OA\RequestBody(
