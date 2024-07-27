@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Error\DataNotFoundModel;
@@ -120,7 +121,7 @@ class UserReportController extends AbstractController
     }
 
     #[Route('/api/report/user', name: 'apiUserReport', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is used for users to report bad behavior',
         requestBody: new OA\RequestBody(

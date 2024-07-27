@@ -115,7 +115,7 @@ class AuthorizationController extends AbstractController
             $isUser = false;
 
             foreach ($roles as $role) {
-                if ($role->getName() === 'User' || $role->getName() === 'Administrator') {
+                if ($role->getName() !== UserRolesNames::GUEST->value) {
                     $isUser = true;
                 }
             }
@@ -148,7 +148,7 @@ class AuthorizationController extends AbstractController
             foreach ($roles as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
 
-                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value) {
+                if ($role->getName() === UserRolesNames::ADMINISTRATOR->value || $role->getName() === UserRolesNames::RECRUITER->value) {
                     $isAdmin = true;
                 }
             }
@@ -165,7 +165,7 @@ class AuthorizationController extends AbstractController
     }
 
     #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method used to logout user',
         requestBody: new OA\RequestBody(),
@@ -189,7 +189,7 @@ class AuthorizationController extends AbstractController
     }
 
     #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method is checking if given token is authorized',
         security   : [],

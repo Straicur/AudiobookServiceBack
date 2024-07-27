@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\AdminUserController;
 
+use App\Repository\UserSettingsRepository;
 use App\Tests\AbstractWebTest;
 
 /**
@@ -131,6 +132,9 @@ class AdminUsersTest extends AbstractWebTest
      */
     public function test_adminUsersNoFilterCorrect(): void
     {
+        $userSettings = $this->getService(UserSettingsRepository::class);
+
+        $this->assertInstanceOf(UserSettingsRepository::class, $userSettings);
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -159,13 +163,13 @@ class AdminUsersTest extends AbstractWebTest
 
         $responseContent = json_decode($response->getContent(), true);
         /// step 5
-        $this->assertIsArray($responseContent);
 
+        $this->assertIsArray($responseContent);
         $this->assertArrayHasKey('users', $responseContent);
         $this->assertArrayHasKey('page', $responseContent);
         $this->assertArrayHasKey('limit', $responseContent);
         $this->assertArrayHasKey('maxPage', $responseContent);
-        $this->assertCount(8, $responseContent['users']);
+        $this->assertCount(9, $responseContent['users']);
     }
 
     /**

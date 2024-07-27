@@ -10,6 +10,7 @@ use App\Entity\NotificationCheck;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\NewNotificationsSuccessModel;
@@ -60,7 +61,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class NotificationController extends AbstractController
 {
     #[Route('/api/notifications', name: 'notifications', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method get all notifications from the system for logged user',
         requestBody: new OA\RequestBody(
@@ -141,7 +142,7 @@ class NotificationController extends AbstractController
     }
 
     #[Route('/api/notification/activate', name: 'notificationActivate', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Method get is activating given notification so user can see if he read this notification',
         requestBody: new OA\RequestBody(
@@ -197,7 +198,7 @@ class NotificationController extends AbstractController
     }
 
     #[Route('/api/new/notifications', name: 'newNotifications', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator', 'User'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method get amount of new notifications for logged user',
         requestBody: new OA\RequestBody(),

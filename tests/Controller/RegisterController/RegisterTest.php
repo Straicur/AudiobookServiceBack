@@ -207,9 +207,16 @@ class RegisterTest extends AbstractWebTest
      */
     public function test_registerIncorrectInstitutionCredentials(): void
     {
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@1cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@2cos.pl', '+48123123124', ['Guest', 'User'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@3cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@1cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@2cos.pl', '+48123123124', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@3cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@4cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@5cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@6cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@7cos.pl', '+48123123129', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@8cos.pl', '+48123123120', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@9cos.pl', '+48123123223', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@10cos.pl', '+48153123223', ['Guest', 'User'], true, 'zaq12wsx');
         /// step 1
 
         $content = [
@@ -220,11 +227,8 @@ class RegisterTest extends AbstractWebTest
             'password' => 'zaq12wsx'
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user3);
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
+        $crawler = self::$webClient->request('PUT', '/api/register', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
 

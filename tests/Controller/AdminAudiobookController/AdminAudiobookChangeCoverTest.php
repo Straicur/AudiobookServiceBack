@@ -190,7 +190,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
      */
     public function test_adminAudiobookChangeCoverPermission(): void
     {
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'Recruiter'], true, 'zaq12wsx');
         $fileBase2 = fopen(self::base64ImgFile, 'rb');
         $readData2 = fread($fileBase2, filesize(self::base64ImgFile,));
 

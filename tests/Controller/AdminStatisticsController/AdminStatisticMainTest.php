@@ -7,6 +7,7 @@ namespace App\Tests\Controller\AdminStatisticsController;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
@@ -24,6 +25,9 @@ class AdminStatisticMainTest extends AbstractWebTest
      */
     public function test_adminStatisticMainCorrect(): void
     {
+        $userRepository = $this->getService(UserRepository::class);
+
+        $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $admin = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -73,7 +77,9 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertArrayHasKey('lastWeekNotifications', $responseContent);
         $this->assertArrayHasKey('lastWeekTechnicalBreaks', $responseContent);
 
-        $this->assertSame($responseContent['users'],11);
+        $this->assertSame($responseContent['users'], count($userRepository->findBy([
+            'active' => true,
+        ])));
         $this->assertSame($responseContent['categories'],13);
         $this->assertSame($responseContent['audiobooks'],2);
         $this->assertSame($responseContent['lastWeekLogins'],3);

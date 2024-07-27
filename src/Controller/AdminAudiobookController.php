@@ -90,7 +90,7 @@ use ZipArchive;
 class AdminAudiobookController extends AbstractController
 {
     #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is getting details of audiobook',
         requestBody: new OA\RequestBody(
@@ -210,7 +210,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Put(
         description: 'Endpoint is adding new audiobook with files',
         requestBody: new OA\RequestBody(
@@ -380,7 +380,19 @@ class AdminAudiobookController extends AbstractController
                         };
                     }
 
-                    $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age ?? AudiobookAgeRange::ABOVE18, $folderDir);
+                    $newAudiobook = new Audiobook(
+                        $title,
+                        $author,
+                        $version,
+                        $album,
+                        $year,
+                        $duration,
+                        $size,
+                        $parts,
+                        $description,
+                        $age ?? AudiobookAgeRange::ABOVE18,
+                        $folderDir,
+                    );
 
                     if ($encoded !== "") {
                         $newAudiobook->setEncoded($encoded);
@@ -459,7 +471,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given audiobook data',
         requestBody: new OA\RequestBody(
@@ -520,7 +532,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting audiobook with his files',
         requestBody: new OA\RequestBody(
@@ -578,7 +590,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning zip blob',
         requestBody: new OA\RequestBody(
@@ -648,7 +660,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is re-adding audiobook by changing files',
         requestBody: new OA\RequestBody(
@@ -937,7 +949,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of all audiobooks',
         requestBody: new OA\RequestBody(
@@ -1052,7 +1064,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given audiobook',
         requestBody: new OA\RequestBody(
@@ -1155,7 +1167,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is changing given cover',
         requestBody: new OA\RequestBody(
@@ -1229,7 +1241,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is deleting given comment',
         requestBody: new OA\RequestBody(
@@ -1281,7 +1293,7 @@ class AdminAudiobookController extends AbstractController
     }
 
     #[Route('/api/admin/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning comments for given audiobook for admin',
         requestBody: new OA\RequestBody(

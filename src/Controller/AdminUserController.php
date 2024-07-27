@@ -92,7 +92,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminUserController extends AbstractController
 {
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning roles in system',
         requestBody: new OA\RequestBody(),
@@ -133,7 +133,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is Adding role to user',
         requestBody: new OA\RequestBody(
@@ -209,7 +209,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is removing role for user',
         requestBody: new OA\RequestBody(
@@ -285,7 +285,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given user',
         requestBody: new OA\RequestBody(
@@ -345,7 +345,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is banning/unbanning user',
         requestBody: new OA\RequestBody(
@@ -399,7 +399,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing password of given user',
         requestBody: new OA\RequestBody(
@@ -459,7 +459,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing phone number of given user',
         requestBody: new OA\RequestBody(
@@ -526,7 +526,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/users', name: 'adminUsers', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users in system',
         requestBody: new OA\RequestBody(
@@ -646,7 +646,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is deleting given user',
         requestBody: new OA\RequestBody(
@@ -724,7 +724,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users to delete',
         requestBody: new OA\RequestBody(
@@ -804,7 +804,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of already delete users',
         requestBody: new OA\RequestBody(
@@ -882,7 +882,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is deleting given user',
         requestBody: new OA\RequestBody(
@@ -956,7 +956,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is declining user request to delete his account',
         requestBody: new OA\RequestBody(
@@ -1048,7 +1048,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of notifications in system',
         requestBody: new OA\RequestBody(
@@ -1131,7 +1131,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding notification',
         requestBody: new OA\RequestBody(
@@ -1316,7 +1316,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing notification',
         requestBody: new OA\RequestBody(
@@ -1394,7 +1394,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is deleting notification',
         requestBody: new OA\RequestBody(

@@ -8,6 +8,7 @@ use App\Annotation\AuthValidation;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\StockCacheTags;
+use App\Enums\UserRolesNames;
 use App\Model\Admin\AdminAudiobookDetailsModel;
 use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
 use App\Model\Admin\AdminStatisticMainSuccessModel;
@@ -55,7 +56,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminStatisticsController extends AbstractController
 {
     #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning main statistic data',
         requestBody: new OA\RequestBody(),
@@ -115,7 +116,7 @@ class AdminStatisticsController extends AbstractController
     }
 
     #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: ['Administrator'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint  is returning most liked audiobooks statistics',
         requestBody: new OA\RequestBody(),

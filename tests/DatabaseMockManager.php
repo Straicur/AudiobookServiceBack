@@ -92,7 +92,7 @@ class DatabaseMockManager
         }
     }
 
-    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, DateTime$editableDate = null, DateTime$bannedTo = null, ?DateTime$birthday = null): User
+    public function testFunc_addUser(string $firstname, string $lastname, string $email, string $phone, array $rolesNames = [], bool $mainGroup = false, string $password = null, DateTime $addedDate = null, bool $banned = false, bool $notActive = false, bool $edited = false, DateTime $editableDate = null, DateTime $bannedTo = null, ?DateTime $birthday = null): User
     {
         $userRepository = $this->getService(UserRepository::class);
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -137,7 +137,7 @@ class DatabaseMockManager
 
         $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
 
-        if($birthday != null){
+        if ($birthday != null) {
             $userInformationEntity->setBirthday($birthday);
         }
 
@@ -161,7 +161,7 @@ class DatabaseMockManager
         return $userRepository->findOneBy(['id' => $user->getId()]);
     }
 
-    public function testFunc_loginUser(User $user, DateTime$dateEnd = null): AuthenticationToken
+    public function testFunc_loginUser(User $user, DateTime $dateEnd = null): AuthenticationToken
     {
         $authenticationTokenRepository = $this->getService(AuthenticationTokenRepository::class);
 
@@ -176,7 +176,7 @@ class DatabaseMockManager
         return $authenticationTokenRepository->findOneBy(['id' => $authenticationToken->getId()]);
     }
 
-    public function testFunc_addRegisterCode(User $user, DateTime$dateAccept = null, bool $active = false, string $code = null): RegisterCode
+    public function testFunc_addRegisterCode(User $user, DateTime $dateAccept = null, bool $active = false, string $code = null): RegisterCode
     {
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
 
@@ -219,7 +219,7 @@ class DatabaseMockManager
      * @param float|null $rating
      * @return Audiobook
      */
-    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, DateTime$year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, DateTime$dateAdd = null, bool $active = false, float $rating = null): Audiobook
+    public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, DateTime $dateAdd = null, bool $active = false, float $rating = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
@@ -283,7 +283,7 @@ class DatabaseMockManager
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part,(string) $endedTime, $watched);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, (string) $endedTime, $watched);
 
         if ($watched) {
             $newRegisterCode->setWatched($watched);
@@ -320,7 +320,7 @@ class DatabaseMockManager
         $proposedAudiobooksRepository->add($proposedAudiobooks);
     }
 
-    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, ?DateTime$dateDeleted = null): UserDelete
+    public function testFunc_addUserDelete(User $user, bool $deleted = false, bool $declined = false, ?DateTime $dateDeleted = null): UserDelete
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
@@ -450,7 +450,7 @@ class DatabaseMockManager
         return $newAudiobookUserCommentLike;
     }
 
-    public function testFunc_addUserEdit(User $user, bool $edited, int $type, ?DateTime$editableDate = null): UserEdit
+    public function testFunc_addUserEdit(User $user, bool $edited, int $type, ?DateTime $editableDate = null): UserEdit
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 
@@ -465,7 +465,7 @@ class DatabaseMockManager
         return $newUserEdit;
     }
 
-    public function testFunc_addReport(ReportType $type, bool $accepted = false, bool $denied = false, DateTime$dateAdd = null, string $desc = null, Uuid $actionId = null, string $ip = null, string $email = null, User $user = null): Report
+    public function testFunc_addReport(ReportType $type, bool $accepted = false, bool $denied = false, DateTime $dateAdd = null, string $desc = null, Uuid $actionId = null, string $ip = null, string $email = null, User $user = null): Report
     {
         $reportRepository = $this->getService(ReportRepository::class);
 
@@ -503,7 +503,7 @@ class DatabaseMockManager
         return $newReport;
     }
 
-    public function testFunc_addUserBanHistory(User $user, DateTime$dateFrom, DateTime$dateTo): UserBanHistory
+    public function testFunc_addUserBanHistory(User $user, DateTime $dateFrom, DateTime $dateTo): UserBanHistory
     {
         $userBanHistoryRepository = $this->getService(UserBanHistoryRepository::class);
 
@@ -514,7 +514,7 @@ class DatabaseMockManager
         return $newUserBanHistory;
     }
 
-    public function testFunc_addTechnicalBreak(bool $active, User $user, ?DateTime$dateFrom = null, ?DateTime$dateTo = null): TechnicalBreak
+    public function testFunc_addTechnicalBreak(bool $active, User $user, ?DateTime $dateFrom = null, ?DateTime $dateTo = null): TechnicalBreak
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
