@@ -101,17 +101,19 @@ class AuthorizationController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
             }
 
-            if ($userInformationEntity->getUser()->isBanned()) {
+            $user = $userInformationEntity->getUser();
+
+            if ($user->isBanned()) {
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserBanned')]);
             }
 
-            if (!$userInformationEntity->getUser()->isActive()) {
+            if (!$user->isActive()) {
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('ActivateAccount')]);
             }
 
-            $roles = $userInformationEntity->getUser()->getRoles();
+            $roles = $user->getRoles();
             $isUser = false;
 
             foreach ($roles as $role) {
@@ -125,7 +127,7 @@ class AuthorizationController extends AbstractController
             }
 
             $passwordEntity = $userPasswordRepository->findOneBy([
-                'user'     => $userInformationEntity->getUser(),
+                'user' => $user->getId(),
                 'password' => $passwordHashGenerator->generate(),
             ]);
 
@@ -134,12 +136,15 @@ class AuthorizationController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('NotActivePassword')]);
             }
 
-            $authTokenGenerator = new AuthTokenGenerator($userInformationEntity->getUser());
+            $authenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
 
-            $authenticationToken = new AuthenticationToken($userInformationEntity->getUser(), $authTokenGenerator);
-            $authenticationTokenRepository->add($authenticationToken);
+            if ($authenticationToken === null) {
+                $authTokenGenerator = new AuthTokenGenerator($user);
+                $authenticationToken = new AuthenticationToken($user, $authTokenGenerator);
+                $authenticationTokenRepository->add($authenticationToken);
+            }
 
-            $usersLogger->info('LOGIN', [$userInformationEntity->getUser()->getId()->__toString()]);
+            $usersLogger->info('LOGIN', [$user->getId()->__toString()]);
 
             $rolesModel = new AuthorizationRolesModel();
 

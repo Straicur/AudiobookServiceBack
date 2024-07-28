@@ -54,18 +54,21 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findActiveToken(string $authorizationHeaderField): ?AuthenticationToken
     {
-        return $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->where('a.token = :token')
             ->andWhere('a.dateExpired > :dateNow')
             ->setParameter('token', $authorizationHeaderField)
             ->setParameter('dateNow', new DateTime())
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->addOrderBy('a.dateExpired', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(1);
+
+        $query = $qb->getQuery();
+        $res = $query->execute();
+
+        return count($res) > 0 ? $res[0] : null;
     }
 
     /**

@@ -646,7 +646,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting given user',
         requestBody: new OA\RequestBody(
