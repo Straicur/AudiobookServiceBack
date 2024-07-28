@@ -577,9 +577,11 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookService->removeFolder($audiobook->getFileName());
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value,
+            $stockCache->invalidateTags([
+                StockCacheTags::ADMIN_AUDIOBOOK->value,
                 StockCacheTags::ADMIN_CATEGORY->value,
-                StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]);
+                StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+            ]);
 
             return ResponseTool::getResponse();
         }

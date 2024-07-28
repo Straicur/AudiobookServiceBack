@@ -345,7 +345,7 @@ class AdminUserController extends AbstractController
     }
 
     #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is banning/unbanning user',
         requestBody: new OA\RequestBody(
@@ -671,6 +671,7 @@ class AdminUserController extends AbstractController
         UserDeleteRepository $userDeleteRepository,
         MailerInterface $mailer,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
 
@@ -701,6 +702,10 @@ class AdminUserController extends AbstractController
             $userDelete->setDateDeleted(new DateTime());
 
             $userDeleteRepository->add($userDelete);
+
+            $stockCache->invalidateTags([
+                StockCacheTags::USER_DELETED->value,
+            ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {
                 $email = (new TemplatedEmail())
@@ -906,6 +911,7 @@ class AdminUserController extends AbstractController
         UserDeleteRepository $userDeleteRepository,
         MailerInterface $mailer,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
 
@@ -933,6 +939,10 @@ class AdminUserController extends AbstractController
             $userDelete->setDateDeleted(new DateTime());
 
             $userDeleteRepository->add($userDelete);
+
+            $stockCache->invalidateTags([
+                StockCacheTags::USER_DELETED->value,
+            ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {
                 $email = (new TemplatedEmail())
@@ -1014,6 +1024,10 @@ class AdminUserController extends AbstractController
             $user->setActive(true);
 
             $userRepository->add($user);
+
+            $stockCache->invalidateTags([
+                StockCacheTags::USER_DELETED->value,
+            ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {
                 $email = (new TemplatedEmail())
