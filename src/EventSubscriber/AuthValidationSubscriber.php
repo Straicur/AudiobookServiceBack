@@ -14,8 +14,10 @@ use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
 use App\Exception\TechnicalBreakException;
+use App\Exception\UserDeletedException;
 use App\Repository\AuthenticationTokenRepository;
 use App\Repository\TechnicalBreakRepository;
+use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
 use DateTime;
@@ -35,6 +37,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
         private readonly TechnicalBreakRepository $technicalBreakRepository,
         private readonly UserRepository $userRepository,
+        private readonly UserDeleteRepository $deleteRepository,
         private readonly LoggerInterface $requestLogger,
         private readonly TagAwareCacheInterface $stockCache,
     ) {
@@ -82,6 +85,20 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         $this->requestLogger->info('Logged user action', $loggedUserData);
 
                         $user = $authToken->getUser();
+
+                        $userDeleted = $this->stockCache->get(CacheKeys::USER_DELETED->value . $user->getId(), function (ItemInterface $item) use ($user) {
+                            $item->expiresAfter(CacheValidTime::DAY->value);
+                            $item->tag(StockCacheTags::USER_DELETED->value);
+
+                            return $this->deleteRepository->findOneBy([
+                                'user'    => $user->getId(),
+                                'deleted' => true,
+                            ]);
+                        });
+
+                        if ($userDeleted !== null) {
+                            throw new UserDeletedException();
+                        }
 
                         if ($user->isBanned()) {
                             if ($user->getBannedTo() < new DateTime()) {
