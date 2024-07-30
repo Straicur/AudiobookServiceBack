@@ -104,7 +104,8 @@ class AdminReportListQuery
             $searchData['type'] !== ReportType::CATEGORY_PROBLEM->value &&
             $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value &&
             $searchData['type'] !== ReportType::USER_PROBLEM->value &&
-            $searchData['type'] !== ReportType::SETTINGS_PROBLEM->value
+            $searchData['type'] !== ReportType::SETTINGS_PROBLEM->value &&
+            $searchData['type'] !== ReportType::RECRUITMENT_REQUEST->value
         ) {
             $searchData['type'] = ReportType::COMMENT->value;
         }

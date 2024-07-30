@@ -80,12 +80,15 @@ class UserReportController extends AbstractController
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
-            $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip);
 
-            if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
-                $endpointLogger->error('To many reports from this ip');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+            if (!empty($ip)) {
+                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip);
+
+                if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
+                    $endpointLogger->error('To many reports from this ip');
+                    $translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+                }
             }
 
             $additionalData = $userNotAuthorizedUserReportQuery->getAdditionalData();
