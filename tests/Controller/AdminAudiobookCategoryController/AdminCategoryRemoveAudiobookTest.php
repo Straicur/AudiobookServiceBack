@@ -208,7 +208,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
     public function test_adminCategoryRemoveAudiobookPermission(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Recruiter'], true, 'zaq12wsx');
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

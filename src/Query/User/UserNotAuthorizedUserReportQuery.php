@@ -14,11 +14,10 @@ class UserNotAuthorizedUserReportQuery
     #[Assert\NotBlank(message: 'Type is empty')]
     #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
-    #[Assert\LessThan(7)]
+    #[Assert\LessThan(8)]
     private int $type;
 
     #[Assert\NotNull(message: 'Ip is null')]
-    #[Assert\NotBlank(message: 'Ip is empty')]
     #[Assert\Type(type: 'string')]
     private string $ip;
 
@@ -73,6 +72,7 @@ class UserNotAuthorizedUserReportQuery
             4 => ReportType::SYSTEM_PROBLEM,
             5 => ReportType::USER_PROBLEM,
             6 => ReportType::SETTINGS_PROBLEM,
+            7 => ReportType::RECRUITMENT_REQUEST,
             default => ReportType::COMMENT,
         };
     }

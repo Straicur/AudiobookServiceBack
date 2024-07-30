@@ -68,7 +68,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 4
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(409);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 

@@ -69,6 +69,7 @@ class Report
             4 => ReportType::SYSTEM_PROBLEM,
             5 => ReportType::USER_PROBLEM,
             6 => ReportType::SETTINGS_PROBLEM,
+            7 => ReportType::RECRUITMENT_REQUEST,
         };
     }
 

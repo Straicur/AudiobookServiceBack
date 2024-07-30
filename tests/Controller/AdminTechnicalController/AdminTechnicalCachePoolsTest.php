@@ -41,7 +41,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('cachePools', $responseContent);
-        $this->assertCount(13, $responseContent['cachePools']);
+        $this->assertCount(14, $responseContent['cachePools']);
     }
 
     /**
