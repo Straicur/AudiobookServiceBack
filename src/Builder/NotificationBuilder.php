@@ -9,7 +9,7 @@ use App\Entity\NotificationCheck;
 use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\StockCacheTags;
+use App\Enums\UserStockCacheTags;
 use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
 use Symfony\Component\Uid\Uuid;
@@ -78,7 +78,7 @@ class NotificationBuilder
 
         $this->notification->setMetaData(json_encode($this->metaData));
 
-        $stockCache?->invalidateTags([StockCacheTags::USER_NOTIFICATIONS->value]);
+        $stockCache?->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
         return $this->notification;
     }

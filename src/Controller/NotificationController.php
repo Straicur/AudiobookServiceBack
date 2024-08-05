@@ -9,8 +9,9 @@ use App\Builder\NotificationBuilder;
 use App\Entity\NotificationCheck;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
-use App\Enums\StockCacheTags;
+use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
+use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\NewNotificationsSuccessModel;
@@ -95,10 +96,10 @@ class NotificationController extends AbstractController
             $user = $authorizedUserService::getAuthorizedUser();
 
             $systemNotificationSuccessModel = $stockCache->get(
-                CacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(),
+                UserCacheKeys::USER_NOTIFICATIONS->value . $user->getId() . '_' . $systemNotificationQuery->getPage() . $systemNotificationQuery->getLimit(),
                 function (ItemInterface $item) use ($notificationRepository, $systemNotificationQuery, $user, $checkRepository) {
                     $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                    $item->tag(StockCacheTags::USER_NOTIFICATIONS->value);
+                    $item->tag(UserStockCacheTags::USER_NOTIFICATIONS->value);
 
                     $userSystemNotifications = $notificationRepository->getUserNotifications($user);
 

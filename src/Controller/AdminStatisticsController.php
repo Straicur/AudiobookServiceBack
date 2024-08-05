@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
+use App\Enums\AdminCacheKeys;
+use App\Enums\AdminStockCacheTags;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
-use App\Enums\StockCacheTags;
 use App\Enums\UserRolesNames;
 use App\Model\Admin\AdminAudiobookDetailsModel;
 use App\Model\Admin\AdminStatisticBestAudiobooksSuccessModel;
@@ -83,9 +84,9 @@ class AdminStatisticsController extends AbstractController
             $lastWeekRegistered,
             $lastWeekLogins,
             $lastWeekNotifications,
-            $lastWeekSystemBreaks] = $stockCache->get(CacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
+            $lastWeekSystemBreaks] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
                 $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-                $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
+                $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
                 $users = count($userRepository->findBy([
                 'active' => true,
@@ -139,9 +140,9 @@ class AdminStatisticsController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $successModel = $stockCache->get(CacheKeys::ADMIN_STATISTICS_AUDIOBOOKS->value, function (ItemInterface $item) use ($topAudiobooks, $audiobookCategoryRepository) {
+        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS_AUDIOBOOKS->value, function (ItemInterface $item) use ($topAudiobooks, $audiobookCategoryRepository) {
             $item->expiresAfter(CacheValidTime::TWO_HOURS->value);
-            $item->tag(StockCacheTags::ADMIN_STATISTICS->value);
+            $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
             $successModel = new AdminStatisticBestAudiobooksSuccessModel();
 

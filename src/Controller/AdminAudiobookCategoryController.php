@@ -6,9 +6,10 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookCategory;
+use App\Enums\AdminCacheKeys;
+use App\Enums\AdminStockCacheTags;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
-use App\Enums\StockCacheTags;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -119,7 +120,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobookCategoryRepository->add($newCategory);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -170,7 +171,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobookCategoryRepository->add($category);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
@@ -221,7 +222,7 @@ class AdminAudiobookCategoryController extends AbstractController
             $notificationRepository->updateDeleteNotificationsByAction($category->getId());
             $audiobookCategoryRepository->removeCategoryAndChildren($category);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
@@ -281,9 +282,9 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
-                StockCacheTags::ADMIN_CATEGORY->value,
-                StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                AdminStockCacheTags::ADMIN_CATEGORY->value,
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -344,9 +345,9 @@ class AdminAudiobookCategoryController extends AbstractController
             $audiobookCategoryRepository->add($category);
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
-                StockCacheTags::ADMIN_CATEGORY->value,
-                StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                AdminStockCacheTags::ADMIN_CATEGORY->value,
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
@@ -396,9 +397,9 @@ class AdminAudiobookCategoryController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
+            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
-                $item->tag(StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value);
+                $item->tag(AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value);
 
                 $successModel = new AdminCategoryAudiobooksSuccessModel();
 
@@ -466,9 +467,9 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookRepository $audiobookRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
-        $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository, $audiobookRepository) {
+        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository, $audiobookRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
-            $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
+            $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
             $categories = $audiobookCategoryRepository->findBy([
                 'parent' => null,
@@ -499,9 +500,9 @@ class AdminAudiobookCategoryController extends AbstractController
         AudiobookCategoryRepository $audiobookCategoryRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
-        $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORIES->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
+        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORIES->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
-            $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
+            $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
             $categories = $audiobookCategoryRepository->findBy([], orderBy: ['dateAdd' => 'ASC']);
 
@@ -559,7 +560,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $audiobookCategoryRepository->add($category);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_CATEGORY->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
@@ -608,9 +609,9 @@ class AdminAudiobookCategoryController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
             }
-            $successModel = $stockCache->get(CacheKeys::ADMIN_CATEGORY->value . $category->getId(), function (ItemInterface $item) use ($category) {
+            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY->value . $category->getId(), function (ItemInterface $item) use ($category) {
                 $item->expiresAfter(CacheValidTime::DAY->value);
-                $item->tag(StockCacheTags::ADMIN_CATEGORY->value);
+                $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
                 return new AdminCategorySuccessModel(
                     (string)$category->getId(),
