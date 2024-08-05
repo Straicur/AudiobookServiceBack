@@ -9,7 +9,7 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
-use App\Enums\StockCacheTags;
+use App\Enums\UserStockCacheTags;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRepository;
@@ -161,7 +161,7 @@ class UserProposedAudiobooksCommand extends Command
             }
         }
 
-        $this->stockCache->invalidateTags([StockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
+        $this->stockCache->invalidateTags([UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);
 
         $io->success('Proposed audiobooks added for users');
 

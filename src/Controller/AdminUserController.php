@@ -7,13 +7,15 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\UserDelete;
+use App\Enums\AdminCacheKeys;
+use App\Enums\AdminStockCacheTags;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\StockCacheTags;
 use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
+use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminSystemRoleModel;
@@ -108,9 +110,9 @@ class AdminUserController extends AbstractController
         RoleRepository $roleRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
-        $successModel = $stockCache->get(CacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
+        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
             $item->expiresAfter(CacheValidTime::DAY->value);
-            $item->tag(StockCacheTags::ADMIN_ROLES->value);
+            $item->tag(AdminStockCacheTags::ADMIN_ROLES->value);
 
             $roles = $roleRepository->getSystemRoles();
 
@@ -704,7 +706,7 @@ class AdminUserController extends AbstractController
             $userDeleteRepository->add($userDelete);
 
             $stockCache->invalidateTags([
-                StockCacheTags::USER_DELETED->value,
+                UserStockCacheTags::USER_DELETED->value,
             ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {
@@ -941,7 +943,7 @@ class AdminUserController extends AbstractController
             $userDeleteRepository->add($userDelete);
 
             $stockCache->invalidateTags([
-                StockCacheTags::USER_DELETED->value,
+                UserStockCacheTags::USER_DELETED->value,
             ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {
@@ -1026,7 +1028,7 @@ class AdminUserController extends AbstractController
             $userRepository->add($user);
 
             $stockCache->invalidateTags([
-                StockCacheTags::USER_DELETED->value,
+                UserStockCacheTags::USER_DELETED->value,
             ]);
 
             if ($_ENV['APP_ENV'] !== 'test') {

@@ -2,14 +2,8 @@
 
 namespace App\Enums;
 
-enum StockCacheTags: string
+enum UserStockCacheTags: string
 {
-    case ADMIN_CATEGORY = 'AdminCategory';
-    case ADMIN_CATEGORY_AUDIOBOOKS = 'AdminCategoryAudiobooks';
-    case ADMIN_AUDIOBOOK = 'AdminAudiobook';
-    case ADMIN_STATISTICS = 'AdminStatistics';
-    case ADMIN_ROLES = 'AdminRoles';
-    case ADMIN_TECHNICAL_BREAK = 'AdminTechnicalBreak';
     case USER_DELETED = 'UserDeleted';
     case USER_AUDIOBOOK_PART = 'UserAudiobookPart';
     case USER_NOTIFICATIONS = 'UserNotifications';

@@ -7,14 +7,16 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\Audiobook;
+use App\Enums\AdminCacheKeys;
+use App\Enums\AdminStockCacheTags;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
-use App\Enums\StockCacheTags;
 use App\Enums\UserAudiobookActivationType;
 use App\Enums\UserRolesNames;
+use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminAudiobookDetailsSuccessModel;
@@ -129,9 +131,9 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository, $audiobookRepository) {
+            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_AUDIOBOOK->value . $audiobook->getId(), function (ItemInterface $item) use ($audiobook, $audiobookRatingRepository, $audiobookCategoryRepository, $audiobookRepository) {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
-                $item->tag(StockCacheTags::ADMIN_AUDIOBOOK->value);
+                $item->tag(AdminStockCacheTags::ADMIN_AUDIOBOOK->value);
 
                 $categories = $audiobookCategoryRepository->getAudiobookCategories($audiobook);
 
@@ -451,9 +453,9 @@ class AdminAudiobookController extends AbstractController
                         $successModel->setEncoded($newAudiobook->getEncoded());
                     }
 
-                    $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value,
-                        StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
-                        StockCacheTags::ADMIN_CATEGORY->value]);
+                    $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
+                        AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                        AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
                     return ResponseTool::getResponse($successModel, 201);
                 }
@@ -521,7 +523,7 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value, StockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value, UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
 
             return ResponseTool::getResponse();
         }
@@ -578,9 +580,9 @@ class AdminAudiobookController extends AbstractController
             $audiobookService->removeFolder($audiobook->getFileName());
 
             $stockCache->invalidateTags([
-                StockCacheTags::ADMIN_AUDIOBOOK->value,
-                StockCacheTags::ADMIN_CATEGORY->value,
-                StockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
+                AdminStockCacheTags::ADMIN_CATEGORY->value,
+                AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
             ]);
 
             return ResponseTool::getResponse();
@@ -937,7 +939,7 @@ class AdminAudiobookController extends AbstractController
                     }
                 }
 
-                $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+                $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
                 return ResponseTool::getResponse($successModel);
             }
@@ -1158,7 +1160,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setActive($adminAudiobookActiveQuery->isActive());
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value, StockCacheTags::USER_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value, UserStockCacheTags::USER_AUDIOBOOKS->value]);
 
             return ResponseTool::getResponse();
         }
@@ -1232,7 +1234,7 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setImgFileChangeDate();
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
@@ -1283,8 +1285,8 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookUserCommentRepository->add($audiobookComment);
 
-            $stockCache->invalidateTags([StockCacheTags::AUDIOBOOK_COMMENTS->value]);
-            $stockCache->invalidateTags([StockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value]);
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
@@ -1337,9 +1339,9 @@ class AdminAudiobookController extends AbstractController
 
             $user = $authorizedUserService::getAuthorizedUser();
 
-            $successModel = $stockCache->get(CacheKeys::ADMIN_AUDIOBOOK_COMMENTS->value . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository) {
+            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_AUDIOBOOK_COMMENTS->value . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository) {
                 $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                $item->tag(StockCacheTags::AUDIOBOOK_COMMENTS->value);
+                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
 
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
                     'parent'    => null,

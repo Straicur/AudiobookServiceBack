@@ -7,8 +7,9 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
-use App\Enums\StockCacheTags;
+use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
+use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Common\AudiobookCoverModel;
@@ -96,9 +97,9 @@ class AudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $dir = $stockCache->get(CacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
+            $dir = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
                 $item->expiresAfter(CacheValidTime::HOUR->value);
-                $item->tag(StockCacheTags::USER_AUDIOBOOK_PART->value);
+                $item->tag(UserStockCacheTags::USER_AUDIOBOOK_PART->value);
                 $allParts = [];
 
                 try {

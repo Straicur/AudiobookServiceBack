@@ -6,10 +6,13 @@ namespace App\EventSubscriber;
 
 use App\Annotation\AuthValidation;
 use App\Entity\User;
+use App\Enums\AdminCacheKeys;
+use App\Enums\AdminStockCacheTags;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
-use App\Enums\StockCacheTags;
+use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
+use App\Enums\UserStockCacheTags;
 use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
@@ -86,9 +89,9 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                         $user = $authToken->getUser();
 
-                        $userDeleted = $this->stockCache->get(CacheKeys::USER_DELETED->value . $user->getId(), function (ItemInterface $item) use ($user) {
+                        $userDeleted = $this->stockCache->get(UserCacheKeys::USER_DELETED->value . $user->getId(), function (ItemInterface $item) use ($user) {
                             $item->expiresAfter(CacheValidTime::DAY->value);
-                            $item->tag(StockCacheTags::USER_DELETED->value);
+                            $item->tag(UserStockCacheTags::USER_DELETED->value);
 
                             return $this->deleteRepository->findOneBy([
                                 'user'    => $user->getId(),
@@ -121,9 +124,9 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         AuthorizedUserService::setAuthenticationToken($authToken);
                         AuthorizedUserService::setAuthorizedUser($authToken->getUser());
 
-                        $technicalBreak = $this->stockCache->get(CacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
+                        $technicalBreak = $this->stockCache->get(AdminCacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
                             $item->expiresAfter(CacheValidTime::DAY->value);
-                            $item->tag(StockCacheTags::ADMIN_TECHNICAL_BREAK->value);
+                            $item->tag(AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value);
 
                             return $this->technicalBreakRepository->findOneBy([
                                 'active' => true,

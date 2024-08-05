@@ -8,23 +8,42 @@ use App\Model\ModelInterface;
 
 class AdminTechnicalCachePoolsModel implements ModelInterface
 {
-    private array $cachePools = [];
+    private array $adminCachePools = [];
+    private array $userCachePools = [];
 
     /**
      * @return CacheModel[]
      */
-    public function getCachePools(): array
+    public function getAdminCachePools(): array
     {
-        return $this->cachePools;
+        return $this->adminCachePools;
     }
 
-    public function setCachePools(array $cachePools): void
+    public function setAdminCachePools(array $adminCachePools): void
     {
-        $this->cachePools = $cachePools;
+        $this->adminCachePools = $adminCachePools;
     }
 
-    public function addCachePool(CacheModel $cachePool): void
+    public function addAdminCachePool(CacheModel $adminCachePool): void
     {
-        $this->cachePools[] = $cachePool;
+        $this->adminCachePools[] = $adminCachePool;
+    }
+
+    /**
+     * @return CacheModel[]
+     */
+    public function getUserCachePools(): array
+    {
+        return $this->userCachePools;
+    }
+
+    public function setUserCachePools(array $userCachePools): void
+    {
+        $this->userCachePools = $userCachePools;
+    }
+
+    public function addUserCachePool(CacheModel $userCachePool): void
+    {
+        $this->userCachePools[] = $userCachePool;
     }
 }
