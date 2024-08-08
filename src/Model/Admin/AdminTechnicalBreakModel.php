@@ -18,7 +18,7 @@ class AdminTechnicalBreakModel
     {
         $this->id = $id;
         $this->active = $active;
-        $this->dateFrom = $dateFrom->getTimestamp();
+        $this->dateFrom = $dateFrom->getTimestamp() * 1000;
         $this->user = $user;
     }
 
@@ -49,7 +49,7 @@ class AdminTechnicalBreakModel
 
     public function setDateFrom(DateTime $dateFrom): void
     {
-        $this->dateFrom = $dateFrom->getTimestamp();
+        $this->dateFrom = $dateFrom->getTimestamp() * 1000;
     }
 
     public function getDateTo(): ?int
@@ -59,7 +59,7 @@ class AdminTechnicalBreakModel
 
     public function setDateTo(DateTime $dateTo): void
     {
-        $this->dateTo = $dateTo->getTimestamp();
+        $this->dateTo = $dateTo->getTimestamp() * 1000;
     }
 
     public function getUser(): string

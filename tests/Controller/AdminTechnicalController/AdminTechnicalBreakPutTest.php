@@ -42,6 +42,35 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         /// step 5
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     * step 5 - Checking response if count of TechnicalBreak is correct
+     * @return void
+     */
+    public function test_adminTechnicalBreakPutOnlyOneExistsdCorrect(): void
+    {
+        $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
+
+        $this->assertInstanceOf(TechnicalBreakRepository::class, $technicalBreakRepository);
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        /// step 2
+        $content = [];
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+            'HTTP_authorization' => $token->getToken()
+        ]);
+
+        /// step 4
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(201);
+        /// step 5
+        $this->assertCount(1, $technicalBreakRepository->findAll());
+    }
 
     /**
      * step 1 - Preparing data

@@ -82,9 +82,15 @@ class AdminTechnicalController extends AbstractController
         TagAwareCacheInterface $stockCache,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
-        $technicalBreakRepository->add(new TechnicalBreak(true, $user));
 
-        $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
+        $activeTechnicalBreak = $technicalBreakRepository->findOneBy([
+            'active' => true,
+        ]);
+
+        if ($activeTechnicalBreak === null) {
+            $technicalBreakRepository->add(new TechnicalBreak(true, $user));
+            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
+        }
 
         return ResponseTool::getResponse(httpCode: 201);
     }

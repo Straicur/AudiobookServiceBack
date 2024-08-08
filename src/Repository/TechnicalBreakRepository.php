@@ -104,6 +104,8 @@ class TechnicalBreakRepository extends ServiceEntityRepository
                     break;
                 }
             }
+        } else {
+            $qb->orderBy('tb.dateFrom', 'DESC');
         }
 
         return $qb->getQuery()->execute();
