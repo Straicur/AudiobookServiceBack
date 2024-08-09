@@ -8,8 +8,8 @@ use App\Entity\TechnicalBreak;
 use App\Enums\TechnicalBreakOrder;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<TechnicalBreak>
@@ -53,20 +53,17 @@ class TechnicalBreakRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Uuid|null $userId
-     * @param bool|null $active
-     * @param int|null $order
-     * @param DateTime|null $dateFrom
-     * @param DateTime|null $dateTo
      * @return TechnicalBreak[]
      */
-    public function getTechnicalBreakByPage(?Uuid $userId, ?bool $active, ?int $order, ?DateTime $dateFrom, ?DateTime $dateTo): array
+    public function getTechnicalBreakByPage(?string $nameOrLastname, ?bool $active, ?int $order, ?DateTime $dateFrom, ?DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('tb');
 
-        if ($userId !== null) {
-            $qb->andWhere('tb.user = :userId')
-                ->setParameter('userId', $userId->toBinary());
+        if ($nameOrLastname !== null) {
+            $qb->innerJoin('tb.user', 'u', Join::WITH, 'u.id = tb.user')
+                ->innerJoin('u.userInformation', 'ui', Join::WITH, 'ui.user = u.id')
+                ->andWhere('((ui.firstname LIKE :nameOrLastname) OR (ui.lastname LIKE :nameOrLastname) )')
+                ->setParameter('nameOrLastname', '%' . $nameOrLastname. '%');
         }
 
         if ($active !== null) {
@@ -90,12 +87,12 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             switch ($order) {
                 case TechnicalBreakOrder::LATEST->value:
                 {
-                    $qb->orderBy('tb.dateFrom', 'DESC');
+                    $qb->orderBy('tb.dateFrom', 'ASC');
                     break;
                 }
                 case TechnicalBreakOrder::OLDEST->value:
                 {
-                    $qb->orderBy('tb.dateFrom', 'ASC');
+                    $qb->orderBy('tb.dateFrom', 'DESC');
                     break;
                 }
                 case TechnicalBreakOrder::ACTIVE->value:

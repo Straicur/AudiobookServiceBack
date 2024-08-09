@@ -180,14 +180,14 @@ class AdminTechnicalController extends AbstractController
         if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
             $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
 
-            $userId = null;
+            $nameOrLastname = null;
             $active = null;
             $order = null;
             $dateFrom = null;
             $dateTo = null;
 
-            if (array_key_exists('userId', $technicalBreakListData)) {
-                $userId = $technicalBreakListData['userId'];
+            if (array_key_exists('nameOrLastname', $technicalBreakListData)) {
+                $nameOrLastname = $technicalBreakListData['nameOrLastname'];
             }
             if (array_key_exists('active', $technicalBreakListData)) {
                 $active = $technicalBreakListData['active'];
@@ -204,7 +204,7 @@ class AdminTechnicalController extends AbstractController
 
             $successModel = new AdminTechnicalBreakSuccessModel();
 
-            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($userId, $active, $order, $dateFrom, $dateTo);
+            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($nameOrLastname, $active, $order, $dateFrom, $dateTo);
 
             $minResult = $adminTechnicalBreakListQuery->getPage() * $adminTechnicalBreakListQuery->getLimit();
             $maxResult = $adminTechnicalBreakListQuery->getLimit() + $minResult;
@@ -219,7 +219,7 @@ class AdminTechnicalController extends AbstractController
                         (string)$technicalBreak->getId(),
                         $technicalBreak->getActive(),
                         $technicalBreak->getDateFrom(),
-                        (string)$technicalBreak->getUser()->getId(),
+                        $technicalBreak->getUser()->getUserInformation()->getFirstname() . ' ' . $technicalBreak->getUser()->getUserInformation()->getLastname(),
                     );
 
                     if ($technicalBreak->getDateTo() !== null) {

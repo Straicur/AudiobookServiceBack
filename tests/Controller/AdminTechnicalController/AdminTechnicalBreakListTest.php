@@ -24,7 +24,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('GOSC', 'COS', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
         $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new DateTime())->modify('-2 day'), (new DateTime())->modify('-1 day'));
@@ -42,7 +42,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             'page' => 0,
             'limit' => 10,
             'searchData' => [
-                'userId' => $user->getId(),
+                'nameOrLastname' => 'User',
                 'order' => 1,
                 'dateFrom' => $dateFrom->modify('-6 day')->format('d.m.Y'),
                 'dateTo' => $dateTo->modify('+2 day')->format('d.m.Y')
