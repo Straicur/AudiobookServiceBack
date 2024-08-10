@@ -25,7 +25,7 @@ class AdminReportModel
     {
         $this->id = $id;
         $this->type = $type->value;
-        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->dateAdd = $dateAdd->getTimestamp() * 1000;
         $this->accepted = $accepted;
         $this->denied = $denied;
     }
@@ -78,7 +78,7 @@ class AdminReportModel
 
     public function setDateAdd(DateTime $dateAdd): void
     {
-        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->dateAdd = $dateAdd->getTimestamp() * 1000;
     }
 
     public function getAccepted(): bool
