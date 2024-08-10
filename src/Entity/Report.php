@@ -41,6 +41,7 @@ class Report
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $email = null;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user = null;
 
@@ -70,6 +71,7 @@ class Report
             5 => ReportType::USER_PROBLEM,
             6 => ReportType::SETTINGS_PROBLEM,
             7 => ReportType::RECRUITMENT_REQUEST,
+            8 => ReportType::OTHER,
         };
     }
 

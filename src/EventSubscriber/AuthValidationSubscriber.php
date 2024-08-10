@@ -103,6 +103,25 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                             throw new UserDeletedException();
                         }
 
+                        $technicalBreak = $this->stockCache->get(AdminCacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
+                            $item->expiresAfter(CacheValidTime::DAY->value);
+                            $item->tag(AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value);
+
+                            return $this->technicalBreakRepository->findOneBy([
+                                'active' => true,
+                            ]);
+                        });
+
+                        if (($_ENV['APP_ENV'] !== 'test') && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
+                            throw new TechnicalBreakException();
+                        }
+
+                        $foundUserRole = $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
+
+                        if (!$foundUserRole) {
+                            throw new PermissionException();
+                        }
+
                         if ($user->isBanned()) {
                             if ($user->getBannedTo() < new DateTime()) {
                                 $user->setBanned(false);
@@ -123,25 +142,6 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                         AuthorizedUserService::setAuthenticationToken($authToken);
                         AuthorizedUserService::setAuthorizedUser($authToken->getUser());
-
-                        $technicalBreak = $this->stockCache->get(AdminCacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
-                            $item->expiresAfter(CacheValidTime::DAY->value);
-                            $item->tag(AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value);
-
-                            return $this->technicalBreakRepository->findOneBy([
-                                'active' => true,
-                            ]);
-                        });
-
-                        if (($_ENV['APP_ENV'] !== 'test') && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
-                            throw new TechnicalBreakException();
-                        }
-
-                        $foundUserRole = $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
-
-                        if (!$foundUserRole) {
-                            throw new PermissionException();
-                        }
                     }
                 }
             } catch (ReflectionException | NonUniqueResultException | InvalidArgumentException) {

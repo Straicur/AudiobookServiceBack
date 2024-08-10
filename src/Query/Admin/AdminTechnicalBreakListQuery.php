@@ -5,7 +5,6 @@ namespace App\Query\Admin;
 use App\Enums\TechnicalBreakOrder;
 use DateTime;
 use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -27,10 +26,9 @@ class AdminTechnicalBreakListQuery
     {
         $metadata->addPropertyConstraint('searchData', new Assert\Collection([
             'fields' => [
-                'userId'   => new Assert\Optional([
+                'nameOrLastname' => new Assert\Optional([
                     new Assert\NotBlank(),
-                    new Assert\Regex(pattern: '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', message: 'Bad Uuid'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'active'   => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
@@ -54,7 +52,7 @@ class AdminTechnicalBreakListQuery
     }
 
     #[OA\Property(property: 'searchData', properties: [
-        new OA\Property(property: 'userId', type: 'string', example: 'UUID', nullable: true),
+        new OA\Property(property: 'nameOrLastname', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'active', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'dateFrom', type: 'datetime', example: 'd.m.Y', nullable: true),
@@ -62,10 +60,6 @@ class AdminTechnicalBreakListQuery
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('userId', $searchData) && Uuid::isValid($searchData['userId'])) {
-            $searchData['userId'] = Uuid::fromString($searchData['userId']);
-        }
-
         if (
             array_key_exists('order', $searchData) &&
             $searchData['order'] !== TechnicalBreakOrder::LATEST->value &&

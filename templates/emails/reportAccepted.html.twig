@@ -1,5 +1,8 @@
 <div>
     <p>{{ 'ReportAcceptEmail' | force_translate( lang ) }}</p>
     <p>{{ 'YourReport' | force_translate( lang ) }}: {{ desc }}</p>
+    {% if answer is not empty %}
+        <p>{{ 'Answer' | force_translate( lang ) }}: {{ answer }} </p>
+    {% endif %}
 </div>
 

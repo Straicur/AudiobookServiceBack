@@ -52,7 +52,7 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
-    public function notLoggedUserReportsCount(string $ip)
+    public function notLoggedUserReportsCount(string $ip, string $email)
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -60,10 +60,11 @@ class ReportRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
-            ->where('r.ip = :ip')
+            ->where('((r.ip = :ip) or (r.email = :email)) ')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
+            ->setParameter('email', $email)
             ->setParameter('ip', $ip);
 
         return $qb->getQuery()->execute()[0];

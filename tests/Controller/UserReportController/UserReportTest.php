@@ -87,6 +87,8 @@ class UserReportTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2

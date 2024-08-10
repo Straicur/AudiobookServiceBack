@@ -183,7 +183,7 @@ class AdminReportController extends AbstractController
                 $notificationRepository->add($notification);
             }
 
-            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail()) {
+            if ($_ENV['APP_ENV'] !== 'test' && $report->getEmail()) {
                 $email = (new TemplatedEmail())
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($report->getEmail())
@@ -191,6 +191,7 @@ class AdminReportController extends AbstractController
                     ->htmlTemplate('emails/reportAccepted.html.twig')
                     ->context([
                         'desc' => $report->getDescription(),
+                        'answer' => $adminReportAcceptQuery->getAnswer(),
                     ]);
                 $mailer->send($email);
             }

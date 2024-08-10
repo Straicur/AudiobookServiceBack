@@ -49,7 +49,7 @@ class AdminReportListQuery
                     new Assert\NotBlank(),
                     new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
                     new Assert\GreaterThan(0),
-                    new Assert\LessThan(7),
+                    new Assert\LessThan(9),
                 ]),
                 'user'        => new Assert\Optional([
                     new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
@@ -105,9 +105,10 @@ class AdminReportListQuery
             $searchData['type'] !== ReportType::SYSTEM_PROBLEM->value &&
             $searchData['type'] !== ReportType::USER_PROBLEM->value &&
             $searchData['type'] !== ReportType::SETTINGS_PROBLEM->value &&
-            $searchData['type'] !== ReportType::RECRUITMENT_REQUEST->value
+            $searchData['type'] !== ReportType::RECRUITMENT_REQUEST->value &&
+            $searchData['type'] !== ReportType::OTHER->value
         ) {
-            $searchData['type'] = ReportType::COMMENT->value;
+            $searchData['type'] = ReportType::OTHER->value;
         }
 
         if (
@@ -115,7 +116,7 @@ class AdminReportListQuery
             $searchData['order'] !== ReportOrderSearch::OLDEST->value &&
             $searchData['order'] !== ReportOrderSearch::LATEST->value
         ) {
-            $searchData['order'] = ReportType::COMMENT->value;
+            $searchData['order'] = ReportOrderSearch::LATEST->value;
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
