@@ -46,7 +46,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'response' => 'dsa'
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/reject', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -90,7 +90,7 @@ class AdminReportRejectTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/reject', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -134,7 +134,7 @@ class AdminReportRejectTest extends AbstractWebTest
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/reject', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -180,7 +180,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'response' => 'dsa'
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/reject', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -225,7 +225,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'response' => 'dsa'
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/reject', content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);

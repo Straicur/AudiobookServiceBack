@@ -47,7 +47,7 @@ class AdminReportAcceptTest extends AbstractWebTest
             'banPeriod' => 2,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -99,7 +99,7 @@ class AdminReportAcceptTest extends AbstractWebTest
             'banPeriod' => 1,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -151,7 +151,7 @@ class AdminReportAcceptTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -195,7 +195,7 @@ class AdminReportAcceptTest extends AbstractWebTest
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -240,7 +240,7 @@ class AdminReportAcceptTest extends AbstractWebTest
             'reportId' => $report->getId()
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', server: [
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -284,7 +284,7 @@ class AdminReportAcceptTest extends AbstractWebTest
             'reportId' => $report->getId()
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/report/admin/accept', content: json_encode($content));
+        $crawler = self::$webClient->request('PATCH', '/api/admin/report/accept', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);

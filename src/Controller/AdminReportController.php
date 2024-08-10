@@ -69,7 +69,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[OA\Tag(name: 'AdminReport')]
 class AdminReportController extends AbstractController
 {
-    #[Route('/api/report/admin/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
+    #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
@@ -114,7 +114,7 @@ class AdminReportController extends AbstractController
             if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
                 $comment = $commentRepository->find($report->getActionId());
 
-                if ($comment !== null) {
+                if ($comment !== null && $adminReportAcceptQuery->getBanPeriod() !== null) {
                     $user = $comment->getUser();
                     $user->setBanned(true);
 
@@ -204,7 +204,7 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/report/admin/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
+    #[Route('/api/admin/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',

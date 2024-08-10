@@ -128,7 +128,7 @@ class UserReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/report/user', name: 'apiUserReport', methods: ['PUT'])]
+    #[Route('/api/user/report', name: 'apiUserReport', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is used for users to report bad behavior',

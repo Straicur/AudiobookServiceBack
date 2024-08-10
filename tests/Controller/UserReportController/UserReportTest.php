@@ -48,7 +48,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -101,7 +101,7 @@ class UserReportTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -149,7 +149,7 @@ class UserReportTest extends AbstractWebTest
             ]];
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -197,7 +197,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -244,7 +244,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', content: json_encode($content));
+        $crawler = self::$webClient->request('PUT', '/api/user/report', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
