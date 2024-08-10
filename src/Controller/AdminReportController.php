@@ -70,7 +70,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminReportController extends AbstractController
 {
     #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
         requestBody: new OA\RequestBody(
@@ -205,7 +205,7 @@ class AdminReportController extends AbstractController
     }
 
     #[Route('/api/admin/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',
         requestBody: new OA\RequestBody(
