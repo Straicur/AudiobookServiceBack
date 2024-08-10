@@ -86,15 +86,15 @@ class AudiobookRepository extends ServiceEntityRepository
         }
         if ($author !== null) {
             $qb->andWhere('a.author LIKE :author')
-                ->setParameter('author', $author);
+                ->setParameter('author', '%' . $author . '%');
         }
         if ($title !== null) {
             $qb->andWhere('a.title LIKE :title')
-                ->setParameter('title', $title);
+                ->setParameter('title', '%' . $title . '%');
         }
         if ($album !== null) {
             $qb->andWhere('a.album LIKE :album')
-                ->setParameter('album', $album);
+                ->setParameter('album', '%' . $album . '%');
         }
 
         if ($duration !== null) {

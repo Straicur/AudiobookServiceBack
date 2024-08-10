@@ -30,8 +30,7 @@ class AdminReportListQuery
             'fields' => [
                 'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(),
-                    new Assert\Regex(pattern: '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', message: 'Bad Uuid'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'description' => new Assert\Optional([
                     new Assert\NotBlank(),
@@ -93,10 +92,6 @@ class AdminReportListQuery
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
-        if (array_key_exists('actionId', $searchData) && Uuid::isValid($searchData['actionId'])) {
-            $searchData['actionId'] = Uuid::fromString($searchData['actionId']);
-        }
-
         if (
             array_key_exists('type', $searchData) &&
             $searchData['type'] !== ReportType::COMMENT->value &&

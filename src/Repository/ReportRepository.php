@@ -123,15 +123,15 @@ class ReportRepository extends ServiceEntityRepository
 
         if ($desc !== null) {
             $qb->andWhere('r.description LIKE :desc')
-                ->setParameter('desc', $desc);
+                ->setParameter('desc', '%' . $desc . '%');
         }
         if ($email !== null) {
             $qb->andWhere('r.email LIKE :email')
-                ->setParameter('email', $email);
+                ->setParameter('email', '%' . $email . '%');
         }
         if ($ip !== null) {
             $qb->andWhere('r.ip LIKE :ip')
-                ->setParameter('ip', $ip);
+                ->setParameter('ip', '%' . $ip . '%');
         }
 
         if ($type !== null) {
@@ -145,25 +145,25 @@ class ReportRepository extends ServiceEntityRepository
             $qb->andWhere('r.user IS NULL');
         }
 
-        if ($accepted !== null) {
+        if ($accepted) {
             $qb->andWhere('r.accepted = :accepted')
                 ->setParameter('accepted', $accepted);
         }
 
-        if ($denied !== null) {
-            $qb->andWhere('r.type = :denied')
+        if ($denied) {
+            $qb->andWhere('r.denied = :denied')
                 ->setParameter('denied', $denied);
         }
 
         if ($dateFrom !== null && $dateTo !== null) {
-            $qb->andWhere('((r.dateAdd > :dateFrom) AND (r.dateAdd < :dateTo))')
+            $qb->andWhere('((r.dateAdd >= :dateFrom) AND (r.dateAdd <= :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
         } elseif ($dateTo !== null) {
-            $qb->andWhere('(r.dateAdd < :dateTo)')
+            $qb->andWhere('(r.dateAdd <= :dateTo)')
                 ->setParameter('dateTo', $dateTo);
         } elseif ($dateFrom !== null) {
-            $qb->andWhere('(r.dateAdd > :dateFrom)')
+            $qb->andWhere('(r.dateAdd >= :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
 

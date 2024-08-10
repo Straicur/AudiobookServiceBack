@@ -202,19 +202,19 @@ class UserRepository extends ServiceEntityRepository
 
         if ($email !== null) {
             $qb->andWhere('ui.email LIKE :email')
-                ->setParameter('email', $email);
+                ->setParameter('email', '%' . $email . '%');
         }
         if ($phoneNumber !== null) {
             $qb->andWhere('ui.phoneNumber LIKE :phoneNumber')
-                ->setParameter('phoneNumber', $phoneNumber);
+                ->setParameter('phoneNumber', '%' . $phoneNumber . '%');
         }
         if ($firstname !== null) {
             $qb->andWhere('ui.firstname LIKE :firstname')
-                ->setParameter('firstname', $firstname);
+                ->setParameter('firstname', '%' . $firstname . '%');
         }
         if ($lastname !== null) {
             $qb->andWhere('ui.lastname LIKE :lastname')
-                ->setParameter('lastname', $lastname);
+                ->setParameter('lastname', '%' . $lastname . '%');
         }
         if ($active !== null) {
             $qb->andWhere('u.active = :active')
