@@ -62,7 +62,8 @@ class UserReportQuery
             4 => ReportType::SYSTEM_PROBLEM,
             5 => ReportType::USER_PROBLEM,
             6 => ReportType::SETTINGS_PROBLEM,
-            default => ReportType::COMMENT,
+            7 => ReportType::RECRUITMENT_REQUEST,
+            default => ReportType::OTHER,
         };
     }
 

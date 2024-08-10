@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
+use App\Enums\ReportLimits;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -80,11 +81,11 @@ class UserReportController extends AbstractController
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
-
+            $email = $userNotAuthorizedUserReportQuery->getEmail();
             if (!empty($ip)) {
-                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip);
+                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email);
 
-                if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
+                if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::IP_LIMIT->value) {
                     $endpointLogger->error('To many reports from this ip');
                     $translateService->setPreferredLanguage($request);
                     throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
@@ -103,8 +104,12 @@ class UserReportController extends AbstractController
             }
 
             $newReport = new Report($userNotAuthorizedUserReportQuery->getType());
-            $newReport->setIp($ip);
-            $newReport->setEmail($userNotAuthorizedUserReportQuery->getEmail());
+
+            if (!empty($ip)) {
+                $newReport->setIp($ip);
+            }
+
+            $newReport->setEmail($email);
 
             if ($actionId) {
                 $newReport->setActionId($actionId);
@@ -155,7 +160,7 @@ class UserReportController extends AbstractController
             $user = $authorizedUserService::getAuthorizedUser();
             $amountOfReports = $reportRepository->loggedUserReportsCount($user);
 
-            if ($amountOfReports[array_key_first($amountOfReports)] >= 3) {
+            if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
                 $endpointLogger->error('To many reports from this ip');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);

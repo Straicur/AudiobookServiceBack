@@ -11,4 +11,5 @@ enum ReportType: int
     case USER_PROBLEM = 5;
     case SETTINGS_PROBLEM = 6;
     case RECRUITMENT_REQUEST = 7;
+    case OTHER = 8;
 }

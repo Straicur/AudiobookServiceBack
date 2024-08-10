@@ -24,6 +24,9 @@ class AdminReportAcceptQuery
     )]
     private int $banPeriod;
 
+    #[Assert\Type(type: 'string')]
+    private string $answer;
+
     public function getBanPeriod(): BanPeriodRage
     {
         return match ($this->banPeriod) {
@@ -52,5 +55,15 @@ class AdminReportAcceptQuery
     public function setReportId(string $reportId): void
     {
         $this->reportId = Uuid::fromString($reportId);
+    }
+
+    public function getAnswer(): string
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(string $answer): void
+    {
+        $this->answer = $answer;
     }
 }
