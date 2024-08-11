@@ -48,6 +48,9 @@ class Report
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $answer = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?UserBanHistory $banned = null;
+
     /**
      * @param ReportType $type
      */
@@ -183,6 +186,18 @@ class Report
     public function setAnswer(?string $answer): static
     {
         $this->answer = $answer;
+
+        return $this;
+    }
+
+    public function getBanned(): ?UserBanHistory
+    {
+        return $this->banned;
+    }
+
+    public function setBanned(?UserBanHistory $banned): static
+    {
+        $this->banned = $banned;
 
         return $this;
     }

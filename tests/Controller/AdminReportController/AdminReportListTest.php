@@ -89,7 +89,7 @@ class AdminReportListTest extends AbstractWebTest
         $this->assertCount(10, $responseContent['reports']);
         $this->assertSame(0, $responseContent['page']);
         $this->assertSame(10, $responseContent['limit']);
-        $this->assertSame(2, $responseContent['maxPage']);
+        $this->assertSame(3, $responseContent['maxPage']);
     }
 
     /**

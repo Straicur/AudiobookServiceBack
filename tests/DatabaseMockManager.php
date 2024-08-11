@@ -31,6 +31,7 @@ use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
+use App\Enums\UserBanType;
 use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
@@ -503,11 +504,11 @@ class DatabaseMockManager
         return $newReport;
     }
 
-    public function testFunc_addUserBanHistory(User $user, DateTime $dateFrom, DateTime $dateTo): UserBanHistory
+    public function testFunc_addUserBanHistory(User $user, DateTime $dateFrom, DateTime $dateTo, UserBanType $type = null): UserBanHistory
     {
         $userBanHistoryRepository = $this->getService(UserBanHistoryRepository::class);
 
-        $newUserBanHistory = new UserBanHistory($user, $dateFrom, $dateTo);
+        $newUserBanHistory = new UserBanHistory($user, $dateFrom, $dateTo, $type ?? UserBanType::SPAM);
 
         $userBanHistoryRepository->add($newUserBanHistory);
 

@@ -9,9 +9,11 @@ use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
 use App\Entity\AudiobookUserCommentLike;
+use App\Entity\UserBanHistory;
 use App\Enums\BanPeriodRage;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
+use App\Enums\UserBanType;
 use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
 use App\Enums\UserStockCacheTags;
@@ -54,6 +56,7 @@ use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -856,6 +859,7 @@ class UserAudiobookController extends AbstractController
         TranslateService $translateService,
         TagAwareCacheInterface $stockCache,
         UserRepository $userRepository,
+        UserBanHistoryRepository $banHistoryRepository,
     ): Response {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
 
@@ -885,9 +889,15 @@ class UserAudiobookController extends AbstractController
             $lastUserComments = count($audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
 
             if ($lastUserComments > (int)$_ENV['INSTITUTION_USER_COMMENTS_LIMIT']) {
-                $user->setBanned(true);
-                $user->setBannedTo((new DateTime())->modify(BanPeriodRage::HOUR_DAY_BAN->value));
+                $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
+
+                $user
+                    ->setBanned(true)
+                    ->setBannedTo($banPeriod);
+
                 $userRepository->add($user);
+
+                $banHistoryRepository->add(new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::SPAM));
 
                 $audiobookUserCommentRepository->setLastUserLastCommentsByMinutesToDeleted($user, '20');
 

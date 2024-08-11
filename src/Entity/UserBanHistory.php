@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\UserBanType;
 use App\Repository\UserBanHistoryRepository;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
@@ -28,19 +29,15 @@ class UserBanHistory
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateTo;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private ?int $type = null;
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $type;
 
-    /**
-     * @param User $user
-     * @param DateTime $dateFrom
-     * @param DateTime $dateTo
-     */
-    public function __construct(User $user, DateTime $dateFrom, DateTime $dateTo)
+    public function __construct(User $user, DateTime $dateFrom, DateTime $dateTo, UserBanType $type)
     {
         $this->user = $user;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
+        $this->type = $type->value;
     }
 
     public function getId(): Uuid
@@ -84,14 +81,18 @@ class UserBanHistory
         return $this;
     }
 
-    public function getType(): ?int
+    public function getType(): UserBanType
     {
-        return $this->type;
+        return match ($this->type) {
+            1 => UserBanType::SPAM,
+            2 => UserBanType::COMMENT,
+            3 => UserBanType::STRANGE_BEHAVIOR,
+        };
     }
 
-    public function setType(int $type): self
+    public function setType(UserBanType $type): self
     {
-        $this->type = $type;
+        $this->type = $type->value;
 
         return $this;
     }

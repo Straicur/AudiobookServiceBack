@@ -12,11 +12,13 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanAmount;
+use App\Enums\UserBanType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminReportListSuccessModel;
 use App\Model\Admin\AdminReportModel;
+use App\Model\Admin\AdminUserBanModel;
 use App\Model\Admin\AdminUserModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -116,7 +118,6 @@ class AdminReportController extends AbstractController
 
                 if ($comment !== null && $adminReportAcceptQuery->getBanPeriod() !== null) {
                     $user = $comment->getUser();
-                    $user->setBanned(true);
 
                     if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
                         $bannedAmount = count($banHistoryRepository->findBy([
@@ -137,17 +138,19 @@ class AdminReportController extends AbstractController
                     } else {
                         $periodTo = $adminReportAcceptQuery->getBanPeriod()->value;
                     }
-
                     $banPeriod = (new DateTime())->modify($periodTo);
 
-                    $user->setBannedTo($banPeriod);
+                    if ((!$user->isBanned() || ($user->getBannedTo() < $banPeriod)) && $periodTo !== BanPeriodRage::NOT_BANNED->value) {
+                        $user->setBanned(true)
+                            ->setBannedTo($banPeriod);
 
-                    if ($periodTo !== BanPeriodRage::NOT_BANNED->value) {
-                        $user->setBanned(true);
+                        $userRepository->add($user);
+
+                        $banHistory = new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::COMMENT);
+
+                        $banHistoryRepository->add($banHistory);
+                        $report->setBanned($banHistory);
                     }
-
-                    $userRepository->add($user);
-                    $banHistoryRepository->add(new UserBanHistory($user, new DateTime(), $banPeriod));
 
                     if ($_ENV['APP_ENV'] !== 'test' && $user->getUserInformation()->getEmail()) {
                         $email = (new TemplatedEmail())
@@ -166,11 +169,11 @@ class AdminReportController extends AbstractController
                 }
             }
 
-            if (!$report->getAccepted() && !$report->getDenied()) {
-                $report->setAccepted(true);
-                $report->setAnswer($adminReportAcceptQuery->getAnswer());
-                $reportRepository->add($report);
-            }
+            $report
+                ->setAccepted(true)
+                ->setAnswer($adminReportAcceptQuery->getAnswer());
+
+            $reportRepository->add($report);
 
             if ($report->getUser()) {
                 $notificationBuilder = new NotificationBuilder();
@@ -416,6 +419,16 @@ class AdminReportController extends AbstractController
                             ),
                         );
                     }
+                    if ($report->getBanned()) {
+                        $reportModel->setUserBan(
+                            new AdminUserBanModel(
+                                $report->getBanned()->getDateFrom(),
+                                $report->getBanned()->getDateTo(),
+                                $report->getBanned()->getType(),
+                            ),
+                        );
+                    }
+
                     $successModel->addReport($reportModel);
                 } else {
                     break;

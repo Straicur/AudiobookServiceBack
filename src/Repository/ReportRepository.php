@@ -141,7 +141,9 @@ class ReportRepository extends ServiceEntityRepository
 
         if ($user) {
             $qb->andWhere('r.user IS NOT NULL');
-        } else {
+        }
+
+        if ($user !== null && !$user) {
             $qb->andWhere('r.user IS NULL');
         }
 

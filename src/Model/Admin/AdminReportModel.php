@@ -21,6 +21,8 @@ class AdminReportModel
     private ?string $ip = null;
     private ?AdminUserModel $user = null;
     private ?string $answer = null;
+
+    private ?AdminUserBanModel $userBan = null;
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
         $this->id = $id;
@@ -148,5 +150,15 @@ class AdminReportModel
     public function setAnswer(?string $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function getUserBan(): ?AdminUserBanModel
+    {
+        return $this->userBan;
+    }
+
+    public function setUserBan(?AdminUserBanModel $userBan): void
+    {
+        $this->userBan = $userBan;
     }
 }
