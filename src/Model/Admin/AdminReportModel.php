@@ -21,6 +21,7 @@ class AdminReportModel
     private ?string $ip = null;
     private ?AdminUserModel $user = null;
     private ?string $answer = null;
+    private ?AdminReportAudiobookCommentsModel $comment = null;
 
     private ?AdminUserBanModel $userBan = null;
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
@@ -160,5 +161,15 @@ class AdminReportModel
     public function setUserBan(?AdminUserBanModel $userBan): void
     {
         $this->userBan = $userBan;
+    }
+
+    public function getComment(): ?AdminReportAudiobookCommentsModel
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?AdminReportAudiobookCommentsModel $comment): void
+    {
+        $this->comment = $comment;
     }
 }

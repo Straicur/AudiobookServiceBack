@@ -99,6 +99,73 @@ class AdminReportListTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
+    public function test_adminReportListCommentsCorrect(): void
+    {
+        /// step 1
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+
+        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1,
+            $category2], active: true);
+
+        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user2);
+        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment2', $audiobook1, $user2, $comment1);
+        $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user1, $comment1);
+
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-1 day'), ip: '198.0.0.1', actionId: $comment3->getId());
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+        /// step 2
+        $content = [
+            'page'       => 0,
+            'limit'      => 10,
+            'searchData' => [],
+        ];
+        /// step 2
+        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server : [
+            'HTTP_authorization' => $token->getToken(),
+        ],                                                                     content: json_encode($content));
+
+        /// step 3
+        self::assertResponseIsSuccessful();
+        self::assertResponseStatusCodeSame(200);
+
+        $response = self::$webClient->getResponse();
+
+        $responseContent = json_decode($response->getContent(), true);
+        /// step 5
+        $this->assertIsArray($responseContent);
+
+        $this->assertArrayHasKey('reports', $responseContent);
+        $this->assertArrayHasKey('page', $responseContent);
+        $this->assertArrayHasKey('limit', $responseContent);
+        $this->assertArrayHasKey('maxPage', $responseContent);
+        $this->assertCount(1, $responseContent['reports']);
+        $this->assertArrayHasKey('comment', $responseContent['reports'][0]);
+        $this->assertArrayHasKey('children', $responseContent['reports'][0]['comment']);
+        $this->assertCount(2, $responseContent['reports'][0]['comment']['children']);
+        $this->assertSame(0, $responseContent['page']);
+        $this->assertSame(10, $responseContent['limit']);
+        $this->assertSame(1, $responseContent['maxPage']);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request
+     * step 3 - Checking response
+     * step 4 - Checking response
+     * @return void
+     */
     public function test_adminReportListSpecificCorrect(): void
     {
         /// step 1

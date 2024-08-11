@@ -16,10 +16,12 @@ use App\Enums\UserBanType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
+use App\Model\Admin\AdminReportAudiobookCommentsModel;
 use App\Model\Admin\AdminReportListSuccessModel;
 use App\Model\Admin\AdminReportModel;
 use App\Model\Admin\AdminUserBanModel;
 use App\Model\Admin\AdminUserModel;
+use App\Model\Common\AudiobookCommentModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
@@ -316,6 +318,7 @@ class AdminReportController extends AbstractController
         TranslateService $translateService,
         ReportRepository $reportRepository,
         UserDeleteRepository $userDeleteRepository,
+        AudiobookUserCommentRepository $commentRepository,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
@@ -418,6 +421,52 @@ class AdminReportController extends AbstractController
                                 $userDeleted,
                             ),
                         );
+                    }
+                    if ($report->getType() === ReportType::COMMENT && $report->getActionId() !== null) {
+                        $comment = $commentRepository->find($report->getActionId());
+
+                        if ($comment !== null) {
+                            if ($comment->getParent() !== null) {
+                                $children = $commentRepository->findBy(['parent' => $comment->getParent()]);
+                                $parent = $comment->getParent();
+
+                                $userModel = new AudiobookCommentModel(
+                                    $parent->getUser()->getUserInformation()->getEmail(),
+                                    $parent->getUser()->getUserInformation()->getFirstname(),
+                                );
+
+                                $commentModel = new AdminReportAudiobookCommentsModel(
+                                    $userModel,
+                                    $parent->getComment(),
+                                );
+
+                                foreach ($children as $commentChildren) {
+                                    $childrenUserModel = new AudiobookCommentModel(
+                                        $commentChildren->getUser()->getUserInformation()->getEmail(),
+                                        $commentChildren->getUser()->getUserInformation()->getFirstname(),
+                                    );
+                                    $commentChildren = new AdminReportAudiobookCommentsModel(
+                                        $childrenUserModel,
+                                        $commentChildren->getComment(),
+                                        $commentChildren->getId()->toBinary() === $comment->getId()->toBinary()
+                                    );
+
+                                    $commentModel->addChildren($commentChildren);
+                                }
+                            } else {
+                                $userModel = new AudiobookCommentModel(
+                                    $comment->getUser()->getUserInformation()->getEmail(),
+                                    $comment->getUser()->getUserInformation()->getFirstname(),
+                                );
+
+                                $commentModel = new AdminReportAudiobookCommentsModel(
+                                    $userModel,
+                                    $comment->getComment(),
+                                    true
+                                );
+                            }
+                            $reportModel->setComment($commentModel);
+                        }
                     }
                     if ($report->getBanned()) {
                         $reportModel->setUserBan(
