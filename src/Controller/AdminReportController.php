@@ -105,7 +105,7 @@ class AdminReportController extends AbstractController
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
             $report = $reportRepository->find($adminReportAcceptQuery->getReportId());
 
-            if ($report === null) {
+            if ($report === null || $report->getAccepted() || $report->getDenied()) {
                 $endpointLogger->error('Cant find report');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
@@ -159,6 +159,7 @@ class AdminReportController extends AbstractController
                                 'name'   => $user->getUserInformation()->getFirstname(),
                                 'desc'   => $comment->getComment(),
                                 'dateTo' => $banPeriod->format('d.m.Y'),
+                                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                             ]);
                         $mailer->send($email);
                     }
@@ -167,6 +168,7 @@ class AdminReportController extends AbstractController
 
             if (!$report->getAccepted() && !$report->getDenied()) {
                 $report->setAccepted(true);
+                $report->setAnswer($adminReportAcceptQuery->getAnswer());
                 $reportRepository->add($report);
             }
 
@@ -192,6 +194,7 @@ class AdminReportController extends AbstractController
                     ->context([
                         'desc' => $report->getDescription(),
                         'answer' => $adminReportAcceptQuery->getAnswer(),
+                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -237,7 +240,7 @@ class AdminReportController extends AbstractController
         if ($adminReportRejectQuery instanceof AdminReportRejectQuery) {
             $report = $reportRepository->find($adminReportRejectQuery->getReportId());
 
-            if ($report === null) {
+            if ($report === null || $report->getAccepted() || $report->getDenied()) {
                 $endpointLogger->error('Cant find report');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
@@ -245,6 +248,7 @@ class AdminReportController extends AbstractController
 
             if (!$report->getAccepted() && !$report->getDenied()) {
                 $report->setDenied(true);
+                $report->setAnswer($adminReportRejectQuery->getAnswer());
                 $reportRepository->add($report);
             }
 
@@ -269,7 +273,8 @@ class AdminReportController extends AbstractController
                     ->htmlTemplate('emails/reportDenied.html.twig')
                     ->context([
                         'desc'        => $report->getDescription(),
-                        'explanation' => $adminReportRejectQuery->getResponse(),
+                        'explanation' => $adminReportRejectQuery->getAnswer(),
+                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
                 $mailer->send($email);
             }
@@ -391,6 +396,9 @@ class AdminReportController extends AbstractController
                     }
                     if ($report->getIp()) {
                         $reportModel->setIp($report->getIp());
+                    }
+                    if ($report->getAnswer()) {
+                        $reportModel->setAnswer($report->getAnswer());
                     }
                     if ($report->getUser()) {
                         $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());

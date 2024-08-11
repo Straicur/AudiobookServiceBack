@@ -43,7 +43,7 @@ class AdminReportRejectTest extends AbstractWebTest
         /// step 2
         $content = [
             'reportId' => $report->getId(),
-            'response' => 'dsa'
+            'answer' => 'dsa'
         ];
         /// step 2
         $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
@@ -86,7 +86,7 @@ class AdminReportRejectTest extends AbstractWebTest
         /// step 2
         $content = [
             'reportId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
-            'response' => 'dsa'
+            'answer' => 'dsa'
         ];
 
         /// step 2
@@ -177,7 +177,7 @@ class AdminReportRejectTest extends AbstractWebTest
         /// step 2
         $content = [
             'reportId' => $report->getId(),
-            'response' => 'dsa'
+            'answer' => 'dsa'
         ];
         /// step 2
         $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
@@ -222,7 +222,7 @@ class AdminReportRejectTest extends AbstractWebTest
         /// step 2
         $content = [
             'reportId' => $report->getId(),
-            'response' => 'dsa'
+            'answer' => 'dsa'
         ];
         /// step 2
         $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));

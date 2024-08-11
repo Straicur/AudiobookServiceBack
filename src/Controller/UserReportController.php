@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
 use App\Enums\ReportLimits;
+use App\Enums\ReportType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -117,6 +118,9 @@ class UserReportController extends AbstractController
             if ($description) {
                 $newReport->setDescription($description);
             }
+            if ($userNotAuthorizedUserReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
+                $newReport->setDenied(true);
+            }
 
             $reportRepository->add($newReport);
 
@@ -185,6 +189,9 @@ class UserReportController extends AbstractController
             }
             if ($description) {
                 $newReport->setDescription($description);
+            }
+            if ($userReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
+                $newReport->setDenied(true);
             }
 
             $reportRepository->add($newReport);

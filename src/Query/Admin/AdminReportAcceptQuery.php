@@ -20,10 +20,10 @@ class AdminReportAcceptQuery
         min              : 1,
         max              : 8,
     )]
-    private int $banPeriod;
+    private ?int $banPeriod = null;
 
     #[Assert\Type(type: 'string')]
-    private string $answer;
+    private ?string $answer = null;
 
     public function getBanPeriod(): ?BanPeriodRage
     {
@@ -60,10 +60,7 @@ class AdminReportAcceptQuery
 
     public function getAnswer(): ?string
     {
-        if ($this->answer !== null) {
-            return $this->answer;
-        }
-        return null;
+        return $this->answer;
     }
 
     public function setAnswer(string $answer): void

@@ -45,6 +45,9 @@ class Report
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $answer = null;
+
     /**
      * @param ReportType $type
      */
@@ -170,5 +173,17 @@ class Report
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getAnswer(): ?string
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(?string $answer): static
+    {
+        $this->answer = $answer;
+
+        return $this;
     }
 }

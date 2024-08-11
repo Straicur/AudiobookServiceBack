@@ -13,10 +13,10 @@ class AdminReportRejectQuery
     #[Assert\Uuid]
     private Uuid $reportId;
 
-    #[Assert\NotNull(message: 'Response is null')]
-    #[Assert\NotBlank(message: 'Response is empty')]
+    #[Assert\NotNull(message: 'Answer is null')]
+    #[Assert\NotBlank(message: 'Answer is empty')]
     #[Assert\Type(type: 'string')]
-    private string $response;
+    private ?string $answer = null;
 
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getReportId(): Uuid
@@ -29,13 +29,13 @@ class AdminReportRejectQuery
         $this->reportId = Uuid::fromString($reportId);
     }
 
-    public function getResponse(): string
+    public function getAnswer(): ?string
     {
-        return $this->response;
+        return $this->answer;
     }
 
-    public function setResponse(string $response): void
+    public function setAnswer(string $answer): void
     {
-        $this->response = $response;
+        $this->answer = $answer;
     }
 }
