@@ -14,7 +14,7 @@ class UserReportQuery
     #[Assert\NotBlank(message: 'Type is empty')]
     #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
-    #[Assert\LessThan(7)]
+    #[Assert\LessThan(9)]
     private int $type;
 
     protected array $additionalData = [];
@@ -48,7 +48,6 @@ class UserReportQuery
         $this->additionalData = $additionalData;
     }
 
-
     public function getAdditionalData(): array
     {
         return $this->additionalData;
@@ -57,6 +56,7 @@ class UserReportQuery
     public function getType(): ReportType
     {
         return match ($this->type) {
+            1 => ReportType::COMMENT,
             2 => ReportType::AUDIOBOOK_PROBLEM,
             3 => ReportType::CATEGORY_PROBLEM,
             4 => ReportType::SYSTEM_PROBLEM,
