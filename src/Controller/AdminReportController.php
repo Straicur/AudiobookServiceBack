@@ -121,6 +121,9 @@ class AdminReportController extends AbstractController
                 if ($comment !== null && $adminReportAcceptQuery->getBanPeriod() !== null) {
                     $user = $comment->getUser();
 
+                    $comment->setDeleted(true);
+                    $commentRepository->add($comment);
+
                     if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
                         $bannedAmount = count($banHistoryRepository->findBy([
                             'user' => $user->getId(),
