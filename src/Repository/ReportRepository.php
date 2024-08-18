@@ -169,19 +169,10 @@ class ReportRepository extends ServiceEntityRepository
                 ->setParameter('dateFrom', $dateFrom);
         }
 
-        if ($order !== null) {
-            switch ($order) {
-                case ReportOrderSearch::LATEST->value:
-                {
-                    $qb->orderBy('r.dateAdd', 'DESC');
-                    break;
-                }
-                case ReportOrderSearch::OLDEST->value:
-                {
-                    $qb->orderBy('r.dateAdd', 'ASC');
-                    break;
-                }
-            }
+        if ($order !== null && $order === ReportOrderSearch::OLDEST->value) {
+            $qb->orderBy('r.dateAdd', 'ASC');
+        } else {
+            $qb->orderBy('r.dateAdd', 'DESC');
         }
 
         return $qb->getQuery()->execute();

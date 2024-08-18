@@ -182,7 +182,9 @@ class UserReportController extends AbstractController
             }
 
             $newReport = new Report($userReportQuery->getType());
-            $newReport->setUser($user);
+            $newReport
+                ->setUser($user)
+                ->setEmail($user->getUserInformation()->getEmail());
 
             if ($actionId) {
                 $newReport->setActionId($actionId);

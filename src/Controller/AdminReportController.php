@@ -145,7 +145,7 @@ class AdminReportController extends AbstractController
                     }
                     $banPeriod = (new DateTime())->modify($periodTo);
 
-                    if ((!$user->isBanned() || ($user->getBannedTo() < $banPeriod)) && $periodTo !== BanPeriodRage::NOT_BANNED->value) {
+                    if ((!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod)) && $periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin()) {
                         $user->setBanned(true)
                             ->setBannedTo($banPeriod);
 
@@ -155,12 +155,13 @@ class AdminReportController extends AbstractController
 
                         $banHistoryRepository->add($banHistory);
                         $report->setBanned($banHistory);
+                        $reportRepository->add($report);
                     }
 
-                    if ($_ENV['APP_ENV'] !== 'test' && $user->getUserInformation()->getEmail()) {
+                    if ($_ENV['APP_ENV'] !== 'test' && $user->getUserInformation()->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
                         $email = (new TemplatedEmail())
                             ->from($_ENV['INSTITUTION_EMAIL'])
-                            ->to($report->getEmail())
+                            ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())
                             ->subject($translateService->getTranslation('UserBannedSubject'))
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
@@ -193,7 +194,7 @@ class AdminReportController extends AbstractController
                 $notificationRepository->add($notification);
             }
 
-            if ($_ENV['APP_ENV'] !== 'test' && $report->getEmail()) {
+            if ($_ENV['APP_ENV'] !== 'test' && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
                 $email = (new TemplatedEmail())
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($report->getEmail())
@@ -273,7 +274,7 @@ class AdminReportController extends AbstractController
                 $notificationRepository->add($notification);
             }
 
-            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail()) {
+            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
                 $email = (new TemplatedEmail())
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($report->getEmail())
