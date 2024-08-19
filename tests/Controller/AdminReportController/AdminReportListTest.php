@@ -122,7 +122,7 @@ class AdminReportListTest extends AbstractWebTest
         $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment2', $audiobook1, $user2, $comment1);
         $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user1, $comment1);
 
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-1 day'), ip: '198.0.0.1', actionId: $comment3->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-1 day'), ip: '198.0.0.1', actionId: (string)$comment3->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2

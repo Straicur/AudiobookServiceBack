@@ -88,17 +88,6 @@ class ReportRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string|null $actionId
-     * @param string|null $desc
-     * @param string|null $email
-     * @param string|null $ip
-     * @param int|null $type
-     * @param bool|null $user
-     * @param bool|null $accepted
-     * @param bool|null $denied
-     * @param DateTime|null $dateFrom
-     * @param DateTime|null $dateTo
-     * @param int|null $order
      * @return Report[]
      */
     public function getReportsByPage(
@@ -117,21 +106,23 @@ class ReportRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         if ($actionId !== null) {
-            $qb->andWhere('r.actionId = :actionId')
+            $qb->andWhere('r.actionId LIKE :actionId')
                 ->setParameter('actionId', $actionId);
         }
 
         if ($desc !== null) {
             $qb->andWhere('r.description LIKE :desc')
-                ->setParameter('desc', '%' . $desc . '%');
+                ->setParameter('desc', $desc);
         }
+
         if ($email !== null) {
             $qb->andWhere('r.email LIKE :email')
-                ->setParameter('email', '%' . $email . '%');
+                ->setParameter('email', $email);
         }
+
         if ($ip !== null) {
             $qb->andWhere('r.ip LIKE :ip')
-                ->setParameter('ip', '%' . $ip . '%');
+                ->setParameter('ip', $ip);
         }
 
         if ($type !== null) {
@@ -176,5 +167,17 @@ class ReportRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->execute();
+    }
+
+    public function getSimilarReportsCount(string $actionId): ?array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.actionId LIKE :actionId')
+            ->andWhere('r.accepted = false')
+            ->andWhere('r.denied = false')
+            ->setParameter('actionId', $actionId);
+
+        return $qb->getQuery()->execute()[0];
     }
 }

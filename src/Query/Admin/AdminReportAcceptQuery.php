@@ -14,6 +14,10 @@ class AdminReportAcceptQuery
     #[Assert\Uuid]
     private Uuid $reportId;
 
+    #[Assert\NotNull(message: 'AcceptOthers is null')]
+    #[Assert\Type(type: 'boolean')]
+    private bool $acceptOthers;
+
     #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
@@ -66,5 +70,15 @@ class AdminReportAcceptQuery
     public function setAnswer(string $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function isAcceptOthers(): bool
+    {
+        return $this->acceptOthers;
+    }
+
+    public function setAcceptOthers(bool $acceptOthers): void
+    {
+        $this->acceptOthers = $acceptOthers;
     }
 }

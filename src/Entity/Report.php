@@ -33,8 +33,8 @@ class Report
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'uuid', nullable: true)]
-    private ?Uuid $actionId = null;
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $actionId = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $ip = null;
@@ -100,12 +100,12 @@ class Report
         return $this;
     }
 
-    public function getActionId(): ?Uuid
+    public function getActionId(): ?string
     {
         return $this->actionId;
     }
 
-    public function setActionId(Uuid $actionId): self
+    public function setActionId(string $actionId): self
     {
         $this->actionId = $actionId;
 

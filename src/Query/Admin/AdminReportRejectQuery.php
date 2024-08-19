@@ -13,6 +13,10 @@ class AdminReportRejectQuery
     #[Assert\Uuid]
     private Uuid $reportId;
 
+    #[Assert\NotNull(message: 'RejectOthers is null')]
+    #[Assert\Type(type: 'boolean')]
+    private bool $rejectOthers;
+
     #[Assert\NotNull(message: 'Answer is null')]
     #[Assert\NotBlank(message: 'Answer is empty')]
     #[Assert\Type(type: 'string')]
@@ -37,5 +41,15 @@ class AdminReportRejectQuery
     public function setAnswer(string $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function isRejectOthers(): bool
+    {
+        return $this->rejectOthers;
+    }
+
+    public function setRejectOthers(bool $rejectOthers): void
+    {
+        $this->rejectOthers = $rejectOthers;
     }
 }

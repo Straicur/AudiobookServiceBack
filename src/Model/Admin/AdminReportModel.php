@@ -15,6 +15,7 @@ class AdminReportModel
     private int $dateAdd;
     private bool $accepted;
     private bool $denied;
+    private int $similarReports = 0;
     private ?string $description = null;
     private ?string $actionId = null;
     private ?string $email = null;
@@ -24,6 +25,7 @@ class AdminReportModel
     private ?AdminReportAudiobookCommentsModel $comment = null;
 
     private ?AdminUserBanModel $userBan = null;
+
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
         $this->id = $id;
@@ -171,5 +173,15 @@ class AdminReportModel
     public function setComment(?AdminReportAudiobookCommentsModel $comment): void
     {
         $this->comment = $comment;
+    }
+
+    public function getSimilarReports(): int
+    {
+        return $this->similarReports;
+    }
+
+    public function setSimilarReports(int $similarReports): void
+    {
+        $this->similarReports = $similarReports;
     }
 }

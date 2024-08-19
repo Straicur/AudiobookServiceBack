@@ -51,10 +51,6 @@ class UserNotAuthorizedUserReportQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {
-            $additionalData['actionId'] = Uuid::fromString($additionalData['actionId']);
-        }
-
         $this->additionalData = $additionalData;
     }
 

@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Builder\NotificationBuilder;
 use App\Entity\UserBanHistory;
 use App\Enums\BanPeriodRage;
-use App\Enums\NotificationType;
-use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanAmount;
 use App\Enums\UserBanType;
@@ -30,11 +27,12 @@ use App\Query\Admin\AdminReportAcceptQuery;
 use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
 use App\Repository\AudiobookUserCommentRepository;
-use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
+use App\Service\Admin\AdminReportAcceptService;
+use App\Service\Admin\AdminReportRejectService;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -48,7 +46,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
     response   : 400,
@@ -92,17 +89,16 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportAccept(
-        Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateService $translateService,
-        ReportRepository $reportRepository,
-        MailerInterface $mailer,
-        NotificationRepository $notificationRepository,
+        Request                  $request,
+        RequestServiceInterface  $requestService,
+        LoggerInterface          $endpointLogger,
+        TranslateService         $translateService,
+        ReportRepository         $reportRepository,
+        MailerInterface          $mailer,
         AudiobookUserCommentRepository $commentRepository,
-        UserRepository $userRepository,
+        UserRepository           $userRepository,
         UserBanHistoryRepository $banHistoryRepository,
-        TagAwareCacheInterface $stockCache,
+        AdminReportAcceptService $adminReportService,
     ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
@@ -175,37 +171,14 @@ class AdminReportController extends AbstractController
                 }
             }
 
-            $report
-                ->setAccepted(true)
-                ->setAnswer($adminReportAcceptQuery->getAnswer());
+            $adminReportService
+                ->setAdminReportAcceptQuery($adminReportAcceptQuery)
+                ->setRequest($request);
 
-            $reportRepository->add($report);
-
-            if ($report->getUser()) {
-                $notificationBuilder = new NotificationBuilder();
-
-                $notification = $notificationBuilder
-                    ->setType(NotificationType::USER_REPORT_ACCEPTED)
-                    ->setAction($report->getId())
-                    ->addUser($report->getUser())
-                    ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build($stockCache);
-
-                $notificationRepository->add($notification);
-            }
-
-            if ($_ENV['APP_ENV'] !== 'test' && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
-                $email = (new TemplatedEmail())
-                    ->from($_ENV['INSTITUTION_EMAIL'])
-                    ->to($report->getEmail())
-                    ->subject($translateService->getTranslation('ReportAcceptSubject'))
-                    ->htmlTemplate('emails/reportAccepted.html.twig')
-                    ->context([
-                        'desc' => $report->getDescription(),
-                        'answer' => $adminReportAcceptQuery->getAnswer(),
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
-                    ]);
-                $mailer->send($email);
+            if (!$adminReportAcceptQuery->isAcceptOthers()) {
+                $adminReportService->sendReportResponse($report);
+            } else {
+                $adminReportService->sendReportResponseToAll($report);
             }
 
             return ResponseTool::getResponse();
@@ -235,14 +208,12 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportReject(
-        Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateService $translateService,
-        ReportRepository $reportRepository,
-        MailerInterface $mailer,
-        NotificationRepository $notificationRepository,
-        TagAwareCacheInterface $stockCache,
+        Request                  $request,
+        RequestServiceInterface  $requestService,
+        LoggerInterface          $endpointLogger,
+        TranslateService         $translateService,
+        ReportRepository         $reportRepository,
+        AdminReportRejectService $adminReportService,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
@@ -255,37 +226,14 @@ class AdminReportController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
             }
 
-            if (!$report->getAccepted() && !$report->getDenied()) {
-                $report->setDenied(true);
-                $report->setAnswer($adminReportRejectQuery->getAnswer());
-                $reportRepository->add($report);
-            }
+            $adminReportService
+                ->setAdminReportRejectQuery($adminReportRejectQuery)
+                ->setRequest($request);
 
-            if ($report->getUser()) {
-                $notificationBuilder = new NotificationBuilder();
-
-                $notification = $notificationBuilder
-                    ->setType(NotificationType::USER_REPORT_DENIED)
-                    ->setAction($report->getId())
-                    ->addUser($report->getUser())
-                    ->setUserAction(NotificationUserType::SYSTEM)
-                    ->build($stockCache);
-
-                $notificationRepository->add($notification);
-            }
-
-            if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
-                $email = (new TemplatedEmail())
-                    ->from($_ENV['INSTITUTION_EMAIL'])
-                    ->to($report->getEmail())
-                    ->subject($translateService->getTranslation('ReportDeniedSubject'))
-                    ->htmlTemplate('emails/reportDenied.html.twig')
-                    ->context([
-                        'desc'        => $report->getDescription(),
-                        'explanation' => $adminReportRejectQuery->getAnswer(),
-                        'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
-                    ]);
-                $mailer->send($email);
+            if (!$adminReportRejectQuery->isRejectOthers()) {
+                $adminReportService->sendReportResponse($report);
+            } else {
+                $adminReportService->sendReportResponseToAll($report);
             }
 
             return ResponseTool::getResponse();
@@ -351,7 +299,7 @@ class AdminReportController extends AbstractController
                 $ip = ($reportSearchData['ip'] && '' !== $reportSearchData['ip']) ? '%' . $reportSearchData['ip'] . '%' : null;
             }
             if (array_key_exists('actionId', $reportSearchData)) {
-                $actionId = $reportSearchData['actionId'];
+                $actionId = ($reportSearchData['actionId'] && '' !== $reportSearchData['actionId']) ? '%' . $reportSearchData['actionId'] . '%' : null;
             }
             if (array_key_exists('type', $reportSearchData)) {
                 $type = $reportSearchData['type'];
@@ -472,6 +420,12 @@ class AdminReportController extends AbstractController
                             $reportModel->setComment($commentModel);
                         }
                     }
+
+                    if ($report->getActionId()) {
+                        $similarReports = $reportRepository->getSimilarReportsCount($report->getActionId());
+                        $reportModel->setSimilarReports(empty($similarReports) ? 0 : $similarReports[array_key_first($similarReports)]);
+                    }
+
                     if ($report->getBanned()) {
                         $reportModel->setUserBan(
                             new AdminUserBanModel(
