@@ -14,7 +14,7 @@ class UserNotAuthorizedUserReportQuery
     #[Assert\NotBlank(message: 'Type is empty')]
     #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
-    #[Assert\LessThan(8)]
+    #[Assert\LessThan(9)]
     private int $type;
 
     #[Assert\NotNull(message: 'Ip is null')]
