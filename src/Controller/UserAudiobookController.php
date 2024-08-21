@@ -238,7 +238,7 @@ class UserAudiobookController extends AbstractController
                 $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
             }
 
-            $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle(), $age);
+            $allAudiobooks = $audiobookRepository->searchAudiobooksByNameOrKey($userAudiobooksSearchQuery->getTitle(), $userAudiobooksSearchQuery->getCategoryKey(), $age);
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
