@@ -9,7 +9,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use Symfony\Component\Uid\Uuid;
 
-class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
+class BuildAdminAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
     public function __construct(
         private array $elements,
@@ -23,7 +23,7 @@ class BuildAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
         $branch = [];
 
         foreach ($elements as $element) {
-            if ($element->getParent() === $parentId || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
+            if ($element->getParent() === null || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
                 $children = $this->categoryRepository->findBy([
                     'parent' => $element->getId(),
                 ]);

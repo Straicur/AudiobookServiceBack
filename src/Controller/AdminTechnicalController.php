@@ -301,7 +301,8 @@ class AdminTechnicalController extends AbstractController
                         UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value,
                         UserStockCacheTags::USER_AUDIOBOOK_RATING->value,
                         UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
-                        UserStockCacheTags::AUDIOBOOK_COMMENTS->value]);
+                        UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
+                        UserStockCacheTags::USER_CATEGORIES_TREE->value]);
                 }
                 if (array_key_exists('pools', $cacheData) && !empty($cacheData['pools'])) {
                     foreach ($cacheData['pools'] as $pool) {
@@ -318,6 +319,7 @@ class AdminTechnicalController extends AbstractController
                             UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value]),
                             UserStockCacheTags::USER_AUDIOBOOK_RATING->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_RATING->value]),
                             UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value => $stockCache->invalidateTags([UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]),
+                            UserStockCacheTags::USER_CATEGORIES_TREE->value => $stockCache->invalidateTags([UserStockCacheTags::USER_CATEGORIES_TREE->value]),
                             default =>
                             $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value])
                         };
