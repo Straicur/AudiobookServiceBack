@@ -24,12 +24,12 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
      * @param AudiobookCategory[] $elements
      * @return UserCategoryTreeModel[]
      */
-    private function buildTree(array $elements, ?Uuid $parentId = null): array
+    private function buildTree(array $elements, ?string $parentKey = null): array
     {
         $branch = [];
 
         foreach ($elements as $element) {
-            if ($element->getParent() === null || ($element->getParent() !== null && $element->getParent()->getId() === $parentId)) {
+            if ($element->getParent() === null || ($element->getParent() !== null && $element->getParent()->getCategoryKey() === $parentKey)) {
                 $children = $this->categoryRepository->findBy([
                     'parent' => $element->getId(),
                     'active' => true,
@@ -38,11 +38,11 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
                 $child = new UserCategoryTreeModel(
                     $element->getName(),
                     $element->getCategoryKey(),
-                    (string)$parentId,
+                    (string)$parentKey,
                 );
 
                 if (!empty($children)) {
-                    $children = $this->buildTree($children, $element->getId());
+                    $children = $this->buildTree($children, $element->getCategoryKey());
 
                     foreach ($children as $parentChild) {
                         $child->addChildren($parentChild);
