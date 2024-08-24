@@ -4,7 +4,6 @@ namespace App\Query\User;
 
 use App\Enums\ReportType;
 use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -29,7 +28,7 @@ class UserReportQuery
                 ]),
                 'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string'),
                 ]),
             ],
         ]));

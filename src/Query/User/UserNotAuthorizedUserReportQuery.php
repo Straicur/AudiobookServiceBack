@@ -38,7 +38,7 @@ class UserNotAuthorizedUserReportQuery
                 ]),
                 'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string'),
                 ]),
             ],
         ]));

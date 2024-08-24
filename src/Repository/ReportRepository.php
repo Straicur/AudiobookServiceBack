@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Report;
 use App\Entity\User;
 use App\Enums\ReportOrderSearch;
+use App\Enums\ReportType;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -52,7 +53,7 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
-    public function notLoggedUserReportsCount(string $ip, string $email)
+    public function notLoggedUserReportsCount(string $ip, string $email, ReportType $type)
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -62,15 +63,17 @@ class ReportRepository extends ServiceEntityRepository
             ->select('COUNT(r.id)')
             ->where('((r.ip = :ip) or (r.email = :email)) ')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
+            ->andWhere('(r.type  = :type)')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('email', $email)
+            ->setParameter('type', $type->value)
             ->setParameter('ip', $ip);
 
         return $qb->getQuery()->execute()[0];
     }
 
-    public function loggedUserReportsCount(User $user)
+    public function loggedUserReportsCount(User $user, ReportType $type)
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -79,9 +82,11 @@ class ReportRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
             ->where('((r.user IS NOT NULL) AND (r.user = :user))')
+            ->andWhere('(r.type  = :type)')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
+            ->setParameter('type', $type->value)
             ->setParameter('user', $user->getId()->toBinary());
 
         return $qb->getQuery()->execute()[0];

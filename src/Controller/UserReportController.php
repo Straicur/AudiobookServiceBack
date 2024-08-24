@@ -83,8 +83,9 @@ class UserReportController extends AbstractController
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
             $email = $userNotAuthorizedUserReportQuery->getEmail();
+
             if (!empty($ip)) {
-                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email);
+                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email, $userNotAuthorizedUserReportQuery->getType());
 
                 if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::IP_LIMIT->value) {
                     $endpointLogger->error('To many reports from this ip');
@@ -162,7 +163,7 @@ class UserReportController extends AbstractController
 
         if ($userReportQuery instanceof UserReportQuery) {
             $user = $authorizedUserService::getAuthorizedUser();
-            $amountOfReports = $reportRepository->loggedUserReportsCount($user);
+            $amountOfReports = $reportRepository->loggedUserReportsCount($user, $userReportQuery->getType());
 
             if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
                 $endpointLogger->error('To many reports from this ip');
