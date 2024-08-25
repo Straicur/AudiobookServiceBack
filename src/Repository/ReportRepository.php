@@ -53,7 +53,7 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
-    public function notLoggedUserReportsCount(string $ip, string $email, ReportType $type)
+    public function notLoggedUserReportsCount(string $ip, string $email, ReportType $type): array
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -73,7 +73,7 @@ class ReportRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute()[0];
     }
 
-    public function loggedUserReportsCount(User $user, ReportType $type)
+    public function loggedUserReportsCount(User $user, ReportType $type, ?string $actionId = null): array
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -83,8 +83,14 @@ class ReportRepository extends ServiceEntityRepository
             ->select('COUNT(r.id)')
             ->where('((r.user IS NOT NULL) AND (r.user = :user))')
             ->andWhere('(r.type  = :type)')
-            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
-            ->setParameter('dateTo', $today)
+            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)');
+
+        if (($type === ReportType::COMMENT || $type === ReportType::AUDIOBOOK_PROBLEM || $type === ReportType::CATEGORY_PROBLEM) && $actionId !== null) {
+            $qb->andWhere('r.actionId LIKE :actionId')
+                ->setParameter('actionId', '%' . $actionId . '%');
+        }
+
+        $qb->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('type', $type->value)
             ->setParameter('user', $user->getId()->toBinary());

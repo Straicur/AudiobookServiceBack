@@ -162,15 +162,6 @@ class UserReportController extends AbstractController
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-            $amountOfReports = $reportRepository->loggedUserReportsCount($user, $userReportQuery->getType());
-
-            if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
-                $endpointLogger->error('To many reports from this ip');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
-            }
-
             $additionalData = $userReportQuery->getAdditionalData();
             $actionId = null;
             $description = null;
@@ -180,6 +171,15 @@ class UserReportController extends AbstractController
             }
             if (array_key_exists('description', $additionalData)) {
                 $description = $additionalData['description'];
+            }
+
+            $user = $authorizedUserService::getAuthorizedUser();
+            $amountOfReports = $reportRepository->loggedUserReportsCount($user, $userReportQuery->getType(), $actionId);
+
+            if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
+                $endpointLogger->error('To many reports from this ip');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
             }
 
             $newReport = new Report($userReportQuery->getType());
