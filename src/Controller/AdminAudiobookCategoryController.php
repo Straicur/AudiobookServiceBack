@@ -36,7 +36,7 @@ use App\Repository\NotificationRepository;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
-use App\ValueGenerator\BuildAudiobookCategoryTreeGenerator;
+use App\ValueGenerator\BuildAdminAudiobookCategoryTreeGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -475,7 +475,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 'parent' => null,
             ]);
 
-            $treeGenerator = new BuildAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+            $treeGenerator = new BuildAdminAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
 
             return new AdminCategoriesSuccessModel($treeGenerator->generate());
         });

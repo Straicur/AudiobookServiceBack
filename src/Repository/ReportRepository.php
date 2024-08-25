@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Report;
 use App\Entity\User;
 use App\Enums\ReportOrderSearch;
+use App\Enums\ReportType;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -52,7 +53,7 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
-    public function notLoggedUserReportsCount(string $ip, string $email)
+    public function notLoggedUserReportsCount(string $ip, string $email, ReportType $type): array
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -62,15 +63,17 @@ class ReportRepository extends ServiceEntityRepository
             ->select('COUNT(r.id)')
             ->where('((r.ip = :ip) or (r.email = :email)) ')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
+            ->andWhere('(r.type  = :type)')
             ->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
             ->setParameter('email', $email)
+            ->setParameter('type', $type->value)
             ->setParameter('ip', $ip);
 
         return $qb->getQuery()->execute()[0];
     }
 
-    public function loggedUserReportsCount(User $user)
+    public function loggedUserReportsCount(User $user, ReportType $type, ?string $actionId = null): array
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -79,26 +82,23 @@ class ReportRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
             ->where('((r.user IS NOT NULL) AND (r.user = :user))')
-            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)')
-            ->setParameter('dateTo', $today)
+            ->andWhere('(r.type  = :type)')
+            ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)');
+
+        if (($type === ReportType::COMMENT || $type === ReportType::AUDIOBOOK_PROBLEM || $type === ReportType::CATEGORY_PROBLEM) && $actionId !== null) {
+            $qb->andWhere('r.actionId LIKE :actionId')
+                ->setParameter('actionId', '%' . $actionId . '%');
+        }
+
+        $qb->setParameter('dateTo', $today)
             ->setParameter('dateFrom', $lastDate)
+            ->setParameter('type', $type->value)
             ->setParameter('user', $user->getId()->toBinary());
 
         return $qb->getQuery()->execute()[0];
     }
 
     /**
-     * @param string|null $actionId
-     * @param string|null $desc
-     * @param string|null $email
-     * @param string|null $ip
-     * @param int|null $type
-     * @param bool|null $user
-     * @param bool|null $accepted
-     * @param bool|null $denied
-     * @param DateTime|null $dateFrom
-     * @param DateTime|null $dateTo
-     * @param int|null $order
      * @return Report[]
      */
     public function getReportsByPage(
@@ -117,7 +117,7 @@ class ReportRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r');
 
         if ($actionId !== null) {
-            $qb->andWhere('r.actionId = :actionId')
+            $qb->andWhere('r.actionId LIKE :actionId')
                 ->setParameter('actionId', $actionId);
         }
 
@@ -125,10 +125,12 @@ class ReportRepository extends ServiceEntityRepository
             $qb->andWhere('r.description LIKE :desc')
                 ->setParameter('desc', $desc);
         }
+
         if ($email !== null) {
             $qb->andWhere('r.email LIKE :email')
                 ->setParameter('email', $email);
         }
+
         if ($ip !== null) {
             $qb->andWhere('r.ip LIKE :ip')
                 ->setParameter('ip', $ip);
@@ -141,47 +143,52 @@ class ReportRepository extends ServiceEntityRepository
 
         if ($user) {
             $qb->andWhere('r.user IS NOT NULL');
-        } else {
+        }
+
+        if ($user !== null && !$user) {
             $qb->andWhere('r.user IS NULL');
         }
 
-        if ($accepted !== null) {
+        if ($accepted) {
             $qb->andWhere('r.accepted = :accepted')
                 ->setParameter('accepted', $accepted);
         }
 
-        if ($denied !== null) {
-            $qb->andWhere('r.type = :denied')
+        if ($denied) {
+            $qb->andWhere('r.denied = :denied')
                 ->setParameter('denied', $denied);
         }
 
         if ($dateFrom !== null && $dateTo !== null) {
-            $qb->andWhere('((r.dateAdd > :dateFrom) AND (r.dateAdd < :dateTo))')
+            $qb->andWhere('((r.dateAdd >= :dateFrom) AND (r.dateAdd <= :dateTo))')
                 ->setParameter('dateFrom', $dateFrom)
                 ->setParameter('dateTo', $dateTo);
         } elseif ($dateTo !== null) {
-            $qb->andWhere('(r.dateAdd < :dateTo)')
+            $qb->andWhere('(r.dateAdd <= :dateTo)')
                 ->setParameter('dateTo', $dateTo);
         } elseif ($dateFrom !== null) {
-            $qb->andWhere('(r.dateAdd > :dateFrom)')
+            $qb->andWhere('(r.dateAdd >= :dateFrom)')
                 ->setParameter('dateFrom', $dateFrom);
         }
 
-        if ($order !== null) {
-            switch ($order) {
-                case ReportOrderSearch::LATEST->value:
-                {
-                    $qb->orderBy('r.dateAdd', 'DESC');
-                    break;
-                }
-                case ReportOrderSearch::OLDEST->value:
-                {
-                    $qb->orderBy('r.dateAdd', 'ASC');
-                    break;
-                }
-            }
+        if ($order !== null && $order === ReportOrderSearch::OLDEST->value) {
+            $qb->orderBy('r.dateAdd', 'ASC');
+        } else {
+            $qb->orderBy('r.dateAdd', 'DESC');
         }
 
         return $qb->getQuery()->execute();
+    }
+
+    public function getSimilarReportsCount(string $actionId): ?array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.actionId LIKE :actionId')
+            ->andWhere('r.accepted = false')
+            ->andWhere('r.denied = false')
+            ->setParameter('actionId', $actionId);
+
+        return $qb->getQuery()->execute()[0];
     }
 }

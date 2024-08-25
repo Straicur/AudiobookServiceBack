@@ -81,19 +81,19 @@ class ReportTest extends AbstractWebTest
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
+        $this->databaseMockManager->testFunc_addReport(ReportType::SYSTEM_PROBLEM, ip: '127.0.0.1');
+        $this->databaseMockManager->testFunc_addReport(ReportType::SYSTEM_PROBLEM, ip: '127.0.0.1');
+        $this->databaseMockManager->testFunc_addReport(ReportType::SYSTEM_PROBLEM, ip: '127.0.0.1');
+        $this->databaseMockManager->testFunc_addReport(ReportType::SYSTEM_PROBLEM, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
         $content = [
-            'type' => ReportType::COMMENT->value,
+            'type' => ReportType::SYSTEM_PROBLEM->value,
             'ip' => '127.0.0.1',
             'email' => 'test@gmail.com',
             'additionalData' => [
                 'description'=>'DESC',
-                'actionId'=>$comment1->getId(),
             ]
         ];
 

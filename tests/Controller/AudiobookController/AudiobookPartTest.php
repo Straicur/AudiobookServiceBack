@@ -6,7 +6,7 @@ namespace App\Tests\Controller\AudiobookController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRepository;
-use App\Service\AudiobookService;
+use App\Service\Admin\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 

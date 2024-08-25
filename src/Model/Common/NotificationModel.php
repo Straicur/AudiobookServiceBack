@@ -109,7 +109,7 @@ class NotificationModel
 
     public function setActive(NotificationCheck $active): void
     {
-        $this->active = $active->getDateWatched()->getTimestamp();
+        $this->active = $active->getDateWatched()->getTimestamp() * 1000;
     }
 
     public function getCategoryKey(): ?string

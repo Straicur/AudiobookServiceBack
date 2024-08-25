@@ -15,17 +15,22 @@ class AdminReportModel
     private int $dateAdd;
     private bool $accepted;
     private bool $denied;
+    private int $similarReports = 0;
     private ?string $description = null;
     private ?string $actionId = null;
     private ?string $email = null;
     private ?string $ip = null;
     private ?AdminUserModel $user = null;
+    private ?string $answer = null;
+    private ?AdminReportAudiobookCommentsModel $comment = null;
+
+    private ?AdminUserBanModel $userBan = null;
 
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
         $this->id = $id;
         $this->type = $type->value;
-        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->dateAdd = $dateAdd->getTimestamp() * 1000;
         $this->accepted = $accepted;
         $this->denied = $denied;
     }
@@ -40,15 +45,24 @@ class AdminReportModel
         $this->id = $id;
     }
 
-    #[OA\Property(type: 'integer', enum: [1 => 'COMMENT', 2 => 'AUDIOBOOK_PROBLEM', 3 => 'CATEGORY_PROBLEM', 4 => 'SYSTEM_PROBLEM', 5 => 'USER_PROBLEM', 6 => 'SETTINGS_PROBLEM'])]
+    #[OA\Property(type: 'integer', enum: [
+        1 => 'COMMENT',
+        2 => 'AUDIOBOOK_PROBLEM',
+        3 => 'CATEGORY_PROBLEM',
+        4 => 'SYSTEM_PROBLEM',
+        5 => 'USER_PROBLEM',
+        6 => 'SETTINGS_PROBLEM',
+        7 => 'RECRUITMENT_REQUEST',
+        8 => 'OTHER',
+    ])]
     public function getType(): int
     {
         return $this->type;
     }
 
-    public function setType(int $type): void
+    public function setType(ReportType $type): void
     {
-        $this->type = $type;
+        $this->type = $type->value;
     }
 
     public function getDescription(): ?string
@@ -78,7 +92,7 @@ class AdminReportModel
 
     public function setDateAdd(DateTime $dateAdd): void
     {
-        $this->dateAdd = $dateAdd->getTimestamp();
+        $this->dateAdd = $dateAdd->getTimestamp() * 1000;
     }
 
     public function getAccepted(): bool
@@ -129,5 +143,45 @@ class AdminReportModel
     public function setUser(AdminUserModel $user): void
     {
         $this->user = $user;
+    }
+
+    public function getAnswer(): ?string
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(?string $answer): void
+    {
+        $this->answer = $answer;
+    }
+
+    public function getUserBan(): ?AdminUserBanModel
+    {
+        return $this->userBan;
+    }
+
+    public function setUserBan(?AdminUserBanModel $userBan): void
+    {
+        $this->userBan = $userBan;
+    }
+
+    public function getComment(): ?AdminReportAudiobookCommentsModel
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?AdminReportAudiobookCommentsModel $comment): void
+    {
+        $this->comment = $comment;
+    }
+
+    public function getSimilarReports(): int
+    {
+        return $this->similarReports;
+    }
+
+    public function setSimilarReports(int $similarReports): void
+    {
+        $this->similarReports = $similarReports;
     }
 }

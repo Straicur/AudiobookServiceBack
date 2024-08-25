@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
 use App\Enums\ReportLimits;
+use App\Enums\ReportType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -82,8 +83,9 @@ class UserReportController extends AbstractController
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
             $email = $userNotAuthorizedUserReportQuery->getEmail();
+
             if (!empty($ip)) {
-                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email);
+                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email, $userNotAuthorizedUserReportQuery->getType());
 
                 if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::IP_LIMIT->value) {
                     $endpointLogger->error('To many reports from this ip');
@@ -117,6 +119,9 @@ class UserReportController extends AbstractController
             if ($description) {
                 $newReport->setDescription($description);
             }
+            if ($userNotAuthorizedUserReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
+                $newReport->setDenied(true);
+            }
 
             $reportRepository->add($newReport);
 
@@ -128,7 +133,7 @@ class UserReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/report/user', name: 'apiUserReport', methods: ['PUT'])]
+    #[Route('/api/user/report', name: 'apiUserReport', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is used for users to report bad behavior',
@@ -157,15 +162,6 @@ class UserReportController extends AbstractController
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-            $amountOfReports = $reportRepository->loggedUserReportsCount($user);
-
-            if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
-                $endpointLogger->error('To many reports from this ip');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
-            }
-
             $additionalData = $userReportQuery->getAdditionalData();
             $actionId = null;
             $description = null;
@@ -177,14 +173,28 @@ class UserReportController extends AbstractController
                 $description = $additionalData['description'];
             }
 
+            $user = $authorizedUserService::getAuthorizedUser();
+            $amountOfReports = $reportRepository->loggedUserReportsCount($user, $userReportQuery->getType(), $actionId);
+
+            if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
+                $endpointLogger->error('To many reports from this ip');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+            }
+
             $newReport = new Report($userReportQuery->getType());
-            $newReport->setUser($user);
+            $newReport
+                ->setUser($user)
+                ->setEmail($user->getUserInformation()->getEmail());
 
             if ($actionId) {
                 $newReport->setActionId($actionId);
             }
             if ($description) {
                 $newReport->setDescription($description);
+            }
+            if ($userReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
+                $newReport->setDenied(true);
             }
 
             $reportRepository->add($newReport);

@@ -14,7 +14,7 @@ class UserNotAuthorizedUserReportQuery
     #[Assert\NotBlank(message: 'Type is empty')]
     #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
-    #[Assert\LessThan(8)]
+    #[Assert\LessThan(9)]
     private int $type;
 
     #[Assert\NotNull(message: 'Ip is null')]
@@ -38,7 +38,7 @@ class UserNotAuthorizedUserReportQuery
                 ]),
                 'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string'),
                 ]),
             ],
         ]));
@@ -51,10 +51,6 @@ class UserNotAuthorizedUserReportQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {
-            $additionalData['actionId'] = Uuid::fromString($additionalData['actionId']);
-        }
-
         $this->additionalData = $additionalData;
     }
 

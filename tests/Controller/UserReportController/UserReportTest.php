@@ -48,7 +48,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -84,11 +84,13 @@ class UserReportTest extends AbstractWebTest
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
-        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT,ip:'127.0.0.1',user: $user);
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -96,12 +98,12 @@ class UserReportTest extends AbstractWebTest
             'type' => ReportType::COMMENT->value,
             'additionalData' => [
                 'description' => 'DESC',
-                'actionId' => $comment1->getId(),
+                'actionId' => (string)$comment1->getId(),
             ]
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -149,7 +151,7 @@ class UserReportTest extends AbstractWebTest
             ]];
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -197,7 +199,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', server: [
+        $crawler = self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -244,7 +246,7 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/report/user', content: json_encode($content));
+        $crawler = self::$webClient->request('PUT', '/api/user/report', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);

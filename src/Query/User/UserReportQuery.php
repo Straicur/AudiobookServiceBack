@@ -4,7 +4,6 @@ namespace App\Query\User;
 
 use App\Enums\ReportType;
 use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -14,7 +13,7 @@ class UserReportQuery
     #[Assert\NotBlank(message: 'Type is empty')]
     #[Assert\Type(type: 'integer')]
     #[Assert\GreaterThan(0)]
-    #[Assert\LessThan(7)]
+    #[Assert\LessThan(9)]
     private int $type;
 
     protected array $additionalData = [];
@@ -29,7 +28,7 @@ class UserReportQuery
                 ]),
                 'actionId'    => new Assert\Optional([
                     new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Uuid(),
+                    new Assert\Type(type: 'string'),
                 ]),
             ],
         ]));
@@ -41,13 +40,8 @@ class UserReportQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
-        if (array_key_exists('actionId', $additionalData) && Uuid::isValid($additionalData['actionId'])) {
-            $additionalData['actionId'] = Uuid::fromString($additionalData['actionId']);
-        }
-
         $this->additionalData = $additionalData;
     }
-
 
     public function getAdditionalData(): array
     {
@@ -57,6 +51,7 @@ class UserReportQuery
     public function getType(): ReportType
     {
         return match ($this->type) {
+            1 => ReportType::COMMENT,
             2 => ReportType::AUDIOBOOK_PROBLEM,
             3 => ReportType::CATEGORY_PROBLEM,
             4 => ReportType::SYSTEM_PROBLEM,

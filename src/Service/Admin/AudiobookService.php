@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\Admin;
 
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddFileInterface;
+use App\Service\TranslateService;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

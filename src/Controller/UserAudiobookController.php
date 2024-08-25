@@ -9,9 +9,11 @@ use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
 use App\Entity\AudiobookUserComment;
 use App\Entity\AudiobookUserCommentLike;
+use App\Entity\UserBanHistory;
 use App\Enums\BanPeriodRage;
 use App\Enums\CacheKeys;
 use App\Enums\CacheValidTime;
+use App\Enums\UserBanType;
 use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
 use App\Enums\UserStockCacheTags;
@@ -31,6 +33,7 @@ use App\Model\User\UserAudiobookModel;
 use App\Model\User\UserAudiobookRatingGetSuccessModel;
 use App\Model\User\UserAudiobooksSearchSuccessModel;
 use App\Model\User\UserAudiobooksSuccessModel;
+use App\Model\User\UserCategoriesSuccessModel;
 use App\Model\User\UserCategoryModel;
 use App\Model\User\UserMyListAudiobooksSuccessModel;
 use App\Model\User\UserProposedAudiobooksSuccessModel;
@@ -54,6 +57,7 @@ use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -61,6 +65,7 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\Tool\UserParentalControlTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
+use App\ValueGenerator\BuildUserAudiobookCategoryTreeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -233,7 +238,7 @@ class UserAudiobookController extends AbstractController
                 $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
             }
 
-            $allAudiobooks = $audiobookRepository->searchAudiobooksByName($userAudiobooksSearchQuery->getTitle(), $age);
+            $allAudiobooks = $audiobookRepository->searchAudiobooksByNameOrKey($userAudiobooksSearchQuery->getTitle(), $userAudiobooksSearchQuery->getCategoryKey(), $age);
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
@@ -827,6 +832,40 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
+    #[Route('/api/user/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[OA\Get(
+        description: 'Endpoint is returning all active categories in system as a tree',
+        requestBody: new OA\RequestBody(),
+        responses  : [
+            new OA\Response(
+                response   : 200,
+                description: 'Success',
+                content    : new Model(type: UserCategoriesSuccessModel::class),
+            ),
+        ]
+    )]
+    public function userCategoriesTree(
+        AudiobookCategoryRepository $audiobookCategoryRepository,
+        TagAwareCacheInterface $stockCache,
+    ): Response {
+        $successModel = $stockCache->get(UserCacheKeys::USER_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
+            $item->expiresAfter(CacheValidTime::DAY->value);
+            $item->tag(UserStockCacheTags::USER_CATEGORIES_TREE->value);
+
+            $categories = $audiobookCategoryRepository->findBy([
+                'parent' => null,
+                'active' => true,
+            ]);
+
+            $treeGenerator = new BuildUserAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository);
+
+            return new UserCategoriesSuccessModel($treeGenerator->generate());
+        });
+
+        return ResponseTool::getResponse($successModel);
+    }
+
     #[Route('/api/user/audiobook/comment/add', name: 'userAudiobookCommentAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
@@ -856,6 +895,7 @@ class UserAudiobookController extends AbstractController
         TranslateService $translateService,
         TagAwareCacheInterface $stockCache,
         UserRepository $userRepository,
+        UserBanHistoryRepository $banHistoryRepository,
     ): Response {
         $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
 
@@ -885,9 +925,15 @@ class UserAudiobookController extends AbstractController
             $lastUserComments = count($audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
 
             if ($lastUserComments > (int)$_ENV['INSTITUTION_USER_COMMENTS_LIMIT']) {
-                $user->setBanned(true);
-                $user->setBannedTo((new DateTime())->modify(BanPeriodRage::HOUR_DAY_BAN->value));
+                $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
+
+                $user
+                    ->setBanned(true)
+                    ->setBannedTo($banPeriod);
+
                 $userRepository->add($user);
+
+                $banHistoryRepository->add(new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::SPAM));
 
                 $audiobookUserCommentRepository->setLastUserLastCommentsByMinutesToDeleted($user, '20');
 

@@ -86,15 +86,15 @@ class AudiobookRepository extends ServiceEntityRepository
         }
         if ($author !== null) {
             $qb->andWhere('a.author LIKE :author')
-                ->setParameter('author', $author);
+                ->setParameter('author', '%' . $author . '%');
         }
         if ($title !== null) {
             $qb->andWhere('a.title LIKE :title')
-                ->setParameter('title', $title);
+                ->setParameter('title', '%' . $title . '%');
         }
         if ($album !== null) {
             $qb->andWhere('a.album LIKE :album')
-                ->setParameter('album', $album);
+                ->setParameter('album', '%' . $album . '%');
         }
 
         if ($duration !== null) {
@@ -258,11 +258,9 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $title
-     * @param AudiobookAgeRange|null $age
      * @return Audiobook[]
      */
-    public function searchAudiobooksByName(string $title, ?AudiobookAgeRange $age = null): array
+    public function searchAudiobooksByNameOrKey(string $title, string $categoryKey, ?AudiobookAgeRange $age = null): array
     {
         $qb = $this->createQueryBuilder('a')
             ->select('a')
@@ -270,6 +268,12 @@ class AudiobookRepository extends ServiceEntityRepository
             ->where('a.active = true')
             ->andWhere('((a.title LIKE :title) OR (a.author LIKE :title))')
             ->setParameter('title', '%' . $title . '%');
+
+        if (!empty($categoryKey)) {
+            $qb
+                ->innerJoin('a.categories', 'c', Join::WITH, 'c.categoryKey = :categoryKey')
+                ->setParameter('categoryKey', $categoryKey);
+        }
 
         if ($age !== null) {
             $qb->andWhere('a.age <= :age')

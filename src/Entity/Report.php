@@ -33,8 +33,8 @@ class Report
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'uuid', nullable: true)]
-    private ?Uuid $actionId = null;
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $actionId = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $ip = null;
@@ -44,6 +44,12 @@ class Report
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $answer = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?UserBanHistory $banned = null;
 
     /**
      * @param ReportType $type
@@ -94,12 +100,12 @@ class Report
         return $this;
     }
 
-    public function getActionId(): ?Uuid
+    public function getActionId(): ?string
     {
         return $this->actionId;
     }
 
-    public function setActionId(Uuid $actionId): self
+    public function setActionId(string $actionId): self
     {
         $this->actionId = $actionId;
 
@@ -170,5 +176,29 @@ class Report
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getAnswer(): ?string
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(?string $answer): static
+    {
+        $this->answer = $answer;
+
+        return $this;
+    }
+
+    public function getBanned(): ?UserBanHistory
+    {
+        return $this->banned;
+    }
+
+    public function setBanned(?UserBanHistory $banned): static
+    {
+        $this->banned = $banned;
+
+        return $this;
     }
 }

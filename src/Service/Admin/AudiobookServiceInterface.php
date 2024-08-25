@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Admin;
 
 use App\Query\Admin\AdminAudiobookAddQuery;
 use App\Query\Admin\AdminAudiobookReAddingQuery;

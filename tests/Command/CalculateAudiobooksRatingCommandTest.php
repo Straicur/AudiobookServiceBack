@@ -6,7 +6,6 @@ namespace App\Tests\Command;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookRepository;
-use App\Service\AudiobookService;
 use App\Tests\AbstractKernelTestCase;
 use DateTime;
 use Symfony\Component\Console\Tester\CommandTester;

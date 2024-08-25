@@ -12,4 +12,5 @@ enum UserCacheKeys: string
     case USER_PROPOSED_AUDIOBOOKS = 'UserProposedAudiobooks';
     case USER_AUDIOBOOK_COMMENTS = 'UserAudiobookComments';
     case USER_NOTIFICATIONS = 'UserNotifications';
+    case USER_CATEGORY_TREE = 'UserCategoriesTree';
 }

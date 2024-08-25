@@ -122,7 +122,7 @@ class NotificationRepository extends ServiceEntityRepository
 
         if ($text !== null) {
             $qb->andWhere('n.metaData LIKE :text')
-                ->setParameter('text', $text);
+                ->setParameter('text', '%' . $text . '%');
         }
         if ($type !== null) {
             $qb->andWhere('n.type = :type')

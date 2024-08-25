@@ -14,31 +14,36 @@ class AdminReportAcceptQuery
     #[Assert\Uuid]
     private Uuid $reportId;
 
-    #[Assert\NotNull(message: 'BanPeriod is null')]
-    #[Assert\NotBlank(message: 'BanPeriod is empty')]
+    #[Assert\NotNull(message: 'AcceptOthers is null')]
+    #[Assert\Type(type: 'boolean')]
+    private bool $acceptOthers;
+
     #[Assert\Type(type: 'integer')]
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min              : 1,
         max              : 8,
     )]
-    private int $banPeriod;
+    private ?int $banPeriod = null;
 
     #[Assert\Type(type: 'string')]
-    private string $answer;
+    private ?string $answer = null;
 
-    public function getBanPeriod(): BanPeriodRage
+    public function getBanPeriod(): ?BanPeriodRage
     {
-        return match ($this->banPeriod) {
-            1 => BanPeriodRage::SYSTEM,
-            2 => BanPeriodRage::NOT_BANNED,
-            3 => BanPeriodRage::HALF_DAY_BAN,
-            4 => BanPeriodRage::ONE_DAY_BAN,
-            5 => BanPeriodRage::FIVE_DAY_BAN,
-            6 => BanPeriodRage::ONE_MONTH_BAN,
-            7 => BanPeriodRage::THREE_MONTH_BAN,
-            8 => BanPeriodRage::ONE_YEAR_BAN,
-        };
+        if ($this->banPeriod !== null) {
+            return match ($this->banPeriod) {
+                1 => BanPeriodRage::SYSTEM,
+                2 => BanPeriodRage::NOT_BANNED,
+                3 => BanPeriodRage::HALF_DAY_BAN,
+                4 => BanPeriodRage::ONE_DAY_BAN,
+                5 => BanPeriodRage::FIVE_DAY_BAN,
+                6 => BanPeriodRage::ONE_MONTH_BAN,
+                7 => BanPeriodRage::THREE_MONTH_BAN,
+                8 => BanPeriodRage::ONE_YEAR_BAN,
+            };
+        }
+        return null;
     }
 
     public function setBanPeriod(int $banPeriod): void
@@ -57,7 +62,7 @@ class AdminReportAcceptQuery
         $this->reportId = Uuid::fromString($reportId);
     }
 
-    public function getAnswer(): string
+    public function getAnswer(): ?string
     {
         return $this->answer;
     }
@@ -65,5 +70,15 @@ class AdminReportAcceptQuery
     public function setAnswer(string $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function isAcceptOthers(): bool
+    {
+        return $this->acceptOthers;
+    }
+
+    public function setAcceptOthers(bool $acceptOthers): void
+    {
+        $this->acceptOthers = $acceptOthers;
     }
 }
