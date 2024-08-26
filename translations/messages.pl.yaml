@@ -49,6 +49,7 @@ SuccessfulEmailChange: Udana zmiana emaila
 Cheers: Dziękujemy
 SystemVolumen: Serwis przekroczył dostępną przestrzeń dyskową
 UserToManyReports: Przez ostatnie 3 dni zostało wysłane przez ciebie za duzo zgłoszeń
+AdminReportAcceptedOrRejected: Zgłoszenie zostało już zaakceptowane lub odrzucone
 ReportAcceptEmail: Cześć twoje zgłoszenie zostało zaakceptowanie i jest przetwarzane
 ReportDeniedEmail: Cześć twoje zgłoszenie zostało odrzucone
 UserBanEmail: Twoje konto zostało zbanowane do

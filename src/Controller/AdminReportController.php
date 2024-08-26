@@ -108,7 +108,7 @@ class AdminReportController extends AbstractController
             if ($report === null || $report->getAccepted() || $report->getDenied()) {
                 $endpointLogger->error('Cant find report');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+                throw new DataNotFoundException([$translateService->getTranslation('AdminReportAcceptedOrRejected')]);
             }
 
             if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
@@ -158,7 +158,7 @@ class AdminReportController extends AbstractController
                         $email = (new TemplatedEmail())
                             ->from($_ENV['INSTITUTION_EMAIL'])
                             ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())
-                            ->subject($translateService->getTranslation('UserBannedSubject'))
+                            ->subject($translateService->getTranslation('AdminReportAcceptedOrRejected'))
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
                                 'name'   => $user->getUserInformation()->getFirstname(),
