@@ -223,14 +223,12 @@ class AudiobookRepository extends ServiceEntityRepository
      * @param bool $getActive
      * @return Audiobook|null
      */
-    public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey, bool $getActive = true): ?Audiobook
+    public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey): ?Audiobook
     {
         $qb = $this->createQueryBuilder('a')
             ->innerJoin('a.categories', 'c', Join::WITH, 'c.categoryKey = :categoryKey')
             ->where('a.id = :audiobookId');
-        if ($getActive) {
-            $qb->andWhere('a.active = true');
-        }
+
         $qb->setParameter('audiobookId', $audiobookId->toBinary())
             ->setParameter('categoryKey', $categoryKey);
 

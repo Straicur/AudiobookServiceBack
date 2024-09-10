@@ -374,6 +374,12 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+            }
+
             $user = $authorizedUserService::getAuthorizedUser();
             $successModel = $stockCache->get(
                 UserCacheKeys::USER_AUDIOBOOK->value . $user->getId() . '_' . $audiobook->getId(),
@@ -499,6 +505,12 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+            }
+
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
                 'active'    => true,
@@ -565,6 +577,12 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            }
+
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
             $myList = $user->getMyList();
@@ -673,6 +691,12 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+            }
+
             $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
 
             $audiobookInfo = $audiobookInfoRepository->findOneBy([
@@ -754,6 +778,12 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+            }
+
             $rating = $ratingRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
                 'user'      => $user->getId(),
@@ -824,6 +854,12 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+            }
+
             return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel((int)$audiobook->getAvgRating()));
         }
 
@@ -833,7 +869,7 @@ class UserAudiobookController extends AbstractController
     }
 
     #[Route('/api/user/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning all active categories in system as a tree',
         requestBody: new OA\RequestBody(),
@@ -908,6 +944,12 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            }
+
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
             $watchedParts = $audiobookInfoRepository->findBy([
@@ -1011,6 +1053,12 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            }
+
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
             $audiobookComment = $audiobookUserCommentRepository->findOneBy([
@@ -1230,6 +1278,12 @@ class UserAudiobookController extends AbstractController
                 $endpointLogger->error('Audiobook dont exist');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
+            }
+
+            if (!$audiobook->getActive()) {
+                $endpointLogger->error('Audiobook is not active');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
             $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {

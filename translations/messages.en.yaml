@@ -6,6 +6,7 @@ NotActivePassword: Cant find active password
 ParentCategoryDontExists: Parent category dont exists
 CategoryDontExists: Category dont exists
 AudiobookDontExists: Audiobook dont exists
+AudiobookNotActive: Audiobook is not active
 TechnicalBreakDontExists: Technical break dont exists
 AudiobookCommentDontExists: Audiobook comment dont exists
 AudiobookParentCommentDontExists: Audiobook parent comment dont exists
