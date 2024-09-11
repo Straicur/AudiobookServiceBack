@@ -1233,7 +1233,10 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setImgFileChangeDate();
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
+                UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId(),
+            ]);
 
             return ResponseTool::getResponse();
         }
