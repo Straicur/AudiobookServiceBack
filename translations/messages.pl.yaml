@@ -69,3 +69,4 @@ UserBannedSubject: Twoje konto zostało zbanowane
 SmsCodeContent: Oto twoj kod zmiany
 SmsCodeError: Nie możemy wysłać sms. Skontaktuj się z nami
 Answer: Odpowiedź
+UserChangedPassword: Użytkownik zmienił już hasło

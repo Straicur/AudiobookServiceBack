@@ -18,7 +18,7 @@ done
 symfony console audiobookservice:clear:audiobooks
 
 symfony console audiobookservice:institution:add "980921222" 4 20
-symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audio.com" "980921222" "zaq12wsx"
+symfony console audiobookservice:admin:add "Damian" "Mosiński" "admin@audiobookback.icu" "980921222" "zaq12wsx"
 symfony console audiobookservice:users:create "Damian" "Mosiński" "mosinskidamian11@gmail.com" "980921223" "zaq12wsx" "User"
 symfony console audiobookservice:users:create "Krystian" "Jakiś" "mosinskidamian12@gmail.com" "980921224" "zaq12wsx" "User"
 symfony console audiobookservice:users:create "Marcin" "Gogo" "mosinskidamian13@gmail.com" "980921225" "zaq12wsx" "User"

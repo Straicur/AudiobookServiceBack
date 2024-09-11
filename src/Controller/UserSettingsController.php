@@ -184,18 +184,18 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailExists')]);
             }
 
-            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
+            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL);
 
             if ($userEdit !== null) {
-                $endpointLogger->error('User dont exist');
+                $endpointLogger->error('User changed password');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserChangedPassword')]);
             }
 
             $user->setEdited(true);
             $user->setEditableDate(new DateTime());
 
-            $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL->value);
+            $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL);
             $newEditedUser->setEditableDate((new DateTime())->modify('+10 hour'));
 
             $editRepository->add($newEditedUser);
@@ -255,12 +255,12 @@ class UserSettingsController extends AbstractController
             throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
         }
 
-        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL->value);
+        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL);
 
         if ($userEdit === null) {
-            $endpointLogger->error('User dont exist');
+            $endpointLogger->error('User changed password');
             $translateService->setPreferredLanguage($request);
-            throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            throw new DataNotFoundException([$translateService->getTranslation('UserChangedPassword')]);
         }
 
         $userNewEmail = $userInformationRepository->findOneBy([
@@ -490,7 +490,7 @@ class UserSettingsController extends AbstractController
 
             $editRepository->changeResetPasswordEdits($user);
 
-            $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD->value);
+            $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD);
             $newEditedUser->setEditableDate((new DateTime())->modify('+10 hour'));
 
             $editRepository->add($newEditedUser);
@@ -557,12 +557,12 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
             }
 
-            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD->value);
+            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD);
 
             if ($userEdit === null) {
-                $endpointLogger->error('User dont exist');
+                $endpointLogger->error('User changed password');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserChangedPassword')]);
             }
 
             $userEdit->setEdited(true);

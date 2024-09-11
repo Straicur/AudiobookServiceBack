@@ -32,7 +32,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
-        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new DateTime())->modify('+1 day'));
+        $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL, (new DateTime())->modify('+1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -70,7 +70,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('-1 month'));
 
-        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL->value, (new DateTime())->modify('-1 day'));
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL, (new DateTime())->modify('-1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -103,7 +103,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', editableDate: (new DateTime())->modify('-1 month'));
 
-        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL->value, (new DateTime())->modify('-1 day'));
+        $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL, (new DateTime())->modify('-1 day'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2

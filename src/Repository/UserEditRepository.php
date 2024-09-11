@@ -58,7 +58,7 @@ class UserEditRepository extends ServiceEntityRepository
      * @param int $type
      * @return UserEdit|null
      */
-    public function checkIfUserCanChange(User $user, int $type): ?UserEdit
+    public function checkIfUserCanChange(User $user, UserEditType $type): ?UserEdit
     {
         $qb = $this->createQueryBuilder('ue');
 
@@ -67,7 +67,7 @@ class UserEditRepository extends ServiceEntityRepository
         $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
             ->where('((ue.edited = false) AND (ue.editableDate IS NOT NULL AND ue.editableDate > :date))')
             ->andWhere('ue.type = :type')
-            ->setParameter('type', $type)
+            ->setParameter('type', $type->value)
             ->setParameter('date', $date)
             ->setParameter('user', $user->getId()->toBinary());
 

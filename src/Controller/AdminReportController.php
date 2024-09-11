@@ -89,14 +89,14 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportAccept(
-        Request                  $request,
-        RequestServiceInterface  $requestService,
-        LoggerInterface          $endpointLogger,
-        TranslateService         $translateService,
-        ReportRepository         $reportRepository,
-        MailerInterface          $mailer,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
+        MailerInterface $mailer,
         AudiobookUserCommentRepository $commentRepository,
-        UserRepository           $userRepository,
+        UserRepository $userRepository,
         UserBanHistoryRepository $banHistoryRepository,
         AdminReportAcceptService $adminReportService,
     ): Response {
@@ -208,11 +208,11 @@ class AdminReportController extends AbstractController
         ]
     )]
     public function apiAdminReportReject(
-        Request                  $request,
-        RequestServiceInterface  $requestService,
-        LoggerInterface          $endpointLogger,
-        TranslateService         $translateService,
-        ReportRepository         $reportRepository,
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        TranslateService $translateService,
+        ReportRepository $reportRepository,
         AdminReportRejectService $adminReportService,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);

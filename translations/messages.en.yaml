@@ -68,3 +68,4 @@ UserBannedSubject: Your account has been banned
 SmsCodeContent: Here is your change code
 SmsCodeError: We can't send sms. Contact us
 Answer: Answer
+UserChangedPassword: User has changed password already
