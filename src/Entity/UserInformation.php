@@ -30,6 +30,9 @@ class UserInformation
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $birthday = null;
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $loginAttempts = 0;
+
     /**
      * @param User $user
      * @param string $email
@@ -149,6 +152,18 @@ class UserInformation
     public function setBirthday(?DateTime $birthday): self
     {
         $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getLoginAttempts(): int
+    {
+        return $this->loginAttempts;
+    }
+
+    public function setLoginAttempts(int $loginAttempts): static
+    {
+        $this->loginAttempts = $loginAttempts;
 
         return $this;
     }

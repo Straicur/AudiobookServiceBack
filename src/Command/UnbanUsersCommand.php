@@ -26,7 +26,7 @@ class UnbanUsersCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->userRepository->bannedUsers();
+        $this->userRepository->unbanBannedUsers();
 
         $io->success('Users unbanned');
 

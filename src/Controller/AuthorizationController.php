@@ -6,6 +6,10 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AuthenticationToken;
+use App\Entity\UserBanHistory;
+use App\Enums\BanPeriodRage;
+use App\Enums\UserBanType;
+use App\Enums\UserLogin;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
@@ -19,20 +23,25 @@ use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Common\AuthorizeQuery;
 use App\Repository\AuthenticationTokenRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
+use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
+use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
@@ -86,6 +95,9 @@ class AuthorizationController extends AbstractController
         UserPasswordRepository $userPasswordRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
         TranslateService $translateService,
+        UserBanHistoryRepository $banHistoryRepository,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
     ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
@@ -133,6 +145,41 @@ class AuthorizationController extends AbstractController
 
             if ($passwordEntity === null) {
                 $translateService->setPreferredLanguage($request);
+
+                $loginAttempts = $userInformationEntity->getLoginAttempts();
+
+                if ($loginAttempts < UserLogin::MAX_LOGIN_ATTEMPTS->value) {
+                    $userInformationEntity->setLoginAttempts($loginAttempts + 1);
+                    $userInformationRepository->add($userInformationEntity);
+                } else {
+                    $userInformationEntity->setLoginAttempts(0);
+                    $userInformationRepository->add($userInformationEntity);
+
+                    $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
+
+                    $banHistory = new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::MAX_LOGINS_BREAK);
+                    $banHistoryRepository->add($banHistory);
+
+                    $user->setBanned(true)
+                        ->setBannedTo($banPeriod);
+
+                    $userRepository->add($user);
+
+                    $email = (new TemplatedEmail())
+                        ->from($_ENV['INSTITUTION_EMAIL'])
+                        ->to($userInformationEntity->getEmail())
+                        ->subject($translateService->getTranslation('MaxLoginsMailAttempts'))
+                        ->htmlTemplate('emails/userBanTooManyLoginsAttempts.html.twig')
+                        ->context([
+                            'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                            'banPeriod' => BanPeriodRage::HOUR_BAN->value,
+                            'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                        ]);
+                    $mailer->send($email);
+
+                    throw new DataNotFoundException([$translateService->getTranslation('BannedForBreakMaxLogins')]);
+                }
+
                 throw new DataNotFoundException([$translateService->getTranslation('NotActivePassword')]);
             }
 
@@ -157,6 +204,9 @@ class AuthorizationController extends AbstractController
                     $isAdmin = true;
                 }
             }
+
+            $userInformationEntity->setLoginAttempts(0);
+            $userInformationRepository->add($userInformationEntity);
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel, $isAdmin);
 

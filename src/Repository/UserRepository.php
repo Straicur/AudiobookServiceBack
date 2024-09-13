@@ -256,7 +256,7 @@ class UserRepository extends ServiceEntityRepository
     /**
      * @return void
      */
-    public function bannedUsers(): void
+    public function unbanBannedUsers(): void
     {
         $qb = $this->createQueryBuilder('u');
 
