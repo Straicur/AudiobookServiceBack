@@ -422,6 +422,11 @@ class UserAudiobookController extends AbstractController
                     'deleted'   => false,
                     ]);
 
+                    $userRating = $audiobookRatingRepository->findOneBy([
+                        'audiobook' => $audiobook->getId(),
+                        'user'      => $user->getId(),
+                    ]);
+
                     $successModel = new UserAudiobookDetailsSuccessModel(
                         (string)$audiobook->getId(),
                         $audiobook->getTitle(),
@@ -446,9 +451,15 @@ class UserAudiobookController extends AbstractController
                     if ($audiobookInfo !== null && count($audiobookInfo) >= $audiobook->getParts()) {
                         $successModel->setCanRate(true);
                     }
+
                     if (floor($audiobook->getParts() / 2) <= count($audiobookInfo)) {
                         $successModel->setCanComment(true);
                     }
+
+                    if ($userRating !== null) {
+                        $successModel->setRated(true);
+                    }
+
                     return $successModel;
                 }
             );

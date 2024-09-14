@@ -34,6 +34,7 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     private int $comments;
     private bool $canRate = false;
     private bool $canComment = false;
+    private bool $rated = false;
     private ?string $imgFile;
 
     public function __construct(
@@ -259,5 +260,15 @@ class UserAudiobookDetailsSuccessModel implements ModelInterface
     public function setImgFile(?string $imgFile): void
     {
         $this->imgFile = $imgFile;
+    }
+
+    public function isRated(): bool
+    {
+        return $this->rated;
+    }
+
+    public function setRated(bool $rated): void
+    {
+        $this->rated = $rated;
     }
 }
