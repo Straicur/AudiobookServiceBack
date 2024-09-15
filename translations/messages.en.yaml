@@ -6,6 +6,7 @@ NotActivePassword: Cant find active password
 ParentCategoryDontExists: Parent category dont exists
 CategoryDontExists: Category dont exists
 AudiobookDontExists: Audiobook dont exists
+AudiobookNotActive: Audiobook is not active
 TechnicalBreakDontExists: Technical break dont exists
 AudiobookCommentDontExists: Audiobook comment dont exists
 AudiobookParentCommentDontExists: Audiobook parent comment dont exists
@@ -49,6 +50,7 @@ SuccessfulEmailChange: Successfully changed email
 Cheers: Cheers
 SystemVolumen: The website has exceeded the available disk space
 UserToManyReports: In last 3 days you send to many reports
+AdminReportAcceptedOrRejected: The application has already been accepted or rejected
 ReportAcceptEmail: Hello your report has been accepted and is processing
 ReportDeniedEmail: Hello your report has been denied
 UserBanEmail: Your account has been banned to
@@ -67,3 +69,7 @@ UserBannedSubject: Your account has been banned
 SmsCodeContent: Here is your change code
 SmsCodeError: We can't send sms. Contact us
 Answer: Answer
+UserChangedPassword: User has changed password already
+BannedForBreakMaxLogins: User has been blocked, too many login attempts. Come back in a while
+BannedForBreakMaxLoginsMailDesc: Your account has been blocked. There have been too many attempts to log into your account. Return back in
+MaxLoginsMailAttempts: Too many attempts to log into the account

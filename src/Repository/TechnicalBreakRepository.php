@@ -87,17 +87,12 @@ class TechnicalBreakRepository extends ServiceEntityRepository
             switch ($order) {
                 case TechnicalBreakOrder::LATEST->value:
                 {
-                    $qb->orderBy('tb.dateFrom', 'ASC');
+                    $qb->orderBy('tb.dateFrom', 'DESC');
                     break;
                 }
                 case TechnicalBreakOrder::OLDEST->value:
                 {
-                    $qb->orderBy('tb.dateFrom', 'DESC');
-                    break;
-                }
-                case TechnicalBreakOrder::ACTIVE->value:
-                {
-                    $qb->orderBy('tb.active', 'DESC');
+                    $qb->orderBy('tb.dateFrom', 'ASC');
                     break;
                 }
             }

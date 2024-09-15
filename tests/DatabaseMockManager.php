@@ -32,6 +32,7 @@ use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanType;
+use App\Enums\UserEditType;
 use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
@@ -451,7 +452,7 @@ class DatabaseMockManager
         return $newAudiobookUserCommentLike;
     }
 
-    public function testFunc_addUserEdit(User $user, bool $edited, int $type, ?DateTime $editableDate = null): UserEdit
+    public function testFunc_addUserEdit(User $user, bool $edited, UserEditType $type, ?DateTime $editableDate = null): UserEdit
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 

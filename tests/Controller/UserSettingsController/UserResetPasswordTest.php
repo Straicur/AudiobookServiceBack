@@ -32,8 +32,8 @@ class UserResetPasswordTest extends AbstractWebTest
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD->value, (new DateTime())->modify('+1 day'));
-        $userEdit2 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD->value, (new DateTime())->modify('+1 day'));
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'));
+        $userEdit2 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'));
 
         /// step 2
         $content = [

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\UserEditType;
 use App\Repository\UserEditRepository;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
@@ -36,11 +37,11 @@ class UserEdit
      * @param bool $edited
      * @param int $type
      */
-    public function __construct(User $user, bool $edited, int $type)
+    public function __construct(User $user, bool $edited, UserEditType $type)
     {
         $this->user = $user;
         $this->edited = $edited;
-        $this->type = $type;
+        $this->type = $type->value;
     }
 
     /**
@@ -92,9 +93,9 @@ class UserEdit
         return $this->type;
     }
 
-    public function setType(int $type): self
+    public function setType(UserEditType $type): self
     {
-        $this->type = $type;
+        $this->type = $type->value;
 
         return $this;
     }

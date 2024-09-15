@@ -73,7 +73,7 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL->value, (new DateTime())->modify('+1 day'));
+        $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL, (new DateTime())->modify('+1 day'));
 
         /// step 2
         $content = [

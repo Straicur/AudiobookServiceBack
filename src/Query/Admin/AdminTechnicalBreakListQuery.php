@@ -63,10 +63,9 @@ class AdminTechnicalBreakListQuery
         if (
             array_key_exists('order', $searchData) &&
             $searchData['order'] !== TechnicalBreakOrder::LATEST->value &&
-            $searchData['order'] !== TechnicalBreakOrder::OLDEST->value &&
-            $searchData['order'] !== TechnicalBreakOrder::ACTIVE->value
+            $searchData['order'] !== TechnicalBreakOrder::OLDEST->value
         ) {
-            $searchData['order'] = TechnicalBreakOrder::ACTIVE->value;
+            $searchData['order'] = TechnicalBreakOrder::LATEST->value;
         }
 
         if (array_key_exists('dateFrom', $searchData)) {
