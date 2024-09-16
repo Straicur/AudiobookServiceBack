@@ -26,6 +26,7 @@ AudiobookNotWatched: Audiobook musi zostać osłuchany żeby ocenić
 AudiobookNotListened: Audiobook nie został odsłuchany
 ToManyUserComments: Wysłałeś za dużo komentarzy w krótkim okresie czasu
 AudiobookCommentLikeDontExists: Komentarz nie został polubiony
+Comment: Komentarz
 UserPasswordDontExists: Hasło użytkownika nie istnieje
 Hello: Witaj
 ActivateAccountRegister: Aktywuj konto aby korzystać z serwisu

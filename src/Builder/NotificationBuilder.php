@@ -12,6 +12,7 @@ use App\Enums\NotificationUserType;
 use App\Enums\UserStockCacheTags;
 use App\Exception\NotificationException;
 use App\Model\Common\NotificationModel;
+use DateTime;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -40,6 +41,20 @@ class NotificationBuilder
     public function setAction(Uuid $id): static
     {
         $this->notification->setActionId($id);
+
+        return $this;
+    }
+
+    public function setDateActive(DateTime $dateActive): static
+    {
+        $this->notification->setDateActive($dateActive);
+
+        return $this;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->notification->setActive($active);
 
         return $this;
     }
@@ -89,22 +104,16 @@ class NotificationBuilder
 
         $metaData = $notification->getMetaData();
 
-        if (array_key_exists('user', $metaData)) {
-            if ($metaData['user'] !== null) {
-                $notificationModel->setUserType($metaData['user']);
-            }
+        if (array_key_exists('user', $metaData) && $metaData['user'] !== null) {
+            $notificationModel->setUserType($metaData['user']);
         }
 
-        if (array_key_exists('text', $metaData)) {
-            if ($metaData['text'] !== "") {
-                $notificationModel->setText($metaData['text']);
-            }
+        if (array_key_exists('text', $metaData) && $metaData['text'] !== "") {
+            $notificationModel->setText($metaData['text']);
         }
 
-        if (array_key_exists('categoryKey', $metaData)) {
-            if ($metaData['categoryKey'] !== "") {
-                $notificationModel->setCategoryKey($metaData['categoryKey']);
-            }
+        if (array_key_exists('categoryKey', $metaData) && $metaData['categoryKey'] !== "") {
+            $notificationModel->setCategoryKey($metaData['categoryKey']);
         }
 
         if ($notificationCheck !== null) {

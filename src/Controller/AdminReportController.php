@@ -162,7 +162,8 @@ class AdminReportController extends AbstractController
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
                                 'name'   => $user->getUserInformation()->getFirstname(),
-                                'desc'   => $comment->getComment(),
+                                'comment' => $comment->getComment(),
+                                'answer'    => $adminReportAcceptQuery->getAnswer(),
                                 'dateTo' => $banPeriod->format('d.m.Y'),
                                 'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                             ]);

@@ -26,6 +26,7 @@ AudiobookNotWatched: Audiobook must be listened to rate
 AudiobookNotListened: Audiobook is not listened
 ToManyUserComments: You posted too many comments in a short period of time
 AudiobookCommentLikeDontExists: Comment was not liked
+Comment: Comment
 UserPasswordDontExists: User password dont exists
 Hello: Hello
 ActivateAccountRegister: Activate your account to use service

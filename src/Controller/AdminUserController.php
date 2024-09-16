@@ -46,7 +46,6 @@ use App\Query\Admin\AdminUserRoleRemoveQuery;
 use App\Query\Admin\AdminUsersQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
-use App\Repository\InstitutionRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
@@ -1172,7 +1171,6 @@ class AdminUserController extends AbstractController
         UserRepository $userRepository,
         RoleRepository $roleRepository,
         AudiobookRepository $audiobookRepository,
-        InstitutionRepository $institutionRepository,
         AudiobookCategoryRepository $categoryRepository,
         TranslateService $translateService,
         TagAwareCacheInterface $stockCache,
@@ -1182,6 +1180,8 @@ class AdminUserController extends AbstractController
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
             $additionalData = $adminUserNotificationPutQuery->getAdditionalData();
 
+            $notificationBuilder = new NotificationBuilder();
+
             switch ($adminUserNotificationPutQuery->getNotificationType()) {
                 case NotificationType::NORMAL:
                     $userRole = $roleRepository->findOneBy([
@@ -1189,16 +1189,10 @@ class AdminUserController extends AbstractController
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $institution = $institutionRepository->findOneBy([
-                        'name' => $_ENV['INSTITUTION_NAME'],
-                    ]);
 
                     $notificationBuilder
                         ->setType($adminUserNotificationPutQuery->getNotificationType())
-                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->setAction($institution->getId());
+                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType());
 
                     if (array_key_exists('text', $additionalData)) {
                         $notificationBuilder->setText($additionalData['text']);
@@ -1208,9 +1202,6 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
                     break;
                 case NotificationType::ADMIN:
                     if (!array_key_exists('userId', $additionalData)) {
@@ -1227,8 +1218,6 @@ class AdminUserController extends AbstractController
                         throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
                     }
 
-                    $notificationBuilder = new NotificationBuilder();
-
                     $notificationBuilder
                         ->setType($adminUserNotificationPutQuery->getNotificationType())
                         ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
@@ -1238,10 +1227,6 @@ class AdminUserController extends AbstractController
                     if (array_key_exists('text', $additionalData)) {
                         $notificationBuilder->setText($additionalData['text']);
                     }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
 
                     break;
                 case NotificationType::NEW_CATEGORY:
@@ -1256,7 +1241,6 @@ class AdminUserController extends AbstractController
                     ]);
 
                     $users = $userRepository->getUsersByRole($userRole);
-                    $notificationBuilder = new NotificationBuilder();
 
                     $category = $categoryRepository->findOneBy([
                         'categoryKey' => $additionalData['categoryKey'],
@@ -1282,9 +1266,6 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
                     break;
                 case NotificationType::NEW_AUDIOBOOK:
                     if (!array_key_exists('actionId', $additionalData)) {
@@ -1302,7 +1283,6 @@ class AdminUserController extends AbstractController
                     }
 
                     $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
-                    $notificationBuilder = new NotificationBuilder();
 
                     $notificationBuilder
                         ->setType($adminUserNotificationPutQuery->getNotificationType())
@@ -1317,11 +1297,22 @@ class AdminUserController extends AbstractController
                         $notificationBuilder->addUser($user);
                     }
 
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
                     break;
             }
+
+            if (array_key_exists('dateActive', $additionalData)) {
+                $notificationBuilder->setDateActive($additionalData['dateActive']);
+            }
+
+            if (array_key_exists('active', $additionalData)) {
+                $notificationBuilder->setActive($additionalData['active']);
+            } else {
+                $notificationBuilder->setActive(false);
+            }
+
+            $notification = $notificationBuilder->build($stockCache);
+
+            $notificationRepository->add($notification);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
