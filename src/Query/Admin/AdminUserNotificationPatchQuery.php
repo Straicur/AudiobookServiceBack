@@ -4,6 +4,7 @@ namespace App\Query\Admin;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -57,6 +58,15 @@ class AdminUserNotificationPatchQuery
                     new Assert\NotNull(),
                     new Assert\Type('string'),
                 ]),
+                'active'     => new Assert\Optional([
+                    new Assert\NotNull(message: 'Active is empty'),
+                    new Assert\Type('boolean'),
+                ]),
+                'dateActive' => new Assert\Optional([
+                    new Assert\NotBlank(message: 'DateActive is empty'),
+                    new Assert\NotNull(),
+                    new Assert\Type('datetime'),
+                ]),
             ],
         ]));
     }
@@ -67,6 +77,10 @@ class AdminUserNotificationPatchQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
+        if (array_key_exists('dateActive', $additionalData)) {
+            $additionalData['dateActive'] = DateTime::createFromFormat('d.m.Y H:i', $additionalData['dateActive']);
+        }
+
         $this->additionalData = $additionalData;
     }
 

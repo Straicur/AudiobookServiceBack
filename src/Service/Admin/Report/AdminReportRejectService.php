@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Admin;
+namespace App\Service\Admin\Report;
 
 use App\Builder\NotificationBuilder;
 use App\Entity\Report;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
-use App\Query\Admin\AdminReportAcceptQuery;
+use App\Query\Admin\AdminReportRejectQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
 use App\Service\TranslateService;
@@ -18,28 +18,28 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class AdminReportAcceptService implements AdminReportAcceptServiceInterface
+class AdminReportRejectService implements AdminReportRejectServiceInterface
 {
-    private AdminReportAcceptQuery $adminReportAcceptQuery;
+    private AdminReportRejectQuery $adminReportRejectQuery;
     private Request $request;
 
     public function __construct(
-        private readonly ReportRepository       $reportRepository,
+        private readonly ReportRepository $reportRepository,
         private readonly TagAwareCacheInterface $stockCache,
         private readonly NotificationRepository $notificationRepository,
-        private readonly MailerInterface        $mailer,
-        private readonly TranslateService       $translateService,
+        private readonly MailerInterface $mailer,
+        private readonly TranslateService $translateService,
     ) {
     }
 
-    public function setAdminReportAcceptQuery(AdminReportAcceptQuery $adminReportAcceptQuery): AdminReportAcceptService
+    public function setAdminReportRejectQuery(AdminReportRejectQuery $adminReportRejectQuery): AdminReportRejectService
     {
-        $this->adminReportAcceptQuery = $adminReportAcceptQuery;
+        $this->adminReportRejectQuery = $adminReportRejectQuery;
 
         return $this;
     }
 
-    public function setRequest(Request $request): AdminReportAcceptService
+    public function setRequest(Request $request): AdminReportRejectService
     {
         $this->request = $request;
 
@@ -61,17 +61,17 @@ class AdminReportAcceptService implements AdminReportAcceptServiceInterface
 
     public function sendReportResponse(Report $report): void
     {
-        $report
-            ->setAccepted(true)
-            ->setAnswer($this->adminReportAcceptQuery->getAnswer());
-
-        $this->reportRepository->add($report);
+        if (!$report->getAccepted() && !$report->getDenied()) {
+            $report->setDenied(true);
+            $report->setAnswer($this->adminReportRejectQuery->getAnswer());
+            $this->reportRepository->add($report);
+        }
 
         if ($report->getUser()) {
             $notificationBuilder = new NotificationBuilder();
 
             $notification = $notificationBuilder
-                ->setType(NotificationType::USER_REPORT_ACCEPTED)
+                ->setType(NotificationType::USER_REPORT_DENIED)
                 ->setAction($report->getId())
                 ->addUser($report->getUser())
                 ->setUserAction(NotificationUserType::SYSTEM)
@@ -80,16 +80,16 @@ class AdminReportAcceptService implements AdminReportAcceptServiceInterface
             $this->notificationRepository->add($notification);
         }
 
-        if ($_ENV['APP_ENV'] !== 'test' && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
+        if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
             $email = (new TemplatedEmail())
                 ->from($_ENV['INSTITUTION_EMAIL'])
                 ->to($report->getEmail())
-                ->subject($this->translateService->getTranslation('ReportAcceptSubject'))
-                ->htmlTemplate('emails/reportAccepted.html.twig')
+                ->subject($this->translateService->getTranslation('ReportDeniedSubject'))
+                ->htmlTemplate('emails/reportDenied.html.twig')
                 ->context([
-                    'desc'   => $report->getDescription(),
-                    'answer' => $this->adminReportAcceptQuery->getAnswer(),
-                    'lang'   => $this->request->getPreferredLanguage() !== null ? $this->request->getPreferredLanguage() : $this->translateService->getLocate(),
+                    'desc'        => $report->getDescription(),
+                    'explanation' => $this->adminReportRejectQuery->getAnswer(),
+                    'lang'        => $this->request->getPreferredLanguage() !== null ? $this->request->getPreferredLanguage() : $this->translateService->getLocate(),
                 ]);
             $this->mailer->send($email);
         }

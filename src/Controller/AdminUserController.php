@@ -1187,7 +1187,7 @@ class AdminUserController extends AbstractController
                     $userRole = $roleRepository->findOneBy([
                         'name' => UserRolesNames::USER->value,
                     ]);
-
+                    //TODO tu dodatkowo dlaczego jest już dodawane ?
                     $users = $userRepository->getUsersByRole($userRole);
 
                     $notificationBuilder
@@ -1367,6 +1367,23 @@ class AdminUserController extends AbstractController
                 ->setType($adminUserNotificationPatchQuery->getNotificationType())
                 ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
 
+            $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
+
+            //TODO tu jeśli będzie false to nie chce dodawać ich userom
+            // Jeśli będzie na tak to tak
+
+            if (array_key_exists('dateActive', $additionalData)) {
+                $notificationBuilder->setDateActive($additionalData['dateActive']);
+            }
+
+            if (array_key_exists('active', $additionalData)) {
+                $notificationBuilder->setActive($additionalData['active']);
+            } else {
+                $notificationBuilder->setActive(false);
+            }
+
+
+            //TODO tu nie powinny być teraz znowu te same osoby tylko te do których nie ma
             $userRole = $roleRepository->findOneBy([
                 'name' => UserRolesNames::USER,
             ]);
@@ -1376,8 +1393,6 @@ class AdminUserController extends AbstractController
             foreach ($users as $user) {
                 $notificationBuilder->addUser($user);
             }
-
-            $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
 
             if (array_key_exists('text', $additionalData)) {
                 $notificationBuilder->setText($additionalData['text']);

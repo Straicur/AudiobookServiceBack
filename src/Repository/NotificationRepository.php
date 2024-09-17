@@ -55,7 +55,7 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
 
-    public function getNumberNotificationsFromLastWeak(): int
+    public function getNumberNotificationsFromLastWeek(): int
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -82,6 +82,7 @@ class NotificationRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('n')
             ->innerJoin('n.users', 'u', Join::WITH, 'u.id = :user')
             ->where('n.deleted = false')
+            ->andWhere('n.active = true')
             ->setParameter('user', $user->getId()->toBinary())
             ->orderBy('n.dateAdd', 'DESC');
 
@@ -99,6 +100,7 @@ class NotificationRepository extends ServiceEntityRepository
             ->leftJoin('n.notificationChecks', 'nc')
             ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
             ->where('n.deleted = false')
+            ->andWhere('n.active = true')
             ->setParameter('user', $user->getId()->toBinary())
             ->having('count(nc.id) = 0')
             ->orderBy('notifications', 'DESC')

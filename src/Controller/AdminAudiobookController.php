@@ -47,7 +47,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookService;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;

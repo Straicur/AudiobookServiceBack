@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\AdminAudiobookController;
 
 use App\Repository\AudiobookRepository;
-use App\Service\Admin\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 
 /**

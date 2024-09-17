@@ -102,7 +102,7 @@ class AdminStatisticsController extends AbstractController
 
                 $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
                 $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-                $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeak();
+                $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeek();
                 $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
                 return [$users,
                 $categories,
