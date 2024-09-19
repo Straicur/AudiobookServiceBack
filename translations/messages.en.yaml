@@ -15,6 +15,7 @@ UserDeleteDontExists: User not in delete list
 UserDeleteExists: User on delete list
 UserDeleted: User deleted
 NotificationDontExists: Notification dont exists
+NotificationTypeNotAllowed: Notification type is not allowed
 AudiobookPartDontExists: Audiobook have no available parts
 AudiobookCoverDontExists: Audiobook cover dont exists
 EmailExists: Email exists in system

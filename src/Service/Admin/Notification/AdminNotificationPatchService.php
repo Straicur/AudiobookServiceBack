@@ -57,8 +57,8 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
 
         $additionalData = $this->adminUserNotificationPatchQuery->getAdditionalData();
 
-        //TODO tu jeśli będzie false to nie chce dodawać ich userom
-        // Jeśli będzie na tak to tak
+        //TODO tu brakuje odpowiedniego dodawania userów i usuwania starych przy zmianie typu który jest inny od starego
+
 
         if (array_key_exists('dateActive', $additionalData)) {
             $notificationBuilder->setDateActive($additionalData['dateActive']);
@@ -70,12 +70,12 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
             $notificationBuilder->setActive(false);
         }
 
-        //TODO tu nie powinny być teraz znowu te same osoby tylko te do których nie ma
+        //TODO tu nie powinny być teraz znowu te same osoby tylko te do których nie ma i oddzielnie dla (NORMAL, NEW_CATEGORY) i NEW_AUDIOBOOK
         $userRole = $this->roleRepository->findOneBy([
             'name' => UserRolesNames::USER,
         ]);
 
-        $users = $this->userRepository->getUsersByRole($userRole);
+        $users = $this->userRepository->getUsersByRoleAndNoNotification($userRole, $notification);
 
         foreach ($users as $user) {
             $notificationBuilder->addUser($user);

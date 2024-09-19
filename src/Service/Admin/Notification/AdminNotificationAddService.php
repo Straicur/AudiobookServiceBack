@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Admin\Notification;
 
 use App\Builder\NotificationBuilder;
+use App\Entity\Audiobook;
+use App\Entity\Notification;
 use App\Enums\NotificationType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
@@ -50,14 +52,6 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
         $additionalData = $this->adminUserNotificationPutQuery->getAdditionalData();
 
         $notificationBuilder = new NotificationBuilder();
-        //TODO tu dodatkowo dlaczego jest już dodawane ?
-        $notificationBuilder = match ($this->adminUserNotificationPutQuery->getNotificationType()) {
-            NotificationType::NORMAL => $this->addNormalNotification($notificationBuilder, $additionalData),
-            NotificationType::ADMIN => $this->addAdminNotification($notificationBuilder, $additionalData),
-            NotificationType::NEW_CATEGORY => $this->addNewCategoryNotification($notificationBuilder, $additionalData),
-            NotificationType::NEW_AUDIOBOOK => $this->addNewAudiobookNotification($notificationBuilder, $additionalData),
-            default => throw new DataNotFoundException('')
-        };
 
         if (array_key_exists('dateActive', $additionalData)) {
             $notificationBuilder->setDateActive($additionalData['dateActive']);
@@ -69,29 +63,49 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             $notificationBuilder->setActive(false);
         }
 
+        $audiobook = null;
+
+        switch ($this->adminUserNotificationPutQuery->getNotificationType()) {
+            case NotificationType::NORMAL:
+                $notificationBuilder = $this->addNormalNotification($notificationBuilder, $additionalData);
+                break;
+            case NotificationType::ADMIN:
+                $notificationBuilder = $this->addAdminNotification($notificationBuilder, $additionalData);
+                break;
+            case NotificationType::NEW_CATEGORY:
+                $notificationBuilder = $this->addNewCategoryNotification($notificationBuilder, $additionalData);
+                break;
+            case NotificationType::NEW_AUDIOBOOK:
+                [$notificationBuilder, $audiobook] = $this->addNewAudiobookNotification($notificationBuilder, $additionalData);
+                break;
+            default:
+                throw new DataNotFoundException([$this->translateService->getTranslation('NotificationTypeNotAllowed')]);
+        }
+
         $notification = $notificationBuilder->build($this->stockCache);
+
+        $this->notificationRepository->add($notification);
+
+        if ($this->adminUserNotificationPutQuery->getNotificationType() === NotificationType::ADMIN) {
+            return;
+        }
+
+        $notification = match ($this->adminUserNotificationPutQuery->getNotificationType()) {
+            NotificationType::NORMAL, NotificationType::NEW_CATEGORY => $this->sendToUsers($notification),
+            NotificationType::NEW_AUDIOBOOK => $this->sendToProposalUsers($notification, $audiobook)
+        };
 
         $this->notificationRepository->add($notification);
     }
 
     private function addNormalNotification(NotificationBuilder $notificationBuilder, array $additionalData): NotificationBuilder
     {
-        $userRole = $this->roleRepository->findOneBy([
-            'name' => UserRolesNames::USER->value,
-        ]);
-
-        $users = $this->userRepository->getUsersByRole($userRole);
-
         $notificationBuilder
             ->setType($this->adminUserNotificationPutQuery->getNotificationType())
             ->setUserAction($this->adminUserNotificationPutQuery->getNotificationUserType());
 
         if (array_key_exists('text', $additionalData)) {
             $notificationBuilder->setText($additionalData['text']);
-        }
-
-        foreach ($users as $user) {
-            $notificationBuilder->addUser($user);
         }
 
         return $notificationBuilder;
@@ -134,12 +148,6 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             throw new InvalidJsonDataException($this->translateService);
         }
 
-        $userRole = $this->roleRepository->findOneBy([
-            'name' => UserRolesNames::USER,
-        ]);
-
-        $users = $this->userRepository->getUsersByRole($userRole);
-
         $category = $this->categoryRepository->findOneBy([
             'categoryKey' => $additionalData['categoryKey'],
         ]);
@@ -160,14 +168,13 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             $notificationBuilder->setText($additionalData['text']);
         }
 
-        foreach ($users as $user) {
-            $notificationBuilder->addUser($user);
-        }
-
         return $notificationBuilder;
     }
 
-    private function addNewAudiobookNotification(NotificationBuilder $notificationBuilder, array $additionalData): NotificationBuilder
+    /**
+     * @return  array{NotificationBuilder, Audiobook}
+     */
+    private function addNewAudiobookNotification(NotificationBuilder $notificationBuilder, array $additionalData): array
     {
         if (!array_key_exists('actionId', $additionalData)) {
             $this->endpointLogger->error('Invalid given Query no actionId');
@@ -183,8 +190,6 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
         }
 
-        $users = $this->userRepository->getUsersWhereAudiobookInProposed($audiobook);
-
         $notificationBuilder
             ->setType($this->adminUserNotificationPutQuery->getNotificationType())
             ->setUserAction($this->adminUserNotificationPutQuery->getNotificationUserType())
@@ -194,10 +199,32 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             $notificationBuilder->setText($additionalData['text']);
         }
 
+        return [$notificationBuilder, $audiobook];
+    }
+
+    private function sendToUsers(Notification $notification): Notification
+    {
+        $userRole = $this->roleRepository->findOneBy([
+            'name' => UserRolesNames::USER,
+        ]);
+
+        $users = $this->userRepository->getUsersByRole($userRole);
+
         foreach ($users as $user) {
-            $notificationBuilder->addUser($user);
+            $notification->addUser($user);
         }
 
-        return $notificationBuilder;
+        return $notification;
+    }
+
+    private function sendToProposalUsers(Notification $notification, Audiobook $audiobook): Notification
+    {
+        $users = $this->userRepository->getUsersWhereAudiobookInProposed($audiobook);
+
+        foreach ($users as $user) {
+            $notification->addUser($user);
+        }
+
+        return $notification;
     }
 }

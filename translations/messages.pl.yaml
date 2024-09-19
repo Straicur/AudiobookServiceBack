@@ -15,6 +15,7 @@ UserDeleteDontExists: Użytkownik nie znajduje się na liście do usunięcia
 UserDeleteExists: Użytkownik znajduje się na liście do usunięcia
 UserDeleted: Użytkownik usunięty
 NotificationDontExists: Powiadomienie nie istnieje
+NotificationTypeNotAllowed: Typ powiadomienia jest niedozwolony
 AudiobookPartDontExists: Audiobook nie posiada aktywnych części
 AudiobookCoverDontExists: Zdjęcie Audiobooka nie istnieje
 EmailExists: Email istnieje w systemie

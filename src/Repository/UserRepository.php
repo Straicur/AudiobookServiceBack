@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Audiobook;
+use App\Entity\Notification;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Enums\UserOrderSearch;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -129,6 +132,54 @@ class UserRepository extends ServiceEntityRepository
             ->andWhere('u.banned = false')
             ->andWhere('u.active = true')
             ->setParameter('categories', $audiobookCategories);
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getUsersByRoleAndNoNotification(Role $role, Notification $notification): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->innerJoin('u.roles', 'r', Join::WITH, 'r.id = :role')
+            ->leftJoin('u.notifications', 'n', Join::WITH, 'n.id = :notificationId')
+            ->where('u.banned = false')
+            ->andWhere('n.id IS NULL')
+            ->setParameters(new ArrayCollection([
+                new Parameter('role', $role->getId()->toBinary()),
+                new Parameter('notificationId', $notification->getId()->toBinary()),
+            ]));
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getUsersWhereNoNotificationAndAudiobookInProposed(Audiobook $audiobook, Notification $notification): array
+    {
+        $audiobookCategories = [];
+
+        foreach ($audiobook->getCategories() as $category) {
+            $audiobookCategories[] = $category->getId()->toBinary();
+        }
+
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->innerJoin('u.proposedAudiobooks', 'pa')
+            ->innerJoin('pa.audiobooks', 'a')
+            ->innerJoin('a.categories', 'c')
+            ->leftJoin('u.notifications', 'n', Join::WITH, 'n.id = :notificationId')
+            ->where('c.id IN (:categories)')
+            ->andWhere('u.banned = false')
+            ->andWhere('u.active = true')
+            ->andWhere('n.id IS NULL')
+            ->setParameters(new ArrayCollection([
+                new Parameter('categories', $audiobookCategories),
+                new Parameter('notificationId', $notification->getId()->toBinary()),
+            ]));
 
         return $qb->getQuery()->execute();
     }

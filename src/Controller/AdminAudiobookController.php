@@ -1109,51 +1109,54 @@ class AdminAudiobookController extends AbstractController
 
             $additionalData = $adminAudiobookActiveQuery->getAdditionalData();
 
-            if ($adminAudiobookActiveQuery->isActive() && array_key_exists('text', $additionalData) && !empty($additionalData['text'])) {
-                if (array_key_exists('type', $additionalData)) {
-                    $users = [];
+            if (
+                $adminAudiobookActiveQuery->isActive() &&
+                array_key_exists('text', $additionalData) &&
+                !empty($additionalData['text']) &&
+                array_key_exists('type', $additionalData)
+            ) {
+                $users = [];
 
-                    switch ($additionalData['type']) {
-                        case UserAudiobookActivationType::ALL->value:
-                            $userRole = $roleRepository->findOneBy([
-                                'name' => UserRolesNames::USER->value,
-                            ]);
+                switch ($additionalData['type']) {
+                    case UserAudiobookActivationType::ALL->value:
+                        $userRole = $roleRepository->findOneBy([
+                            'name' => UserRolesNames::USER->value,
+                        ]);
 
-                            $users = $userRepository->getUsersByRole($userRole);
-                            break;
-                        case UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value:
-                            $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
-                            break;
-                        case UserAudiobookActivationType::MY_LIST_RELATED->value:
-                            $users = $userRepository->getUsersWhereAudiobookInMyList($audiobook);
-                            break;
-                        case UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value:
-                            $usersIds = $audiobookInfoRepository->getUsersWhereAudiobookInAudiobookInfo($audiobook);
+                        $users = $userRepository->getUsersByRole($userRole);
+                        break;
+                    case UserAudiobookActivationType::CATEGORY_PROPOSED_RELATED->value:
+                        $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
+                        break;
+                    case UserAudiobookActivationType::MY_LIST_RELATED->value:
+                        $users = $userRepository->getUsersWhereAudiobookInMyList($audiobook);
+                        break;
+                    case UserAudiobookActivationType::AUDIOBOOK_INFO_RELATED->value:
+                        $usersIds = $audiobookInfoRepository->getUsersWhereAudiobookInAudiobookInfo($audiobook);
 
-                            foreach ($usersIds as $id) {
-                                $user = $userRepository->find($id);
+                        foreach ($usersIds as $id) {
+                            $user = $userRepository->find($id);
 
-                                if ($user !== null) {
-                                    $users[] = $user;
-                                }
+                            if ($user !== null) {
+                                $users[] = $user;
                             }
-                    }
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $notificationBuilder
-                        ->setType(NotificationType::USER_DELETE_DECLINE)
-                        ->setAction($audiobook->getId())
-                        ->setUserAction(NotificationUserType::SYSTEM)
-                        ->setText($additionalData['text']);
-
-                    foreach ($users as $user) {
-                        $notificationBuilder->addUser($user);
-                    }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
+                        }
                 }
+                $notificationBuilder = new NotificationBuilder();
+
+                $notificationBuilder
+                    ->setType(NotificationType::USER_DELETE_DECLINE)
+                    ->setAction($audiobook->getId())
+                    ->setUserAction(NotificationUserType::SYSTEM)
+                    ->setText($additionalData['text']);
+
+                foreach ($users as $user) {
+                    $notificationBuilder->addUser($user);
+                }
+
+                $notification = $notificationBuilder->build($stockCache);
+
+                $notificationRepository->add($notification);
             }
 
             $audiobook->setActive($adminAudiobookActiveQuery->isActive());
