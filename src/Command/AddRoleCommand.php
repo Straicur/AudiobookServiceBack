@@ -38,7 +38,7 @@ class AddRoleCommand extends Command
 
         $this->roleRepository->add($roleEntity);
 
-        $io->success('Role ${roleName} add successfully.');
+        $io->success("Role ${roleName} add successfully.");
 
         return Command::SUCCESS;
     }

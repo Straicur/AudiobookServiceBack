@@ -170,4 +170,21 @@ class NotificationRepository extends ServiceEntityRepository
 
         $qb->getQuery()->execute();
     }
+
+    /**
+     * @return Notification[]
+     */
+    public function getNotificationsToActivate(): array
+    {
+        $today = new DateTime();
+
+        $qb = $this->createQueryBuilder('n')
+            ->where('n.deleted = false')
+            ->andWhere('n.active = false')
+            ->andWhere('n.dateActive >= :today')
+            ->setParameter('today', $today)
+            ->orderBy('n.dateAdd', 'DESC');
+
+        return $qb->getQuery()->execute();
+    }
 }
