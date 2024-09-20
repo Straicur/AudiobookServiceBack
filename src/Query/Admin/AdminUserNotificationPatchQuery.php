@@ -67,6 +67,11 @@ class AdminUserNotificationPatchQuery
                     new Assert\NotNull(),
                     new Assert\Type('datetime'),
                 ]),
+                'userId'      => new Assert\Optional([
+                    new Assert\NotBlank(message: 'UserId is empty'),
+                    new Assert\NotNull(),
+                    new Assert\Uuid(),
+                ]),
             ],
         ]));
     }
@@ -77,6 +82,10 @@ class AdminUserNotificationPatchQuery
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
+        if (array_key_exists('userId', $additionalData)) {
+            $additionalData['userId'] = Uuid::fromString($additionalData['userId']);
+        }
+
         if (array_key_exists('dateActive', $additionalData)) {
             $additionalData['dateActive'] = DateTime::createFromFormat('d.m.Y H:i', $additionalData['dateActive']);
         }

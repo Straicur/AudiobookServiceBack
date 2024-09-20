@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Admin\Notification;
 
 use App\Builder\NotificationBuilder;
+use App\Entity\Notification;
+use App\Entity\User;
+use App\Enums\NotificationType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
+use App\Exception\InvalidJsonDataException;
 use App\Query\Admin\AdminUserNotificationPatchQuery;
+use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
@@ -28,6 +33,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         private readonly TranslateService $translateService,
         private readonly TagAwareCacheInterface $stockCache,
         private readonly LoggerInterface $endpointLogger,
+        private readonly AudiobookRepository $audiobookRepository,
     ) {
     }
 
@@ -49,6 +55,12 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
             throw new DataNotFoundException([$this->translateService->getTranslation('NotificationDontExists')]);
         }
 
+        if ($notification->getType() !== $this->adminUserNotificationPatchQuery->getNotificationType()) {
+            foreach ($notification->getUsers() as $user) {
+                $notification->removeUser($user);
+            }
+        }
+
         $notificationBuilder = new NotificationBuilder($notification);
 
         $notificationBuilder
@@ -56,9 +68,6 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
             ->setUserAction($this->adminUserNotificationPatchQuery->getNotificationUserType());
 
         $additionalData = $this->adminUserNotificationPatchQuery->getAdditionalData();
-
-        //TODO tu brakuje odpowiedniego dodawania userów i usuwania starych przy zmianie typu który jest inny od starego
-
 
         if (array_key_exists('dateActive', $additionalData)) {
             $notificationBuilder->setDateActive($additionalData['dateActive']);
@@ -70,20 +79,26 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
             $notificationBuilder->setActive(false);
         }
 
-        //TODO tu nie powinny być teraz znowu te same osoby tylko te do których nie ma i oddzielnie dla (NORMAL, NEW_CATEGORY) i NEW_AUDIOBOOK
-        $userRole = $this->roleRepository->findOneBy([
-            'name' => UserRolesNames::USER,
-        ]);
+        $users = [];
 
-        $users = $this->userRepository->getUsersByRoleAndNoNotification($userRole, $notification);
+        if ($this->adminUserNotificationPatchQuery->getNotificationType() === NotificationType::NEW_AUDIOBOOK) {
+            $users = $this->getAudiobookUsers($notification);
+        } elseif ($this->adminUserNotificationPatchQuery->getNotificationType() === NotificationType::ADMIN) {
+            $this->changeToAdminNotification($notificationBuilder, $additionalData);
+        } else {
+            $userRole = $this->roleRepository->findOneBy([
+                'name' => UserRolesNames::USER,
+            ]);
 
-        foreach ($users as $user) {
-            $notificationBuilder->addUser($user);
+            $users = $this->userRepository->getUsersByRoleAndNoNotification($userRole, $notification);
         }
+
+        $notificationBuilder = $this->addUsersToNotification($notificationBuilder, $users);
 
         if (array_key_exists('text', $additionalData)) {
             $notificationBuilder->setText($additionalData['text']);
         }
+
         if (array_key_exists('categoryKey', $additionalData)) {
             $notificationBuilder->setCategoryKey($additionalData['categoryKey']);
         } else {
@@ -93,5 +108,53 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         $notification = $notificationBuilder->build($this->stockCache);
 
         $this->notificationRepository->add($notification);
+    }
+
+    public function changeToAdminNotification(NotificationBuilder $notificationBuilder,array $additionalData): NotificationBuilder
+    {
+        if (!array_key_exists('userId', $additionalData)) {
+            $this->endpointLogger->error('Invalid given Query no userId');
+            $this->translateService->setPreferredLanguage($this->request);
+            throw new InvalidJsonDataException($this->translateService);
+        }
+
+        $user = $this->userRepository->find($additionalData['userId']);
+
+        if ($user === null) {
+            $this->endpointLogger->error('User dont exist');
+            $this->translateService->setPreferredLanguage($this->request);
+            throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
+        }
+
+        $notificationBuilder->addUser($user);
+
+        return $notificationBuilder;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getAudiobookUsers(Notification $notification): array
+    {
+        $audiobook = $this->audiobookRepository->find($this->adminUserNotificationPatchQuery->getActionId());
+
+        if ($audiobook === null) {
+            $this->endpointLogger->error('Audiobook dont exist');
+            $this->translateService->setPreferredLanguage($this->request);
+            throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
+        }
+
+        return $this->userRepository->getUsersWhereNoNotificationAndAudiobookInProposed($audiobook, $notification);
+    }
+
+    public function addUsersToNotification(NotificationBuilder $notificationBuilder, ?array $users): NotificationBuilder
+    {
+        if ($users !== null) {
+            foreach ($users as $user) {
+                $notificationBuilder->addUser($user);
+            }
+        }
+
+        return $notificationBuilder;
     }
 }
