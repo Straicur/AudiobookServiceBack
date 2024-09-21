@@ -145,10 +145,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId'       => $not1->getId(),
             'notificationType'     => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId'             => $user1->getProposedAudiobooks()->getId(),
+            'actionId'             => $user1->getId(),
             'additionalData'       => [
-                'text'   => 'Nowy text',
-                'userId' => $user1->getId(),
+                'text'   => 'Nowy text'
             ],
         ];
 
@@ -248,7 +247,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => $not1->getId(),
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => $user1->getId(),
+            'actionId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'additionalData' => [
                 'text' => 'Nowy text'
             ]
@@ -259,7 +258,8 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
-        self::assertResponseStatusCodeSame(400);
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
 
         $responseContent = self::$webClient->getResponse()->getContent();
 
@@ -271,6 +271,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
     }
 
     /**

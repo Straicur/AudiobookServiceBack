@@ -84,7 +84,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         if ($this->adminUserNotificationPatchQuery->getNotificationType() === NotificationType::NEW_AUDIOBOOK) {
             $users = $this->getAudiobookUsers($notification);
         } elseif ($this->adminUserNotificationPatchQuery->getNotificationType() === NotificationType::ADMIN) {
-            $this->changeToAdminNotification($notificationBuilder, $additionalData);
+            $this->changeToAdminNotification($notificationBuilder);
         } else {
             $userRole = $this->roleRepository->findOneBy([
                 'name' => UserRolesNames::USER,
@@ -110,15 +110,9 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         $this->notificationRepository->add($notification);
     }
 
-    public function changeToAdminNotification(NotificationBuilder $notificationBuilder,array $additionalData): NotificationBuilder
+    public function changeToAdminNotification(NotificationBuilder $notificationBuilder): NotificationBuilder
     {
-        if (!array_key_exists('userId', $additionalData)) {
-            $this->endpointLogger->error('Invalid given Query no userId');
-            $this->translateService->setPreferredLanguage($this->request);
-            throw new InvalidJsonDataException($this->translateService);
-        }
-
-        $user = $this->userRepository->find($additionalData['userId']);
+        $user = $this->userRepository->find($this->adminUserNotificationPatchQuery->getActionId());
 
         if ($user === null) {
             $this->endpointLogger->error('User dont exist');
