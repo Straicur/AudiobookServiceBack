@@ -6,9 +6,9 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\TechnicalBreak;
-use App\Enums\AdminStockCacheTags;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\UserRolesNames;
-use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminTechnicalBreakModel;

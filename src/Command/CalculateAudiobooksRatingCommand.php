@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Enums\AdminStockCacheTags;
-use App\Enums\UserStockCacheTags;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
 use Symfony\Component\Console\Attribute\AsCommand;

@@ -6,10 +6,10 @@ namespace App\Controller;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookCategory;
-use App\Enums\AdminCacheKeys;
-use App\Enums\AdminStockCacheTags;
+use App\Enums\Cache\AdminCacheKeys;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\CacheValidTime;
 use App\Enums\CacheKeys;
-use App\Enums\CacheValidTime;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;

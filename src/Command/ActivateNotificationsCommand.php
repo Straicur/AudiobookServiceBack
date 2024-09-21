@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Enums\UserStockCacheTags;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Repository\NotificationRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

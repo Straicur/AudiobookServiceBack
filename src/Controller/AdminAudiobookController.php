@@ -7,15 +7,15 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\Audiobook;
-use App\Enums\AdminCacheKeys;
-use App\Enums\AdminStockCacheTags;
 use App\Enums\AudiobookAgeRange;
-use App\Enums\CacheValidTime;
+use App\Enums\Cache\AdminCacheKeys;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\CacheValidTime;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserAudiobookActivationType;
 use App\Enums\UserRolesNames;
-use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminAudiobookDetailsSuccessModel;
@@ -522,7 +522,12 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value, UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId()]);
+            $stockCache->invalidateTags([
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
+                UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId(),
+                UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
+                UserStockCacheTags::USER_AUDIOBOOKS->value,
+            ]);
 
             return ResponseTool::getResponse();
         }
@@ -938,7 +943,12 @@ class AdminAudiobookController extends AbstractController
                     }
                 }
 
-                $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
+                $stockCache->invalidateTags([
+                    AdminStockCacheTags::ADMIN_AUDIOBOOK->value . $audiobook->getId(),
+                    UserStockCacheTags::USER_AUDIOBOOKS->value,
+                    UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
+                    UserStockCacheTags::USER_AUDIOBOOKS->value,
+                ]);
 
                 return ResponseTool::getResponse($successModel);
             }
@@ -1162,7 +1172,12 @@ class AdminAudiobookController extends AbstractController
             $audiobook->setActive($adminAudiobookActiveQuery->isActive());
             $audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value, UserStockCacheTags::USER_AUDIOBOOKS->value]);
+            $stockCache->invalidateTags([
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value . $audiobook->getId(),
+                UserStockCacheTags::USER_AUDIOBOOKS->value,
+                UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
+                UserStockCacheTags::USER_AUDIOBOOKS->value,
+            ]);
 
             return ResponseTool::getResponse();
         }
@@ -1290,8 +1305,10 @@ class AdminAudiobookController extends AbstractController
 
             $audiobookUserCommentRepository->add($audiobookComment);
 
-            $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value]);
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
+            $stockCache->invalidateTags([
+                UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
+                AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
+            ]);
 
             return ResponseTool::getResponse();
         }

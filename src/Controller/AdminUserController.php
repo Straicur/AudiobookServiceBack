@@ -7,15 +7,15 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\UserDelete;
-use App\Enums\AdminCacheKeys;
-use App\Enums\AdminStockCacheTags;
+use App\Enums\Cache\AdminCacheKeys;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\CacheValidTime;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\CacheKeys;
-use App\Enums\CacheValidTime;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
-use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminSystemRoleModel;
@@ -1257,6 +1257,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         NotificationRepository $notificationRepository,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
@@ -1272,6 +1273,8 @@ class AdminUserController extends AbstractController
             $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
 
             $notificationRepository->add($notification);
+
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }

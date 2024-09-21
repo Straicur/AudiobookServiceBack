@@ -6,13 +6,13 @@ namespace App\EventSubscriber;
 
 use App\Annotation\AuthValidation;
 use App\Entity\User;
-use App\Enums\AdminCacheKeys;
-use App\Enums\AdminStockCacheTags;
+use App\Enums\Cache\AdminCacheKeys;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\CacheValidTime;
+use App\Enums\Cache\UserCacheKeys;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\CacheKeys;
-use App\Enums\CacheValidTime;
-use App\Enums\UserCacheKeys;
 use App\Enums\UserRolesNames;
-use App\Enums\UserStockCacheTags;
 use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
 use App\Exception\PermissionException;
