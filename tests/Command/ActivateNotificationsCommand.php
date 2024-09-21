@@ -51,6 +51,5 @@ class ActivateNotificationsCommand extends AbstractKernelTestCase
         $this->assertFalse($notification1After->isActive());
         $this->assertTrue($notification2After->isActive());
         $this->assertTrue($notification3After->isActive());
-
     }
 }

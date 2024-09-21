@@ -11,6 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Fired every 5 minutes
+ */
 #[AsCommand(
     name       : 'audiobookservice:notifications:activate',
     description: 'Activate Notifications',
@@ -38,7 +41,7 @@ class ActivateNotificationsCommand extends Command
         }
 
         $io->success("Activated ${$notificationsCount} notifications successfully.");
-
+//todo cache wyczsc
         return Command::SUCCESS;
     }
 }

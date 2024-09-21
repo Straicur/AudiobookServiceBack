@@ -12,6 +12,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Fired once a month
+ */
 #[AsCommand(
     name       : 'audiobookservice:audioobooks:remove:notused',
     description: 'Command is removing not used audiobooks from files',

@@ -26,6 +26,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+/**
+ * Fired once a day
+ */
 #[AsCommand(
     name       : 'audiobookservice:proposed:audiobooks',
     description: 'Command is generating new audiobooks proposed lists for users',
