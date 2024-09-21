@@ -36,6 +36,7 @@ class ActivateNotificationsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
         $notifications = $this->notificationRepository->getNotificationsToActivate();
         $notificationsCount = count($notifications);
 

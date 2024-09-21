@@ -158,6 +158,7 @@ class UserProposedAudiobooksCommand extends Command
                     ->setAction($proposedAudiobooks->getId())
                     ->addUser($user)
                     ->setUserAction(NotificationUserType::ADMIN)
+                    ->setActive(true)
                     ->build($this->stockCache);
 
                 $this->notificationRepository->add($notification);

@@ -1050,6 +1050,7 @@ class AdminUserController extends AbstractController
                 ->setAction($userDelete->getId())
                 ->addUser($user)
                 ->setUserAction(NotificationUserType::SYSTEM)
+                ->setActive(true)
                 ->build($stockCache);
 
             $notificationRepository->add($notification);

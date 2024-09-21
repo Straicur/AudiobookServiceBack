@@ -75,6 +75,9 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             case NotificationType::NEW_CATEGORY:
                 $notificationBuilder = $this->addNewCategoryNotification($notificationBuilder, $additionalData);
                 break;
+            case NotificationType::PROPOSED:
+                $notificationBuilder = $this->addNewCategoryNotification($notificationBuilder, $additionalData);
+                break;
             case NotificationType::NEW_AUDIOBOOK:
                 [$notificationBuilder, $audiobook] = $this->addNewAudiobookNotification($notificationBuilder, $additionalData);
                 break;

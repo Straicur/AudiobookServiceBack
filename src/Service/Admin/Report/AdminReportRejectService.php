@@ -75,6 +75,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
                 ->setAction($report->getId())
                 ->addUser($report->getUser())
                 ->setUserAction(NotificationUserType::SYSTEM)
+                ->setActive(true)
                 ->build($this->stockCache);
 
             $this->notificationRepository->add($notification);

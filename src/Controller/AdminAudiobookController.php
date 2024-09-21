@@ -1155,9 +1155,10 @@ class AdminAudiobookController extends AbstractController
                 $notificationBuilder = new NotificationBuilder();
 
                 $notificationBuilder
-                    ->setType(NotificationType::USER_DELETE_DECLINE)
+                    ->setType(NotificationType::NEW_AUDIOBOOK)
                     ->setAction($audiobook->getId())
                     ->setUserAction(NotificationUserType::SYSTEM)
+                    ->setActive(true)
                     ->setText($additionalData['text']);
 
                 foreach ($users as $user) {
