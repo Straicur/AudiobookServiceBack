@@ -125,7 +125,8 @@ class NotificationBuilder
         }
 
         $notificationModel->setDateAdd($notification->getDateAdd());
-
+        $notificationModel->setActivated($notification->isActive());
+        $notificationModel->setActivatedDate($notification->getDateActive());
         $notificationModel->setDelete($notification->getDeleted());
 
         return $notificationModel;
