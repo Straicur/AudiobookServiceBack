@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Enums\UserStockCacheTags;
 use App\Repository\NotificationRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * Fired every 5 minutes
@@ -20,8 +22,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class ActivateNotificationsCommand extends Command
 {
-    public function __construct(private readonly NotificationRepository $notificationRepository)
-    {
+    public function __construct(
+        private readonly NotificationRepository $notificationRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+    ) {
         parent::__construct();
     }
 
@@ -40,8 +44,12 @@ class ActivateNotificationsCommand extends Command
             $this->notificationRepository->add($notification);
         }
 
+        if ($notificationsCount > 0) {
+            $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
+        }
+
         $io->success("Activated ${$notificationsCount} notifications successfully.");
-//todo cache wyczsc
+
         return Command::SUCCESS;
     }
 }

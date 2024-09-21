@@ -1169,6 +1169,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         AdminNotificationAddService $adminNotificationAddService,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
@@ -1177,6 +1178,8 @@ class AdminUserController extends AbstractController
                 ->setData($adminUserNotificationPutQuery, $request)
                 ->addNotification()
             ;
+
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -1210,6 +1213,7 @@ class AdminUserController extends AbstractController
         AdminNotificationPatchService $adminNotificationPatchService,
         LoggerInterface $endpointLogger,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
@@ -1218,6 +1222,8 @@ class AdminUserController extends AbstractController
                 ->setData($adminUserNotificationPatchQuery, $request)
                 ->editNotification()
             ;
+
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }
