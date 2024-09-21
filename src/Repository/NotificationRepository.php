@@ -181,7 +181,7 @@ class NotificationRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('n')
             ->where('n.deleted = false')
             ->andWhere('n.active = false')
-            ->andWhere('n.dateActive >= :today')
+            ->andWhere('n.dateActive <= :today')
             ->setParameter('today', $today)
             ->orderBy('n.dateAdd', 'DESC');
 

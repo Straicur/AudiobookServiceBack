@@ -48,7 +48,7 @@ class ActivateNotificationsCommand extends Command
             $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
         }
 
-        $io->success("Activated ${$notificationsCount} notifications successfully.");
+        $io->success("Activated $notificationsCount notifications successfully.");
 
         return Command::SUCCESS;
     }
