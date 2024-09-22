@@ -60,13 +60,20 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
             }
         }
 
+        $additionalData = $this->adminUserNotificationPatchQuery->getAdditionalData();
+
+        if (array_key_exists('active', $additionalData) && !$additionalData['active'] && $notification->isActive()) {
+            $this->endpointLogger->error('Notification cant change to inactive');
+            $this->translateService->setPreferredLanguage($this->request);
+            throw new DataNotFoundException([$this->translateService->getTranslation('CantDeActivateNotification')]);
+        }
+
         $notificationBuilder = new NotificationBuilder($notification);
 
         $notificationBuilder
             ->setType($this->adminUserNotificationPatchQuery->getNotificationType())
             ->setUserAction($this->adminUserNotificationPatchQuery->getNotificationUserType());
 
-        $additionalData = $this->adminUserNotificationPatchQuery->getAdditionalData();
 
         if (array_key_exists('dateActive', $additionalData)) {
             $notificationBuilder->setDateActive($additionalData['dateActive']);
@@ -74,8 +81,6 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
 
         if (array_key_exists('active', $additionalData)) {
             $notificationBuilder->setActive($additionalData['active']);
-        } else {
-            $notificationBuilder->setActive(false);
         }
 
         $users = [];

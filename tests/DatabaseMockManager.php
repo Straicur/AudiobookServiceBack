@@ -378,6 +378,8 @@ class DatabaseMockManager
 
         if ($active !== null) {
             $newSystemNotification = $newSystemNotification->setActive($active);
+        } else {
+            $newSystemNotification->setActive(true);
         }
 
         if ($dateActive !== null) {

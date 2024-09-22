@@ -75,3 +75,4 @@ UserChangedPassword: User has changed password already
 BannedForBreakMaxLogins: User has been blocked, too many login attempts. Come back in a while
 BannedForBreakMaxLoginsMailDesc: Your account has been blocked. There have been too many attempts to log into your account. Return back in
 MaxLoginsMailAttempts: Too many attempts to log into the account
+CantDeActivateNotification: You cant deactivate notification, If you want delete it

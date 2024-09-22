@@ -75,3 +75,4 @@ UserChangedPassword: Użytkownik zmienił już hasło
 BannedForBreakMaxLogins: Użytkownik został zablokowany. Wystąpiła za duża ilość prób logowania. Wróć za jakiś czas
 BannedForBreakMaxLoginsMailDesc: Twoje konto zostało zablokowany. Wystąpiła za duża ilość prób zalogowania na konto. Wróć za
 MaxLoginsMailAttempts: Za dużo prób zalogowania na konto
+CantDeActivateNotification: Nie można deaktywować powiadomienia. Jeśli chcesz usuń go
