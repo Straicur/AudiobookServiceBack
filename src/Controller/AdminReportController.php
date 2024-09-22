@@ -31,8 +31,8 @@ use App\Repository\ReportRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\AdminReportAcceptService;
-use App\Service\Admin\AdminReportRejectService;
+use App\Service\Admin\Report\AdminReportAcceptService;
+use App\Service\Admin\Report\AdminReportRejectService;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -162,7 +162,8 @@ class AdminReportController extends AbstractController
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
                                 'name'   => $user->getUserInformation()->getFirstname(),
-                                'desc'   => $comment->getComment(),
+                                'comment' => $comment->getComment(),
+                                'answer'    => $adminReportAcceptQuery->getAnswer(),
                                 'dateTo' => $banPeriod->format('d.m.Y'),
                                 'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                             ]);

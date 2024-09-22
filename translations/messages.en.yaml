@@ -15,6 +15,7 @@ UserDeleteDontExists: User not in delete list
 UserDeleteExists: User on delete list
 UserDeleted: User deleted
 NotificationDontExists: Notification dont exists
+NotificationTypeNotAllowed: Notification type is not allowed
 AudiobookPartDontExists: Audiobook have no available parts
 AudiobookCoverDontExists: Audiobook cover dont exists
 EmailExists: Email exists in system
@@ -26,6 +27,7 @@ AudiobookNotWatched: Audiobook must be listened to rate
 AudiobookNotListened: Audiobook is not listened
 ToManyUserComments: You posted too many comments in a short period of time
 AudiobookCommentLikeDontExists: Comment was not liked
+Comment: Comment
 UserPasswordDontExists: User password dont exists
 Hello: Hello
 ActivateAccountRegister: Activate your account to use service
@@ -63,6 +65,8 @@ AccountActivationCodeSubject: Account activation code
 AccountDeletedSubject: Account deleted
 DeletionRejectedSubject: Deletion rejected
 ChangeEmailSubject: Change email
+ChangePasswordSubject: Change password
+ChangeUserDataSubject: Change user data
 RequestDeleteAccountSubject: Your request to delete your account is being processed
 PasswordResetSubject: Password reset
 UserBannedSubject: Your account has been banned
@@ -70,6 +74,14 @@ SmsCodeContent: Here is your change code
 SmsCodeError: We can't send sms. Contact us
 Answer: Answer
 UserChangedPassword: User has changed password already
+UserChangedEmail: User has changed email already
+UserChangedUserData: User has changed user data already
 BannedForBreakMaxLogins: User has been blocked, too many login attempts. Come back in a while
 BannedForBreakMaxLoginsMailDesc: Your account has been blocked. There have been too many attempts to log into your account. Return back in
 MaxLoginsMailAttempts: Too many attempts to log into the account
+CantDeActivateNotification: You cant deactivate notification, If you want delete it
+IncorrectCodeOrPasswordWasChanged: Incorrect code or password was changed
+IncorrectCodeOrEmailWasChanged: Incorrect code or email was changed
+IncorrectCodeOrUserDataWasChanged: Incorrect code or user data was changed
+UserDataChangeCodeDesc: Here is your code required when changing user data
+PasswordChangeCodeDesc: Here is your code required to change your password

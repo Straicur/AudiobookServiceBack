@@ -39,11 +39,17 @@ class Notification
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $deleted;
 
-    #[ORM\OneToMany(mappedBy: 'notification', targetEntity: NotificationCheck::class)]
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $active = true;
+
+    #[ORM\OneToMany(targetEntity: NotificationCheck::class, mappedBy: 'notification')]
     private Collection $notificationChecks;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $dateDeleted;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $dateActive;
 
     public function __construct()
     {
@@ -167,14 +173,38 @@ class Notification
         $this->notificationChecks = $notificationChecks;
     }
 
-    public function getDateDeleted(): \DateTimeInterface
+    public function getDateDeleted(): DateTime
     {
         return $this->dateDeleted;
     }
 
-    public function setDateDeleted(?\DateTimeInterface $dateDeleted): self
+    public function setDateDeleted(DateTime $dateDeleted): self
     {
         $this->dateDeleted = $dateDeleted;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    public function getDateActive(): ?DateTime
+    {
+        return $this->dateActive;
+    }
+
+    public function setDateActive(DateTime $dateActive): static
+    {
+        $this->dateActive = $dateActive;
 
         return $this;
     }

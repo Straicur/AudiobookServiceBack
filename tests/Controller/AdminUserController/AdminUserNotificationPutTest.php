@@ -69,7 +69,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
-
     }
 
     /**
@@ -126,7 +125,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
-
     }
 
     /**
@@ -170,7 +168,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             'additionalData' => [
                 'text' => 'Nowy text',
                 'categoryKey' => $category5->getCategoryKey(),
-                'userId' => $user1->getId(),
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
@@ -184,7 +181,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
-
     }
 
     /**
@@ -247,7 +243,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(201);
         /// step 5
         $this->assertCount(1, $notificationRepository->findAll());
-
     }
 
     /**
@@ -297,7 +292,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $this->assertIsArray($responseContent);
         $this->assertArrayHasKey('error', $responseContent);
-
     }
 
     /**

@@ -1,6 +1,9 @@
 <div>
     <p>{{ 'Hello' | force_translate( lang ) }}: {{ name }},</p>
     <p>{{ 'UserBanEmail' | force_translate( lang ) }}: {{ dateTo }}.</p>
-    <p>{{ 'Reason' | force_translate( lang ) }}: {{ desc }}.</p>
+    <p>{{ 'Comment' | force_translate( lang ) }}: {{ comment }}.</p>
+    {% if answer != null %}
+    <p>{{ 'Reason' | force_translate( lang ) }}: {{ answer }}.</p>
+    {% endif %}
 </div>
 

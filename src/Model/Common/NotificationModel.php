@@ -21,6 +21,8 @@ class NotificationModel
     private ?string $categoryKey;
     private ?bool $delete;
     private ?int $active;
+    private ?bool $activated;
+    private ?int $activatedDate;
 
     public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType, ?bool $delete)
     {
@@ -121,4 +123,25 @@ class NotificationModel
     {
         $this->categoryKey = $categoryKey;
     }
+
+    public function getActivated(): ?bool
+    {
+        return $this->activated;
+    }
+
+    public function setActivated(?bool $activated): void
+    {
+        $this->activated = $activated;
+    }
+
+    public function getActivatedDate(): ?int
+    {
+        return $this->activatedDate;
+    }
+
+    public function setActivatedDate(?DateTime $activatedDate): void
+    {
+        $this->activatedDate = $activatedDate?->getTimestamp() * 1000;
+    }
+
 }

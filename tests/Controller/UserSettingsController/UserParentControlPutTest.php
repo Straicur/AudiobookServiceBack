@@ -43,7 +43,7 @@ class UserParentControlPutTest extends AbstractWebTest
         /// step 5
         $this->assertIsArray($responseContent);
 
-        $this->assertArrayHasKey('smsCode', $responseContent);
+        $this->assertArrayHasKey('code', $responseContent);
 
         $this->assertCount(1, $userParentalControlCodeRepository->findAll());
     }

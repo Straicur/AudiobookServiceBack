@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Admin;
+namespace App\Service\Admin\Report;
 
 use App\Builder\NotificationBuilder;
 use App\Entity\Report;
@@ -24,11 +24,11 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
     private Request $request;
 
     public function __construct(
-        private readonly ReportRepository       $reportRepository,
+        private readonly ReportRepository $reportRepository,
         private readonly TagAwareCacheInterface $stockCache,
         private readonly NotificationRepository $notificationRepository,
-        private readonly MailerInterface        $mailer,
-        private readonly TranslateService       $translateService,
+        private readonly MailerInterface $mailer,
+        private readonly TranslateService $translateService,
     ) {
     }
 
@@ -75,6 +75,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
                 ->setAction($report->getId())
                 ->addUser($report->getUser())
                 ->setUserAction(NotificationUserType::SYSTEM)
+                ->setActive(true)
                 ->build($this->stockCache);
 
             $this->notificationRepository->add($notification);

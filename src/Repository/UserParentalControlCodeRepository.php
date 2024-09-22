@@ -55,7 +55,7 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
      * @param User $user
      * @return int
      */
-    public function getUserParentalControlCodeFromLastWeakByUser(User $user): int
+    public function getUserParentalControlCodeFromLastWeekByUser(User $user): int
     {
         $today = new DateTime();
         $lastDate = clone $today;

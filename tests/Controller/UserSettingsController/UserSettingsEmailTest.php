@@ -33,10 +33,13 @@ class UserSettingsEmailTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL_CODE, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'newEmail' => 'test2@cos.pl',
             'oldEmail' => $user->getUserInformation()->getEmail(),
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -55,7 +58,7 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $this->assertTrue($userAfter->getEdited());
         $this->assertNotNull($userAfter->getEditableDate());
-        $this->assertCount(1, $userEditRepository->findAll());
+        $this->assertCount(2, $userEditRepository->findAll());
     }
 
     /**
@@ -73,12 +76,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL, (new DateTime())->modify('+1 day'));
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL_CODE, (new DateTime())->modify('+1 day'), true);
 
         /// step 2
         $content = [
             'newEmail' => 'test2@cos.pl',
             'oldEmail' => $user2->getUserInformation()->getEmail(),
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
@@ -118,10 +122,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL_CODE, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'newEmail' => 'test2@cos.pl',
             'oldEmail' => $user2->getUserInformation()->getEmail(),
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
@@ -161,10 +168,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user2, false, UserEditType::EMAIL_CODE, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'newEmail' => 'test2@cos.pl',
             'oldEmail' => 'test3@cos.pl',
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);

@@ -7,15 +7,15 @@ namespace App\Controller;
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
 use App\Entity\UserDelete;
-use App\Enums\AdminCacheKeys;
-use App\Enums\AdminStockCacheTags;
+use App\Enums\Cache\AdminCacheKeys;
+use App\Enums\Cache\AdminStockCacheTags;
+use App\Enums\Cache\CacheValidTime;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\CacheKeys;
-use App\Enums\CacheValidTime;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\UserRoles;
 use App\Enums\UserRolesNames;
-use App\Enums\UserStockCacheTags;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminSystemRoleModel;
@@ -44,15 +44,14 @@ use App\Query\Admin\AdminUserNotificationsQuery;
 use App\Query\Admin\AdminUserRoleAddQuery;
 use App\Query\Admin\AdminUserRoleRemoveQuery;
 use App\Query\Admin\AdminUsersQuery;
-use App\Repository\AudiobookCategoryRepository;
-use App\Repository\AudiobookRepository;
-use App\Repository\InstitutionRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
+use App\Service\Admin\Notification\AdminNotificationAddService;
+use App\Service\Admin\Notification\AdminNotificationPatchService;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -1051,6 +1050,7 @@ class AdminUserController extends AbstractController
                 ->setAction($userDelete->getId())
                 ->addUser($user)
                 ->setUserAction(NotificationUserType::SYSTEM)
+                ->setActive(true)
                 ->build($stockCache);
 
             $notificationRepository->add($notification);
@@ -1168,160 +1168,19 @@ class AdminUserController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        UserRepository $userRepository,
-        RoleRepository $roleRepository,
-        AudiobookRepository $audiobookRepository,
-        InstitutionRepository $institutionRepository,
-        AudiobookCategoryRepository $categoryRepository,
+        AdminNotificationAddService $adminNotificationAddService,
         TranslateService $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
-            $additionalData = $adminUserNotificationPutQuery->getAdditionalData();
+            $adminNotificationAddService
+                ->setData($adminUserNotificationPutQuery, $request)
+                ->addNotification()
+            ;
 
-            switch ($adminUserNotificationPutQuery->getNotificationType()) {
-                case NotificationType::NORMAL:
-                    $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER->value,
-                    ]);
-
-                    $users = $userRepository->getUsersByRole($userRole);
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $institution = $institutionRepository->findOneBy([
-                        'name' => $_ENV['INSTITUTION_NAME'],
-                    ]);
-
-                    $notificationBuilder
-                        ->setType($adminUserNotificationPutQuery->getNotificationType())
-                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->setAction($institution->getId());
-
-                    if (array_key_exists('text', $additionalData)) {
-                        $notificationBuilder->setText($additionalData['text']);
-                    }
-
-                    foreach ($users as $user) {
-                        $notificationBuilder->addUser($user);
-                    }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
-                    break;
-                case NotificationType::ADMIN:
-                    if (!array_key_exists('userId', $additionalData)) {
-                        $endpointLogger->error('Invalid given Query no userId');
-                        $translateService->setPreferredLanguage($request);
-                        throw new InvalidJsonDataException($translateService);
-                    }
-
-                    $user = $userRepository->find($additionalData['userId']);
-
-                    if ($user === null) {
-                        $endpointLogger->error('User dont exist');
-                        $translateService->setPreferredLanguage($request);
-                        throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
-                    }
-
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $notificationBuilder
-                        ->setType($adminUserNotificationPutQuery->getNotificationType())
-                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->addUser($user)
-                        ->setAction($user->getId());
-
-                    if (array_key_exists('text', $additionalData)) {
-                        $notificationBuilder->setText($additionalData['text']);
-                    }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
-
-                    break;
-                case NotificationType::NEW_CATEGORY:
-                    if (!array_key_exists('categoryKey', $additionalData)) {
-                        $endpointLogger->error('Invalid given Query no categoryKey');
-                        $translateService->setPreferredLanguage($request);
-                        throw new InvalidJsonDataException($translateService);
-                    }
-
-                    $userRole = $roleRepository->findOneBy([
-                        'name' => UserRolesNames::USER,
-                    ]);
-
-                    $users = $userRepository->getUsersByRole($userRole);
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $category = $categoryRepository->findOneBy([
-                        'categoryKey' => $additionalData['categoryKey'],
-                    ]);
-
-                    if ($category === null) {
-                        $endpointLogger->error('Category dont exist');
-                        $translateService->setPreferredLanguage($request);
-                        throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
-                    }
-
-                    $notificationBuilder
-                        ->setType($adminUserNotificationPutQuery->getNotificationType())
-                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->setAction($category->getId())
-                        ->setCategoryKey($category->getCategoryKey());
-
-                    if (array_key_exists('text', $additionalData)) {
-                        $notificationBuilder->setText($additionalData['text']);
-                    }
-
-                    foreach ($users as $user) {
-                        $notificationBuilder->addUser($user);
-                    }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
-                    break;
-                case NotificationType::NEW_AUDIOBOOK:
-                    if (!array_key_exists('actionId', $additionalData)) {
-                        $endpointLogger->error('Invalid given Query no actionId');
-                        $translateService->setPreferredLanguage($request);
-                        throw new InvalidJsonDataException($translateService);
-                    }
-
-                    $audiobook = $audiobookRepository->find($additionalData['actionId']);
-
-                    if ($audiobook === null) {
-                        $endpointLogger->error('Audiobook dont exist');
-                        $translateService->setPreferredLanguage($request);
-                        throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
-                    }
-
-                    $users = $userRepository->getUsersWhereAudiobookInProposed($audiobook);
-                    $notificationBuilder = new NotificationBuilder();
-
-                    $notificationBuilder
-                        ->setType($adminUserNotificationPutQuery->getNotificationType())
-                        ->setUserAction($adminUserNotificationPutQuery->getNotificationUserType())
-                        ->setAction($additionalData['actionId']);
-
-                    if (array_key_exists('text', $additionalData)) {
-                        $notificationBuilder->setText($additionalData['text']);
-                    }
-
-                    foreach ($users as $user) {
-                        $notificationBuilder->addUser($user);
-                    }
-
-                    $notification = $notificationBuilder->build($stockCache);
-
-                    $notificationRepository->add($notification);
-                    break;
-            }
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse(httpCode: 201);
         }
@@ -1352,54 +1211,20 @@ class AdminUserController extends AbstractController
     public function adminUserNotificationPatch(
         Request $request,
         RequestServiceInterface $requestService,
-        UserRepository $userRepository,
+        AdminNotificationPatchService $adminNotificationPatchService,
         LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        RoleRepository $roleRepository,
         TranslateService $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
-            $notification = $notificationRepository->find($adminUserNotificationPatchQuery->getNotificationId());
+            $adminNotificationPatchService
+                ->setData($adminUserNotificationPatchQuery, $request)
+                ->editNotification()
+            ;
 
-            if ($notification === null) {
-                $endpointLogger->error('Notification dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);
-            }
-
-            $notificationBuilder = new NotificationBuilder($notification);
-
-            $notificationBuilder
-                ->setType($adminUserNotificationPatchQuery->getNotificationType())
-                ->setUserAction($adminUserNotificationPatchQuery->getNotificationUserType());
-
-            $userRole = $roleRepository->findOneBy([
-                'name' => UserRolesNames::USER,
-            ]);
-
-            $users = $userRepository->getUsersByRole($userRole);
-
-            foreach ($users as $user) {
-                $notificationBuilder->addUser($user);
-            }
-
-            $additionalData = $adminUserNotificationPatchQuery->getAdditionalData();
-
-            if (array_key_exists('text', $additionalData)) {
-                $notificationBuilder->setText($additionalData['text']);
-            }
-            if (array_key_exists('categoryKey', $additionalData)) {
-                $notificationBuilder->setCategoryKey($additionalData['categoryKey']);
-            } else {
-                $notificationBuilder->setAction($adminUserNotificationPatchQuery->getActionId());
-            }
-
-            $notification = $notificationBuilder->build($stockCache);
-
-            $notificationRepository->add($notification);
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }
@@ -1433,6 +1258,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         NotificationRepository $notificationRepository,
         TranslateService $translateService,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
@@ -1448,6 +1274,8 @@ class AdminUserController extends AbstractController
             $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
 
             $notificationRepository->add($notification);
+
+            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }

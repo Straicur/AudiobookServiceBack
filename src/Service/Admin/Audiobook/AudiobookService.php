@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Admin;
+namespace App\Service\Admin\Audiobook;
 
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;

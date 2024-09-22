@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Builder\NotificationBuilder;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ProposedAudiobookCategoriesRanges;
 use App\Enums\ProposedAudiobooksRanges;
-use App\Enums\UserStockCacheTags;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRepository;
@@ -26,6 +26,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+/**
+ * Fired once a day
+ */
 #[AsCommand(
     name       : 'audiobookservice:proposed:audiobooks',
     description: 'Command is generating new audiobooks proposed lists for users',
@@ -155,6 +158,7 @@ class UserProposedAudiobooksCommand extends Command
                     ->setAction($proposedAudiobooks->getId())
                     ->addUser($user)
                     ->setUserAction(NotificationUserType::ADMIN)
+                    ->setActive(true)
                     ->build($this->stockCache);
 
                 $this->notificationRepository->add($notification);

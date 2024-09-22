@@ -61,6 +61,7 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use App\ValueGenerator\UserEditConfirmGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -119,15 +120,15 @@ class DatabaseMockManager
             $user->setEdited($edited);
         }
 
-        if ($editableDate != null) {
+        if ($editableDate !== null) {
             $user->setEditableDate($editableDate);
         }
 
-        if ($addedDate != null) {
+        if ($addedDate !== null) {
             $user->setDateCreate($addedDate);
         }
 
-        if ($bannedTo != null) {
+        if ($bannedTo !== null) {
             $user->setBannedTo($bannedTo);
         }
 
@@ -139,7 +140,7 @@ class DatabaseMockManager
 
         $userInformationEntity = new UserInformation($user, $email, $phone, $firstname, $lastname);
 
-        if ($birthday != null) {
+        if ($birthday !== null) {
             $userInformationEntity->setBirthday($birthday);
         }
 
@@ -155,7 +156,7 @@ class DatabaseMockManager
 
         $this->testFunc_addRole($user, $rolesNames);
 
-        if ($password != null) {
+        if ($password !== null) {
             $userPassword = new UserPassword($user, new PasswordHashGenerator($password));
             $userPasswordRepository->add($userPassword);
         }
@@ -169,7 +170,7 @@ class DatabaseMockManager
 
         $authenticationToken = new AuthenticationToken($user, new AuthTokenGenerator($user));
 
-        if ($dateEnd != null) {
+        if ($dateEnd !== null) {
             $authenticationToken->setDateExpired($dateEnd);
         }
 
@@ -190,7 +191,7 @@ class DatabaseMockManager
 
         $newRegisterCode = new RegisterCode($registerCodeGenerator, $user);
 
-        if ($dateAccept != null) {
+        if ($dateAccept !== null) {
             $newRegisterCode->setDateAccept($dateAccept);
         }
         if ($active) {
@@ -228,11 +229,11 @@ class DatabaseMockManager
 
         $newAudiobook = new Audiobook($title, $author, $version, $album, $year, $duration, $size, $parts, $description, $age, $fileName);
 
-        if ($encoded != null) {
+        if ($encoded !== null) {
             $newAudiobook->setEncoded($encoded);
         }
 
-        if ($dateAdd != null) {
+        if ($dateAdd !== null) {
             $newAudiobook->setDateAdd($dateAdd);
         }
 
@@ -240,7 +241,7 @@ class DatabaseMockManager
             $newAudiobook->setActive($active);
         }
 
-        if ($rating != null) {
+        if ($rating !== null) {
             $newAudiobook->setAvgRating($rating);
         }
 
@@ -266,7 +267,7 @@ class DatabaseMockManager
 
         $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
 
-        if ($parent != null) {
+        if ($parent !== null) {
             $newAudiobookCategory->setParent($parent);
         }
 
@@ -334,7 +335,7 @@ class DatabaseMockManager
         if ($declined) {
             $newUserDelete->setDeclined($declined);
         }
-        if ($dateDeleted != null) {
+        if ($dateDeleted !== null) {
             $newUserDelete->setDateDeleted($dateDeleted);
         }
 
@@ -354,7 +355,7 @@ class DatabaseMockManager
      * @return Notification
      * @throws NotificationException
      */
-    public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, ?string $text = null, bool $deleted = false, ?string $categoryKey = null): Notification
+    public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, ?string $text = null, bool $deleted = false, ?string $categoryKey = null, ?bool $active = null, ?DateTime $dateActive = null): Notification
     {
         $systemNotificationRepository = $this->getService(NotificationRepository::class);
 
@@ -368,12 +369,22 @@ class DatabaseMockManager
             $newSystemNotification = $newSystemNotification->addUser($user);
         }
 
-        if ($text != null) {
+        if ($text !== null) {
             $newSystemNotification = $newSystemNotification->setText($text);
         }
 
-        if ($categoryKey != null) {
+        if ($categoryKey !== null) {
             $newSystemNotification = $newSystemNotification->setCategoryKey($categoryKey);
+        }
+
+        if ($active !== null) {
+            $newSystemNotification = $newSystemNotification->setActive($active);
+        } else {
+            $newSystemNotification->setActive(true);
+        }
+
+        if ($dateActive !== null) {
+            $newSystemNotification = $newSystemNotification->setDateActive($dateActive);
         }
 
         $newSystemNotification = $newSystemNotification->build();
@@ -420,7 +431,7 @@ class DatabaseMockManager
 
         $newAudiobookUserComment = new AudiobookUserComment($comment, $audiobook, $user);
 
-        if ($parent != null) {
+        if ($parent !== null) {
             $newAudiobookUserComment->setParent($parent);
         }
 
@@ -452,14 +463,18 @@ class DatabaseMockManager
         return $newAudiobookUserCommentLike;
     }
 
-    public function testFunc_addUserEdit(User $user, bool $edited, UserEditType $type, ?DateTime $editableDate = null): UserEdit
+    public function testFunc_addUserEdit(User $user, bool $edited, UserEditType $type, ?DateTime $editableDate = null, ?bool $code = null): UserEdit
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 
         $newUserEdit = new UserEdit($user, $edited, $type);
 
-        if ($editableDate != null) {
+        if ($editableDate !== null) {
             $newUserEdit->setEditableDate($editableDate);
+        }
+
+        if ($code !== null) {
+            $newUserEdit->setCode(new UserEditConfirmGenerator());
         }
 
         $userEditRepository->add($newUserEdit);
@@ -522,10 +537,10 @@ class DatabaseMockManager
 
         $newTechnicalBreak = new TechnicalBreak($active, $user);
 
-        if ($dateFrom != null) {
+        if ($dateFrom !== null) {
             $newTechnicalBreak->setDateFrom($dateFrom);
         }
-        if ($dateTo != null) {
+        if ($dateTo !== null) {
             $newTechnicalBreak->setDateTo($dateTo);
         }
 

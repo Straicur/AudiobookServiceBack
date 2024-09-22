@@ -5,6 +5,7 @@ if [ ! -f .env.local ]; then
   exit 1
 fi
 
+composer install
 symfony console doctrine:database:drop --force
 symfony console doctrine:database:create
 echo | symfony console doctrine:migrations:migrate

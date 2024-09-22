@@ -10,7 +10,7 @@ use App\Enums\NotificationUserType;
 use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
-use App\Service\Admin\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 

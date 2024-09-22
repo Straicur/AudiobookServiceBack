@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Admin;
+namespace App\Service\Admin\Audiobook;
 
 interface AudiobooksID3TagsReaderServiceInterface
 {

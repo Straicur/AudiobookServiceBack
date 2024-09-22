@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\UserSettingsController;
 
+use App\Enums\UserEditType;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * UserSettingsChangeTest
@@ -28,11 +30,14 @@ class UserSettingsChangeTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
             'lastName' => 'Mos',
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -69,11 +74,60 @@ class UserSettingsChangeTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'phoneNumber' => '+48123123121',
             'firstName' => 'Damian',
             'lastName' => 'Mos',
+            'code' => $userEdit1->getCode(),
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
+    }
+    /**
+     * /**
+     *  step 1 - Preparing data
+     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
+     *  step 3 - Sending Request
+     *  step 4 - Checking response
+     *
+     * @return void
+     */
+    public function test_userSettingsIncorrectCode(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
+
+        /// step 2
+        $content = [
+            'phoneNumber' => '+48124124124',
+            'firstName' => 'Damian',
+            'lastName' => 'Mos',
+            'code' => 'DS1D2211',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

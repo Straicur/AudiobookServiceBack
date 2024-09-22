@@ -4,6 +4,7 @@ namespace App\Query\Admin;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +23,7 @@ class AdminUserNotificationPatchQuery
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min              : 1,
-        max              : 5,
+        max              : 8,
     )]
     private int $notificationType;
 
@@ -35,11 +36,6 @@ class AdminUserNotificationPatchQuery
         max              : 2,
     )]
     private int $notificationUserType;
-
-    #[Assert\NotNull(message: 'ActionId is null')]
-    #[Assert\NotBlank(message: 'ActionId is blank')]
-    #[Assert\Uuid]
-    private Uuid $actionId;
 
     protected array $additionalData = [];
 
@@ -57,6 +53,20 @@ class AdminUserNotificationPatchQuery
                     new Assert\NotNull(),
                     new Assert\Type('string'),
                 ]),
+                'active'     => new Assert\Optional([
+                    new Assert\NotNull(message: 'Active is empty'),
+                    new Assert\Type('boolean'),
+                ]),
+                'dateActive' => new Assert\Optional([
+                    new Assert\NotBlank(message: 'DateActive is empty'),
+                    new Assert\NotNull(),
+                    new Assert\Type('datetime'),
+                ]),
+                'actionId'    => new Assert\Optional([
+                    new Assert\NotBlank(message: 'ActionId is empty'),
+                    new Assert\NotNull(),
+                    new Assert\Uuid(),
+                ]),
             ],
         ]));
     }
@@ -64,9 +74,20 @@ class AdminUserNotificationPatchQuery
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
+        new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
+        new OA\Property(property: 'active', type: 'boolean', example: true, nullable: true),
+        new OA\Property(property: 'dateActive', type: 'string', example: 'd.m.Y H:i', nullable: true),
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
+        if (array_key_exists('actionId', $additionalData)) {
+            $additionalData['actionId'] = Uuid::fromString($additionalData['actionId']);
+        }
+
+        if (array_key_exists('dateActive', $additionalData)) {
+            $additionalData['dateActive'] = DateTime::createFromFormat('d.m.Y H:i', $additionalData['dateActive']);
+        }
+
         $this->additionalData = $additionalData;
     }
 
@@ -86,17 +107,6 @@ class AdminUserNotificationPatchQuery
         $this->notificationId = Uuid::fromString($notificationId);
     }
 
-    #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
-    public function getActionId(): Uuid
-    {
-        return $this->actionId;
-    }
-
-    public function setActionId(string $actionId): void
-    {
-        $this->actionId = Uuid::fromString($actionId);
-    }
-
     public function getNotificationType(): NotificationType
     {
         return match ($this->notificationType) {
@@ -105,6 +115,9 @@ class AdminUserNotificationPatchQuery
             3 => NotificationType::PROPOSED,
             4 => NotificationType::NEW_CATEGORY,
             5 => NotificationType::NEW_AUDIOBOOK,
+            6 => NotificationType::USER_DELETE_DECLINE,
+            7 => NotificationType::USER_REPORT_ACCEPTED,
+            8 => NotificationType::USER_REPORT_DENIED,
         };
     }
 

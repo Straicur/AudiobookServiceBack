@@ -21,6 +21,11 @@ class UserSettingsChangeQuery
     #[Assert\Type(type: 'string')]
     private string $lastName;
 
+    #[Assert\NotNull(message: 'Code is null')]
+    #[Assert\NotBlank(message: 'Code is empty')]
+    #[Assert\Type(type: 'string')]
+    private string $code;
+
     public function getPhoneNumber(): string
     {
         return $this->phoneNumber;
@@ -49,5 +54,15 @@ class UserSettingsChangeQuery
     public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): void
+    {
+        $this->code = $code;
     }
 }

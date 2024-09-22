@@ -53,11 +53,6 @@ class UserEditRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @param int $type
-     * @return UserEdit|null
-     */
     public function checkIfUserCanChange(User $user, UserEditType $type): ?UserEdit
     {
         $qb = $this->createQueryBuilder('ue');
@@ -78,10 +73,28 @@ class UserEditRepository extends ServiceEntityRepository
         return count($res) > 0 ? $res[0] : null;
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
+    public function checkIfUserCanChangeWithCode(User $user, UserEditType $type, string $code): ?UserEdit
+    {
+        $qb = $this->createQueryBuilder('ue');
+
+        $date = new DateTime();
+
+        $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
+            ->where('((ue.edited = false) AND (ue.editableDate IS NOT NULL AND ue.editableDate > :date))')
+            ->andWhere('ue.type = :type')
+            ->andWhere('ue.code = :code')
+            ->setParameter('type', $type->value)
+            ->setParameter('date', $date)
+            ->setParameter('code', $code)
+            ->setParameter('user', $user->getId()->toBinary());
+
+        $query = $qb->getQuery();
+
+        $res = $query->execute();
+
+        return count($res) > 0 ? $res[0] : null;
+    }
+
     public function changeResetPasswordEdits(User $user): void
     {
         $qb = $this->createQueryBuilder('ue');

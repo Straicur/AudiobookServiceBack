@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Repository\AudiobookRepository;
-use App\Service\Admin\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Fired once a month
+ */
 #[AsCommand(
     name       : 'audiobookservice:audioobooks:remove:notused',
     description: 'Command is removing not used audiobooks from files',

@@ -55,7 +55,7 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
 
-    public function getNumberNotificationsFromLastWeak(): int
+    public function getNumberNotificationsFromLastWeek(): int
     {
         $today = new DateTime();
         $lastDate = clone $today;
@@ -82,6 +82,7 @@ class NotificationRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('n')
             ->innerJoin('n.users', 'u', Join::WITH, 'u.id = :user')
             ->where('n.deleted = false')
+            ->andWhere('n.active = true')
             ->setParameter('user', $user->getId()->toBinary())
             ->orderBy('n.dateAdd', 'DESC');
 
@@ -99,6 +100,7 @@ class NotificationRepository extends ServiceEntityRepository
             ->leftJoin('n.notificationChecks', 'nc')
             ->select('COUNT(nc.id) AS HIDDEN notifications', 'n')
             ->where('n.deleted = false')
+            ->andWhere('n.active = true')
             ->setParameter('user', $user->getId()->toBinary())
             ->having('count(nc.id) = 0')
             ->orderBy('notifications', 'DESC')
@@ -167,5 +169,22 @@ class NotificationRepository extends ServiceEntityRepository
             ->setParameter('actionId', $actionId->toBinary());
 
         $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return Notification[]
+     */
+    public function getNotificationsToActivate(): array
+    {
+        $today = new DateTime();
+
+        $qb = $this->createQueryBuilder('n')
+            ->where('n.deleted = false')
+            ->andWhere('n.active = false')
+            ->andWhere('n.dateActive <= :today')
+            ->setParameter('today', $today)
+            ->orderBy('n.dateAdd', 'DESC');
+
+        return $qb->getQuery()->execute();
     }
 }

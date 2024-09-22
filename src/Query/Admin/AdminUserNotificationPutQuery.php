@@ -4,6 +4,7 @@ namespace App\Query\Admin;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
+use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -57,6 +58,15 @@ class AdminUserNotificationPutQuery
                     new Assert\NotNull(),
                     new Assert\Uuid(),
                 ]),
+                'active'      => new Assert\Optional([
+                    new Assert\NotNull(message: 'Active is empty'),
+                    new Assert\Type('boolean'),
+                ]),
+                'dateActive'      => new Assert\Optional([
+                    new Assert\NotBlank(message: 'DateActive is empty'),
+                    new Assert\NotNull(),
+                    new Assert\Type('datetime'),
+                ]),
             ],
         ]));
     }
@@ -66,6 +76,8 @@ class AdminUserNotificationPutQuery
         new OA\Property(property: 'categoryKey', type: 'string', example: 'CategoryKey', nullable: true),
         new OA\Property(property: 'actionId', type: 'string', example: 'UUID', nullable: true),
         new OA\Property(property: 'userId', type: 'string', example: 'UUID', nullable: true),
+        new OA\Property(property: 'active', type: 'boolean', example: true, nullable: true),
+        new OA\Property(property: 'dateActive', type: 'string', example: 'd.m.Y H:i', nullable: true),
     ], type    : 'object')]
     public function setAdditionalData(array $additionalData): void
     {
@@ -75,6 +87,10 @@ class AdminUserNotificationPutQuery
 
         if (array_key_exists('userId', $additionalData)) {
             $additionalData['userId'] = Uuid::fromString($additionalData['userId']);
+        }
+
+        if (array_key_exists('dateActive', $additionalData)) {
+            $additionalData['dateActive'] = DateTime::createFromFormat('d.m.Y H:i', $additionalData['dateActive']);
         }
 
         $this->additionalData = $additionalData;

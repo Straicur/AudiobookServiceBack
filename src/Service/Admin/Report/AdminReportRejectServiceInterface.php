@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Admin;
+namespace App\Service\Admin\Report;
 
 use App\Entity\Report;
 use App\Query\Admin\AdminReportRejectQuery;
