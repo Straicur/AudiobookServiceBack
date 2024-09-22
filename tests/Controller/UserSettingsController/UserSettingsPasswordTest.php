@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\UserSettingsController;
 
+use App\Enums\UserEditType;
 use App\Repository\UserPasswordRepository;
 use App\Tests\AbstractWebTest;
 use App\ValueGenerator\PasswordHashGenerator;
+use DateTime;
 
 /**
  * UserSettingsPasswordTest
@@ -29,11 +31,14 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'), true);
+
         $passwordGenerator2 = new PasswordHashGenerator('zaq12WSX');
         /// step 2
         $content = [
             'oldPassword' => 'zaq12wsx',
             'newPassword' => 'zaq12WSX',
+            'code' => $userEdit1->getCode(),
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -66,10 +71,55 @@ class UserSettingsPasswordTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'), true);
+
         /// step 2
         $content = [
             'oldPassword' => 'zaq12WSX',
             'newPassword' => 'zaq12Wsa',
+            'code' => $userEdit1->getCode(),
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        $crawler = self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
+
+        $responseContent = self::$webClient->getResponse()->getContent();
+
+        $this->assertNotNull($responseContent);
+        $this->assertNotEmpty($responseContent);
+        $this->assertJson($responseContent);
+
+        $responseContent = json_decode($responseContent, true);
+
+        $this->assertIsArray($responseContent);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertArrayHasKey('data', $responseContent);
+    }
+    /**
+     * step 1 - Preparing data
+     * step 2 - Preparing JsonBodyContent with bad Password
+     * step 3 - Sending Request
+     * step 4 - Checking response
+     *
+     * @return void
+     */
+    public function test_userSettingsPasswordIncorrectCode(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'), true);
+
+        /// step 2
+        $content = [
+            'oldPassword' => 'zaq12wsx',
+            'newPassword' => 'zaq12WSX',
+            'code' => 'DS1D2211',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enums\UserEditType;
 use App\Repository\UserEditRepository;
+use App\ValueGenerator\ValueGeneratorInterface;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,10 +33,13 @@ class UserEdit
     #[ORM\Column(type: Types::INTEGER)]
     private int $type;
 
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
+    private ?string $code = null;
+
     /**
      * @param User $user
      * @param bool $edited
-     * @param int $type
+     * @param UserEditType $type
      */
     public function __construct(User $user, bool $edited, UserEditType $type)
     {
@@ -96,6 +100,18 @@ class UserEdit
     public function setType(UserEditType $type): self
     {
         $this->type = $type->value;
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(ValueGeneratorInterface $userEditConfirmGenerator): static
+    {
+        $this->code = $userEditConfirmGenerator->generate();
 
         return $this;
     }

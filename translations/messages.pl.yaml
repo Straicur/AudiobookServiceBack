@@ -3,8 +3,8 @@ EmailDontExists: Email nie istnieje
 UserBanned: Twoje konto jest zbanowane
 ActivateAccount: Aktywuj konto
 NotActivePassword: Nie można znaleźć aktywnego konta
-ParentCategoryDontExists: Ojciec kategorii nie isnieje
-CategoryDontExists: Categoria nie istnieje
+ParentCategoryDontExists: Ojciec kategorii nie istnieje
+CategoryDontExists: Kategoria nie istnieje
 AudiobookDontExists: Audiobook nie istnieje
 AudiobookNotActive: Audiobook nie jest aktywny
 TechnicalBreakDontExists: Przerwa techniczna nie istnieje
@@ -43,7 +43,7 @@ StayPatient: Prosimy o cierpliwość, w razie zmian zostanie wysłany kolejny em
 MailChange: Otrzymaliśmy prośbę o zmianie maila twojego konta na podany
 ClickToChange: Kliknij aby zmienić
 PasswordReset: Otrzymaliśmy prośbę resetu hasła twojego konta
-YouCanGoBack: Teraz możesz wrócić do strony główniej:)
+YouCanGoBack: Teraz możesz wrócić do strony głównej :)
 Login: Zaloguj
 UserParentalControlCodeToManyAttempts: Przez ostatnie 3 dni otrzymaliśmy za dużą ilość prób
 UserParentalControlCodeDontExists: Kod sms zmiany rodzicielskiej nie istnieje
@@ -58,21 +58,29 @@ ReportDeniedEmail: Cześć twoje zgłoszenie zostało odrzucone
 UserBanEmail: Twoje konto zostało zbanowane do
 ReportAcceptSubject: Akceptacja zgłoszenia
 ReportDeniedSubject: Odrzucenie zgłoszenia
-Explanation: Wyjasnienie
-Reason: Wyjasnienie
+Explanation: Wyjaśnienie
+Reason: Powód
 YourReport: Twoje zgłoszenie
 AccountActivationCodeSubject: Kod aktywacji konta
 AccountDeletedSubject: Konto usunięte
 DeletionRejectedSubject: Usunięcie odrzucone
 ChangeEmailSubject: Zmiana emaila
+ChangePasswordSubject: Zmiana hasła
+ChangeUserDataSubject: Zmiana danych użytkownika
 RequestDeleteAccountSubject: Prośba o usunięcie konta jest przetwarzana
 PasswordResetSubject: Reset hasła
 UserBannedSubject: Twoje konto zostało zbanowane
-SmsCodeContent: Oto twoj kod zmiany
+SmsCodeContent: Oto twój kod zmiany
 SmsCodeError: Nie możemy wysłać sms. Skontaktuj się z nami
 Answer: Odpowiedź
 UserChangedPassword: Użytkownik zmienił już hasło
+UserChangedEmail: Użytkownik zmienił już emial
 BannedForBreakMaxLogins: Użytkownik został zablokowany. Wystąpiła za duża ilość prób logowania. Wróć za jakiś czas
 BannedForBreakMaxLoginsMailDesc: Twoje konto zostało zablokowany. Wystąpiła za duża ilość prób zalogowania na konto. Wróć za
 MaxLoginsMailAttempts: Za dużo prób zalogowania na konto
 CantDeActivateNotification: Nie można deaktywować powiadomienia. Jeśli chcesz usuń go
+IncorrectCodeOrPasswordWasChanged: Nieprawidłowy kod lub hasło zostało zmienione
+IncorrectCodeOrEmailWasChanged: Nieprawidłowy kod lub email został zmieniony
+IncorrectCodeOrUserDataWasChanged: Nieprawidłowy kod lub dane użytkownika zostały zmienione
+UserDataChangeCodeDesc: Oto twój kod wymagany przy zmianie danych użytkownika
+PasswordChangeCodeDesc: Oto twój kod wymagany przy zmianie hasła

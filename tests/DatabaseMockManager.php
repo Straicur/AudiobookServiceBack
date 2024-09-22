@@ -61,6 +61,7 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
+use App\ValueGenerator\UserEditConfirmGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -462,7 +463,7 @@ class DatabaseMockManager
         return $newAudiobookUserCommentLike;
     }
 
-    public function testFunc_addUserEdit(User $user, bool $edited, UserEditType $type, ?DateTime $editableDate = null): UserEdit
+    public function testFunc_addUserEdit(User $user, bool $edited, UserEditType $type, ?DateTime $editableDate = null, ?bool $code = null): UserEdit
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 
@@ -470,6 +471,10 @@ class DatabaseMockManager
 
         if ($editableDate !== null) {
             $newUserEdit->setEditableDate($editableDate);
+        }
+
+        if ($code !== null) {
+            $newUserEdit->setCode(new UserEditConfirmGenerator());
         }
 
         $userEditRepository->add($newUserEdit);

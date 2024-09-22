@@ -16,6 +16,11 @@ class UserSettingsPasswordQuery
     #[Assert\Type(type: 'string')]
     private string $newPassword;
 
+    #[Assert\NotNull(message: 'Code is null')]
+    #[Assert\NotBlank(message: 'Code is empty')]
+    #[Assert\Type(type: 'string')]
+    private string $code;
+
     public function getOldPassword(): string
     {
         return $this->oldPassword;
@@ -34,5 +39,15 @@ class UserSettingsPasswordQuery
     public function setNewPassword(string $newPassword): void
     {
         $this->newPassword = $newPassword;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): void
+    {
+        $this->code = $code;
     }
 }

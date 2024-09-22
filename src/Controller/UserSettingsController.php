@@ -16,7 +16,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
-use App\Model\User\UserParentControlPutSuccessModel;
+use App\Model\User\UserChangeCodeSuccessModel;
 use App\Model\User\UserSettingsGetSuccessModel;
 use App\Query\User\UserParentControlPatchQuery;
 use App\Query\User\UserResetPasswordConfirmQuery;
@@ -37,6 +37,7 @@ use App\Service\TranslateService;
 use App\Tool\ResponseTool;
 use App\Tool\SmsTool;
 use App\ValueGenerator\PasswordHashGenerator;
+use App\ValueGenerator\UserEditConfirmGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -98,6 +99,8 @@ class UserSettingsController extends AbstractController
         LoggerInterface $endpointLogger,
         UserPasswordRepository $userPasswordRepository,
         TranslateService $translateService,
+        AuthenticationTokenRepository $authenticationTokenRepository,
+        UserEditRepository $userEditRepository,
     ): Response {
         $userSettingsPasswordQuery = $requestService->getRequestBodyContent($request, UserSettingsPasswordQuery::class);
 
@@ -110,11 +113,22 @@ class UserSettingsController extends AbstractController
 
             $passwordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getOldPassword());
 
-            if ($passwordGenerator->generate() !== $userPassword->getPassword()) {
+            if ($userPassword === null || $passwordGenerator->generate() !== $userPassword->getPassword()) {
                 $endpointLogger->error('Password dont exist');
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserPasswordDontExists')]);
             }
+
+            $userEdit = $userEditRepository->checkIfUserCanChangeWithCode($user, UserEditType::PASSWORD, $userSettingsPasswordQuery->getCode());
+
+            if ($userEdit === null) {
+                $endpointLogger->error('User changed password');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('IncorrectCodeOrPasswordWasChanged')]);
+            }
+
+            $userEdit->setEdited(true);
+            $userEditRepository->add($userEdit);
 
             $newPasswordGenerator = new PasswordHashGenerator($userSettingsPasswordQuery->getNewPassword());
 
@@ -122,12 +136,129 @@ class UserSettingsController extends AbstractController
 
             $userPasswordRepository->add($userPassword);
 
+            $authToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
+
+            if ($authToken !== null) {
+                $authToken->setDateExpired((new DateTime())->modify('-1 day'));
+                $authenticationTokenRepository->add($authToken);
+            }
+
             return ResponseTool::getResponse();
         }
 
         $endpointLogger->error('Invalid given Query');
         $translateService->setPreferredLanguage($request);
         throw new InvalidJsonDataException($translateService);
+    }
+
+    #[Route('/api/user/settings/password/code', name: 'userSettingsPasswordCode', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
+    #[OA\Put(
+        description: 'Endpoint is sending new password code to email',
+        requestBody: new OA\RequestBody(),
+        responses  : [
+            new OA\Response(
+                response   : 200,
+                description: 'Success',
+            ),
+        ]
+    )]
+    public function userSettingsPasswordCode(
+        Request $request,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
+        MailerInterface $mailer,
+    ): Response {
+        $user = $authorizedUserService::getAuthorizedUser();
+
+        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD);
+
+        if ($userEdit !== null) {
+            $endpointLogger->error('User changed password');
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation('UserChangedPassword')]);
+        }
+
+        $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD);
+        $newEditedUser->setCode(new UserEditConfirmGenerator());
+        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+
+        $editRepository->add($newEditedUser);
+
+        if ($_ENV['APP_ENV'] !== 'test') {
+            $email = (new TemplatedEmail())
+                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->to($user->getUserInformation()->getEmail())
+                ->subject($translateService->getTranslation('ChangePasswordSubject'))
+                ->htmlTemplate('emails/userSettingsPasswordChangeCode.html.twig')
+                ->context([
+                    'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                    'code'     => $newEditedUser->getCode(),
+                    'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                ]);
+            $mailer->send($email);
+        }
+
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
+    }
+
+    #[Route('/api/user/settings/email/smsCode', name: 'userSettingsEmailSmsCode', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
+    #[OA\Put(
+        description: 'Endpoint is sending confirmation sms code for changing email',
+        requestBody: new OA\RequestBody(),
+        responses  : [
+            new OA\Response(
+                response   : 200,
+                description: 'Success',
+            ),
+        ]
+    )]
+    public function userSettingsEmailSmsCode(
+        Request $request,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        UserRepository $userRepository,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
+    ): Response {
+        $user = $authorizedUserService::getAuthorizedUser();
+
+        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL_CODE);
+
+        if ($userEdit !== null) {
+            $endpointLogger->error('User changed password');
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation('UserChangedEmail')]);
+        }
+
+        $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL_CODE);
+        $newEditedUser->setCode(new UserEditConfirmGenerator());
+        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+
+        $editRepository->add($newEditedUser);
+
+        $smsTool = new SmsTool();
+
+        try {
+            $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $translateService->getTranslation('SmsCodeContent') . ': ' . $newEditedUser->getCode() . ' ');
+        } catch (Throwable $e) {
+            $endpointLogger->error($e->getMessage());
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation('SmsCodeError')]);
+        }
+
+        if (!$status) {
+            $endpointLogger->error("Can't send sms");
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation('SmsCodeError')]);
+        }
+
+        $userRepository->add($user);
+
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
     }
 
     #[Route('/api/user/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
@@ -184,12 +315,20 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailExists')]);
             }
 
+            $userEditCode = $editRepository->checkIfUserCanChangeWithCode($user, UserEditType::EMAIL_CODE, $userSettingsEmailQuery->getCode());
+
+            if ($userEditCode === null) {
+                $endpointLogger->error('User changed password');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('IncorrectCodeOrEmailWasChanged')]);
+            }
+
             $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::EMAIL);
 
             if ($userEdit !== null) {
                 $endpointLogger->error('User changed password');
                 $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserChangedPassword')]);
+                throw new DataNotFoundException([$translateService->getTranslation('UserChangedEmail')]);
             }
 
             $user->setEdited(true);
@@ -198,7 +337,10 @@ class UserSettingsController extends AbstractController
             $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL);
             $newEditedUser->setEditableDate((new DateTime())->modify('+10 hour'));
 
-            $editRepository->add($newEditedUser);
+            $editRepository->add($newEditedUser, false);
+
+            $userEditCode->setEdited(true);
+            $editRepository->add($userEditCode, false);
 
             $userRepository->add($user);
 
@@ -242,6 +384,7 @@ class UserSettingsController extends AbstractController
         UserInformationRepository $userInformationRepository,
         UserRepository $userRepository,
         UserEditRepository $editRepository,
+        AuthenticationTokenRepository $authenticationTokenRepository,
         TranslateService $translateService,
     ): Response {
         $userEmail = $request->get('email');
@@ -284,6 +427,13 @@ class UserSettingsController extends AbstractController
         $userInformation->setEmail($userEmail);
 
         $userInformationRepository->add($userInformation);
+
+        $authToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
+
+        if ($authToken !== null) {
+            $authToken->setDateExpired((new DateTime())->modify('-1 day'));
+            $authenticationTokenRepository->add($authToken);
+        }
 
         return $this->render(
             'pages/userSettingsEmailChange.html.twig',
@@ -356,6 +506,59 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse();
     }
 
+    #[Route('/api/user/settings/change/code', name: 'userSettingsChangeCode', methods: ['PUT'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
+    #[OA\Put(
+        description: 'Endpoint is sending email code to change user information',
+        requestBody: new OA\RequestBody(),
+        responses  : [
+            new OA\Response(
+                response   : 200,
+                description: 'Success',
+            ),
+        ]
+    )]
+    public function userSettingsChangeCode(
+        Request $request,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        LoggerInterface $endpointLogger,
+        UserEditRepository $editRepository,
+        TranslateService $translateService,
+        MailerInterface $mailer,
+    ): Response {
+        $user = $authorizedUserService::getAuthorizedUser();
+
+        $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::USER_DATA);
+
+        if ($userEdit !== null) {
+            $endpointLogger->error('User changed password');
+            $translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$translateService->getTranslation('UserChangedUserData')]);
+        }
+
+        $newEditedUser = new UserEdit($user, false, UserEditType::USER_DATA);
+        $newEditedUser->setCode(new UserEditConfirmGenerator());
+        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+
+        $editRepository->add($newEditedUser);
+
+        if ($_ENV['APP_ENV'] !== 'test') {
+            $email = (new TemplatedEmail())
+                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->to($user->getUserInformation()->getEmail())
+                ->subject($translateService->getTranslation('ChangeUserDataSubject'))
+                ->htmlTemplate('emails/userSettingsChangeCode.html.twig')
+                ->context([
+                    'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                    'code'     => $newEditedUser->getCode(),
+                    'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                ]);
+            $mailer->send($email);
+        }
+
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
+    }
+
     #[Route('/api/user/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
@@ -380,12 +583,23 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         UserInformationRepository $userInformationRepository,
+        UserEditRepository $editRepository,
         TranslateService $translateService,
     ): Response {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
         if ($userSettingsChangeQuery instanceof UserSettingsChangeQuery) {
             $user = $authorizedUserService::getAuthorizedUser();
+
+            $userEdit = $editRepository->checkIfUserCanChangeWithCode($user, UserEditType::USER_DATA, $userSettingsChangeQuery->getCode());
+
+            if ($userEdit === null) {
+                $endpointLogger->error('User changed password');
+                $translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$translateService->getTranslation('IncorrectCodeOrUserDataWasChanged')]);
+            }
+
+            $userEdit->setEdited(true);
 
             $userInformation = $user->getUserInformation();
 
@@ -406,6 +620,7 @@ class UserSettingsController extends AbstractController
                 $userInformation->setPhoneNumber($userSettingsChangeQuery->getPhoneNumber());
             }
 
+            $editRepository->add($userEdit, false);
             $userInformationRepository->add($userInformation);
 
             return ResponseTool::getResponse();
@@ -441,6 +656,7 @@ class UserSettingsController extends AbstractController
         if ($user->getEditableDate() !== null) {
             $successModel->setEditableDate($user->getEditableDate());
         }
+
         return ResponseTool::getResponse($successModel);
     }
 
@@ -490,7 +706,7 @@ class UserSettingsController extends AbstractController
 
             $editRepository->changeResetPasswordEdits($user);
 
-            $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD);
+            $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD_RESET);
             $newEditedUser->setEditableDate((new DateTime())->modify('+10 hour'));
 
             $editRepository->add($newEditedUser);
@@ -557,7 +773,7 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
             }
 
-            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD);
+            $userEdit = $editRepository->checkIfUserCanChange($user, UserEditType::PASSWORD_RESET);
 
             if ($userEdit === null) {
                 $endpointLogger->error('User changed password');
@@ -598,7 +814,7 @@ class UserSettingsController extends AbstractController
             new OA\Response(
                 response   : 201,
                 description: 'Success',
-                content    : new Model(type: UserParentControlPutSuccessModel::class),
+                content    : new Model(type: UserChangeCodeSuccessModel::class),
             ),
         ]
     )]
@@ -612,7 +828,7 @@ class UserSettingsController extends AbstractController
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
-        $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeakByUser($user);
+        $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeekByUser($user);
 
         if ($lastWeakAttempts > 3) {
             $endpointLogger->error('To many attempts to get UserParentalControlCode sms code');
@@ -646,7 +862,7 @@ class UserSettingsController extends AbstractController
 
         $userRepository->add($user);
 
-        return ResponseTool::getResponse(new UserParentControlPutSuccessModel($newUserParentalControlCode->getCode()), 201);
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
     #[Route('/api/user/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
@@ -692,6 +908,7 @@ class UserSettingsController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserParentalControlCodeDontExists')]);
             }
+
             $additionalData = $userParentControlPatchQuery->getAdditionalData();
             $userInformation = $user->getUserInformation();
 
