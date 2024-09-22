@@ -62,9 +62,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => $not1->getId(),
             'notificationType' => NotificationType::PROPOSED->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => $user1->getProposedAudiobooks()->getId(),
             'additionalData' => [
-                'text' => 'Nowy text'
+                'text' => 'Nowy text',
+                'actionId' => $user1->getProposedAudiobooks()->getId()
             ]
         ];
 
@@ -83,7 +83,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         ]);
 
         $this->assertSame($content['notificationType'], $not1After->getType()->value);
-        $this->assertSame($content['actionId']->toBinary(), $not1After->getActionId()->toBinary());
+        $this->assertSame($content['additionalData']['actionId']->toBinary(), $not1After->getActionId()->toBinary());
 
         $metaData = $not1After->getMetaData();
 
@@ -145,9 +145,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId'       => $not1->getId(),
             'notificationType'     => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId'             => $user1->getId(),
             'additionalData'       => [
-                'text'   => 'Nowy text'
+                'text'     => 'Nowy text',
+                'actionId' => $user1->getId(),
             ],
         ];
 
@@ -166,7 +166,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         ]);
 
         $this->assertSame($content['notificationType'], $not1After->getType()->value);
-        $this->assertSame($content['actionId']->toBinary(), $not1After->getActionId()->toBinary());
+        $this->assertSame($content['additionalData']['actionId']->toBinary(), $not1After->getActionId()->toBinary());
 
         $metaData = $not1After->getMetaData();
 
@@ -197,9 +197,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => $user1->getProposedAudiobooks()->getId(),
             'additionalData' => [
-                'text' => 'Nowy text'
+                'text' => 'Nowy text',
+                'actionId' => $user1->getProposedAudiobooks()->getId(),
             ]
         ];
 
@@ -247,9 +247,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => $not1->getId(),
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'additionalData' => [
-                'text' => 'Nowy text'
+                'text' => 'Nowy text',
+                'actionId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             ]
         ];
 
@@ -328,9 +328,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => $user1->getProposedAudiobooks()->getId(),
             'additionalData' => [
-                'text' => 'Nowy text'
+                'text' => 'Nowy text',
+                'actionId' => $user1->getProposedAudiobooks()->getId(),
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
@@ -372,9 +372,9 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'actionId' => $user1->getProposedAudiobooks()->getId(),
             'additionalData' => [
-                'text' => 'Nowy text'
+                'text' => 'Nowy text',
+                'actionId' => $user1->getProposedAudiobooks()->getId(),
             ]
         ];
         /// step 2
