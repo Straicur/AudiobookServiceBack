@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class UserInformation
 {
     #[ORM\Id]
-    #[ORM\OneToOne(inversedBy: 'userInformation', targetEntity: User::class)]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'userInformation')]
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 

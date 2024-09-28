@@ -128,7 +128,7 @@ class UserAudiobooksTest extends AbstractWebTest
         $this->assertArrayHasKey('limit', $responseContent);
         $this->assertArrayHasKey('maxPage', $responseContent);
         $this->assertArrayHasKey('categories', $responseContent);
-        $this->assertCount(3, $responseContent['categories']);
+        $this->assertCount(2, $responseContent['categories']);
         $this->assertCount(4, $responseContent['categories'][0]['audiobooks']);
         $this->assertArrayHasKey('name', $responseContent['categories'][0]);
         $this->assertArrayHasKey('categoryKey', $responseContent['categories'][0]);

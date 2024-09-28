@@ -217,12 +217,6 @@ class AudiobookRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param Uuid $audiobookId
-     * @param string $categoryKey
-     * @param bool $getActive
-     * @return Audiobook|null
-     */
     public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey): ?Audiobook
     {
         $qb = $this->createQueryBuilder('a')
@@ -236,7 +230,7 @@ class AudiobookRepository extends ServiceEntityRepository
 
         $res = $query->execute();
 
-        return count($res) > 0 ? $res[0] : null;
+        return count($res) > 0 ? current($res) : null;
     }
 
     /**

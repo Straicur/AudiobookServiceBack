@@ -21,7 +21,7 @@ class ProposedAudiobooks
     #[ORM\ManyToMany(targetEntity: Audiobook::class)]
     private Collection $audiobooks;
 
-    #[ORM\OneToOne(inversedBy: 'proposedAudiobooks', targetEntity: User::class)]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'proposedAudiobooks')]
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 

@@ -15,6 +15,7 @@ class UserSettingsGetSuccessModel implements ModelInterface
     private string $lastname;
     private bool $edited;
     private ?int $editableDate = null;
+    private ?int $birthday = null;
 
     public function __construct(string $email, string $phoneNumber, string $firstname, string $lastname, bool $edited)
     {
@@ -83,5 +84,15 @@ class UserSettingsGetSuccessModel implements ModelInterface
     public function setEditableDate(DateTime $editableDate): void
     {
         $this->editableDate = $editableDate->getTimestamp() * 1000;
+    }
+
+    public function getBirthday(): ?int
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(DateTime $birthday): void
+    {
+        $this->birthday = $birthday->getTimestamp() * 1000;
     }
 }

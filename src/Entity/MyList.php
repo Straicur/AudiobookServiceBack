@@ -21,7 +21,7 @@ class MyList
     #[ORM\ManyToMany(targetEntity: Audiobook::class)]
     private Collection $audiobooks;
 
-    #[ORM\OneToOne(inversedBy: 'myList', targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'myList', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'user_id', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 

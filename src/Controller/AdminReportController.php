@@ -141,7 +141,7 @@ class AdminReportController extends AbstractController
                     }
                     $banPeriod = (new DateTime())->modify($periodTo);
 
-                    if ((!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod)) && $periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin()) {
+                    if ($periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin() && (!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod))) {
                         $user->setBanned(true)
                             ->setBannedTo($banPeriod);
 
@@ -154,7 +154,7 @@ class AdminReportController extends AbstractController
                         $reportRepository->add($report);
                     }
 
-                    if ($_ENV['APP_ENV'] !== 'test' && $user->getUserInformation()->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
+                    if ($_ENV['APP_ENV'] !== 'test' && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
                         $email = (new TemplatedEmail())
                             ->from($_ENV['INSTITUTION_EMAIL'])
                             ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())

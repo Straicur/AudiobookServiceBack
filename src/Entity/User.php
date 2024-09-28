@@ -32,19 +32,19 @@ class User
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $bannedTo = null;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserInformation::class, cascade: ['persist'])]
+    #[ORM\OneToOne(targetEntity: UserInformation::class, mappedBy: 'user', cascade: ['persist'])]
     private ?UserInformation $userInformation;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserSettings::class, cascade: ['persist'])]
+    #[ORM\OneToOne(targetEntity: UserSettings::class, mappedBy: 'user', cascade: ['persist'])]
     private ?UserSettings $userSettings;
 
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $roles;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: MyList::class, cascade: ['persist'])]
+    #[ORM\OneToOne(targetEntity: MyList::class, mappedBy: 'user', cascade: ['persist'])]
     private ?MyList $myList;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: ProposedAudiobooks::class, cascade: ['persist'])]
+    #[ORM\OneToOne(targetEntity: ProposedAudiobooks::class, mappedBy: 'user', cascade: ['persist'])]
     private ?ProposedAudiobooks $proposedAudiobooks;
 
     #[ORM\Column(type: Types::BOOLEAN)]

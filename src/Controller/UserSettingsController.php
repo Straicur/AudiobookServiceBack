@@ -657,6 +657,10 @@ class UserSettingsController extends AbstractController
             $successModel->setEditableDate($user->getEditableDate());
         }
 
+        if ($userInformation->getBirthday() !== null) {
+            $successModel->setBirthday($userInformation->getBirthday());
+        }
+
         return ResponseTool::getResponse($successModel);
     }
 
@@ -830,7 +834,7 @@ class UserSettingsController extends AbstractController
 
         $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeekByUser($user);
 
-        if ($lastWeakAttempts > 3) {
+        if ($lastWeakAttempts >= 3) {
             $endpointLogger->error('To many attempts to get UserParentalControlCode sms code');
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation('UserParentalControlCodeToManyAttempts')]);
@@ -891,6 +895,7 @@ class UserSettingsController extends AbstractController
         UserInformationRepository $userInformationRepository,
         TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
+        MailerInterface $mailer,
     ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
@@ -924,6 +929,20 @@ class UserSettingsController extends AbstractController
 
             $controlCode->setActive(false);
             $controlCodeRepository->add($controlCode);
+
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $email = (new TemplatedEmail())
+                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject($translateService->getTranslation('ParentControlChangedSubject'))
+                    ->htmlTemplate('emails/userParentControlChanged.html.twig')
+                    ->context([
+                        'name' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        'change'   => $birthday !== null,
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                    ]);
+                $mailer->send($email);
+            }
 
             return ResponseTool::getResponse();
         }

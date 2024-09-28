@@ -85,3 +85,6 @@ IncorrectCodeOrEmailWasChanged: Incorrect code or email was changed
 IncorrectCodeOrUserDataWasChanged: Incorrect code or user data was changed
 UserDataChangeCodeDesc: Here is your code required when changing user data
 PasswordChangeCodeDesc: Here is your code required to change your password
+ParentControlYes: Parental protection has been added to your account
+ParentControlNo:  Parental protection has been removed from your account
+ParentControlChangedSubject: Changing parental account protection

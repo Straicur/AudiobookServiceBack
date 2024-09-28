@@ -70,7 +70,7 @@ class ReportRepository extends ServiceEntityRepository
             ->setParameter('type', $type->value)
             ->setParameter('ip', $ip);
 
-        return $qb->getQuery()->execute()[0];
+        return current($qb->getQuery()->execute());
     }
 
     public function loggedUserReportsCount(User $user, ReportType $type, ?string $actionId = null): array
@@ -95,7 +95,7 @@ class ReportRepository extends ServiceEntityRepository
             ->setParameter('type', $type->value)
             ->setParameter('user', $user->getId()->toBinary());
 
-        return $qb->getQuery()->execute()[0];
+        return current($qb->getQuery()->execute());
     }
 
     /**
@@ -189,6 +189,6 @@ class ReportRepository extends ServiceEntityRepository
             ->andWhere('r.denied = false')
             ->setParameter('actionId', $actionId);
 
-        return $qb->getQuery()->execute()[0];
+        return current($qb->getQuery()->execute());
     }
 }

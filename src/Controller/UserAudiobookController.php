@@ -14,7 +14,6 @@ use App\Enums\BanPeriodRage;
 use App\Enums\Cache\CacheValidTime;
 use App\Enums\Cache\UserCacheKeys;
 use App\Enums\Cache\UserStockCacheTags;
-use App\Enums\CacheKeys;
 use App\Enums\UserBanType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
@@ -143,7 +142,7 @@ class UserAudiobookController extends AbstractController
                     $audiobookRepository
                 ) {
                     $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-                    $item->tag(UserStockCacheTags::USER_AUDIOBOOKS->value . $user->getId());
+                    $item->tag(UserStockCacheTags::USER_AUDIOBOOKS->value);
 
                     $minResult = $userAudiobooksQuery->getPage() * $userAudiobooksQuery->getLimit();
                     $maxResult = $userAudiobooksQuery->getLimit() + $minResult;
@@ -152,22 +151,26 @@ class UserAudiobookController extends AbstractController
 
                     $successModel = new UserAudiobooksSuccessModel();
 
+                    $age = null;
+
+                    if ($user->getUserInformation()->getBirthday() !== null) {
+                        $userParentalControlTool = new UserParentalControlTool();
+                        $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+                    }
+
                     foreach ($allCategories as $index => $category) {
                         if ($index < $minResult) {
                             continue;
                         }
 
                         if ($index < $maxResult) {
-                            $categoryModel = new UserCategoryModel($category->getName(), $category->getCategoryKey());
+                            $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category, $age);
 
-                            $age = null;
-
-                            if ($user->getUserInformation()->getBirthday() !== null) {
-                                $userParentalControlTool = new UserParentalControlTool();
-                                $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
+                            if (count($audiobooks) === 0) {
+                                continue;
                             }
 
-                            $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category, $age);
+                            $categoryModel = new UserCategoryModel($category->getName(), $category->getCategoryKey());
 
                             foreach ($audiobooks as $audiobook) {
                                 $categoryModel->addAudiobook(new UserAudiobookModel(
@@ -393,7 +396,7 @@ class UserAudiobookController extends AbstractController
                     $audiobookCategoryRepository
                 ) {
                     $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
-                    $item->tag(UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId());
+                    $item->tag(UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value);
 
                     $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
