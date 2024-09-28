@@ -657,6 +657,10 @@ class UserSettingsController extends AbstractController
             $successModel->setEditableDate($user->getEditableDate());
         }
 
+        if ($userInformation->getBirthday() !== null) {
+            $successModel->setBirthday($userInformation->getBirthday());
+        }
+
         return ResponseTool::getResponse($successModel);
     }
 
@@ -830,7 +834,7 @@ class UserSettingsController extends AbstractController
 
         $lastWeakAttempts = $controlCodeRepository->getUserParentalControlCodeFromLastWeekByUser($user);
 
-        if ($lastWeakAttempts > 3) {
+        if ($lastWeakAttempts >= 3) {
             $endpointLogger->error('To many attempts to get UserParentalControlCode sms code');
             $translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$translateService->getTranslation('UserParentalControlCodeToManyAttempts')]);
@@ -933,7 +937,7 @@ class UserSettingsController extends AbstractController
                     ->subject($translateService->getTranslation('ParentControlChangedSubject'))
                     ->htmlTemplate('emails/userParentControlChanged.html.twig')
                     ->context([
-                        'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        'name' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         'change'   => $birthday !== null,
                         'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
                     ]);
