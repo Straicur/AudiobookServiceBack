@@ -11,7 +11,6 @@ use App\Enums\Cache\AdminStockCacheTags;
 use App\Enums\Cache\CacheValidTime;
 use App\Enums\Cache\UserCacheKeys;
 use App\Enums\Cache\UserStockCacheTags;
-use App\Enums\CacheKeys;
 use App\Enums\UserRolesNames;
 use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
@@ -27,6 +26,7 @@ use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -53,15 +53,15 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
         if (is_array($controller)) {
             $method = $controller[1];
-            $controller = $controller[0];
+            $controller = current($controller);
 
             try {
-                $controllerReflectionClass = new \ReflectionClass($controller);
+                $controllerReflectionClass = new ReflectionClass($controller);
                 $reflectionMethod = $controllerReflectionClass->getMethod($method);
                 $methodAttributes = $reflectionMethod->getAttributes(AuthValidation::class);
 
                 if (count($methodAttributes) === 1) {
-                    $authValidationAttribute = $methodAttributes[0]->newInstance();
+                    $authValidationAttribute = current($methodAttributes)->newInstance();
 
                     if (($authValidationAttribute instanceof AuthValidation) && $authValidationAttribute->isCheckAuthToken()) {
                         $authorizationHeaderField = $request->headers->get('authorization');

@@ -264,7 +264,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (array_key_exists('version', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['version']) > 0) {
-                            $version = $ID3JsonFileData['version'][0];
+                            $version = current($ID3JsonFileData['version']);
                         } else {
                             $version = $ID3JsonFileData['version'];
                         }
@@ -274,7 +274,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (array_key_exists('album', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['album']) > 0) {
-                            $album = $ID3JsonFileData['album'][0];
+                            $album = current($ID3JsonFileData['album']);
                         } else {
                             $album = $ID3JsonFileData['album'];
                         }
@@ -284,7 +284,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (array_key_exists('artist', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['artist']) > 0) {
-                            $author = $ID3JsonFileData['artist'][0];
+                            $author = current($ID3JsonFileData['artist']);
                         } else {
                             $author = $ID3JsonFileData['artist'];
                         }
@@ -294,7 +294,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['year']) > 0) {
-                            $year = '01.01.' . $ID3JsonFileData['year'][0];
+                            $year = '01.01.' . current($ID3JsonFileData['year']);
                         } else {
                             $year = '01.01.' . $ID3JsonFileData['year'];
                         }
@@ -313,7 +313,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (array_key_exists('encoded', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['encoded']) > 0) {
-                            $encoded = $ID3JsonFileData['encoded'][0];
+                            $encoded = current($ID3JsonFileData['encoded']);
                         } else {
                             $encoded = $ID3JsonFileData['encoded'];
                         }
@@ -323,7 +323,7 @@ class AdminAudiobookController extends AbstractController
 
                     if (array_key_exists('comment', $ID3JsonFileData)) {
                         if (count($ID3JsonFileData['comment']) > 0) {
-                            $description = $ID3JsonFileData['comment'][0];
+                            $description = current($ID3JsonFileData['comment']);
                         } else {
                             $description = $ID3JsonFileData['comment'];
                         }
@@ -732,7 +732,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists('version', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['version']) > 0) {
-                        $version = $ID3JsonFileData['version'][0];
+                        $version = current($ID3JsonFileData['version']);
                     } else {
                         $version = $ID3JsonFileData['version'];
                     }
@@ -742,7 +742,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists('album', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['album']) > 0) {
-                        $album = $ID3JsonFileData['album'][0];
+                        $album = current($ID3JsonFileData['album']);
                     } else {
                         $album = $ID3JsonFileData['album'];
                     }
@@ -752,7 +752,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists('artist', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['artist']) > 0) {
-                        $author = $ID3JsonFileData['artist'][0];
+                        $author = current($ID3JsonFileData['artist']);
                     } else {
                         $author = $ID3JsonFileData['artist'];
                     }
@@ -762,7 +762,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['year']) > 0) {
-                        $year = '01.01.' . $ID3JsonFileData['year'][0];
+                        $year = '01.01.' . current($ID3JsonFileData['year']);
                     } else {
                         $year = '01.01.' . $ID3JsonFileData['year'];
                     }
@@ -780,7 +780,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists('encoded', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['encoded']) > 0) {
-                        $encoded = $ID3JsonFileData['encoded'][0];
+                        $encoded = current($ID3JsonFileData['encoded']);
                     } else {
                         $encoded = $ID3JsonFileData['encoded'];
                     }
@@ -790,7 +790,7 @@ class AdminAudiobookController extends AbstractController
 
                 if (array_key_exists('comment', $ID3JsonFileData)) {
                     if (count($ID3JsonFileData['comment']) > 0) {
-                        $description = $ID3JsonFileData['comment'][0];
+                        $description = current($ID3JsonFileData['comment']);
                     } else {
                         $description = $ID3JsonFileData['comment'];
                     }
@@ -1120,10 +1120,10 @@ class AdminAudiobookController extends AbstractController
             $additionalData = $adminAudiobookActiveQuery->getAdditionalData();
 
             if (
-                $adminAudiobookActiveQuery->isActive() &&
                 array_key_exists('text', $additionalData) &&
                 !empty($additionalData['text']) &&
-                array_key_exists('type', $additionalData)
+                array_key_exists('type', $additionalData) &&
+                $adminAudiobookActiveQuery->isActive()
             ) {
                 $users = [];
 

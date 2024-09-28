@@ -70,7 +70,7 @@ class UserEditRepository extends ServiceEntityRepository
 
         $res = $query->execute();
 
-        return count($res) > 0 ? $res[0] : null;
+        return count($res) > 0 ? current($res) : null;
     }
 
     public function checkIfUserCanChangeWithCode(User $user, UserEditType $type, string $code): ?UserEdit
@@ -92,7 +92,7 @@ class UserEditRepository extends ServiceEntityRepository
 
         $res = $query->execute();
 
-        return count($res) > 0 ? $res[0] : null;
+        return count($res) > 0 ? current($res) : null;
     }
 
     public function changeResetPasswordEdits(User $user): void

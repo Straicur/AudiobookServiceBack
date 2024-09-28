@@ -35,7 +35,7 @@ class AdminAudiobooksSuccessModel implements ModelInterface
         $this->audiobooks = $audiobooks;
     }
 
-    public function addAudiobook(AdminCategoryAudiobookModel $audiobook)
+    public function addAudiobook(AdminCategoryAudiobookModel $audiobook): void
     {
         $this->audiobooks[] = $audiobook;
     }

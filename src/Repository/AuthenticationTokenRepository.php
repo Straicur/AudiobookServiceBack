@@ -67,7 +67,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         $res = $query->execute();
 
-        return count($res) > 0 ? $res[0] : null;
+        return count($res) > 0 ? current($res) : null;
     }
 
     /**
@@ -88,7 +88,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         $res = $query->execute();
 
-        return count($res) > 0 ? $res[0] : null;
+        return count($res) > 0 ? current($res) : null;
     }
 
 

@@ -66,11 +66,11 @@ class Audiobook
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     private string $fileName;
 
-    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookRating::class)]
+    #[ORM\OneToMany(targetEntity: AudiobookRating::class, mappedBy: 'audiobook')]
     private Collection $audiobookRatings;
-    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookUserComment::class)]
+    #[ORM\OneToMany(targetEntity: AudiobookUserComment::class, mappedBy: 'audiobook')]
     private Collection $audiobookUserComments;
-    #[ORM\OneToMany(mappedBy: 'audiobook', targetEntity: AudiobookInfo::class)]
+    #[ORM\OneToMany(targetEntity: AudiobookInfo::class, mappedBy: 'audiobook')]
     private Collection $audiobookInfos;
 
     #[ORM\Column(type: Types::FLOAT)]
@@ -445,7 +445,7 @@ class Audiobook
         return $this;
     }
 
-    public function getImgFileChangeDate(): ?\DateTime
+    public function getImgFileChangeDate(): ?DateTime
     {
         return $this->imgFileChangeDate;
     }

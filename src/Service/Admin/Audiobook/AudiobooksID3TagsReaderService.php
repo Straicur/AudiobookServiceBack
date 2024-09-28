@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Admin\Audiobook;
 
+use getID3;
+
 class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceInterface
 {
     public string $fileName = "";
-    public readonly \getID3 $ID3;
+    public readonly getID3 $ID3;
 
     public function __construct()
     {
-        $this->ID3 = new \getID3();
+        $this->ID3 = new getID3();
     }
 
     private function analyze(): array

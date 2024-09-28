@@ -90,11 +90,6 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         $query->execute();
     }
 
-    /**
-     * @param Audiobook $audiobook
-     * @param User $user
-     * @return User[]
-     */
     public function getUsersWhereAudiobookInAudiobookInfo(Audiobook $audiobook): array
     {
         $audiobookCategories = [];

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\ValueGenerator;
 
+use SensitiveParameter;
+
 class PasswordHashGenerator implements ValueGeneratorInterface
 {
     private string $planeTextPassword;
 
-    public function __construct(#[\SensitiveParameter] string $planeTextPassword = null)
+    public function __construct(#[SensitiveParameter] string $planeTextPassword = null)
     {
         if ($planeTextPassword === null) {
             $this->planeTextPassword = "";
