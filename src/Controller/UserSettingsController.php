@@ -891,6 +891,7 @@ class UserSettingsController extends AbstractController
         UserInformationRepository $userInformationRepository,
         TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
+        MailerInterface $mailer,
     ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
@@ -924,6 +925,20 @@ class UserSettingsController extends AbstractController
 
             $controlCode->setActive(false);
             $controlCodeRepository->add($controlCode);
+
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $email = (new TemplatedEmail())
+                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->to($user->getUserInformation()->getEmail())
+                    ->subject($translateService->getTranslation('ParentControlChangedSubject'))
+                    ->htmlTemplate('emails/userParentControlChanged.html.twig')
+                    ->context([
+                        'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
+                        'change'   => $birthday !== null,
+                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                    ]);
+                $mailer->send($email);
+            }
 
             return ResponseTool::getResponse();
         }

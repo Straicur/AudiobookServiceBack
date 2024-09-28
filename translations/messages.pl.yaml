@@ -84,3 +84,6 @@ IncorrectCodeOrEmailWasChanged: Nieprawidłowy kod lub email został zmieniony
 IncorrectCodeOrUserDataWasChanged: Nieprawidłowy kod lub dane użytkownika zostały zmienione
 UserDataChangeCodeDesc: Oto twój kod wymagany przy zmianie danych użytkownika
 PasswordChangeCodeDesc: Oto twój kod wymagany przy zmianie hasła
+ParentControlYes: Ochrona rodzicielka została dodana do twojego konta
+ParentControlNo: Ochrona rodzicielka została usunięta z twojego konta
+ParentControlChangedSubject: Zmiana ochrony rodzicielskie konta

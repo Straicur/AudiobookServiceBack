@@ -1,0 +1,9 @@
+<div>
+    <p>{{ 'Hello' | force_translate( lang ) }}: {{ name }},</p>
+    {% if change %}
+        <p>{{ 'ParentControlYes' | force_translate( lang ) }}.</p>
+    {% else %}
+        <p>{{ 'ParentControlNo' | force_translate( lang ) }}</p>
+    {% endif %}
+</div>
+
