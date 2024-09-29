@@ -615,6 +615,8 @@ class AdminUserController extends AbstractController
                         $userDeleted,
                     );
 
+                    $userModel->setPhoneNumber($user->getUserInformation()->getPhoneNumber());
+
                     foreach ($user->getRoles() as $role) {
                         switch ($role->getName()) {
                             case UserRolesNames::GUEST->value:

@@ -18,6 +18,7 @@ class AdminUserModel
     private int $dateCreated;
     private array $roles = [];
     private bool $deleted;
+    private ?string $phoneNumber = null;
 
     public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, DateTime $dateCreated, bool $deleted)
     {
@@ -124,5 +125,15 @@ class AdminUserModel
     public function setDeleted(bool $deleted): void
     {
         $this->deleted = $deleted;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): void
+    {
+        $this->phoneNumber = $phoneNumber;
     }
 }
