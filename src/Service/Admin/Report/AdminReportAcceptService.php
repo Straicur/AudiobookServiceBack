@@ -13,6 +13,7 @@ use App\Query\Admin\AdminReportAcceptQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
 use App\Service\TranslateService;
+use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -63,7 +64,8 @@ class AdminReportAcceptService implements AdminReportAcceptServiceInterface
     {
         $report
             ->setAccepted(true)
-            ->setAnswer($this->adminReportAcceptQuery->getAnswer());
+            ->setAnswer($this->adminReportAcceptQuery->getAnswer())
+            ->setSettleDate(new DateTime());
 
         $this->reportRepository->add($report);
 
