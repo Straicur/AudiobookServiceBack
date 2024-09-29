@@ -8,6 +8,7 @@ use App\Annotation\AuthValidation;
 use App\Entity\UserDelete;
 use App\Entity\UserEdit;
 use App\Entity\UserParentalControlCode;
+use App\Enums\Cache\UserStockCacheTags;
 use App\Enums\UserEditType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
@@ -49,6 +50,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Throwable;
 
 #[OA\Response(
@@ -896,6 +898,7 @@ class UserSettingsController extends AbstractController
         TranslateService $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
         MailerInterface $mailer,
+        TagAwareCacheInterface $stockCache,
     ): Response {
         $userParentControlPatchQuery = $requestService->getRequestBodyContent($request, UserParentControlPatchQuery::class);
 
@@ -943,6 +946,12 @@ class UserSettingsController extends AbstractController
                     ]);
                 $mailer->send($email);
             }
+
+            $stockCache->invalidateTags([
+                UserStockCacheTags::USER_AUDIOBOOKS->value,
+                UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value,
+                UserStockCacheTags::USER_CATEGORIES_TREE->value,
+            ]);
 
             return ResponseTool::getResponse();
         }
