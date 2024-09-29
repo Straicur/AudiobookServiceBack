@@ -19,6 +19,7 @@ class AdminUserModel
     private array $roles = [];
     private bool $deleted;
     private ?string $phoneNumber = null;
+    private ?AdminUserBanModel $userBan = null;
 
     public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, DateTime $dateCreated, bool $deleted)
     {
@@ -135,5 +136,15 @@ class AdminUserModel
     public function setPhoneNumber(string $phoneNumber): void
     {
         $this->phoneNumber = $phoneNumber;
+    }
+
+    public function getUserBan(): ?AdminUserBanModel
+    {
+        return $this->userBan;
+    }
+
+    public function setUserBan(AdminUserBanModel $userBan): void
+    {
+        $this->userBan = $userBan;
     }
 }

@@ -66,9 +66,7 @@ class UserEditRepository extends ServiceEntityRepository
             ->setParameter('date', $date)
             ->setParameter('user', $user->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        $res = $query->execute();
+        $res = $qb->getQuery()->execute();
 
         return count($res) > 0 ? current($res) : null;
     }
@@ -88,9 +86,7 @@ class UserEditRepository extends ServiceEntityRepository
             ->setParameter('code', $code)
             ->setParameter('user', $user->getId()->toBinary());
 
-        $query = $qb->getQuery();
-
-        $res = $query->execute();
+        $res = $qb->getQuery()->execute();
 
         return count($res) > 0 ? current($res) : null;
     }

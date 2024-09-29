@@ -23,8 +23,8 @@ class AdminReportModel
     private ?AdminUserModel $user = null;
     private ?string $answer = null;
     private ?AdminReportAudiobookCommentsModel $comment = null;
-
     private ?AdminUserBanModel $userBan = null;
+    private ?int $settleDate = null;
 
     public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
@@ -183,5 +183,15 @@ class AdminReportModel
     public function setSimilarReports(int $similarReports): void
     {
         $this->similarReports = $similarReports;
+    }
+
+    public function getSettleDate(): ?int
+    {
+        return $this->settleDate;
+    }
+
+    public function setSettleDate(DateTime $settleDate): void
+    {
+        $this->settleDate = $settleDate->getTimestamp() * 1000;
     }
 }

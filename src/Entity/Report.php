@@ -51,6 +51,9 @@ class Report
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?UserBanHistory $banned = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTime $settleDate = null;
+
     /**
      * @param ReportType $type
      */
@@ -198,6 +201,18 @@ class Report
     public function setBanned(?UserBanHistory $banned): static
     {
         $this->banned = $banned;
+
+        return $this;
+    }
+
+    public function getSettleDate(): ?DateTime
+    {
+        return $this->settleDate;
+    }
+
+    public function setSettleDate(DateTime $settleDate): static
+    {
+        $this->settleDate = $settleDate;
 
         return $this;
     }

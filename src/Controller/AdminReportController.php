@@ -344,6 +344,7 @@ class AdminReportController extends AbstractController
                         $report->getAccepted(),
                         $report->getDenied(),
                     );
+
                     if ($report->getDescription()) {
                         $reportModel->setDescription($report->getDescription());
                     }
@@ -359,6 +360,10 @@ class AdminReportController extends AbstractController
                     if ($report->getAnswer()) {
                         $reportModel->setAnswer($report->getAnswer());
                     }
+                    if ($report->getSettleDate()) {
+                        $reportModel->setSettleDate($report->getSettleDate());
+                    }
+
                     if ($report->getUser()) {
                         $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());
 
@@ -375,6 +380,7 @@ class AdminReportController extends AbstractController
                             ),
                         );
                     }
+
                     if ($report->getType() === ReportType::COMMENT && $report->getActionId() !== null) {
                         $comment = $commentRepository->find($report->getActionId());
 

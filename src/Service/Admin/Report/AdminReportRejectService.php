@@ -13,6 +13,7 @@ use App\Query\Admin\AdminReportRejectQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
 use App\Service\TranslateService;
+use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -62,8 +63,11 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
     public function sendReportResponse(Report $report): void
     {
         if (!$report->getAccepted() && !$report->getDenied()) {
-            $report->setDenied(true);
-            $report->setAnswer($this->adminReportRejectQuery->getAnswer());
+            $report
+                ->setDenied(true)
+                ->setAnswer($this->adminReportRejectQuery->getAnswer())
+                ->setSettleDate(new DateTime());
+
             $this->reportRepository->add($report);
         }
 
