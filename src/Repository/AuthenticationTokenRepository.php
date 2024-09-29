@@ -64,8 +64,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->setFirstResult(0)
             ->setMaxResults(1);
 
-        $query = $qb->getQuery();
-        $res = $query->execute();
+        $res = $qb->getQuery()->execute();
 
         return count($res) > 0 ? current($res) : null;
     }
@@ -85,8 +84,7 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
             ->setFirstResult(0)
             ->setMaxResults(1);
 
-        $query = $qb->getQuery();
-        $res = $query->execute();
+        $res = $qb->getQuery()->execute();
 
         return count($res) > 0 ? current($res) : null;
     }

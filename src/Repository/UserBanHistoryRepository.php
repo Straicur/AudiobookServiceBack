@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\UserBanHistory;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,5 +49,20 @@ class UserBanHistoryRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getActiveBan(User $user): ?UserBanHistory
+    {
+        $today = new DateTime();
+
+        $qb = $this->createQueryBuilder('ub')
+            ->where('ub.user = :userId')
+            ->andWhere('ub.dateTo >= :today')
+            ->setParameter('userId', $user->getId()->toBinary())
+            ->setParameter('today', $today);
+
+        $res = $qb->getQuery()->execute();
+
+        return count($res) > 0 ? current($res) : null;
     }
 }

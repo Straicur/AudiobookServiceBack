@@ -226,9 +226,7 @@ class AudiobookRepository extends ServiceEntityRepository
         $qb->setParameter('audiobookId', $audiobookId->toBinary())
             ->setParameter('categoryKey', $categoryKey);
 
-        $query = $qb->getQuery();
-
-        $res = $query->execute();
+        $res = $qb->getQuery()->execute();
 
         return count($res) > 0 ? current($res) : null;
     }

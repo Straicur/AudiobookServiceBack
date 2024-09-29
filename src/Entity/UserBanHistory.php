@@ -87,6 +87,7 @@ class UserBanHistory
             1 => UserBanType::SPAM,
             2 => UserBanType::COMMENT,
             3 => UserBanType::STRANGE_BEHAVIOR,
+            4 => UserBanType::MAX_LOGINS_BREAK,
         };
     }
 

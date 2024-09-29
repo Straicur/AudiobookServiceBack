@@ -18,6 +18,7 @@ use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
 use App\Model\Admin\AdminSystemRoleModel;
+use App\Model\Admin\AdminUserBanModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
 use App\Model\Admin\AdminUserDeleteModel;
 use App\Model\Admin\AdminUserModel;
@@ -44,7 +45,9 @@ use App\Query\Admin\AdminUserRoleAddQuery;
 use App\Query\Admin\AdminUserRoleRemoveQuery;
 use App\Query\Admin\AdminUsersQuery;
 use App\Repository\NotificationRepository;
+use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
@@ -550,6 +553,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserDeleteRepository $userDeleteRepository,
+        UserBanHistoryRepository $banHistoryRepository,
         TranslateService $translateService,
     ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
@@ -616,6 +620,14 @@ class AdminUserController extends AbstractController
                     );
 
                     $userModel->setPhoneNumber($user->getUserInformation()->getPhoneNumber());
+
+                    if ($user->isBanned()) {
+                        $userBan = $banHistoryRepository->getActiveBan($user);
+
+                        if ($userBan !== null) {
+                            $userModel->setUserBan(new AdminUserBanModel($userBan->getDateFrom(), $userBan->getDateTo(), $userBan->getType()));
+                        }
+                    }
 
                     foreach ($user->getRoles() as $role) {
                         switch ($role->getName()) {
