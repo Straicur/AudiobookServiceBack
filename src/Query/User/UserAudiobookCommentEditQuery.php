@@ -33,39 +33,6 @@ class UserAudiobookCommentEditQuery
     #[Assert\Type(type: 'boolean')]
     private bool $deleted;
 
-    protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'parentId' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'ParentId is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Uuid(),
-                ]),
-            ],
-        ]));
-    }
-
-    #[OA\Property(property: 'additionalData', properties: [
-        new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),
-    ], type    : 'object')]
-    public function setAdditionalData(array $additionalData): void
-    {
-        if (array_key_exists('parentId', $additionalData)) {
-            $additionalData['parentId'] = Uuid::fromString($additionalData['parentId']);
-        }
-
-        $this->additionalData = $additionalData;
-    }
-
-
-    public function getAdditionalData(): array
-    {
-        return $this->additionalData;
-    }
-
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {

@@ -48,9 +48,6 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
             'audiobookCommentId'=>$comment2->getId(),
             'comment' => 'comment',
             'deleted'=>false,
-            'additionalData' => [
-                'parentId' => $comment1->getId()->__toString()
-            ]
         ];
         /// step 2
         $crawler = self::$webClient->request('PATCH', '/api/user/audiobook/comment/edit', server: [
@@ -72,7 +69,6 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
 
         $this->assertSame($content['comment'],$commentAfter->getComment());
         $this->assertSame($content['deleted'],$commentAfter->getDeleted());
-        $this->assertSame($content['additionalData']['parentId'],$commentAfter->getParent()->getId()->__toString());
         $this->assertTrue($commentAfter->getEdited());
 
     }
