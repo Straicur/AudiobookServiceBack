@@ -1086,25 +1086,13 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
             }
 
-            $audiobookComment->setDeleted($userAudiobookCommentEditQuery->isDeleted());
-            $audiobookComment->setComment($userAudiobookCommentEditQuery->getComment());
-            $audiobookComment->setEdited(true);
-
-            $additionalData = $userAudiobookCommentEditQuery->getAdditionalData();
-
-            if (array_key_exists('parentId', $additionalData)) {
-                $audiobookParentComment = $audiobookUserCommentRepository->find($additionalData['parentId']);
-
-                if ($audiobookParentComment === null) {
-                    $endpointLogger->error('Audiobook Parent Comment dont exist');
-                    $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation('AudiobookParentCommentDontExists')]);
-                }
-
-                $audiobookComment->setParent($audiobookParentComment);
-            }
+            $audiobookComment
+                ->setDeleted($userAudiobookCommentEditQuery->isDeleted())
+                ->setComment($userAudiobookCommentEditQuery->getComment())
+                ->setEdited(true);
 
             $audiobookUserCommentRepository->add($audiobookComment);
+
             $stockCache->invalidateTags([
                 UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
                 UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId(),
