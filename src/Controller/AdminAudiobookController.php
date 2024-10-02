@@ -147,7 +147,7 @@ class AdminAudiobookController extends AbstractController
                     );
                 }
 
-                if ($audiobook->getImgFileChangeDate() == null || $audiobook->getImgFileChangeDate() < new DateTime()) {
+                if ($audiobook->getImgFileChangeDate() == null) {
                     try {
                         $handle = opendir($audiobook->getFileName());
                         $img = "";
@@ -1248,7 +1248,7 @@ class AdminAudiobookController extends AbstractController
             $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
             file_put_contents($audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
-            $audiobook->setImgFile($audiobook->getFileName() . '/' . $audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType());
+            $audiobook->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/cover.' . $adminAudiobookChangeCoverQuery->getType());
             $audiobook->setImgFileChangeDate();
             $audiobookRepository->add($audiobook);
 

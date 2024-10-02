@@ -452,7 +452,7 @@ class Audiobook
 
     public function setImgFileChangeDate(): static
     {
-        $this->imgFileChangeDate = (new DateTime())->modify('+5 day');
+        $this->imgFileChangeDate = new DateTime();
 
         return $this;
     }
