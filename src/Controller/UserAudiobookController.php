@@ -413,7 +413,7 @@ class UserAudiobookController extends AbstractController
 
                     $inList = $listRepository->getAudiobookInMyList($user, $audiobook);
 
-                    $audiobookInfo = $audiobookInfoRepository->findBy([
+                    $audiobookInfos = $audiobookInfoRepository->findBy([
                     'audiobook' => $audiobook->getId(),
                     'watched'   => true,
                     'user'      => $user->getId(),
@@ -451,11 +451,13 @@ class UserAudiobookController extends AbstractController
                         $audiobook->getImgFile(),
                     );
 
-                    if ($audiobookInfo !== null && count($audiobookInfo) >= $audiobook->getParts()) {
+                    $audiobookInfosAmount = count($audiobookInfos);
+
+                    if ($audiobookInfos !== null && $audiobookInfosAmount >= $audiobook->getParts()) {
                         $successModel->setCanRate(true);
                     }
 
-                    if (floor($audiobook->getParts() / 2) <= count($audiobookInfo)) {
+                    if ($audiobookInfosAmount > 1 && floor($audiobook->getParts() / 2) <= $audiobookInfosAmount) {
                         $successModel->setCanComment(true);
                     }
 
