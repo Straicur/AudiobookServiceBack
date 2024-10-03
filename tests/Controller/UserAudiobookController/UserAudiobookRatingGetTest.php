@@ -32,9 +32,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true, rating: 66.0);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -83,9 +83,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -130,9 +130,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -181,9 +181,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -232,9 +232,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
@@ -281,9 +281,9 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user3);
 
         $content = [
             'audiobookId' => $audiobook1->getId(),

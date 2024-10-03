@@ -19,8 +19,9 @@ class UserAudiobookRatingAddQuery
     private string $categoryKey;
 
     #[Assert\NotNull(message: 'Rating is null')]
-    #[Assert\Type(type: 'boolean')]
-    private bool $rating;
+    #[Assert\NotBlank(message: 'Rating is empty')]
+    #[Assert\Type(type: 'integer')]
+    private int $rating;
 
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
@@ -33,12 +34,12 @@ class UserAudiobookRatingAddQuery
         $this->audiobookId = Uuid::fromString($audiobookId);
     }
 
-    public function isRating(): bool
+    public function getRating(): int
     {
         return $this->rating;
     }
 
-    public function setRating(bool $rating): void
+    public function setRating(int $rating): void
     {
         $this->rating = $rating;
     }

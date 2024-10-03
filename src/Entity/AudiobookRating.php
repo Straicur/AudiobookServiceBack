@@ -21,8 +21,8 @@ class AudiobookRating
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Audiobook $audiobook;
 
-    #[ORM\Column(type: Types::BOOLEAN)]
-    private bool $rating;
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $rating;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,7 +33,7 @@ class AudiobookRating
      * @param bool $rating
      * @param User $user
      */
-    public function __construct(Audiobook $audiobook, bool $rating, User $user)
+    public function __construct(Audiobook $audiobook, int $rating, User $user)
     {
         $this->audiobook = $audiobook;
         $this->rating = $rating;
@@ -57,12 +57,12 @@ class AudiobookRating
         return $this;
     }
 
-    public function getRating(): bool
+    public function getRating(): int
     {
         return $this->rating;
     }
 
-    public function setRating(bool $rating): self
+    public function setRating(int $rating): self
     {
         $this->rating = $rating;
 

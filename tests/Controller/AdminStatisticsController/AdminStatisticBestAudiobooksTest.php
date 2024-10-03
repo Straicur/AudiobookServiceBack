@@ -40,13 +40,13 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category2], active: true);
         $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd5', [$category2]);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
-        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
-        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
-        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
+        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 3, $user1);
+        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 2, $user2);
+        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -111,13 +111,13 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category2], active: true);
         $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd5', [$category2]);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating2 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating3 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
-        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
-        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
-        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
+        $audiobookRating4 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 3, $user1);
+        $audiobookRating5 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 2, $user2);
+        $audiobookRating6 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2

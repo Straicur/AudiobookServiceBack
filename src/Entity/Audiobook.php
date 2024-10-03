@@ -421,9 +421,9 @@ class Audiobook
         return $this;
     }
 
-    public function getAvgRating(): float
+    public function getAvgRating(): int
     {
-        return $this->avgRating;
+        return (int)ceil($this->avgRating);
     }
 
     public function setAvgRating(float $avgRating): self

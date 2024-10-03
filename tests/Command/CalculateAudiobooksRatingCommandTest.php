@@ -36,17 +36,17 @@ class CalculateAudiobooksRatingCommandTest extends AbstractKernelTestCase
         $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t2', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2], active: true);
         $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t3', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category1, $category2], null, (new DateTime())->modify('- 1 month'), active: true);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 3, $user1);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 2, $user2);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook1, 1, $user3);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 3, $user1);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 2, $user2);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 1, $user3);
 
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, true, $user1);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, true, $user2);
-        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, false, $user3);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, 4, $user1);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, 2, $user2);
+        $audiobookRating1 = $this->databaseMockManager->testFunc_addAudiobookRating($audiobook3, 3, $user3);
 
         $cmd = $this->commandApplication->find('audiobookservice:calculate:rating');
 
@@ -66,8 +66,8 @@ class CalculateAudiobooksRatingCommandTest extends AbstractKernelTestCase
             'id'=>$audiobook3->getId()
         ]);
 
-        $this->assertNotSame(0,$audiobook1After->getAvgRating());
-        $this->assertNotSame(0,$audiobook2After->getAvgRating());
-        $this->assertNotSame(0,$audiobook3After->getAvgRating());
+        $this->assertSame(2, (int)$audiobook1After->getAvgRating());
+        $this->assertSame(2, (int)$audiobook2After->getAvgRating());
+        $this->assertSame(3, (int)$audiobook3After->getAvgRating());
     }
 }

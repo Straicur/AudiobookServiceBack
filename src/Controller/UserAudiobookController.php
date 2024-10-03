@@ -804,7 +804,7 @@ class UserAudiobookController extends AbstractController
             ]);
 
             if ($rating !== null) {
-                $rating->setRating($userAudiobookRatingAddQuery->isRating());
+                $rating->setRating($userAudiobookRatingAddQuery->getRating());
             } else {
                 $audiobookInfo = $audiobookInfoRepository->findBy([
                     'audiobook' => $audiobook->getId(),
@@ -818,7 +818,7 @@ class UserAudiobookController extends AbstractController
                     throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotWatched')]);
                 }
 
-                $rating = new AudiobookRating($audiobook, $userAudiobookRatingAddQuery->isRating(), $user);
+                $rating = new AudiobookRating($audiobook, $userAudiobookRatingAddQuery->getRating(), $user);
             }
 
             $ratingRepository->add($rating);
@@ -874,7 +874,7 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel((int)$audiobook->getAvgRating()));
+            return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel($audiobook->getAvgRating()));
         }
 
         $endpointLogger->error('Invalid given Query');
