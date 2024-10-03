@@ -45,15 +45,19 @@ class CalculateAudiobooksRatingCommand extends Command
         ]);
 
         foreach ($activeAudiobooks as $audiobook) {
-            $goodRatings = count($this->ratingRepository->findBy([
-                'audiobook' => $audiobook->getId(),
-                'rating'    => true,
-            ]));
+            $ratings = $this->ratingRepository->findBy([
+                'audiobook' => $audiobook->getId()
+            ]);
 
+            $ratingSum = 0;
+
+            foreach ($ratings as $rating) {
+                $ratingSum += $rating->getRating();
+            }
             $audiobookRatings = count($audiobook->getAudiobookRatings());
 
             if ($audiobookRatings !== 0) {
-                $audiobook->setAvgRating(($goodRatings / $audiobookRatings) * 100);
+                $audiobook->setAvgRating($ratingSum / $audiobookRatings);
 
                 $this->audiobookRepository->add($audiobook);
             }

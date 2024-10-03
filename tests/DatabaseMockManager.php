@@ -414,13 +414,16 @@ class DatabaseMockManager
         return $newNotificationCheck;
     }
 
-    public function testFunc_addAudiobookRating(Audiobook $audiobook, bool $rating, User $user): AudiobookRating
+    public function testFunc_addAudiobookRating(Audiobook $audiobook, int $rating, User $user): AudiobookRating
     {
         $audiobookRatingRepository = $this->getService(AudiobookRatingRepository::class);
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
 
         $newAudiobookRating = new AudiobookRating($audiobook, $rating, $user);
 
+        $audiobook->addAudiobookRating($newAudiobookRating);
         $audiobookRatingRepository->add($newAudiobookRating);
+        $audiobookRepository->add($audiobook);
 
         return $newAudiobookRating;
     }

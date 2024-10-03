@@ -39,7 +39,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category2->getCategoryKey(),
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
@@ -131,7 +131,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category2->getCategoryKey(),
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
@@ -179,7 +179,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'categoryKey' => $category2->getCategoryKey(),
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
@@ -228,7 +228,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
@@ -277,7 +277,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category2->getCategoryKey(),
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
@@ -322,7 +322,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category2->getCategoryKey(),
-            'rating' => true
+            'rating' => 2
         ];
 
         /// step 2
