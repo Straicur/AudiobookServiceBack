@@ -20,6 +20,8 @@ class UserAudiobookRatingAddQuery
 
     #[Assert\NotNull(message: 'Rating is null')]
     #[Assert\NotBlank(message: 'Rating is empty')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\LessThanOrEqual(5)]
     #[Assert\Type(type: 'integer')]
     private int $rating;
 
