@@ -457,7 +457,7 @@ class UserAudiobookController extends AbstractController
                         $successModel->setCanRate(true);
                     }
 
-                    if ($audiobookInfosAmount > 1 && floor($audiobook->getParts() / 2) <= $audiobookInfosAmount) {
+                    if ($audiobookInfosAmount > 1 && (floor($audiobook->getParts() / 2) <= $audiobookInfosAmount || $audiobook->getParts() === $audiobookInfos)) {
                         $successModel->setCanComment(true);
                     }
 

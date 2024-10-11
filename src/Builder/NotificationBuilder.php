@@ -120,10 +120,7 @@ class NotificationBuilder
             $notificationModel->setActive($notificationCheck);
         }
 
-        if ($notification->getType() !== NotificationType::NEW_CATEGORY) {
-            $notificationModel->setActionId($notification->getActionId());
-        }
-
+        $notificationModel->setActionId($notification->getActionId());
         $notificationModel->setDateAdd($notification->getDateAdd());
         $notificationModel->setActivated($notification->isActive());
         $notificationModel->setActivatedDate($notification->getDateActive());
