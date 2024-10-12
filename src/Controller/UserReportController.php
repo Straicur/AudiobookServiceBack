@@ -15,8 +15,12 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\User\UserReportListSuccessModel;
+use App\Model\User\UserReportModel;
 use App\Query\User\UserNotAuthorizedUserReportQuery;
+use App\Query\User\UserReportListQuery;
 use App\Query\User\UserReportQuery;
+use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\ReportRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -151,7 +155,7 @@ class UserReportController extends AbstractController
             ),
         ]
     )]
-    public function apiReportUser(
+    public function userReport(
         Request $request,
         RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
@@ -200,6 +204,95 @@ class UserReportController extends AbstractController
             $reportRepository->add($newReport);
 
             return ResponseTool::getResponse(httpCode: 201);
+        }
+
+        $endpointLogger->error('Invalid given Query');
+        $translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($translateService);
+    }
+
+    #[Route('/api/user/reports', name: 'apiUserReports', methods: ['POST'])]
+    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
+    #[OA\Post(
+        description: 'Endpoint returning user reports',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content : new OA\JsonContent(
+                ref : new Model(type: UserReportListQuery::class),
+                type: 'object',
+            ),
+        ),
+        responses  : [
+            new OA\Response(
+                response   : 200,
+                description: 'Success',
+            ),
+        ]
+    )]
+    public function userReports(
+        Request $request,
+        RequestServiceInterface $requestService,
+        LoggerInterface $endpointLogger,
+        AuthorizedUserServiceInterface $authorizedUserService,
+        ReportRepository $reportRepository,
+        TranslateService $translateService,
+        AudiobookUserCommentRepository $commentRepository,
+    ): Response {
+        $adminReportListQuery = $requestService->getRequestBodyContent($request, UserReportListQuery::class);
+
+        if ($adminReportListQuery instanceof UserReportListQuery) {
+            $user = $authorizedUserService::getAuthorizedUser();
+
+            $reports = $reportRepository->findBy(['user' => $user], ['dateAdd' => 'DESC']);
+
+            $successModel = new UserReportListSuccessModel();
+
+            $minResult = $adminReportListQuery->getPage() * $adminReportListQuery->getLimit();
+            $maxResult = $adminReportListQuery->getLimit() + $minResult;
+
+            foreach ($reports as $index => $report) {
+                if ($index < $minResult) {
+                    continue;
+                }
+
+                if ($index < $maxResult) {
+                    $reportModel = new UserReportModel(
+                        (string)$report->getId(),
+                        $report->getType(),
+                        $report->getDateAdd(),
+                        $report->getAccepted(),
+                        $report->getDenied(),
+                    );
+
+                    if ($report->getDescription()) {
+                        $reportModel->setDescription($report->getDescription());
+                    }
+                    if ($report->getAnswer()) {
+                        $reportModel->setAnswer($report->getAnswer());
+                    }
+                    if ($report->getSettleDate()) {
+                        $reportModel->setSettleDate($report->getSettleDate());
+                    }
+
+                    if ($report->getType() === ReportType::COMMENT && $report->getActionId() !== null) {
+                        $comment = $commentRepository->find($report->getActionId());
+
+                        if ($comment !== null) {
+                            $reportModel->setComment($comment->getComment());
+                        }
+                    }
+
+                    $successModel->addReport($reportModel);
+                } else {
+                    break;
+                }
+            }
+
+            $successModel->setPage($adminReportListQuery->getPage());
+            $successModel->setLimit($adminReportListQuery->getLimit());
+            $successModel->setMaxPage((int)ceil(count($reports) / $adminReportListQuery->getLimit()));
+
+            return ResponseTool::getResponse($successModel);
         }
 
         $endpointLogger->error('Invalid given Query');
