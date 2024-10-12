@@ -44,7 +44,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
-            'fileName' => 'Base',
+            'fileName' => 'Fajny_Audio',
             'base64' => $readData,
             'part' => 1,
             'parts' => 1,

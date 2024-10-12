@@ -145,6 +145,7 @@ class AudiobookService implements AudiobookServiceInterface
         $zip->open($file);
 
         $dir = trim($zip->getNameIndex(0), '/');
+        $dir = explode("/", $dir)[0];
 
         $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
 
