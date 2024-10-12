@@ -651,9 +651,11 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
+            $hash = bin2hex(random_bytes(4));
+
             while ($file = readdir($dir)) {
                 if (is_file($audiobook->getFileName() . '/' . $file)) {
-                    $zip->addFile($audiobook->getFileName() . '/' . $file, basename($audiobook->getFileName() . '/' . $file));
+                    $zip->addFile($audiobook->getFileName() . '/' . $file, $audiobook->getTitle() . '_' . $audiobook->getAuthor() . $hash . '/' . $file);
                 }
             }
 

@@ -133,9 +133,7 @@ class AudiobookController extends AbstractController
             });
 
             if ($dir === "") {
-                $endpointLogger->error('Parts dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookPartDontExists')]);
+                return ResponseTool::getResponse(new AudiobookPartSuccessModel(''));
             }
 
             $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
