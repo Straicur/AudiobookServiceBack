@@ -257,7 +257,6 @@ class UserReportController extends AbstractController
 
                 if ($index < $maxResult) {
                     $reportModel = new UserReportModel(
-                        (string)$report->getId(),
                         $report->getType(),
                         $report->getDateAdd(),
                         $report->getAccepted(),
