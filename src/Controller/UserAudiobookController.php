@@ -420,7 +420,6 @@ class UserAudiobookController extends AbstractController
                     ]);
 
                     $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    'parent'    => null,
                     'audiobook' => $audiobook->getId(),
                     'deleted'   => false,
                     ]);
@@ -457,7 +456,7 @@ class UserAudiobookController extends AbstractController
                         $successModel->setCanRate(true);
                     }
 
-                    if ($audiobookInfosAmount > 1 && (floor($audiobook->getParts() / 2) <= $audiobookInfosAmount || $audiobook->getParts() === $audiobookInfos)) {
+                    if ($audiobookInfosAmount > 1 && (floor($audiobook->getParts() / 2) <= $audiobookInfosAmount || $audiobook->getParts() === $audiobookInfosAmount)) {
                         $successModel->setCanComment(true);
                     }
 
