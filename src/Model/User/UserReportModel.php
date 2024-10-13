@@ -10,7 +10,6 @@ use OpenApi\Attributes as OA;
 
 class UserReportModel
 {
-    private string $id;
     private int $type;
     private int $dateAdd;
     private bool $accepted;
@@ -20,23 +19,12 @@ class UserReportModel
     private ?string $answer = null;
     private ?int $settleDate = null;
 
-    public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
+    public function __construct(ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
     {
-        $this->id = $id;
         $this->type = $type->value;
         $this->dateAdd = $dateAdd->getTimestamp() * 1000;
         $this->accepted = $accepted;
         $this->denied = $denied;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
     }
 
     #[OA\Property(type: 'integer', enum: [
