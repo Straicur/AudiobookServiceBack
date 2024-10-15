@@ -1294,9 +1294,9 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
-//            $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
-//                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-//                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
+            $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
+                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
+                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
 
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
                     'parent'    => null,
@@ -1306,8 +1306,9 @@ class UserAudiobookController extends AbstractController
 
                 $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, false);
 
-            $successModel = new AudiobookCommentsSuccessModel($treeGenerator->generate());
-//            });
+                return new AudiobookCommentsSuccessModel($treeGenerator->generate());
+            });
+
             return ResponseTool::getResponse($successModel);
         }
 
