@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Audiobook;
 use App\Entity\AudiobookUserComment;
 use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -79,5 +81,20 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
             ->setParameter('dateAdd', (new DateTime())->modify('-' . $minutes . ' minutes'));
 
         $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return AudiobookUserComment[]
+     */
+    public function getAllActiveChildrenAudiobookComments(Audiobook $audiobook): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->innerJoin('c.parent', 'parent')
+            ->where('c.deleted = false and c.parent IS NOT NULL')
+            ->andWhere('parent.deleted = false')
+            ->andWhere('c.audiobook = :audiobook')
+            ->setParameter('audiobook', $audiobook->getId()->toBinary());
+
+        return $qb->getQuery()->execute();
     }
 }
