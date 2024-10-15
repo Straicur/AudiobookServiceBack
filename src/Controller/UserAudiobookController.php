@@ -419,10 +419,15 @@ class UserAudiobookController extends AbstractController
                     'user'      => $user->getId(),
                     ]);
 
-                    $audiobookUserComments = $audiobookUserCommentRepository->findBy([
+                    $parentAudiobookUserComments = $audiobookUserCommentRepository->findBy([
                     'audiobook' => $audiobook->getId(),
                     'deleted'   => false,
+                    'parent' => null,
                     ]);
+
+                    $childrenAudiobookUserComments = $audiobookUserCommentRepository->getAllActiveChildrenAudiobookComments($audiobook);
+
+                    $comments = count($parentAudiobookUserComments) + count($childrenAudiobookUserComments);
 
                     $userRating = $audiobookRatingRepository->findOneBy([
                         'audiobook' => $audiobook->getId(),
@@ -442,7 +447,7 @@ class UserAudiobookController extends AbstractController
                         $audiobook->getAge(),
                         $audiobookCategories,
                         $inList,
-                        count($audiobookUserComments),
+                        $comments,
                         $audiobook->getAvgRating(),
                         count($audiobookRatingRepository->findBy([
                         'audiobook' => $audiobook->getId(),
@@ -1289,9 +1294,9 @@ class UserAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
-                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
+//            $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
+//                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
+//                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
 
                 $audiobookUserComments = $audiobookUserCommentRepository->findBy([
                     'parent'    => null,
@@ -1301,8 +1306,8 @@ class UserAudiobookController extends AbstractController
 
                 $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, false);
 
-                return new AudiobookCommentsSuccessModel($treeGenerator->generate());
-            });
+            $successModel = new AudiobookCommentsSuccessModel($treeGenerator->generate());
+//            });
             return ResponseTool::getResponse($successModel);
         }
 
