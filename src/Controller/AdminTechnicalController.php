@@ -133,9 +133,10 @@ class AdminTechnicalController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('TechnicalBreakDontExists')]);
             }
 
-            $technicalBreak->setUser($authorizedUserService::getAuthorizedUser());
-            $technicalBreak->setDateTo(new DateTime());
-            $technicalBreak->setActive(false);
+            $technicalBreak
+                ->setUser($authorizedUserService::getAuthorizedUser())
+                ->setDateTo(new DateTime())
+                ->setActive(false);
 
             $technicalBreakRepository->add($technicalBreak);
 

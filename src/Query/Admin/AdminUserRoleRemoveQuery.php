@@ -20,7 +20,7 @@ class AdminUserRoleRemoveQuery
     #[Assert\Range(
         notInRangeMessage: 'You must be between {{ min }} and {{ max }}',
         min              : 1,
-        max              : 3,
+        max              : 2,
     )]
     private int $role;
 
@@ -40,7 +40,6 @@ class AdminUserRoleRemoveQuery
         return match ($this->role) {
             1 => UserRoles::GUEST,
             2 => UserRoles::USER,
-            3 => UserRoles::ADMINISTRATOR,
         };
     }
 

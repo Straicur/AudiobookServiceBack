@@ -614,6 +614,7 @@ class UserAudiobookController extends AbstractController
             }
 
             $myListRepository->add($myList);
+
             $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId()]);
 
             return ResponseTool::getResponse();
@@ -1021,6 +1022,7 @@ class UserAudiobookController extends AbstractController
             }
 
             $audiobookUserCommentRepository->add($audiobookComment);
+
             $stockCache->invalidateTags([
                 UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
                 UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId(),

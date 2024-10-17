@@ -77,13 +77,15 @@ class AdminStatisticsController extends AbstractController
         TechnicalBreakRepository $technicalBreakRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
-        [$users,
+        [
+            $users,
             $categories,
             $audiobooks,
             $lastWeekRegistered,
             $lastWeekLogins,
             $lastWeekNotifications,
-            $lastWeekSystemBreaks] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
+            $lastWeekSystemBreaks,
+        ] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
                 $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
                 $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
@@ -103,14 +105,16 @@ class AdminStatisticsController extends AbstractController
                 $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
                 $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeek();
                 $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
-                return [$users,
+            return [
+                $users,
                 $categories,
                 $audiobooks,
                 $lastWeekRegistered,
                 $lastWeekLogins,
                 $lastWeekNotifications,
-                $lastWeekSystemBreaks];
-            });
+                $lastWeekSystemBreaks,
+            ];
+        });
 
         return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
     }

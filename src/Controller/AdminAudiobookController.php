@@ -168,8 +168,10 @@ class AdminAudiobookController extends AbstractController
                             $audiobookRepository->add($audiobook);
                         }
                     } catch (Throwable) {
-                        $audiobook->setImgFile(null);
-                        $audiobook->setImgFileChangeDate();
+                        $audiobook
+                            ->setImgFile(null)
+                            ->setImgFileChangeDate();
+
                         $audiobookRepository->add($audiobook);
                     }
                 }
@@ -400,8 +402,9 @@ class AdminAudiobookController extends AbstractController
                     }
 
                     if ($img !== "") {
-                        $newAudiobook->setImgFile($img);
-                        $newAudiobook->setImgFileChangeDate();
+                        $newAudiobook
+                            ->setImgFile($img)
+                            ->setImgFileChangeDate();
                     }
 
                     $audiobookCategories = [];
@@ -460,6 +463,7 @@ class AdminAudiobookController extends AbstractController
                 }
             } catch (Throwable $e) {
                 $usersLogger->error($e->getMessage());
+                //TODO tu dodaj jakieś powiadomienie plus sprawdź czy się usunie
                 return ResponseTool::getResponse(httpCode: 500);
             }
 
@@ -508,17 +512,18 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $audiobook->setTitle($adminAudiobookEditQuery->getTitle());
-            $audiobook->setAuthor($adminAudiobookEditQuery->getAuthor());
-            $audiobook->setVersion($adminAudiobookEditQuery->getVersion());
-            $audiobook->setAlbum($adminAudiobookEditQuery->getAlbum());
-            $audiobook->setYear($adminAudiobookEditQuery->getYear());
-            $audiobook->setDuration((int)$adminAudiobookEditQuery->getDuration());
-            $audiobook->setSize($adminAudiobookEditQuery->getSize());
-            $audiobook->setParts($adminAudiobookEditQuery->getParts());
-            $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
-            $audiobook->setAge($adminAudiobookEditQuery->getAge());
-            $audiobook->setEncoded($adminAudiobookEditQuery->getEncoded());
+            $audiobook
+                ->setTitle($adminAudiobookEditQuery->getTitle())
+                ->setAuthor($adminAudiobookEditQuery->getAuthor())
+                ->setVersion($adminAudiobookEditQuery->getVersion())
+                ->setAlbum($adminAudiobookEditQuery->getAlbum())
+                ->setYear($adminAudiobookEditQuery->getYear())
+                ->setDuration((int)$adminAudiobookEditQuery->getDuration())
+                ->setSize($adminAudiobookEditQuery->getSize())
+                ->setParts($adminAudiobookEditQuery->getParts())
+                ->setDescription($adminAudiobookEditQuery->getDescription())
+                ->setAge($adminAudiobookEditQuery->getAge())
+                ->setEncoded($adminAudiobookEditQuery->getEncoded());
 
             $audiobookRepository->add($audiobook);
 
@@ -866,8 +871,9 @@ class AdminAudiobookController extends AbstractController
                 }
 
                 if ($img !== "") {
-                    $audiobook->setImgFile($img);
-                    $audiobook->setImgFileChangeDate();
+                    $audiobook
+                        ->setImgFile($img)
+                        ->setImgFileChangeDate();
                 }
 
                 foreach ($audiobook->getCategories() as $category) {
@@ -1250,8 +1256,10 @@ class AdminAudiobookController extends AbstractController
             $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
             file_put_contents($audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
-            $audiobook->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/cover.' . $adminAudiobookChangeCoverQuery->getType());
-            $audiobook->setImgFileChangeDate();
+            $audiobook
+                ->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/cover.' . $adminAudiobookChangeCoverQuery->getType())
+                ->setImgFileChangeDate();
+
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([

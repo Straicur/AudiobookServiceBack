@@ -184,8 +184,9 @@ class UserSettingsController extends AbstractController
         }
 
         $newEditedUser = new UserEdit($user, false, UserEditType::PASSWORD);
-        $newEditedUser->setCode(new UserEditConfirmGenerator());
-        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+        $newEditedUser
+            ->setCode(new UserEditConfirmGenerator())
+            ->setEditableDate((new DateTime())->modify('+15 minutes'));
 
         $editRepository->add($newEditedUser);
 
@@ -237,8 +238,9 @@ class UserSettingsController extends AbstractController
         }
 
         $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL_CODE);
-        $newEditedUser->setCode(new UserEditConfirmGenerator());
-        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+        $newEditedUser
+            ->setCode(new UserEditConfirmGenerator())
+            ->setEditableDate((new DateTime())->modify('+15 minutes'));
 
         $editRepository->add($newEditedUser);
 
@@ -333,8 +335,9 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('UserChangedEmail')]);
             }
 
-            $user->setEdited(true);
-            $user->setEditableDate(new DateTime());
+            $user
+                ->setEdited(true)
+                ->setEditableDate(new DateTime());
 
             $newEditedUser = new UserEdit($user, false, UserEditType::EMAIL);
             $newEditedUser->setEditableDate((new DateTime())->modify('+10 hour'));
@@ -539,8 +542,9 @@ class UserSettingsController extends AbstractController
         }
 
         $newEditedUser = new UserEdit($user, false, UserEditType::USER_DATA);
-        $newEditedUser->setCode(new UserEditConfirmGenerator());
-        $newEditedUser->setEditableDate((new DateTime())->modify('+15 minutes'));
+        $newEditedUser
+            ->setCode(new UserEditConfirmGenerator())
+            ->setEditableDate((new DateTime())->modify('+15 minutes'));
 
         $editRepository->add($newEditedUser);
 
@@ -605,8 +609,9 @@ class UserSettingsController extends AbstractController
 
             $userInformation = $user->getUserInformation();
 
-            $userInformation->setFirstname($userSettingsChangeQuery->getFirstName());
-            $userInformation->setLastname($userSettingsChangeQuery->getLastName());
+            $userInformation
+                ->setFirstname($userSettingsChangeQuery->getFirstName())
+                ->setLastname($userSettingsChangeQuery->getLastName());
 
             if ($userInformation->getPhoneNumber() !== $userSettingsChangeQuery->getPhoneNumber()) {
                 $existingPhone = $userInformationRepository->findOneBy([
@@ -706,9 +711,10 @@ class UserSettingsController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
             }
 
-            $user = $userInformation->getUser();
-            $user->setEdited(true);
-            $user->setEditableDate(new DateTime());
+            $user = $userInformation
+                ->getUser()
+                ->setEdited(true)
+                ->setEditableDate(new DateTime());
 
             $editRepository->changeResetPasswordEdits($user);
 

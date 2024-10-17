@@ -142,7 +142,8 @@ class AdminReportController extends AbstractController
                     $banPeriod = (new DateTime())->modify($periodTo);
 
                     if ($periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin() && (!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod))) {
-                        $user->setBanned(true)
+                        $user
+                            ->setBanned(true)
                             ->setBannedTo($banPeriod);
 
                         $userRepository->add($user);

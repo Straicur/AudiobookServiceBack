@@ -45,7 +45,6 @@ use App\Query\Admin\AdminUserRoleAddQuery;
 use App\Query\Admin\AdminUserRoleRemoveQuery;
 use App\Query\Admin\AdminUsersQuery;
 use App\Repository\NotificationRepository;
-use App\Repository\ReportRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
@@ -129,6 +128,7 @@ class AdminUserController extends AbstractController
                         break;
                 }
             }
+
             return $successModel;
         });
 
@@ -180,26 +180,19 @@ class AdminUserController extends AbstractController
 
             switch ($adminUserRoleAddQuery->getRole()) {
                 case UserRoles::GUEST:
-                    $guestRole = $roleRepository->findOneBy([
+                    $role = $roleRepository->findOneBy([
                         'name' => UserRolesNames::GUEST,
                     ]);
-                    $user->addRole($guestRole);
                     break;
 
                 case UserRoles::USER:
-                    $userRole = $roleRepository->findOneBy([
+                    $role = $roleRepository->findOneBy([
                         'name' => UserRolesNames::USER,
                     ]);
-                    $user->addRole($userRole);
-                    break;
-
-                case UserRoles::ADMINISTRATOR:
-                    $adminRole = $roleRepository->findOneBy([
-                        'name' => 'Administrator',
-                    ]);
-                    $user->addRole($adminRole);
                     break;
             }
+
+            $user->addRole($role);
 
             $userRepository->add($user);
 
@@ -256,26 +249,18 @@ class AdminUserController extends AbstractController
 
             switch ($adminUserRoleRemoveQuery->getRole()) {
                 case UserRoles::GUEST:
-                    $guestRole = $roleRepository->findOneBy([
+                    $role = $roleRepository->findOneBy([
                         'name' => UserRolesNames::GUEST,
                     ]);
-                    $user->removeRole($guestRole);
                     break;
-
                 case UserRoles::USER:
-                    $userRole = $roleRepository->findOneBy([
+                    $role = $roleRepository->findOneBy([
                         'name' => UserRolesNames::USER,
                     ]);
-                    $user->removeRole($userRole);
-                    break;
-
-                case UserRoles::ADMINISTRATOR:
-                    $adminRole = $roleRepository->findOneBy([
-                        'name' => 'Administrator',
-                    ]);
-                    $user->removeRole($adminRole);
                     break;
             }
+
+            $user->removeRole($role);
 
             $userRepository->add($user);
 
@@ -334,8 +319,9 @@ class AdminUserController extends AbstractController
                 'name' => UserRolesNames::USER,
             ]);
 
-            $user->addRole($userRole);
-            $user->setActive(true);
+            $user
+                ->addRole($userRole)
+                ->setActive(true);
 
             $userRepository->add($user);
 
@@ -712,8 +698,9 @@ class AdminUserController extends AbstractController
                 $userDelete = new UserDelete($user);
             }
 
-            $userDelete->setDeleted(true);
-            $userDelete->setDateDeleted(new DateTime());
+            $userDelete
+                ->setDeleted(true)
+                ->setDateDeleted(new DateTime());
 
             $userDeleteRepository->add($userDelete);
 
@@ -939,6 +926,7 @@ class AdminUserController extends AbstractController
                 $translateService->setPreferredLanguage($request);
                 throw new DataNotFoundException([$translateService->getTranslation('UserDeleteDontExists')]);
             }
+
             $user = $userDelete->getUser();
 
             $userInDelete = $userDeleteRepository->userInList($user);
