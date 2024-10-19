@@ -7,7 +7,7 @@ namespace App\Service\Admin\Audiobook;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddFileInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -22,8 +22,8 @@ class AudiobookService implements AudiobookServiceInterface
     private string $whole_zip_path = '';
 
     public function __construct(
-        private readonly AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService,
-        private readonly TranslateService $translateService,
+        private readonly AudiobooksID3TagsReaderServiceInterface $audiobooksID3TagsReaderService,
+        private readonly TranslateServiceInterface $translateService,
     ) {
     }
 

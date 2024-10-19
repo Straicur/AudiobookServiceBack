@@ -17,8 +17,8 @@ use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Common\AuthorizeQuery;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
-use App\Service\User\UserLoginService;
+use App\Service\TranslateServiceInterface;
+use App\Service\User\UserLoginServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -76,8 +76,8 @@ class AuthorizationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         LoggerInterface $usersLogger,
         LoggerInterface $endpointLogger,
-        UserLoginService $loginService,
-        TranslateService $translateService,
+        UserLoginServiceInterface $loginService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 

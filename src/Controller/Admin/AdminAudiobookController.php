@@ -47,10 +47,10 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\Audiobook\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookServiceInterface;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use DateTime;
@@ -117,7 +117,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookRepository $audiobookRepository,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
@@ -236,11 +236,11 @@ class AdminAudiobookController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $usersLogger,
-        AudiobookService $audiobookService,
+        AudiobookServiceInterface $audiobookService,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRepository $audiobookRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
@@ -498,7 +498,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
@@ -564,9 +564,9 @@ class AdminAudiobookController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        AudiobookService $audiobookService,
+        AudiobookServiceInterface $audiobookService,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -625,7 +625,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
@@ -698,11 +698,11 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        AudiobookService $audiobookService,
+        AudiobookServiceInterface $audiobookService,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
         TagAwareCacheInterface $stockCache,
@@ -993,7 +993,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
@@ -1107,7 +1107,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         UserRepository $userRepository,
@@ -1219,7 +1219,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
@@ -1298,7 +1298,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
@@ -1356,7 +1356,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);

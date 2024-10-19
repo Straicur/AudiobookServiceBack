@@ -7,7 +7,7 @@ namespace App\EventSubscriber;
 use App\Annotation\AuthValidation;
 use App\Exception\DataNotFoundException;
 use App\Service\AuthorizedUserService;
-use App\Service\AuthValidationService;
+use App\Service\AuthValidationServiceInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -21,7 +21,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $requestLogger,
-        private readonly AuthValidationService $authValidationService,
+        private readonly AuthValidationServiceInterface $authValidationService,
     ) {
     }
 

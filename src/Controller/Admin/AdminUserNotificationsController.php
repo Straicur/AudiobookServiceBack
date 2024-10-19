@@ -20,10 +20,10 @@ use App\Query\Admin\AdminUserNotificationPatchQuery;
 use App\Query\Admin\AdminUserNotificationPutQuery;
 use App\Query\Admin\AdminUserNotificationsQuery;
 use App\Repository\NotificationRepository;
-use App\Service\Admin\Notification\AdminNotificationAddService;
-use App\Service\Admin\Notification\AdminNotificationPatchService;
+use App\Service\Admin\Notification\AdminNotificationAddServiceInterface;
+use App\Service\Admin\Notification\AdminNotificationPatchServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -82,7 +82,7 @@ class AdminUserNotificationsController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         NotificationRepository $notificationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
@@ -163,8 +163,8 @@ class AdminUserNotificationsController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        AdminNotificationAddService $adminNotificationAddService,
-        TranslateService $translateService,
+        AdminNotificationAddServiceInterface $adminNotificationAddService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
@@ -205,9 +205,9 @@ class AdminUserNotificationsController extends AbstractController
     public function adminUserNotificationPatch(
         Request $request,
         RequestServiceInterface $requestService,
-        AdminNotificationPatchService $adminNotificationPatchService,
+        AdminNotificationPatchServiceInterface $adminNotificationPatchService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
@@ -250,7 +250,7 @@ class AdminUserNotificationsController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         NotificationRepository $notificationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);

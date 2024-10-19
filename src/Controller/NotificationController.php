@@ -25,7 +25,7 @@ use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -86,7 +86,7 @@ class NotificationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         NotificationRepository $notificationRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationCheckRepository $checkRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -166,7 +166,7 @@ class NotificationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         NotificationRepository $notificationRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationCheckRepository $checkRepository,
     ): Response {
         $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);

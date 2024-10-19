@@ -19,7 +19,7 @@ use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
@@ -27,13 +27,13 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 
-class UserLoginService
+class UserLoginService implements UserLoginServiceInterface
 {
     public function __construct(
         private readonly UserInformationRepository $userInformationRepository,
         private readonly UserPasswordRepository $userPasswordRepository,
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-        private readonly TranslateService $translateService,
+        private readonly TranslateServiceInterface $translateService,
         private readonly UserBanHistoryRepository $banHistoryRepository,
         private readonly UserRepository $userRepository,
         private readonly MailerInterface $mailer,

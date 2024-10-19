@@ -34,7 +34,7 @@ use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use DateTime;
@@ -99,7 +99,7 @@ class UserAudiobookCommentController extends AbstractController
         AudiobookRepository $audiobookRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
         UserRepository $userRepository,
         UserBanHistoryRepository $banHistoryRepository,
@@ -211,7 +211,7 @@ class UserAudiobookCommentController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookCommentEditQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentEditQuery::class);
@@ -289,7 +289,7 @@ class UserAudiobookCommentController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookCommentLikeAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeAddQuery::class);
@@ -355,7 +355,7 @@ class UserAudiobookCommentController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookCommentLikeDeleteQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeDeleteQuery::class);
@@ -423,7 +423,7 @@ class UserAudiobookCommentController extends AbstractController
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
 

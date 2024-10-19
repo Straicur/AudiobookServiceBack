@@ -22,7 +22,7 @@ use App\Query\Common\AudiobookCoversQuery;
 use App\Query\Common\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -83,7 +83,7 @@ class AudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
@@ -171,7 +171,7 @@ class AudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 

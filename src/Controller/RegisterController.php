@@ -16,8 +16,8 @@ use App\Repository\RoleRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
-use App\Service\User\UserRegisterService;
+use App\Service\TranslateServiceInterface;
+use App\Service\User\UserRegisterServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\RegisterCodeGenerator;
 use DateTime;
@@ -68,8 +68,8 @@ class RegisterController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         LoggerInterface $endpointLogger,
         LoggerInterface $usersLogger,
-        TranslateService $translateService,
-        UserRegisterService $registerService,
+        TranslateServiceInterface $translateService,
+        UserRegisterServiceInterface $registerService,
     ): Response {
         $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
@@ -111,7 +111,7 @@ class RegisterController extends AbstractController
         RoleRepository $roleRepository,
         UserRepository $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $code = $request->get('code');
@@ -190,7 +190,7 @@ class RegisterController extends AbstractController
         MailerInterface $mailer,
         RegisterCodeRepository $registerCodeRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 

@@ -34,7 +34,7 @@ use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\Tool\SmsTool;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -101,7 +101,7 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         UserPasswordRepository $userPasswordRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         AuthenticationTokenRepository $authenticationTokenRepository,
         UserEditRepository $userEditRepository,
     ): Response {
@@ -171,7 +171,7 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         MailerInterface $mailer,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
@@ -226,7 +226,7 @@ class UserSettingsController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
@@ -293,7 +293,7 @@ class UserSettingsController extends AbstractController
         UserRepository $userRepository,
         MailerInterface $mailer,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userSettingsEmailQuery = $requestService->getRequestBodyContent($request, UserSettingsEmailQuery::class);
 
@@ -391,7 +391,7 @@ class UserSettingsController extends AbstractController
         UserRepository $userRepository,
         UserEditRepository $editRepository,
         AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $userId = $request->get('id');
@@ -470,7 +470,7 @@ class UserSettingsController extends AbstractController
         AuthenticationTokenRepository $authenticationTokenRepository,
         UserRepository $userRepository,
         MailerInterface $mailer,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
 
@@ -529,7 +529,7 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         MailerInterface $mailer,
     ): Response {
         $user = $authorizedUserService::getAuthorizedUser();
@@ -591,7 +591,7 @@ class UserSettingsController extends AbstractController
         LoggerInterface $endpointLogger,
         UserInformationRepository $userInformationRepository,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userSettingsChangeQuery = $requestService->getRequestBodyContent($request, UserSettingsChangeQuery::class);
 
@@ -697,7 +697,7 @@ class UserSettingsController extends AbstractController
         UserInformationRepository $userInformationRepository,
         UserRepository $userRepository,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userResetPasswordQuery = $requestService->getRequestBodyContent($request, UserResetPasswordQuery::class);
 
@@ -773,7 +773,7 @@ class UserSettingsController extends AbstractController
         UserRepository $userRepository,
         UserPasswordRepository $userPasswordRepository,
         UserEditRepository $editRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userResetPasswordConfirmQuery = $requestService->getRequestBodyContent($request, UserResetPasswordConfirmQuery::class);
 
@@ -835,7 +835,7 @@ class UserSettingsController extends AbstractController
         Request $request,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
         UserRepository $userRepository,
     ): Response {
@@ -902,7 +902,7 @@ class UserSettingsController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         UserInformationRepository $userInformationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         UserParentalControlCodeRepository $controlCodeRepository,
         MailerInterface $mailer,
         TagAwareCacheInterface $stockCache,

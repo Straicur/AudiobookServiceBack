@@ -22,7 +22,6 @@ use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use DateTime;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -31,11 +30,10 @@ class AuthValidationService implements AuthValidationServiceInterface
 {
     public function __construct(
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-        private readonly TechnicalBreakRepository      $technicalBreakRepository,
-        private readonly UserRepository                $userRepository,
-        private readonly UserDeleteRepository          $deleteRepository,
-        private readonly LoggerInterface               $requestLogger,
-        private readonly TagAwareCacheInterface        $stockCache,
+        private readonly TechnicalBreakRepository $technicalBreakRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UserDeleteRepository $deleteRepository,
+        private readonly TagAwareCacheInterface $stockCache,
     ) {
     }
 
@@ -56,7 +54,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         return $authToken;
     }
 
-    public function checkIfUserIsDeleted(User $user)
+    public function checkIfUserIsDeleted(User $user): void
     {
         $userDeleted = $this->stockCache->get(UserCacheKeys::USER_DELETED->value . $user->getId(), function (ItemInterface $item) use ($user) {
             $item->expiresAfter(CacheValidTime::DAY->value);
@@ -73,7 +71,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         }
     }
 
-    public function checkTechnicalBreak(User $user)
+    public function checkTechnicalBreak(User $user): void
     {
         $technicalBreak = $this->stockCache->get(AdminCacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
             $item->expiresAfter(CacheValidTime::DAY->value);
@@ -89,7 +87,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         }
     }
 
-    public function checkIfUserIsBanned(User $user, AuthenticationToken $authToken)
+    public function checkIfUserIsBanned(User $user, AuthenticationToken $authToken): void
     {
         if ($user->isBanned()) {
             if ($user->getBannedTo() < new DateTime()) {
@@ -109,7 +107,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         $this->userRepository->add($user);
     }
 
-    public function addAuthTokenTime(AuthenticationToken $authToken)
+    public function addAuthTokenTime(AuthenticationToken $authToken): void
     {
         $dateNew = clone $authToken->getDateExpired();
         $dateNew->modify('+3 second');
@@ -118,7 +116,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         $this->authenticationTokenRepository->add($authToken);
     }
 
-    public function checkIfUserHasRoles(User $user, AuthValidation $authValidationAttribute)
+    public function checkIfUserHasRoles(User $user, AuthValidation $authValidationAttribute): void
     {
         $foundUserRole = $this->checkRoles($user, $authValidationAttribute->getRoles());
 

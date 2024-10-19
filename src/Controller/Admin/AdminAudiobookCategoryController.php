@@ -33,7 +33,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAdminAudiobookCategoryTreeGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
@@ -94,7 +94,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAddQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
@@ -153,7 +153,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
@@ -204,7 +204,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -256,7 +256,7 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAddAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
@@ -318,7 +318,7 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryRemoveAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
@@ -381,7 +381,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
@@ -542,7 +542,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryActiveQuery = $requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
@@ -594,7 +594,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);

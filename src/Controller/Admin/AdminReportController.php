@@ -31,10 +31,10 @@ use App\Repository\ReportRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\Report\AdminReportAcceptService;
-use App\Service\Admin\Report\AdminReportRejectService;
+use App\Service\Admin\Report\AdminReportAcceptServiceInterface;
+use App\Service\Admin\Report\AdminReportRejectServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -93,13 +93,13 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
         MailerInterface $mailer,
         AudiobookUserCommentRepository $commentRepository,
         UserRepository $userRepository,
         UserBanHistoryRepository $banHistoryRepository,
-        AdminReportAcceptService $adminReportService,
+        AdminReportAcceptServiceInterface $adminReportService,
     ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
@@ -214,9 +214,9 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
-        AdminReportRejectService $adminReportService,
+        AdminReportRejectServiceInterface $adminReportService,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
@@ -270,7 +270,7 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
         UserDeleteRepository $userDeleteRepository,
         AudiobookUserCommentRepository $commentRepository,

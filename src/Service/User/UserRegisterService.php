@@ -23,7 +23,7 @@ use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserSettingsRepository;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
 use Psr\Log\LoggerInterface;
@@ -31,7 +31,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 
-class UserRegisterService
+class UserRegisterService implements UserRegisterServiceInterface
 {
     public function __construct(
         private readonly UserInformationRepository $userInformationRepository,
@@ -44,7 +44,7 @@ class UserRegisterService
         private readonly ProposedAudiobooksRepository $proposedAudiobooksRepository,
         private readonly InstitutionRepository $institutionRepository,
         private readonly UserPasswordRepository $userPasswordRepository,
-        private readonly TranslateService $translateService,
+        private readonly TranslateServiceInterface $translateService,
         private readonly UserSettingsRepository $userSettingsRepository,
     ) {
     }
@@ -121,7 +121,7 @@ class UserRegisterService
         return $newUser;
     }
 
-    private function addGuestRole(User $newUser)
+    private function addGuestRole(User $newUser): void
     {
         $guestRole = $this->roleRepository->findOneBy([
             'name' => UserRolesNames::GUEST->value,

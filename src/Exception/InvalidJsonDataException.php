@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Exception;
 
 use App\Model\Error\JsonDataInvalidModel;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +20,11 @@ class InvalidJsonDataException extends Exception implements ResponseExceptionInt
     private ?array $errors;
 
     /**
-     * @param TranslateService $translateService
+     * @param TranslateServiceInterface $translateService
      * @param ConstraintViolationListInterface|null $validationErrors
      * @param string[]|null $errors
      */
-    public function __construct(TranslateService $translateService, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)
+    public function __construct(TranslateServiceInterface $translateService, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)
     {
         parent::__construct('Bad request');
 

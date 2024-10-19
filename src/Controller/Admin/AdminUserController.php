@@ -47,7 +47,7 @@ use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
@@ -153,7 +153,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         RoleRepository $roleRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
 
@@ -222,7 +222,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         RoleRepository $roleRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
 
@@ -290,7 +290,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         RoleRepository $roleRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
 
@@ -350,7 +350,7 @@ class AdminUserController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
 
@@ -405,7 +405,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserPasswordRepository $userPasswordRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
 
@@ -465,7 +465,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserInformationRepository $userInformationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
@@ -534,7 +534,7 @@ class AdminUserController extends AbstractController
         UserRepository $userRepository,
         UserDeleteRepository $userDeleteRepository,
         UserBanHistoryRepository $banHistoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
@@ -664,7 +664,7 @@ class AdminUserController extends AbstractController
         UserRepository $userRepository,
         UserDeleteRepository $userDeleteRepository,
         MailerInterface $mailer,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
@@ -748,7 +748,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserDeleteRepository $userDeleteRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
@@ -828,7 +828,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserRepository $userRepository,
         UserDeleteRepository $userDeleteRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
@@ -905,7 +905,7 @@ class AdminUserController extends AbstractController
         LoggerInterface $endpointLogger,
         UserDeleteRepository $userDeleteRepository,
         MailerInterface $mailer,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
@@ -987,7 +987,7 @@ class AdminUserController extends AbstractController
         UserDeleteRepository $userDeleteRepository,
         MailerInterface $mailer,
         NotificationRepository $notificationRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);

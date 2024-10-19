@@ -25,7 +25,7 @@ use App\Query\Admin\AdminTechnicalCacheClearQuery;
 use App\Repository\TechnicalBreakRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -120,7 +120,7 @@ class AdminTechnicalController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         TechnicalBreakRepository $technicalBreakRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
@@ -175,7 +175,7 @@ class AdminTechnicalController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         TechnicalBreakRepository $technicalBreakRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
@@ -269,7 +269,7 @@ class AdminTechnicalController extends AbstractController
         RequestServiceInterface $requestService,
         TagAwareCacheInterface $stockCache,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         KernelInterface $kernel,
     ): Response {
         $adminTechnicalCacheClearQuery = $requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);

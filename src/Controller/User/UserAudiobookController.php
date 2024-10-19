@@ -46,7 +46,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\Tool\UserParentalControlTool;
 use App\ValueGenerator\BuildUserAudiobookCategoryTreeGenerator;
@@ -111,7 +111,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
@@ -214,7 +214,7 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
 
@@ -346,7 +346,7 @@ class UserAudiobookController extends AbstractController
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -493,7 +493,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
@@ -566,7 +566,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         MyListRepository $myListRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
@@ -683,7 +683,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
 
@@ -770,7 +770,7 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         AudiobookRatingRepository $ratingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
 
@@ -848,7 +848,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 

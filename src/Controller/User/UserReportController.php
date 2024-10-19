@@ -24,7 +24,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\ReportRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -80,7 +80,7 @@ class UserReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
     ): Response {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
@@ -161,7 +161,7 @@ class UserReportController extends AbstractController
         RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
     ): Response {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
@@ -236,7 +236,7 @@ class UserReportController extends AbstractController
         LoggerInterface $endpointLogger,
         AuthorizedUserServiceInterface $authorizedUserService,
         ReportRepository $reportRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         AudiobookUserCommentRepository $commentRepository,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, UserReportListQuery::class);

@@ -12,7 +12,7 @@ use App\Enums\ReportType;
 use App\Query\Admin\AdminReportRejectQuery;
 use App\Repository\NotificationRepository;
 use App\Repository\ReportRepository;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
         private readonly TagAwareCacheInterface $stockCache,
         private readonly NotificationRepository $notificationRepository,
         private readonly MailerInterface $mailer,
-        private readonly TranslateService $translateService,
+        private readonly TranslateServiceInterface $translateService,
     ) {
     }
 

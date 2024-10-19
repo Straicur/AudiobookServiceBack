@@ -17,7 +17,7 @@ use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -33,7 +33,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
         private readonly RoleRepository $roleRepository,
         private readonly AudiobookRepository $audiobookRepository,
         private readonly AudiobookCategoryRepository $categoryRepository,
-        private readonly TranslateService $translateService,
+        private readonly TranslateServiceInterface $translateService,
         private readonly TagAwareCacheInterface $stockCache,
         private readonly LoggerInterface $endpointLogger,
     ) {
