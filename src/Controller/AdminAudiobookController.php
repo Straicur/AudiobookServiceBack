@@ -463,7 +463,6 @@ class AdminAudiobookController extends AbstractController
                 }
             } catch (Throwable $e) {
                 $usersLogger->error($e->getMessage());
-                //TODO tu dodaj jakieś powiadomienie plus sprawdź czy się usunie
                 return ResponseTool::getResponse(httpCode: 500);
             }
 

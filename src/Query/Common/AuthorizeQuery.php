@@ -2,7 +2,6 @@
 
 namespace App\Query\Common;
 
-use SensitiveParameter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AuthorizeQuery
@@ -32,7 +31,7 @@ class AuthorizeQuery
         return $this->password;
     }
 
-    public function setPassword(#[SensitiveParameter] string $password): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
