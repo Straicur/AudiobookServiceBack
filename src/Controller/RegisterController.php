@@ -42,9 +42,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Tag(name: 'Register')]
+#[Route('/api')]
 class RegisterController extends AbstractController
 {
-    #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
+    #[Route('/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to register user',
         security   : [],
@@ -90,7 +91,7 @@ class RegisterController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
+    #[Route('/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
     #[OA\Get(
         description: 'Method used to confirm user registration',
         security   : [],
@@ -163,7 +164,7 @@ class RegisterController extends AbstractController
         );
     }
 
-    #[Route('/api/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
+    #[Route('/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to send registration code again',
         security   : [],

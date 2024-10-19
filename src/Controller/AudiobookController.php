@@ -56,9 +56,10 @@ use Throwable;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Audiobook')]
+#[Route('/api')]
 class AudiobookController extends AbstractController
 {
-    #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
+    #[Route('/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning specific part of audiobook',
@@ -146,7 +147,7 @@ class AudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
+    #[Route('/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning covers paths for given audiobooks',

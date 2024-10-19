@@ -49,9 +49,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Authorize')]
+#[Route('/api')]
 class AuthorizationController extends AbstractController
 {
-    #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
+    #[Route('/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to authorize user credentials. Return authorized token',
         security   : [],
@@ -111,7 +112,7 @@ class AuthorizationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
+    #[Route('/logout', name: 'apiLogout', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method used to logout user',
@@ -135,7 +136,7 @@ class AuthorizationController extends AbstractController
         return ResponseTool::getResponse();
     }
 
-    #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
+    #[Route('/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method is checking if given token is authorized',

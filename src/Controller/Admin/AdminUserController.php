@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
@@ -22,7 +22,6 @@ use App\Model\Admin\AdminUserBanModel;
 use App\Model\Admin\AdminUserDeleteListSuccessModel;
 use App\Model\Admin\AdminUserDeleteModel;
 use App\Model\Admin\AdminUserModel;
-use App\Model\Admin\AdminUserNotificationsSuccessModel;
 use App\Model\Admin\AdminUsersSuccessModel;
 use App\Model\Admin\AdminUserSystemRolesSuccessModel;
 use App\Model\Error\DataNotFoundModel;
@@ -37,10 +36,6 @@ use App\Query\Admin\AdminUserDeleteAcceptQuery;
 use App\Query\Admin\AdminUserDeleteDeclineQuery;
 use App\Query\Admin\AdminUserDeleteListQuery;
 use App\Query\Admin\AdminUserDeleteQuery;
-use App\Query\Admin\AdminUserNotificationDeleteQuery;
-use App\Query\Admin\AdminUserNotificationPatchQuery;
-use App\Query\Admin\AdminUserNotificationPutQuery;
-use App\Query\Admin\AdminUserNotificationsQuery;
 use App\Query\Admin\AdminUserRoleAddQuery;
 use App\Query\Admin\AdminUserRoleRemoveQuery;
 use App\Query\Admin\AdminUsersQuery;
@@ -51,8 +46,6 @@ use App\Repository\UserDeleteRepository;
 use App\Repository\UserInformationRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\Notification\AdminNotificationAddService;
-use App\Service\Admin\Notification\AdminNotificationPatchService;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateService;
 use App\Tool\ResponseTool;
@@ -91,9 +84,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminUser')]
+#[Route('/api/admin')]
 class AdminUserController extends AbstractController
 {
-    #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
+    #[Route('/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning roles in system',
@@ -135,7 +129,7 @@ class AdminUserController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/admin/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
+    #[Route('/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is Adding role to user',
@@ -204,7 +198,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
+    #[Route('/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is removing role for user',
@@ -272,7 +266,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
+    #[Route('/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given user',
@@ -333,7 +327,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
+    #[Route('/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is banning/unbanning user',
@@ -387,7 +381,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
+    #[Route('/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing password of given user',
@@ -447,7 +441,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
+    #[Route('/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing phone number of given user',
@@ -514,7 +508,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/users', name: 'adminUsers', methods: ['POST'])]
+    #[Route('/users', name: 'adminUsers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users in system',
@@ -645,7 +639,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
+    #[Route('/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting given user',
@@ -729,7 +723,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
+    #[Route('/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users to delete',
@@ -809,7 +803,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
+    #[Route('/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of already delete users',
@@ -887,7 +881,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
+    #[Route('/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is deleting given user',
@@ -967,7 +961,7 @@ class AdminUserController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
+    #[Route('/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is declining user request to delete his account',
@@ -1055,228 +1049,6 @@ class AdminUserController extends AbstractController
                 ->build($stockCache);
 
             $notificationRepository->add($notification);
-
-            return ResponseTool::getResponse();
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/admin/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
-    #[OA\Post(
-        description: 'Endpoint is returning list of notifications in system',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: AdminUserNotificationsQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-                content    : new Model(type: AdminUserNotificationsSuccessModel::class),
-            ),
-        ]
-    )]
-    public function adminUserNotifications(
-        Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        TranslateService $translateService,
-    ): Response {
-        $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
-
-        if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
-            $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
-
-            $text = null;
-            $type = null;
-            $deleted = null;
-            $order = null;
-
-            if (array_key_exists('text', $notificationSearchData)) {
-                $text = ($notificationSearchData['text'] && '' !== $notificationSearchData['text']) ? '%' . $notificationSearchData['text'] . '%' : null;
-            }
-            if (array_key_exists('type', $notificationSearchData)) {
-                $type = $notificationSearchData['type'];
-            }
-            if (array_key_exists('deleted', $notificationSearchData)) {
-                $deleted = $notificationSearchData['deleted'];
-            }
-            if (array_key_exists('order', $notificationSearchData)) {
-                $order = $notificationSearchData['order'];
-            }
-
-            $allUserSystemNotifications = $notificationRepository->getSearchNotifications($text, $type, $deleted, $order);
-
-            $systemNotifications = [];
-
-            $minResult = $adminUserNotificationsQuery->getPage() * $adminUserNotificationsQuery->getLimit();
-            $maxResult = $adminUserNotificationsQuery->getLimit() + $minResult;
-
-            foreach ($allUserSystemNotifications as $index => $notification) {
-                if ($index < $minResult) {
-                    continue;
-                }
-
-                if ($index < $maxResult) {
-                    $systemNotifications[] = NotificationBuilder::read($notification);
-                } else {
-                    break;
-                }
-            }
-
-            $systemNotificationSuccessModel = new AdminUserNotificationsSuccessModel(
-                $systemNotifications,
-                $adminUserNotificationsQuery->getPage(),
-                $adminUserNotificationsQuery->getLimit(),
-                (int)ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()),
-            );
-
-            return ResponseTool::getResponse($systemNotificationSuccessModel);
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/admin/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
-    #[OA\Put(
-        description: 'Endpoint is adding notification',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: AdminUserNotificationPutQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 201,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function adminUserNotificationPut(
-        Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AdminNotificationAddService $adminNotificationAddService,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
-
-        if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
-            $adminNotificationAddService
-                ->setData($adminUserNotificationPutQuery, $request)
-                ->addNotification()
-            ;
-
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
-
-            return ResponseTool::getResponse(httpCode: 201);
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
-    #[OA\Patch(
-        description: 'Endpoint is editing notification',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: AdminUserNotificationPatchQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function adminUserNotificationPatch(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AdminNotificationPatchService $adminNotificationPatchService,
-        LoggerInterface $endpointLogger,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
-
-        if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
-            $adminNotificationPatchService
-                ->setData($adminUserNotificationPatchQuery, $request)
-                ->editNotification()
-            ;
-
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
-
-            return ResponseTool::getResponse();
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/admin/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
-    #[OA\Patch(
-        description: 'Endpoint is deleting notification',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: AdminUserNotificationDeleteQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function adminUserNotificationDelete(
-        Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
-
-        if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
-            $notification = $notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
-
-            if ($notification === null) {
-                $endpointLogger->error('Notification dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);
-            }
-
-            $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
-
-            $notificationRepository->add($notification);
-
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }

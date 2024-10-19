@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
@@ -88,9 +88,10 @@ use ZipArchive;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminAudiobook')]
+#[Route('/api/admin')]
 class AdminAudiobookController extends AbstractController
 {
-    #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
+    #[Route('/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is getting details of audiobook',
@@ -212,7 +213,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
+    #[Route('/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Put(
         description: 'Endpoint is adding new audiobook with files',
@@ -474,7 +475,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
+    #[Route('/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given audiobook data',
@@ -541,7 +542,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
+    #[Route('/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting audiobook with his files',
@@ -601,7 +602,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
+    #[Route('/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning zip blob',
@@ -673,7 +674,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
+    #[Route('/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is re-adding audiobook by changing files',
@@ -968,7 +969,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
+    #[Route('/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of all audiobooks',
@@ -1083,7 +1084,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
+    #[Route('/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given audiobook',
@@ -1195,7 +1196,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
+    #[Route('/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is changing given cover',
@@ -1274,7 +1275,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
+    #[Route('/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is deleting given comment',
@@ -1328,7 +1329,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
+    #[Route('/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning comments for given audiobook for admin',

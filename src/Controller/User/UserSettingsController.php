@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\User;
 
 use App\Annotation\AuthValidation;
 use App\Entity\UserDelete;
@@ -73,10 +73,11 @@ use Throwable;
     description: 'User have no permission',
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
-#[OA\Tag(name: 'User')]
+#[OA\Tag(name: 'UserSettings')]
+#[Route('/api/user')]
 class UserSettingsController extends AbstractController
 {
-    #[Route('/api/user/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
+    #[Route('/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing password of logged user',
@@ -153,7 +154,7 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/settings/password/code', name: 'userSettingsPasswordCode', methods: ['PUT'])]
+    #[Route('/settings/password/code', name: 'userSettingsPasswordCode', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is sending new password code to email',
@@ -207,7 +208,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
     }
 
-    #[Route('/api/user/settings/email/smsCode', name: 'userSettingsEmailSmsCode', methods: ['PUT'])]
+    #[Route('/settings/email/smsCode', name: 'userSettingsEmailSmsCode', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is sending confirmation sms code for changing email',
@@ -265,7 +266,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
     }
 
-    #[Route('/api/user/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
+    #[Route('/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is sending confirmation email to change user email',
@@ -372,7 +373,7 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/settings/email/change/{email}/{id}', name: 'userSettingsEmailChange', methods: ['GET'])]
+    #[Route('/settings/email/change/{email}/{id}', name: 'userSettingsEmailChange', methods: ['GET'])]
     #[OA\Get(
         description: 'Endpoint is sending confirmation email to change user email',
         requestBody: new OA\RequestBody(),
@@ -449,7 +450,7 @@ class UserSettingsController extends AbstractController
         );
     }
 
-    #[Route('/api/user/settings/delete', name: 'userSettingsDelete', methods: ['PATCH'])]
+    #[Route('/settings/delete', name: 'userSettingsDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is setting user account to not active',
@@ -511,7 +512,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse();
     }
 
-    #[Route('/api/user/settings/change/code', name: 'userSettingsChangeCode', methods: ['PUT'])]
+    #[Route('/settings/change/code', name: 'userSettingsChangeCode', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is sending email code to change user information',
@@ -565,7 +566,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
     }
 
-    #[Route('/api/user/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]
+    #[Route('/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing given user informations',
@@ -638,7 +639,7 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/settings', name: 'userSettingsGet', methods: ['GET'])]
+    #[Route('/settings', name: 'userSettingsGet', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning logged user informations',
@@ -671,7 +672,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/user/reset/password', name: 'userResetPassword', methods: ['POST'])]
+    #[Route('/reset/password', name: 'userResetPassword', methods: ['POST'])]
     #[OA\Post(
         description: 'Endpoint is sending reset password email',
         requestBody: new OA\RequestBody(
@@ -748,7 +749,7 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/reset/password/confirm', name: 'userResetPasswordConfirm', methods: ['PATCH'])]
+    #[Route('/reset/password/confirm', name: 'userResetPasswordConfirm', methods: ['PATCH'])]
     #[OA\Patch(
         description: 'Endpoint is changing user password',
         requestBody: new OA\RequestBody(
@@ -817,7 +818,7 @@ class UserSettingsController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/parent/control', name: 'userParentControlPut', methods: ['PUT'])]
+    #[Route('/parent/control', name: 'userParentControlPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is creating a sms code for changing parent control settings',
@@ -877,7 +878,7 @@ class UserSettingsController extends AbstractController
         return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newUserParentalControlCode->getCode()), 201);
     }
 
-    #[Route('/api/user/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
+    #[Route('/parent/control', name: 'userParentControlPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is changing parent control settings',

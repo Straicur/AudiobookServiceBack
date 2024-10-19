@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Entity\UserBanHistory;
@@ -68,9 +68,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminReport')]
+#[Route('/api/admin')]
 class AdminReportController extends AbstractController
 {
-    #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
+    #[Route('/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
@@ -191,7 +192,7 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
+    #[Route('/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',
@@ -246,7 +247,7 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
+    #[Route('/report/list', name: 'apiAdminReportList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get report list',
