@@ -40,10 +40,6 @@ class AudiobookCategory
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
-    /**
-     * @param string $name
-     * @param ValueGeneratorInterface $categoryKeyGenerator
-     */
     public function __construct(string $name, ValueGeneratorInterface $categoryKeyGenerator)
     {
         $this->name = $name;
@@ -133,17 +129,11 @@ class AudiobookCategory
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDateAdd(): DateTime
     {
         return $this->dateAdd;
     }
 
-    /**
-     * @param DateTime $dateAdd
-     */
     public function setDateAdd(DateTime $dateAdd): void
     {
         $this->dateAdd = $dateAdd;

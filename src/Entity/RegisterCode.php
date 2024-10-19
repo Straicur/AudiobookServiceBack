@@ -35,10 +35,6 @@ class RegisterCode
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    /**
-     * @param RegisterCodeGenerator $code
-     * @param User $user
-     */
     public function __construct(RegisterCodeGenerator $code, User $user)
     {
         $this->code = $code->generate();

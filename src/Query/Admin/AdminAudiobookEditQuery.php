@@ -75,9 +75,6 @@ class AdminAudiobookEditQuery
     #[Assert\Type(type: 'string')]
     private string $encoded;
 
-    /**
-     * @return Uuid
-     */
     #[OA\Property(type: 'string', example: '60266c4e-16e6-1ecc-9890-a7e8b0073d3b')]
     public function getAudiobookId(): Uuid
     {

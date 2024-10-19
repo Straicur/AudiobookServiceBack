@@ -51,10 +51,6 @@ class UserDeleteRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function userInList(User $user): bool
     {
         $qb = $this->createQueryBuilder('ud');
@@ -82,10 +78,6 @@ class UserDeleteRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function userInToDeleteList(User $user): bool
     {
         $qb = $this->createQueryBuilder('ud');

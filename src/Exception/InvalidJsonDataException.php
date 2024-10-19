@@ -20,8 +20,6 @@ class InvalidJsonDataException extends Exception implements ResponseExceptionInt
     private ?array $errors;
 
     /**
-     * @param TranslateServiceInterface $translateService
-     * @param ConstraintViolationListInterface|null $validationErrors
      * @param string[]|null $errors
      */
     public function __construct(TranslateServiceInterface $translateService, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)

@@ -16,15 +16,6 @@ class AdminStatisticMainSuccessModel implements ModelInterface
     private int $lastWeekNotifications;
     private int $lastWeekTechnicalBreaks;
 
-    /**
-     * @param int $users
-     * @param int $categories
-     * @param int $audiobooks
-     * @param int $lastWeekRegistered
-     * @param int $lastWeekLogins
-     * @param int $lastWeekNotifications
-     * @param int $lastWeekTechnicalBreaks
-     */
     public function __construct(
         int $users,
         int $categories,

@@ -32,10 +32,6 @@ class UserParentalControlCode
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active;
 
-    /**
-     * @param User $user
-     * @param ValueGeneratorInterface $userParentalControlCodeGenerator
-     */
     public function __construct(User $user, ValueGeneratorInterface $userParentalControlCodeGenerator)
     {
         $this->user = $user;

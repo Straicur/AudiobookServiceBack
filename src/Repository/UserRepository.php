@@ -60,7 +60,6 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Role $role
      * @return User[]
      */
     public function getUsersByRole(Role $role): array
@@ -74,11 +73,6 @@ class UserRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param User $user
-     * @param Role $role
-     * @return bool
-     */
     public function userHasRole(User $user, Role $role): bool
     {
         $qb = $this->createQueryBuilder('u');
@@ -94,10 +88,6 @@ class UserRepository extends ServiceEntityRepository
         return count($query->execute()) > 0;
     }
 
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function userIsAdmin(User $user): bool
     {
         $qb = $this->createQueryBuilder('u');
@@ -113,7 +103,6 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Audiobook $audiobook
      * @return User[]
      */
     public function getUsersWhereAudiobookInProposed(Audiobook $audiobook): array
@@ -185,7 +174,6 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Audiobook $audiobook
      * @return User[]
      */
     public function getUsersWhereAudiobookInMyList(Audiobook $audiobook): array
@@ -208,7 +196,6 @@ class UserRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-
     public function newUsersFromLastWeak(): int
     {
         $today = new DateTime();
@@ -229,13 +216,6 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string|null $email
-     * @param string|null $phoneNumber
-     * @param string|null $firstname
-     * @param string|null $lastname
-     * @param bool|null $active
-     * @param bool|null $banned
-     * @param int|null $order
      * @return User[]
      */
     public function searchUsers(
@@ -303,10 +283,6 @@ class UserRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-
-    /**
-     * @return void
-     */
     public function unbanBannedUsers(): void
     {
         $qb = $this->createQueryBuilder('u');

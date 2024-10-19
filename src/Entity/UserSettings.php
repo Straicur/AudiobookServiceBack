@@ -20,9 +20,6 @@ class UserSettings
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $admin;
 
-    /**
-     * @param User $user
-     */
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -30,18 +27,11 @@ class UserSettings
         $this->admin = false;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
     public function setUser(User $user): static
     {
         $this->user = $user;
@@ -49,17 +39,11 @@ class UserSettings
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isNormal(): bool
     {
         return $this->normal;
     }
 
-    /**
-     * @param bool $normal
-     */
     public function setNormal(bool $normal): void
     {
         $this->normal = $normal;

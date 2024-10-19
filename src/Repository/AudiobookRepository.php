@@ -56,15 +56,6 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array|null $categories
-     * @param string|null $author
-     * @param string|null $title
-     * @param string|null $album
-     * @param int|null $duration
-     * @param int|null $age
-     * @param DateTime|null $year
-     * @param int|null $parts
-     * @param int|null $order
      * @return Audiobook[]
      */
     public function getAudiobooksByPage(
@@ -185,8 +176,6 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param AudiobookCategory $category
-     * @param AudiobookAgeRange|null $age
      * @return Audiobook[]
      */
     public function getActiveCategoryAudiobooks(AudiobookCategory $category, ?AudiobookAgeRange $age = null): array
@@ -205,7 +194,6 @@ class AudiobookRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param AudiobookCategory $category
      * @return Audiobook[]
      */
     public function getCategoryAudiobooks(AudiobookCategory $category): array

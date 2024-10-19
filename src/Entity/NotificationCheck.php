@@ -29,10 +29,6 @@ class NotificationCheck
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateWatched;
 
-    /**
-     * @param User $user
-     * @param Notification $notification
-     */
     public function __construct(User $user, Notification $notification)
     {
         $this->user = $user;

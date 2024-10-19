@@ -69,10 +69,6 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         return count($res) > 0 ? current($res) : null;
     }
 
-    /**
-     * @param User $user
-     * @return AuthenticationToken|null
-     */
     public function getLastActiveUserAuthenticationToken(User $user): ?AuthenticationToken
     {
         $qb = $this->createQueryBuilder('at')
@@ -88,7 +84,6 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
 
         return count($res) > 0 ? current($res) : null;
     }
-
 
     public function getNumberOfAuthenticationTokensFromLast7Days(): int
     {

@@ -21,9 +21,6 @@ class NotificationsSuccessModel implements ModelInterface
 
     /**
      * @param NotificationModel[] $systemNotifications
-     * @param int $page
-     * @param int $limit
-     * @param int $maxPage
      */
     public function __construct(array $systemNotifications, int $page, int $limit, int $maxPage)
     {

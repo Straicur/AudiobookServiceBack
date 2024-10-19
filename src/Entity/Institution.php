@@ -32,13 +32,6 @@ class Institution
     #[ORM\Column(type: Types::INTEGER)]
     private int $maxUsers;
 
-    /**
-     * @param string $name
-     * @param string $email
-     * @param string $phoneNumber
-     * @param int $maxAdmins
-     * @param int $maxUsers
-     */
     public function __construct(string $name, string $email, string $phoneNumber, int $maxAdmins, int $maxUsers)
     {
         $this->name = $name;

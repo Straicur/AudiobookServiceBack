@@ -2,10 +2,6 @@
 
 namespace App\Serializer;
 
-/**
- * SerializerInterface
- *
- */
 interface SerializerInterface
 {
     public function serialize(mixed $object): string;

@@ -31,9 +31,6 @@ class UserDelete
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $declined;
 
-    /**
-     * @param User $user
-     */
     public function __construct(User $user)
     {
         $this->user = $user;

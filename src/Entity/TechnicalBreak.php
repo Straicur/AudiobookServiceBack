@@ -30,10 +30,6 @@ class TechnicalBreak
     #[ORM\ManyToOne(targetEntity: User::class)]
     private User $user;
 
-    /**
-     * @param bool $active
-     * @param User $user
-     */
     public function __construct(bool $active, User $user)
     {
         $this->active = $active;

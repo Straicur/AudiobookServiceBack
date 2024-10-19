@@ -157,17 +157,11 @@ class Notification
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getNotificationChecks(): Collection
     {
         return $this->notificationChecks;
     }
 
-    /**
-     * @param Collection $notificationChecks
-     */
     public function setNotificationChecks(Collection $notificationChecks): void
     {
         $this->notificationChecks = $notificationChecks;

@@ -36,11 +36,6 @@ class UserEdit
     #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
     private ?string $code = null;
 
-    /**
-     * @param User $user
-     * @param bool $edited
-     * @param UserEditType $type
-     */
     public function __construct(User $user, bool $edited, UserEditType $type)
     {
         $this->user = $user;
@@ -48,9 +43,6 @@ class UserEdit
         $this->type = $type->value;
     }
 
-    /**
-     * @return Uuid
-     */
     public function getId(): Uuid
     {
         return $this->id;
