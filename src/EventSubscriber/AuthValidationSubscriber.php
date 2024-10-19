@@ -5,24 +5,9 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Annotation\AuthValidation;
-use App\Entity\User;
-use App\Enums\Cache\AdminCacheKeys;
-use App\Enums\Cache\AdminStockCacheTags;
-use App\Enums\Cache\CacheValidTime;
-use App\Enums\Cache\UserCacheKeys;
-use App\Enums\Cache\UserStockCacheTags;
-use App\Enums\UserRolesNames;
-use App\Exception\AuthenticationException;
 use App\Exception\DataNotFoundException;
-use App\Exception\PermissionException;
-use App\Exception\TechnicalBreakException;
-use App\Exception\UserDeletedException;
-use App\Repository\AuthenticationTokenRepository;
-use App\Repository\TechnicalBreakRepository;
-use App\Repository\UserDeleteRepository;
-use App\Repository\UserRepository;
 use App\Service\AuthorizedUserService;
-use DateTime;
+use App\Service\AuthValidationService;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -31,18 +16,12 @@ use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-        private readonly TechnicalBreakRepository $technicalBreakRepository,
-        private readonly UserRepository $userRepository,
-        private readonly UserDeleteRepository $deleteRepository,
         private readonly LoggerInterface $requestLogger,
-        private readonly TagAwareCacheInterface $stockCache,
+        private readonly AuthValidationService $authValidationService,
     ) {
     }
 
@@ -63,18 +42,8 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                 if (count($methodAttributes) === 1) {
                     $authValidationAttribute = current($methodAttributes)->newInstance();
 
-                    if (($authValidationAttribute instanceof AuthValidation) && $authValidationAttribute->isCheckAuthToken()) {
-                        $authorizationHeaderField = $request->headers->get('authorization');
-
-                        if ($authorizationHeaderField === null) {
-                            throw new AuthenticationException();
-                        }
-
-                        $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
-
-                        if ($authToken === null) {
-                            throw new AuthenticationException();
-                        }
+                    if ($authValidationAttribute instanceof AuthValidation && $authValidationAttribute->isCheckAuthToken()) {
+                        $authToken = $this->authValidationService->getAuthenticatedUserToken($request);
 
                         $loggedUserData = [
                             'method'        => $reflectionMethod->class . '::' . $reflectionMethod->name,
@@ -89,56 +58,12 @@ class AuthValidationSubscriber implements EventSubscriberInterface
 
                         $user = $authToken->getUser();
 
-                        $userDeleted = $this->stockCache->get(UserCacheKeys::USER_DELETED->value . $user->getId(), function (ItemInterface $item) use ($user) {
-                            $item->expiresAfter(CacheValidTime::DAY->value);
-                            $item->tag(UserStockCacheTags::USER_DELETED->value);
+                        $this->authValidationService->checkIfUserIsDeleted($user);
+                        $this->authValidationService->checkIfUserHasRoles($user, $authValidationAttribute);
+                        $this->authValidationService->checkTechnicalBreak($user);
+                        $this->authValidationService->checkIfUserIsBanned($user, $authToken);
 
-                            return $this->deleteRepository->findOneBy([
-                                'user'    => $user->getId(),
-                                'deleted' => true,
-                            ]);
-                        });
-
-                        if ($userDeleted !== null) {
-                            throw new UserDeletedException();
-                        }
-
-                        $technicalBreak = $this->stockCache->get(AdminCacheKeys::ADMIN_TECHNICAL_BREAK->value, function (ItemInterface $item) {
-                            $item->expiresAfter(CacheValidTime::DAY->value);
-                            $item->tag(AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value);
-
-                            return $this->technicalBreakRepository->findOneBy([
-                                'active' => true,
-                            ]);
-                        });
-
-                        if (($_ENV['APP_ENV'] !== 'test') && $technicalBreak !== null && !$authToken->getUser()->getUserSettings()->isAdmin()) {
-                            throw new TechnicalBreakException();
-                        }
-
-                        $foundUserRole = $this->checkRoles($authToken->getUser(), $authValidationAttribute->getRoles());
-
-                        if (!$foundUserRole) {
-                            throw new PermissionException();
-                        }
-
-                        if ($user->isBanned()) {
-                            if ($user->getBannedTo() < new DateTime()) {
-                                $user->setBanned(false);
-                                $this->userRepository->add($user);
-                            } else {
-                                $authToken->setDateExpired(new DateTime());
-                                $this->authenticationTokenRepository->add($authToken);
-
-                                throw new PermissionException();
-                            }
-                        }
-
-                        $dateNew = clone $authToken->getDateExpired();
-                        $dateNew->modify('+2 second');
-                        $authToken->setDateExpired($dateNew);
-
-                        $this->authenticationTokenRepository->add($authToken);
+                        $this->authValidationService->addAuthTokenTime($authToken);
 
                         AuthorizedUserService::setAuthenticationToken($authToken);
                         AuthorizedUserService::setAuthorizedUser($authToken->getUser());
@@ -155,30 +80,5 @@ class AuthValidationSubscriber implements EventSubscriberInterface
         return [
             KernelEvents::CONTROLLER => 'onControllerCall',
         ];
-    }
-
-    /**
-     * @param UserRolesNames[] $roles
-     */
-    private function checkRoles(User $user, array $roles): bool
-    {
-        $userRoles = $user->getRoles();
-
-        $foundRole = false;
-
-        foreach ($userRoles as $userRole) {
-            foreach ($roles as $role) {
-                if ($userRole->getName() === $role->value) {
-                    $foundRole = true;
-                    break;
-                }
-            }
-
-            if ($foundRole) {
-                break;
-            }
-        }
-
-        return $foundRole;
     }
 }
