@@ -80,6 +80,10 @@ class RegisterController extends AbstractController
             $newUser = $registerService->createUser($registerQuery);
 
             $registerCode = $registerService->getRegisterCode($newUser);
+
+            /**
+             * Now user has to click on a link in mail to activate his account
+             */
             $registerService->sendMail($newUser, $registerCode, $request);
 
             $usersLogger->info('user.' . $newUser->getUserInformation()->getEmail() . 'registered');

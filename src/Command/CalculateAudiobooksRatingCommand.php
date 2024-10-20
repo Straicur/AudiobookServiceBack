@@ -20,7 +20,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
  */
 #[AsCommand(
     name       : 'audiobookservice:calculate:rating',
-    description: 'Calculate audiobooks rating',
+    description: 'Calculate audiobooks rating. Sum all ratings in one on audiobook entity',
 )]
 class CalculateAudiobooksRatingCommand extends Command
 {

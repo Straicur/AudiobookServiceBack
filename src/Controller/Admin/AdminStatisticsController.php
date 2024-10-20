@@ -117,7 +117,17 @@ class AdminStatisticsController extends AbstractController
             ];
         });
 
-        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
+        return ResponseTool::getResponse(
+            new AdminStatisticMainSuccessModel(
+                $users,
+                $categories,
+                $audiobooks,
+                $lastWeekRegistered,
+                $lastWeekLogins,
+                $lastWeekNotifications,
+                $lastWeekSystemBreaks
+            )
+        );
     }
 
     #[Route('/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]

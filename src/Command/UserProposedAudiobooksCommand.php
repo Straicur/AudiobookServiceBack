@@ -62,6 +62,9 @@ class UserProposedAudiobooksCommand extends Command
         foreach ($users as $user) {
             $age = null;
 
+            /**
+             * Checking if user has parental control
+             */
             if ($user->getUserInformation()->getBirthday() !== null) {
                 $userParentalControlTool = new UserParentalControlTool();
                 $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
@@ -70,99 +73,122 @@ class UserProposedAudiobooksCommand extends Command
             $myList = $user->getMyList();
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
-            if (count($myList->getAudiobooks()) + count($audiobookInfos) >= 10) {
-                $userWantedCategories = [];
-
-                foreach ($myList->getAudiobooks() as $audiobook) {
-                    foreach ($audiobook->getCategories() as $category) {
-                        if ($category->getActive()) {
-                            if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
-                                $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 2;
-                            } else {
-                                $userWantedCategories[$category->getId()->__toString()] = 2;
-                            }
-                        }
-                    }
-                }
-
-                foreach ($audiobookInfos as $audiobookInfo) {
-                    foreach ($audiobookInfo->getAudiobook()->getCategories() as $category) {
-                        if ($category->getActive()) {
-                            if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
-                                $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 1;
-                            } else {
-                                $userWantedCategories[$category->getId()->__toString()] = 1;
-                            }
-                        }
-                    }
-                }
-
-                arsort($userWantedCategories);
-
-                $selectedCategories = array_slice(array_keys($userWantedCategories), 0, 4, true);
-                $lastCategory = array_slice(array_keys($userWantedCategories), count($selectedCategories), count($userWantedCategories), true);
-
-                $lastRandomKey = array_rand($lastCategory);
-
-                $selectedCategories[] = $lastCategory[$lastRandomKey];
-
-                $proposedAudiobooks = $user->getProposedAudiobooks();
-
-                foreach ($proposedAudiobooks->getAudiobooks() as $audiobook) {
-                    $proposedAudiobooks->removeAudiobook($audiobook);
-                }
-
-                foreach ($selectedCategories as $categoryIndex => $category) {
-                    $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
-                        'id'     => $category,
-                        'active' => true,
-                    ]);
-
-                    if ($databaseCategory !== null) {
-                        $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory, $age);
-
-                        shuffle($audiobooks);
-
-                        $audiobooksAdded = 0;
-
-                        foreach ($audiobooks as $audiobook) {
-                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::MOST_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
-                                continue;
-                            }
-                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
-                                continue;
-                            }
-                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::LESS_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
-                                continue;
-                            }
-                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::PROPOSED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
-                                continue;
-                            }
-                            if (($categoryIndex === ProposedAudiobookCategoriesRanges::RANDOM->value) && $audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
-                                continue;
-                            }
-
-                            if (!$this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
-                                ++$audiobooksAdded;
-                                $proposedAudiobooks->addAudiobook($audiobook);
-                            }
-                        }
-                    }
-                }
-                $this->proposedAudiobooksRepository->add($proposedAudiobooks);
-
-                $notificationBuilder = new NotificationBuilder();
-
-                $notification = $notificationBuilder
-                    ->setType(NotificationType::PROPOSED)
-                    ->setAction($proposedAudiobooks->getId())
-                    ->addUser($user)
-                    ->setUserAction(NotificationUserType::ADMIN)
-                    ->setActive(true)
-                    ->build($this->stockCache);
-
-                $this->notificationRepository->add($notification);
+            /**
+             * Checking if user has sufficient amount of data
+             */
+            if ((count($myList->getAudiobooks()) + count($audiobookInfos)) <= 10) {
+                continue;
             }
+
+            $userWantedCategories = [];
+
+            /**
+             * Creating array of points in value and key of categoryId
+             */
+            foreach ($myList->getAudiobooks() as $audiobook) {
+                foreach ($audiobook->getCategories() as $category) {
+                    if ($category->getActive()) {
+                        if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
+                            $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 2;
+                        } else {
+                            $userWantedCategories[$category->getId()->__toString()] = 2;
+                        }
+                    }
+                }
+            }
+
+            foreach ($audiobookInfos as $audiobookInfo) {
+                foreach ($audiobookInfo->getAudiobook()->getCategories() as $category) {
+                    if ($category->getActive()) {
+                        if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
+                            $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 1;
+                        } else {
+                            $userWantedCategories[$category->getId()->__toString()] = 1;
+                        }
+                    }
+                }
+            }
+
+            arsort($userWantedCategories);
+
+            $selectedCategories = array_slice(array_keys($userWantedCategories), 0, 4, true);
+            $lastCategory = array_slice(array_keys($userWantedCategories), count($selectedCategories), count($userWantedCategories), true);
+
+            $lastRandomKey = array_rand($lastCategory);
+
+            $selectedCategories[] = $lastCategory[$lastRandomKey];
+            /**
+             * $selectedCategories now has 5 categories where user is listening most audiobooks
+             */
+
+            $proposedAudiobooks = $user->getProposedAudiobooks();
+
+            foreach ($proposedAudiobooks->getAudiobooks() as $audiobook) {
+                $proposedAudiobooks->removeAudiobook($audiobook);
+            }
+
+            /**
+             * Now we are selecting audiobook depend on index of category
+             */
+            foreach ($selectedCategories as $categoryIndex => $category) {
+                $databaseCategory = $this->audiobookCategoryRepository->findOneBy([
+                    'id'     => $category,
+                    'active' => true,
+                ]);
+
+                if ($databaseCategory === null) {
+                    continue;
+                }
+
+                $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($databaseCategory, $age);
+
+                shuffle($audiobooks);
+
+                $audiobooksAdded = 0;
+
+                foreach ($audiobooks as $audiobook) {
+                    if (($categoryIndex === ProposedAudiobookCategoriesRanges::MOST_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
+                        continue;
+                    }
+                    if (($categoryIndex === ProposedAudiobookCategoriesRanges::WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
+                        continue;
+                    }
+                    if (($categoryIndex === ProposedAudiobookCategoriesRanges::LESS_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
+                        continue;
+                    }
+                    if (($categoryIndex === ProposedAudiobookCategoriesRanges::PROPOSED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
+                        continue;
+                    }
+                    if (($categoryIndex === ProposedAudiobookCategoriesRanges::RANDOM->value) && $audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
+                        continue;
+                    }
+
+                    /**
+                     * checking if audiobook is not in myList
+                     */
+                    if (!$this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
+                        ++$audiobooksAdded;
+                        $proposedAudiobooks->addAudiobook($audiobook);
+                    }
+                }
+            }
+
+            $this->proposedAudiobooksRepository->add($proposedAudiobooks);
+
+            /**
+             * Sending an notification to user about his new proposed audiobooks
+             */
+            $notificationBuilder = new NotificationBuilder();
+
+            $notification = $notificationBuilder
+                ->setType(NotificationType::PROPOSED)
+                ->setAction($proposedAudiobooks->getId())
+                ->addUser($user)
+                ->setUserAction(NotificationUserType::ADMIN)
+                ->setActive(true)
+                ->build($this->stockCache);
+
+            $this->notificationRepository->add($notification);
         }
 
         $this->stockCache->invalidateTags([UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]);

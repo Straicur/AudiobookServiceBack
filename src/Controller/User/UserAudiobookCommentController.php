@@ -72,7 +72,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[Route('/api/user')]
 class UserAudiobookCommentController extends AbstractController
 {
-
     #[Route('/audiobook/comment/add', name: 'userAudiobookCommentAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
