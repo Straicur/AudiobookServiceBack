@@ -47,6 +47,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use App\Service\Admin\Audiobook\AudiobookAddService;
 use App\Service\Admin\Audiobook\AudiobookServiceInterface;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
@@ -242,6 +243,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookRatingRepository $audiobookRatingRepository,
         TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
+        AudiobookAddService $addService,
     ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
@@ -257,112 +259,10 @@ class AdminAudiobookController extends AbstractController
 
                     $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
-                    if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
-                        $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
-                    } elseif (array_key_exists('id3v1', $ID3JsonData)) {
-                        $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
-                    } else {
-                        $ID3JsonFileData = $ID3JsonData;
-                    }
+                    $id3TagsModel = $addService->getAudiobookId3Tags($ID3JsonData);
 
-                    if (array_key_exists('version', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['version']) > 0) {
-                            $version = current($ID3JsonFileData['version']);
-                        } else {
-                            $version = $ID3JsonFileData['version'];
-                        }
-                    } else {
-                        $version = '1';
-                    }
-
-                    if (array_key_exists('album', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['album']) > 0) {
-                            $album = current($ID3JsonFileData['album']);
-                        } else {
-                            $album = $ID3JsonFileData['album'];
-                        }
-                    } else {
-                        $album = 'album';
-                    }
-
-                    if (array_key_exists('artist', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['artist']) > 0) {
-                            $author = current($ID3JsonFileData['artist']);
-                        } else {
-                            $author = $ID3JsonFileData['artist'];
-                        }
-                    } else {
-                        $author = 'author';
-                    }
-
-                    if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['year']) > 0) {
-                            $year = '01.01.' . current($ID3JsonFileData['year']);
-                        } else {
-                            $year = '01.01.' . $ID3JsonFileData['year'];
-                        }
-
-                        if (DateTime::createFromFormat('d.m.Y', $year)) {
-                            $year = DateTime::createFromFormat('d.m.Y', $year);
-                        } else {
-                            $year = new DateTime();
-                        }
-                        $usersLogger->error("TU1");
-                    } elseif (array_key_exists('year', $additionalData)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
-                    } else {
-                        $year = new DateTime();
-                    }
-
-                    if (array_key_exists('encoded', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['encoded']) > 0) {
-                            $encoded = current($ID3JsonFileData['encoded']);
-                        } else {
-                            $encoded = $ID3JsonFileData['encoded'];
-                        }
-                    } else {
-                        $encoded = "";
-                    }
-
-                    if (array_key_exists('comment', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['comment']) > 0) {
-                            $description = current($ID3JsonFileData['comment']);
-                        } else {
-                            $description = $ID3JsonFileData['comment'];
-                        }
-                    } else {
-                        $description = 'desc';
-                    }
-
-                    if (array_key_exists('duration', $ID3JsonData)) {
-                        $duration = $ID3JsonData['duration'];
-                    } else {
-                        $duration = 0;
-                    }
-
-                    if (array_key_exists('size', $ID3JsonData)) {
-                        $size = $ID3JsonData['size'];
-                    } else {
-                        $size = '1';
-                    }
-
-                    if (array_key_exists('parts', $ID3JsonData)) {
-                        $parts = $ID3JsonData['parts'];
-                    } else {
-                        $parts = '1';
-                    }
-
-                    if (array_key_exists('title', $ID3JsonData)) {
-                        $title = $ID3JsonData['title'];
-                    } else {
-                        $title = 'title';
-                    }
-
-                    if (array_key_exists('imgFileDir', $ID3JsonData)) {
-                        $img = $ID3JsonData['imgFileDir'];
-                    } else {
-                        $img = 'imgFileDir';
-                    }
+                    $title = $id3TagsModel->getTitle();
+                    $author = $id3TagsModel->getArtist();
 
                     if (array_key_exists('title', $additionalData)) {
                         $title = $additionalData['title'];
@@ -387,47 +287,30 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook = new Audiobook(
                         $title,
                         $author,
-                        $version,
-                        $album,
-                        $year,
-                        $duration,
-                        $size,
-                        $parts,
-                        $description,
+                        $id3TagsModel->getVersion(),
+                        $id3TagsModel->getAlbum(),
+                        $id3TagsModel->getYear(),
+                        $id3TagsModel->getDuration(),
+                        $id3TagsModel->getSize(),
+                        $id3TagsModel->getParts(),
+                        $id3TagsModel->getComment(),
                         $age ?? AudiobookAgeRange::ABOVE18,
                         $folderDir,
                     );
 
-                    if ($encoded !== "") {
-                        $newAudiobook->setEncoded($encoded);
+                    if ($id3TagsModel->getEncoded() !== "") {
+                        $newAudiobook->setEncoded($id3TagsModel->getEncoded());
                     }
 
-                    if ($img !== "") {
+                    if (!empty($id3TagsModel->getImgFileDir())) {
                         $newAudiobook
-                            ->setImgFile($img)
+                            ->setImgFile($id3TagsModel->getImgFileDir())
                             ->setImgFileChangeDate();
                     }
 
                     $audiobookCategories = [];
 
-                    if (array_key_exists('categories', $additionalData)) {
-                        $categories = $additionalData['categories'];
-
-                        foreach ($categories as $category) {
-                            $audiobookCategory = $audiobookCategoryRepository->find(Uuid::fromString($category));
-
-                            if ($audiobookCategory !== null) {
-                                $newAudiobook->addCategory($audiobookCategory);
-
-                                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                    (string)$audiobookCategory->getId(),
-                                    $audiobookCategory->getName(),
-                                    $audiobookCategory->getActive(),
-                                    $audiobookCategory->getCategoryKey(),
-                                );
-                            }
-                        }
-                    }
+                    $addService->addAudiobookCategories($newAudiobook, $additionalData, $audiobookCategories);
 
                     $audiobookRepository->add($newAudiobook);
 
@@ -706,6 +589,7 @@ class AdminAudiobookController extends AbstractController
         NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
         TagAwareCacheInterface $stockCache,
+        AudiobookAddService $addService,
     ): Response {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
@@ -729,111 +613,11 @@ class AdminAudiobookController extends AbstractController
 
                 $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
 
-                if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
-                } elseif (array_key_exists('id3v1', $ID3JsonData)) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
-                } else {
-                    $ID3JsonFileData = $ID3JsonData;
-                }
+                $id3TagsModel = $addService->getAudiobookId3Tags($ID3JsonData);
 
-                if (array_key_exists('version', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['version']) > 0) {
-                        $version = current($ID3JsonFileData['version']);
-                    } else {
-                        $version = $ID3JsonFileData['version'];
-                    }
-                } else {
-                    $version = '1';
-                }
 
-                if (array_key_exists('album', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['album']) > 0) {
-                        $album = current($ID3JsonFileData['album']);
-                    } else {
-                        $album = $ID3JsonFileData['album'];
-                    }
-                } else {
-                    $album = 'album';
-                }
-
-                if (array_key_exists('artist', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['artist']) > 0) {
-                        $author = current($ID3JsonFileData['artist']);
-                    } else {
-                        $author = $ID3JsonFileData['artist'];
-                    }
-                } else {
-                    $author = 'author';
-                }
-
-                if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['year']) > 0) {
-                        $year = '01.01.' . current($ID3JsonFileData['year']);
-                    } else {
-                        $year = '01.01.' . $ID3JsonFileData['year'];
-                    }
-
-                    if (DateTime::createFromFormat('d.m.Y', $year)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $year);
-                    } else {
-                        $year = new DateTime();
-                    }
-                } elseif (array_key_exists('year', $additionalData)) {
-                    $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
-                } else {
-                    $year = new DateTime();
-                }
-
-                if (array_key_exists('encoded', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['encoded']) > 0) {
-                        $encoded = current($ID3JsonFileData['encoded']);
-                    } else {
-                        $encoded = $ID3JsonFileData['encoded'];
-                    }
-                } else {
-                    $encoded = "";
-                }
-
-                if (array_key_exists('comment', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['comment']) > 0) {
-                        $description = current($ID3JsonFileData['comment']);
-                    } else {
-                        $description = $ID3JsonFileData['comment'];
-                    }
-                } else {
-                    $description = 'desc';
-                }
-
-                if (array_key_exists('duration', $ID3JsonData)) {
-                    $duration = $ID3JsonData['duration'];
-                } else {
-                    $duration = '1';
-                }
-
-                if (array_key_exists('size', $ID3JsonData)) {
-                    $size = $ID3JsonData['size'];
-                } else {
-                    $size = '1';
-                }
-
-                if (array_key_exists('parts', $ID3JsonData)) {
-                    $parts = $ID3JsonData['parts'];
-                } else {
-                    $parts = '1';
-                }
-
-                if (array_key_exists('title', $ID3JsonData)) {
-                    $title = $ID3JsonData['title'];
-                } else {
-                    $title = 'title';
-                }
-
-                if (array_key_exists('imgFileDir', $ID3JsonData)) {
-                    $img = $ID3JsonData['imgFileDir'];
-                } else {
-                    $img = 'imgFileDir';
-                }
+                $title = $id3TagsModel->getTitle();
+                $author = $id3TagsModel->getArtist();
 
                 if (array_key_exists('title', $additionalData)) {
                     $title = $additionalData['title'];
@@ -841,6 +625,7 @@ class AdminAudiobookController extends AbstractController
                 if (array_key_exists('author', $additionalData)) {
                     $author = $additionalData['author'];
                 }
+
                 $age = null;
 
                 if (array_key_exists('age', $additionalData)) {
@@ -856,23 +641,23 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->setActive(false);
                 $audiobook->setTitle($title);
                 $audiobook->setAuthor($author);
-                $audiobook->setVersion($version);
-                $audiobook->setAlbum($album);
-                $audiobook->setYear($year);
-                $audiobook->setDuration($duration);
-                $audiobook->setSize($size);
-                $audiobook->setParts($parts);
-                $audiobook->setDescription($description);
+                $audiobook->setVersion($id3TagsModel->getVersion());
+                $audiobook->setAlbum($id3TagsModel->getAlbum());
+                $audiobook->setYear($id3TagsModel->getYear());
+                $audiobook->setDuration($id3TagsModel->getDuration());
+                $audiobook->setSize($id3TagsModel->getSize());
+                $audiobook->setParts($id3TagsModel->getParts());
+                $audiobook->setDescription($id3TagsModel->getComment());
                 $audiobook->setAge($age ?? AudiobookAgeRange::ABOVE18);
                 $audiobook->setFileName($folderDir);
 
-                if ($encoded !== "") {
-                    $audiobook->setEncoded($encoded);
+                if ($id3TagsModel->getEncoded() !== "") {
+                    $audiobook->setEncoded($id3TagsModel->getEncoded());
                 }
 
-                if ($img !== "") {
+                if (!empty($id3TagsModel->getImgFileDir())) {
                     $audiobook
-                        ->setImgFile($img)
+                        ->setImgFile($id3TagsModel->getImgFileDir())
                         ->setImgFileChangeDate();
                 }
 
@@ -882,29 +667,7 @@ class AdminAudiobookController extends AbstractController
 
                 $audiobookCategories = [];
 
-                if (array_key_exists('categories', $additionalData)) {
-                    $categories = [];
-
-                    if (!empty($additionalData['categories'])) {
-                        foreach ($additionalData['categories'] as $category) {
-                            $categories[] = Uuid::fromString($category)->toBinary();
-                        }
-                    }
-                    foreach ($categories as $category) {
-                        $audiobookCategory = $audiobookCategoryRepository->find($category);
-
-                        if ($audiobookCategory !== null) {
-                            $audiobook->addCategory($audiobookCategory);
-
-                            $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                (string)$audiobookCategory->getId(),
-                                $audiobookCategory->getName(),
-                                $audiobookCategory->getActive(),
-                                $audiobookCategory->getCategoryKey(),
-                            );
-                        }
-                    }
-                }
+                $addService->addAudiobookCategories($audiobook, $additionalData, $audiobookCategories);
 
                 $audiobookRepository->add($audiobook);
 
