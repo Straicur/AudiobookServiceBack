@@ -35,11 +35,6 @@ class AudiobookUserCommentLike
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    /**
-     * @param bool $liked
-     * @param AudiobookUserComment $audiobookUserComment
-     * @param User $user
-     */
     public function __construct(bool $liked, AudiobookUserComment $audiobookUserComment, User $user)
     {
         $this->liked = $liked;

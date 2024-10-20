@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Builder\NotificationBuilder;
@@ -27,6 +27,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminAudiobooksSearchModel;
 use App\Query\Admin\AdminAudiobookActiveQuery;
 use App\Query\Admin\AdminAudiobookAddQuery;
 use App\Query\Admin\AdminAudiobookChangeCoverQuery;
@@ -47,13 +48,13 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\Audiobook\AudiobookService;
+use App\Service\Admin\Audiobook\AudiobookAddService;
+use App\Service\Admin\Audiobook\AudiobookServiceInterface;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
-use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -61,7 +62,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Throwable;
@@ -88,9 +91,10 @@ use ZipArchive;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminAudiobook')]
+#[Route('/api/admin')]
 class AdminAudiobookController extends AbstractController
 {
-    #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
+    #[Route('/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is getting details of audiobook',
@@ -116,7 +120,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookRepository $audiobookRepository,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, AdminAudiobookDetailsQuery::class);
@@ -168,8 +172,10 @@ class AdminAudiobookController extends AbstractController
                             $audiobookRepository->add($audiobook);
                         }
                     } catch (Throwable) {
-                        $audiobook->setImgFile(null);
-                        $audiobook->setImgFileChangeDate();
+                        $audiobook
+                            ->setImgFile(null)
+                            ->setImgFileChangeDate();
+
                         $audiobookRepository->add($audiobook);
                     }
                 }
@@ -210,7 +216,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
+    #[Route('/audiobook/add', name: 'adminAudiobookAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Put(
         description: 'Endpoint is adding new audiobook with files',
@@ -233,12 +239,12 @@ class AdminAudiobookController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $usersLogger,
-        AudiobookService $audiobookService,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookServiceInterface $audiobookService,
         AudiobookRepository $audiobookRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
+        AudiobookAddService $addService,
     ): Response {
         $adminAudiobookAddQuery = $requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
 
@@ -254,112 +260,10 @@ class AdminAudiobookController extends AbstractController
 
                     $additionalData = $adminAudiobookAddQuery->getAdditionalData();
 
-                    if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
-                        $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
-                    } elseif (array_key_exists('id3v1', $ID3JsonData)) {
-                        $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
-                    } else {
-                        $ID3JsonFileData = $ID3JsonData;
-                    }
+                    $id3TagsModel = $addService->getAudiobookId3Tags($ID3JsonData);
 
-                    if (array_key_exists('version', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['version']) > 0) {
-                            $version = current($ID3JsonFileData['version']);
-                        } else {
-                            $version = $ID3JsonFileData['version'];
-                        }
-                    } else {
-                        $version = '1';
-                    }
-
-                    if (array_key_exists('album', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['album']) > 0) {
-                            $album = current($ID3JsonFileData['album']);
-                        } else {
-                            $album = $ID3JsonFileData['album'];
-                        }
-                    } else {
-                        $album = 'album';
-                    }
-
-                    if (array_key_exists('artist', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['artist']) > 0) {
-                            $author = current($ID3JsonFileData['artist']);
-                        } else {
-                            $author = $ID3JsonFileData['artist'];
-                        }
-                    } else {
-                        $author = 'author';
-                    }
-
-                    if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['year']) > 0) {
-                            $year = '01.01.' . current($ID3JsonFileData['year']);
-                        } else {
-                            $year = '01.01.' . $ID3JsonFileData['year'];
-                        }
-
-                        if (DateTime::createFromFormat('d.m.Y', $year)) {
-                            $year = DateTime::createFromFormat('d.m.Y', $year);
-                        } else {
-                            $year = new DateTime();
-                        }
-                        $usersLogger->error("TU1");
-                    } elseif (array_key_exists('year', $additionalData)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
-                    } else {
-                        $year = new DateTime();
-                    }
-
-                    if (array_key_exists('encoded', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['encoded']) > 0) {
-                            $encoded = current($ID3JsonFileData['encoded']);
-                        } else {
-                            $encoded = $ID3JsonFileData['encoded'];
-                        }
-                    } else {
-                        $encoded = "";
-                    }
-
-                    if (array_key_exists('comment', $ID3JsonFileData)) {
-                        if (count($ID3JsonFileData['comment']) > 0) {
-                            $description = current($ID3JsonFileData['comment']);
-                        } else {
-                            $description = $ID3JsonFileData['comment'];
-                        }
-                    } else {
-                        $description = 'desc';
-                    }
-
-                    if (array_key_exists('duration', $ID3JsonData)) {
-                        $duration = $ID3JsonData['duration'];
-                    } else {
-                        $duration = 0;
-                    }
-
-                    if (array_key_exists('size', $ID3JsonData)) {
-                        $size = $ID3JsonData['size'];
-                    } else {
-                        $size = '1';
-                    }
-
-                    if (array_key_exists('parts', $ID3JsonData)) {
-                        $parts = $ID3JsonData['parts'];
-                    } else {
-                        $parts = '1';
-                    }
-
-                    if (array_key_exists('title', $ID3JsonData)) {
-                        $title = $ID3JsonData['title'];
-                    } else {
-                        $title = 'title';
-                    }
-
-                    if (array_key_exists('imgFileDir', $ID3JsonData)) {
-                        $img = $ID3JsonData['imgFileDir'];
-                    } else {
-                        $img = 'imgFileDir';
-                    }
+                    $title = $id3TagsModel->getTitle();
+                    $author = $id3TagsModel->getArtist();
 
                     if (array_key_exists('title', $additionalData)) {
                         $title = $additionalData['title'];
@@ -384,46 +288,30 @@ class AdminAudiobookController extends AbstractController
                     $newAudiobook = new Audiobook(
                         $title,
                         $author,
-                        $version,
-                        $album,
-                        $year,
-                        $duration,
-                        $size,
-                        $parts,
-                        $description,
+                        $id3TagsModel->getVersion(),
+                        $id3TagsModel->getAlbum(),
+                        $id3TagsModel->getYear(),
+                        $id3TagsModel->getDuration(),
+                        $id3TagsModel->getSize(),
+                        $id3TagsModel->getParts(),
+                        $id3TagsModel->getComment(),
                         $age ?? AudiobookAgeRange::ABOVE18,
                         $folderDir,
                     );
 
-                    if ($encoded !== "") {
-                        $newAudiobook->setEncoded($encoded);
+                    if ($id3TagsModel->getEncoded() !== "") {
+                        $newAudiobook->setEncoded($id3TagsModel->getEncoded());
                     }
 
-                    if ($img !== "") {
-                        $newAudiobook->setImgFile($img);
-                        $newAudiobook->setImgFileChangeDate();
+                    if (!empty($id3TagsModel->getImgFileDir())) {
+                        $newAudiobook
+                            ->setImgFile($id3TagsModel->getImgFileDir())
+                            ->setImgFileChangeDate();
                     }
 
                     $audiobookCategories = [];
 
-                    if (array_key_exists('categories', $additionalData)) {
-                        $categories = $additionalData['categories'];
-
-                        foreach ($categories as $category) {
-                            $audiobookCategory = $audiobookCategoryRepository->find(Uuid::fromString($category));
-
-                            if ($audiobookCategory !== null) {
-                                $newAudiobook->addCategory($audiobookCategory);
-
-                                $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                    (string)$audiobookCategory->getId(),
-                                    $audiobookCategory->getName(),
-                                    $audiobookCategory->getActive(),
-                                    $audiobookCategory->getCategoryKey(),
-                                );
-                            }
-                        }
-                    }
+                    $addService->addAudiobookCategories($newAudiobook, $additionalData, $audiobookCategories);
 
                     $audiobookRepository->add($newAudiobook);
 
@@ -471,7 +359,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
+    #[Route('/audiobook/edit', name: 'adminAudiobookEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given audiobook data',
@@ -494,7 +382,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookEditQuery = $requestService->getRequestBodyContent($request, AdminAudiobookEditQuery::class);
@@ -508,17 +396,18 @@ class AdminAudiobookController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $audiobook->setTitle($adminAudiobookEditQuery->getTitle());
-            $audiobook->setAuthor($adminAudiobookEditQuery->getAuthor());
-            $audiobook->setVersion($adminAudiobookEditQuery->getVersion());
-            $audiobook->setAlbum($adminAudiobookEditQuery->getAlbum());
-            $audiobook->setYear($adminAudiobookEditQuery->getYear());
-            $audiobook->setDuration((int)$adminAudiobookEditQuery->getDuration());
-            $audiobook->setSize($adminAudiobookEditQuery->getSize());
-            $audiobook->setParts($adminAudiobookEditQuery->getParts());
-            $audiobook->setDescription($adminAudiobookEditQuery->getDescription());
-            $audiobook->setAge($adminAudiobookEditQuery->getAge());
-            $audiobook->setEncoded($adminAudiobookEditQuery->getEncoded());
+            $audiobook
+                ->setTitle($adminAudiobookEditQuery->getTitle())
+                ->setAuthor($adminAudiobookEditQuery->getAuthor())
+                ->setVersion($adminAudiobookEditQuery->getVersion())
+                ->setAlbum($adminAudiobookEditQuery->getAlbum())
+                ->setYear($adminAudiobookEditQuery->getYear())
+                ->setDuration((int)$adminAudiobookEditQuery->getDuration())
+                ->setSize($adminAudiobookEditQuery->getSize())
+                ->setParts($adminAudiobookEditQuery->getParts())
+                ->setDescription($adminAudiobookEditQuery->getDescription())
+                ->setAge($adminAudiobookEditQuery->getAge())
+                ->setEncoded($adminAudiobookEditQuery->getEncoded());
 
             $audiobookRepository->add($audiobook);
 
@@ -537,7 +426,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
+    #[Route('/audiobook/delete', name: 'adminAudiobookDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting audiobook with his files',
@@ -559,9 +448,9 @@ class AdminAudiobookController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        AudiobookService $audiobookService,
+        AudiobookServiceInterface $audiobookService,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -597,7 +486,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
+    #[Route('/audiobook/zip', name: 'adminAudiobookZip', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning zip blob',
@@ -620,7 +509,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $adminAudiobookZipQuery = $requestService->getRequestBodyContent($request, AdminAudiobookZipQuery::class);
 
@@ -669,7 +558,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
+    #[Route('/audiobook/reAdding', name: 'adminAudiobookReAdding', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is re-adding audiobook by changing files',
@@ -693,14 +582,14 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        AudiobookService $audiobookService,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
+        AudiobookServiceInterface $audiobookService,
         AudiobookRatingRepository $audiobookRatingRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         AudiobookUserCommentRepository $commentRepository,
         TagAwareCacheInterface $stockCache,
+        AudiobookAddService $addService,
     ): Response {
         $adminAudiobookReAddingQuery = $requestService->getRequestBodyContent($request, AdminAudiobookReAddingQuery::class);
 
@@ -724,111 +613,11 @@ class AdminAudiobookController extends AbstractController
 
                 $additionalData = $adminAudiobookReAddingQuery->getAdditionalData();
 
-                if (array_key_exists('id3v2', $ID3JsonData['tags'])) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v2'];
-                } elseif (array_key_exists('id3v1', $ID3JsonData)) {
-                    $ID3JsonFileData = $ID3JsonData['tags']['id3v1'];
-                } else {
-                    $ID3JsonFileData = $ID3JsonData;
-                }
+                $id3TagsModel = $addService->getAudiobookId3Tags($ID3JsonData);
 
-                if (array_key_exists('version', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['version']) > 0) {
-                        $version = current($ID3JsonFileData['version']);
-                    } else {
-                        $version = $ID3JsonFileData['version'];
-                    }
-                } else {
-                    $version = '1';
-                }
 
-                if (array_key_exists('album', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['album']) > 0) {
-                        $album = current($ID3JsonFileData['album']);
-                    } else {
-                        $album = $ID3JsonFileData['album'];
-                    }
-                } else {
-                    $album = 'album';
-                }
-
-                if (array_key_exists('artist', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['artist']) > 0) {
-                        $author = current($ID3JsonFileData['artist']);
-                    } else {
-                        $author = $ID3JsonFileData['artist'];
-                    }
-                } else {
-                    $author = 'author';
-                }
-
-                if (!array_key_exists('year', $additionalData) && array_key_exists('year', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['year']) > 0) {
-                        $year = '01.01.' . current($ID3JsonFileData['year']);
-                    } else {
-                        $year = '01.01.' . $ID3JsonFileData['year'];
-                    }
-
-                    if (DateTime::createFromFormat('d.m.Y', $year)) {
-                        $year = DateTime::createFromFormat('d.m.Y', $year);
-                    } else {
-                        $year = new DateTime();
-                    }
-                } elseif (array_key_exists('year', $additionalData)) {
-                    $year = DateTime::createFromFormat('d.m.Y', $additionalData['year']);
-                } else {
-                    $year = new DateTime();
-                }
-
-                if (array_key_exists('encoded', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['encoded']) > 0) {
-                        $encoded = current($ID3JsonFileData['encoded']);
-                    } else {
-                        $encoded = $ID3JsonFileData['encoded'];
-                    }
-                } else {
-                    $encoded = "";
-                }
-
-                if (array_key_exists('comment', $ID3JsonFileData)) {
-                    if (count($ID3JsonFileData['comment']) > 0) {
-                        $description = current($ID3JsonFileData['comment']);
-                    } else {
-                        $description = $ID3JsonFileData['comment'];
-                    }
-                } else {
-                    $description = 'desc';
-                }
-
-                if (array_key_exists('duration', $ID3JsonData)) {
-                    $duration = $ID3JsonData['duration'];
-                } else {
-                    $duration = '1';
-                }
-
-                if (array_key_exists('size', $ID3JsonData)) {
-                    $size = $ID3JsonData['size'];
-                } else {
-                    $size = '1';
-                }
-
-                if (array_key_exists('parts', $ID3JsonData)) {
-                    $parts = $ID3JsonData['parts'];
-                } else {
-                    $parts = '1';
-                }
-
-                if (array_key_exists('title', $ID3JsonData)) {
-                    $title = $ID3JsonData['title'];
-                } else {
-                    $title = 'title';
-                }
-
-                if (array_key_exists('imgFileDir', $ID3JsonData)) {
-                    $img = $ID3JsonData['imgFileDir'];
-                } else {
-                    $img = 'imgFileDir';
-                }
+                $title = $id3TagsModel->getTitle();
+                $author = $id3TagsModel->getArtist();
 
                 if (array_key_exists('title', $additionalData)) {
                     $title = $additionalData['title'];
@@ -836,6 +625,7 @@ class AdminAudiobookController extends AbstractController
                 if (array_key_exists('author', $additionalData)) {
                     $author = $additionalData['author'];
                 }
+
                 $age = null;
 
                 if (array_key_exists('age', $additionalData)) {
@@ -851,23 +641,24 @@ class AdminAudiobookController extends AbstractController
                 $audiobook->setActive(false);
                 $audiobook->setTitle($title);
                 $audiobook->setAuthor($author);
-                $audiobook->setVersion($version);
-                $audiobook->setAlbum($album);
-                $audiobook->setYear($year);
-                $audiobook->setDuration($duration);
-                $audiobook->setSize($size);
-                $audiobook->setParts($parts);
-                $audiobook->setDescription($description);
+                $audiobook->setVersion($id3TagsModel->getVersion());
+                $audiobook->setAlbum($id3TagsModel->getAlbum());
+                $audiobook->setYear($id3TagsModel->getYear());
+                $audiobook->setDuration($id3TagsModel->getDuration());
+                $audiobook->setSize($id3TagsModel->getSize());
+                $audiobook->setParts($id3TagsModel->getParts());
+                $audiobook->setDescription($id3TagsModel->getComment());
                 $audiobook->setAge($age ?? AudiobookAgeRange::ABOVE18);
                 $audiobook->setFileName($folderDir);
 
-                if ($encoded !== "") {
-                    $audiobook->setEncoded($encoded);
+                if ($id3TagsModel->getEncoded() !== "") {
+                    $audiobook->setEncoded($id3TagsModel->getEncoded());
                 }
 
-                if ($img !== "") {
-                    $audiobook->setImgFile($img);
-                    $audiobook->setImgFileChangeDate();
+                if (!empty($id3TagsModel->getImgFileDir())) {
+                    $audiobook
+                        ->setImgFile($id3TagsModel->getImgFileDir())
+                        ->setImgFileChangeDate();
                 }
 
                 foreach ($audiobook->getCategories() as $category) {
@@ -876,29 +667,7 @@ class AdminAudiobookController extends AbstractController
 
                 $audiobookCategories = [];
 
-                if (array_key_exists('categories', $additionalData)) {
-                    $categories = [];
-
-                    if (!empty($additionalData['categories'])) {
-                        foreach ($additionalData['categories'] as $category) {
-                            $categories[] = Uuid::fromString($category)->toBinary();
-                        }
-                    }
-                    foreach ($categories as $category) {
-                        $audiobookCategory = $audiobookCategoryRepository->find($category);
-
-                        if ($audiobookCategory !== null) {
-                            $audiobook->addCategory($audiobookCategory);
-
-                            $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                                (string)$audiobookCategory->getId(),
-                                $audiobookCategory->getName(),
-                                $audiobookCategory->getActive(),
-                                $audiobookCategory->getCategoryKey(),
-                            );
-                        }
-                    }
-                }
+                $addService->addAudiobookCategories($audiobook, $additionalData, $audiobookCategories);
 
                 $audiobookRepository->add($audiobook);
 
@@ -963,7 +732,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
+    #[Route('/audiobooks', name: 'adminAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of all audiobooks',
@@ -987,57 +756,28 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
             $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
 
-            $categories = null;
-            $author = null;
-            $title = null;
-            $album = null;
-            $duration = null;
-            $parts = null;
-            $age = null;
-            $order = null;
-            $year = null;
-
-            if (array_key_exists('categories', $audiobookSearchData) && !empty($audiobookSearchData['categories'])) {
-                foreach ($audiobookSearchData['categories'] as $category) {
-                    $categories[] = Uuid::fromString($category)->toBinary();
-                }
-            }
-
-            if (array_key_exists('author', $audiobookSearchData)) {
-                $author = ($audiobookSearchData['author'] && '' !== $audiobookSearchData['author']) ? '%' . $audiobookSearchData['author'] . '%' : null;
-            }
-            if (array_key_exists('title', $audiobookSearchData)) {
-                $title = ($audiobookSearchData['title'] && '' !== $audiobookSearchData['title']) ? '%' . $audiobookSearchData['title'] . '%' : null;
-            }
-            if (array_key_exists('album', $audiobookSearchData)) {
-                $album = ($audiobookSearchData['album'] && '' !== $audiobookSearchData['album']) ? '%' . $audiobookSearchData['album'] . '%' : null;
-            }
-            if (array_key_exists('duration', $audiobookSearchData)) {
-                $duration = $audiobookSearchData['duration'];
-            }
-            if (array_key_exists('age', $audiobookSearchData)) {
-                $age = $audiobookSearchData['age'];
-            }
-            if (array_key_exists('parts', $audiobookSearchData)) {
-                $parts = $audiobookSearchData['parts'];
-            }
-            if (array_key_exists('order', $audiobookSearchData)) {
-                $order = $audiobookSearchData['order'];
-            }
-            if (array_key_exists('year', $audiobookSearchData) && $audiobookSearchData['year'] !== false) {
-                $year = $audiobookSearchData['year'];
-            }
+            $audiobookSearchModel = new AdminAudiobooksSearchModel();
+            $serializer->deserialize(
+                json_encode($audiobookSearchData),
+                AdminAudiobooksSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $audiobookSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($audiobookSearchModel);
 
             $minResult = $adminAudiobooksQuery->getPage() * $adminAudiobooksQuery->getLimit();
             $maxResult = $adminAudiobooksQuery->getLimit() + $minResult;
@@ -1078,7 +818,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
+    #[Route('/audiobook/active', name: 'adminAudiobookActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given audiobook',
@@ -1101,7 +841,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         UserRepository $userRepository,
@@ -1190,7 +930,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
+    #[Route('/audiobook/change/cover', name: 'adminAudiobookChangeCover', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is changing given cover',
@@ -1213,7 +953,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookChangeCoverQuery = $requestService->getRequestBodyContent($request, AdminAudiobookChangeCoverQuery::class);
@@ -1250,8 +990,10 @@ class AdminAudiobookController extends AbstractController
             $decodedImageData = base64_decode($adminAudiobookChangeCoverQuery->getBase64());
             file_put_contents($audiobook->getFileName() . '/cover.' . $adminAudiobookChangeCoverQuery->getType(), $decodedImageData);
 
-            $audiobook->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/cover.' . $adminAudiobookChangeCoverQuery->getType());
-            $audiobook->setImgFileChangeDate();
+            $audiobook
+                ->setImgFile('/files/' . pathinfo($audiobook->getFileName())['filename'] . '/cover.' . $adminAudiobookChangeCoverQuery->getType())
+                ->setImgFileChangeDate();
+
             $audiobookRepository->add($audiobook);
 
             $stockCache->invalidateTags([
@@ -1267,7 +1009,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
+    #[Route('/audiobook/comment/delete', name: 'adminAudiobookCommentDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is deleting given comment',
@@ -1290,7 +1032,7 @@ class AdminAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminAudiobookCommentDeleteQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentDeleteQuery::class);
@@ -1321,7 +1063,7 @@ class AdminAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
+    #[Route('/audiobook/comment/get', name: 'adminAudiobookCommentGet', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning comments for given audiobook for admin',
@@ -1348,7 +1090,7 @@ class AdminAudiobookController extends AbstractController
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookCommentGetQuery = $requestService->getRequestBodyContent($request, AdminAudiobookCommentGetQuery::class);

@@ -41,13 +41,6 @@ class AudiobookInfo
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $watched;
 
-    /**
-     * @param User $user
-     * @param Audiobook $audiobook
-     * @param int $part
-     * @param string $endedTime
-     * @param bool $watched
-     */
     public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, bool $watched)
     {
         $this->user = $user;

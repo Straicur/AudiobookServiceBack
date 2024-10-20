@@ -54,7 +54,6 @@ class AudiobookInfoRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param User $user
      * @return AudiobookInfo[]
      */
     public function getActiveAudiobookInfos(User $user): array
@@ -68,11 +67,6 @@ class AudiobookInfoRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param User $user
-     * @param Audiobook $audiobook
-     * @return void
-     */
     public function deActiveAudiobookInfos(User $user, Audiobook $audiobook): void
     {
         $qb = $this->createQueryBuilder('ai');

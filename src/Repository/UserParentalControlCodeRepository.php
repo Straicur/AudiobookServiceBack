@@ -51,10 +51,6 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @return int
-     */
     public function getUserParentalControlCodeFromLastWeekByUser(User $user): int
     {
         $today = new DateTime();
@@ -71,10 +67,6 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         return count($qb->getQuery()->execute());
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
     public function setCodesToNotActive(User $user): void
     {
         $qb = $this->createQueryBuilder('upcc')

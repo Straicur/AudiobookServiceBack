@@ -68,7 +68,6 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Audiobook $audiobook
      * @return AudiobookCategory[]
      */
     public function getAudiobookCategories(Audiobook $audiobook): array
@@ -81,7 +80,6 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Audiobook $audiobook
      * @return AudiobookCategory[]
      */
     public function getAudiobookActiveCategories(Audiobook $audiobook): array

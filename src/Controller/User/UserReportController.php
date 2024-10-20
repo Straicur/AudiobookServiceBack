@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\User;
 
 use App\Annotation\AuthValidation;
 use App\Entity\Report;
@@ -24,7 +24,7 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\ReportRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -55,9 +55,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserReport')]
+#[Route('/api')]
 class UserReportController extends AbstractController
 {
-    #[Route('/api/report', name: 'apiReport', methods: ['PUT'])]
+    #[Route('/report', name: 'apiReport', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to report for not logged users',
         security   : [],
@@ -79,7 +80,7 @@ class UserReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
     ): Response {
         $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
@@ -137,7 +138,7 @@ class UserReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/report', name: 'apiUserReport', methods: ['PUT'])]
+    #[Route('/user/report', name: 'apiUserReport', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is used for users to report bad behavior',
@@ -160,7 +161,7 @@ class UserReportController extends AbstractController
         RequestServiceInterface $requestService,
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
     ): Response {
         $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
@@ -211,7 +212,7 @@ class UserReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/reports', name: 'apiUserReports', methods: ['POST'])]
+    #[Route('/user/reports', name: 'apiUserReports', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint returning user reports',
@@ -235,7 +236,7 @@ class UserReportController extends AbstractController
         LoggerInterface $endpointLogger,
         AuthorizedUserServiceInterface $authorizedUserService,
         ReportRepository $reportRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         AudiobookUserCommentRepository $commentRepository,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, UserReportListQuery::class);

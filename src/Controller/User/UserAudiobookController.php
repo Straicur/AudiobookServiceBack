@@ -2,23 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\User;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookInfo;
 use App\Entity\AudiobookRating;
-use App\Entity\AudiobookUserComment;
-use App\Entity\AudiobookUserCommentLike;
-use App\Entity\UserBanHistory;
-use App\Enums\BanPeriodRage;
 use App\Enums\Cache\CacheValidTime;
 use App\Enums\Cache\UserCacheKeys;
 use App\Enums\Cache\UserStockCacheTags;
-use App\Enums\UserBanType;
 use App\Enums\UserRolesNames;
 use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Model\Common\AudiobookCommentsSuccessModel;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
@@ -36,11 +30,6 @@ use App\Model\User\UserCategoriesSuccessModel;
 use App\Model\User\UserCategoryModel;
 use App\Model\User\UserMyListAudiobooksSuccessModel;
 use App\Model\User\UserProposedAudiobooksSuccessModel;
-use App\Query\User\UserAudiobookCommentAddQuery;
-use App\Query\User\UserAudiobookCommentEditQuery;
-use App\Query\User\UserAudiobookCommentGetQuery;
-use App\Query\User\UserAudiobookCommentLikeAddQuery;
-use App\Query\User\UserAudiobookCommentLikeDeleteQuery;
 use App\Query\User\UserAudiobookDetailsQuery;
 use App\Query\User\UserAudiobookInfoAddQuery;
 use App\Query\User\UserAudiobookInfoQuery;
@@ -53,17 +42,13 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
 use App\Repository\AudiobookRepository;
-use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Repository\MyListRepository;
-use App\Repository\UserBanHistoryRepository;
-use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\Tool\UserParentalControlTool;
-use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
 use App\ValueGenerator\BuildUserAudiobookCategoryTreeGenerator;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -97,9 +82,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserAudiobook')]
+#[Route('/api/user')]
 class UserAudiobookController extends AbstractController
 {
-    #[Route('/api/user/audiobooks', name: 'userAudiobooks', methods: ['POST'])]
+    #[Route('/audiobooks', name: 'userAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of categories with audiobooks',
@@ -125,7 +111,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
@@ -203,7 +189,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/audiobooks/search', name: 'userAudiobooksSearch', methods: ['POST'])]
+    #[Route('/audiobooks/search', name: 'userAudiobooksSearch', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of audiobooks by title',
@@ -228,7 +214,7 @@ class UserAudiobookController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
 
@@ -273,7 +259,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/proposed/audiobooks', name: 'userProposedAudiobooks', methods: ['GET'])]
+    #[Route('/proposed/audiobooks', name: 'userProposedAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of proposed audiobooks',
@@ -330,7 +316,7 @@ class UserAudiobookController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/user/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
+    #[Route('/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning details of given audiobook',
@@ -360,7 +346,7 @@ class UserAudiobookController extends AbstractController
         AudiobookUserCommentRepository $audiobookUserCommentRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
@@ -481,7 +467,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/audiobook/info', name: 'userAudiobookInfo', methods: ['POST'])]
+    #[Route('/audiobook/info', name: 'userAudiobookInfo', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning last information about last played part and time of given audiobook',
@@ -507,7 +493,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
@@ -555,7 +541,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/audiobook/like', name: 'userAudiobookLike', methods: ['PATCH'])]
+    #[Route('/audiobook/like', name: 'userAudiobookLike', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is adding/deleting audiobook from my list',
@@ -580,7 +566,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         MyListRepository $myListRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
@@ -614,6 +600,7 @@ class UserAudiobookController extends AbstractController
             }
 
             $myListRepository->add($myList);
+
             $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId()]);
 
             return ResponseTool::getResponse();
@@ -624,7 +611,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/myList/audiobooks', name: 'userMyListAudiobooks', methods: ['GET'])]
+    #[Route('/myList/audiobooks', name: 'userMyListAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of audiobooks from my list',
@@ -671,7 +658,7 @@ class UserAudiobookController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/user/audiobook/info/add', name: 'userAudiobookInfoAdd', methods: ['PUT'])]
+    #[Route('/audiobook/info/add', name: 'userAudiobookInfoAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding new info about given audiobook',
@@ -696,7 +683,7 @@ class UserAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
 
@@ -757,7 +744,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/audiobook/rating/add', name: 'userAudiobookRatingAdd', methods: ['PUT'])]
+    #[Route('/audiobook/rating/add', name: 'userAudiobookRatingAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding/editing user audiobook rating',
@@ -783,7 +770,7 @@ class UserAudiobookController extends AbstractController
         AudiobookRepository $audiobookRepository,
         AudiobookInfoRepository $audiobookInfoRepository,
         AudiobookRatingRepository $ratingRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
 
@@ -837,7 +824,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/audiobook/rating/get', name: 'userAudiobookRatingGet', methods: ['POST'])]
+    #[Route('/audiobook/rating/get', name: 'userAudiobookRatingGet', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is getting audiobook overall rating',
@@ -861,7 +848,7 @@ class UserAudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 
@@ -888,7 +875,7 @@ class UserAudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/user/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
+    #[Route('/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning all active categories in system as a tree',
@@ -920,400 +907,5 @@ class UserAudiobookController extends AbstractController
         });
 
         return ResponseTool::getResponse($successModel);
-    }
-
-    #[Route('/api/user/audiobook/comment/add', name: 'userAudiobookCommentAdd', methods: ['PUT'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
-    #[OA\Put(
-        description: 'Endpoint is adding comment for given audiobook',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: UserAudiobookCommentAddQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 201,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function userAudiobookCommentAdd(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-        UserRepository $userRepository,
-        UserBanHistoryRepository $banHistoryRepository,
-    ): Response {
-        $userAudiobookCommentAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentAddQuery::class);
-
-        if ($userAudiobookCommentAddQuery instanceof UserAudiobookCommentAddQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookCommentAddQuery->getAudiobookId(), $userAudiobookCommentAddQuery->getCategoryKey());
-
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
-            }
-
-            if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
-            }
-
-            $watchedParts = $audiobookInfoRepository->findBy([
-                'audiobook' => $audiobook->getId(),
-                'user'      => $user->getId(),
-                'watched'   => true,
-            ]);
-
-            if (floor($audiobook->getParts() / 2) > $watchedParts) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotListened')]);
-            }
-
-            $lastUserComments = count($audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
-
-            if ($lastUserComments > (int)$_ENV['INSTITUTION_USER_COMMENTS_LIMIT']) {
-                $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
-
-                $user
-                    ->setBanned(true)
-                    ->setBannedTo($banPeriod);
-
-                $userRepository->add($user);
-
-                $banHistoryRepository->add(new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::SPAM));
-
-                $audiobookUserCommentRepository->setLastUserLastCommentsByMinutesToDeleted($user, '20');
-
-                $endpointLogger->error('User got banned for to many comments in short period');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('ToManyUserComments')]);
-            }
-
-            $audiobookComment = new AudiobookUserComment($userAudiobookCommentAddQuery->getComment(), $audiobook, $user);
-
-            $additionalData = $userAudiobookCommentAddQuery->getAdditionalData();
-
-            if (array_key_exists('parentId', $additionalData)) {
-                $audiobookParentComment = $audiobookUserCommentRepository->find($additionalData['parentId']);
-
-                if ($audiobookParentComment === null || $audiobookParentComment->getParent() !== null) {
-                    $endpointLogger->error('Audiobook Parent Comment dont exist');
-                    $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation('AudiobookParentCommentDontExists')]);
-                }
-
-                $audiobookComment->setParent($audiobookParentComment);
-            }
-
-            $audiobookUserCommentRepository->add($audiobookComment);
-            $stockCache->invalidateTags([
-                UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
-                UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId(),
-            ]);
-
-            return ResponseTool::getResponse(httpCode: 201);
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/user/audiobook/comment/edit', name: 'userAudiobookCommentEdit', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
-    #[OA\Patch(
-        description: 'Endpoint is editing given comment',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: UserAudiobookCommentEditQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function userAudiobookCommentEdit(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $userAudiobookCommentEditQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentEditQuery::class);
-
-        if ($userAudiobookCommentEditQuery instanceof UserAudiobookCommentEditQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookCommentEditQuery->getAudiobookId(), $userAudiobookCommentEditQuery->getCategoryKey());
-
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
-            }
-
-            if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
-            }
-
-            $audiobookComment = $audiobookUserCommentRepository->findOneBy([
-                'id'   => $userAudiobookCommentEditQuery->getAudiobookCommentId(),
-                'user' => $user->getId(),
-            ]);
-
-            if ($audiobookComment === null) {
-                $endpointLogger->error('Audiobook Comment dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
-            }
-
-            $audiobookComment
-                ->setDeleted($userAudiobookCommentEditQuery->isDeleted())
-                ->setComment($userAudiobookCommentEditQuery->getComment())
-                ->setEdited(true);
-
-            $audiobookUserCommentRepository->add($audiobookComment);
-
-            $stockCache->invalidateTags([
-                UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
-                UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId(),
-            ]);
-
-            return ResponseTool::getResponse();
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/user/audiobook/comment/like/add', name: 'userAudiobookCommentLikeAdd', methods: ['PATCH'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
-    #[OA\Patch(
-        description: 'Endpoint is adding/editing user audiobook comment like',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: UserAudiobookCommentLikeAddQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function userAudiobookCommentLikeAdd(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $userAudiobookCommentLikeAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeAddQuery::class);
-
-        if ($userAudiobookCommentLikeAddQuery instanceof UserAudiobookCommentLikeAddQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-
-            $comment = $audiobookUserCommentRepository->find($userAudiobookCommentLikeAddQuery->getCommentId());
-
-            if ($comment === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
-            }
-
-            $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
-                'audiobookUserComment' => $comment->getId(),
-                'user'                 => $user->getId(),
-            ]);
-
-            if ($commentLike === null) {
-                $commentLike = new AudiobookUserCommentLike($userAudiobookCommentLikeAddQuery->isLike(), $comment, $user);
-            } else {
-                $commentLike->setLiked($userAudiobookCommentLikeAddQuery->isLike());
-                if ($commentLike->getDeleted()) {
-                    $commentLike->setDeleted(!$commentLike->getDeleted());
-                }
-            }
-
-            $audiobookUserCommentLikeRepository->add($commentLike);
-            $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value]);
-
-            return ResponseTool::getResponse();
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/user/audiobook/comment/like/delete', name: 'userAudiobookCommentLikeDelete', methods: ['DELETE'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
-    #[OA\Delete(
-        description: 'Endpoint is adding/editing user audiobook comment like',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: UserAudiobookCommentLikeDeleteQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-            ),
-        ]
-    )]
-    public function userAudiobookCommentLikeDelete(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $userAudiobookCommentLikeDeleteQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentLikeDeleteQuery::class);
-
-        if ($userAudiobookCommentLikeDeleteQuery instanceof UserAudiobookCommentLikeDeleteQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-
-            $comment = $audiobookUserCommentRepository->find($userAudiobookCommentLikeDeleteQuery->getCommentId());
-
-            if ($comment === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
-            }
-
-            $commentLike = $audiobookUserCommentLikeRepository->findOneBy([
-                'audiobookUserComment' => $comment->getId(),
-                'user'                 => $user->getId(),
-                'deleted'              => false,
-            ]);
-
-            if ($commentLike === null) {
-                $endpointLogger->error('Comment like dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentLikeDontExists')]);
-            }
-
-            $commentLike->setDeleted(true);
-
-            $audiobookUserCommentLikeRepository->add($commentLike);
-            $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value]);
-
-            return ResponseTool::getResponse();
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
-    }
-
-    #[Route('/api/user/audiobook/comment/get', name: 'userAudiobookCommentGet', methods: ['POST'])]
-    #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
-    #[OA\Post(
-        description: 'Endpoint is returning comments for given audiobook for user',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content : new OA\JsonContent(
-                ref : new Model(type: UserAudiobookCommentGetQuery::class),
-                type: 'object',
-            ),
-        ),
-        responses  : [
-            new OA\Response(
-                response   : 200,
-                description: 'Success',
-                content    : new Model(type: AudiobookCommentsSuccessModel::class),
-            ),
-        ]
-    )]
-    public function userAudiobookCommentGet(
-        Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
-        AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-
-        $userAudiobookCommentGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookCommentGetQuery::class);
-
-        if ($userAudiobookCommentGetQuery instanceof UserAudiobookCommentGetQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
-
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookCommentGetQuery->getAudiobookId(), $userAudiobookCommentGetQuery->getCategoryKey());
-
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookCommentDontExists')]);
-            }
-
-            if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
-            }
-
-            $successModel = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_COMMENTS->value . $user->getId() . '_' . $audiobook->getId(), function (ItemInterface $item) use ($user, $audiobook, $audiobookUserCommentLikeRepository, $audiobookUserCommentRepository) {
-                $item->expiresAfter(CacheValidTime::FIVE_MINUTES->value);
-                $item->tag(UserStockCacheTags::AUDIOBOOK_COMMENTS->value);
-
-                $audiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    'parent'    => null,
-                    'audiobook' => $audiobook->getId(),
-                    'deleted'   => false,
-                ]);
-
-                $treeGenerator = new BuildAudiobookCommentTreeGenerator($audiobookUserComments, $audiobookUserCommentRepository, $audiobookUserCommentLikeRepository, $user, false);
-
-                return new AudiobookCommentsSuccessModel($treeGenerator->generate());
-            });
-
-            return ResponseTool::getResponse($successModel);
-        }
-
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
     }
 }

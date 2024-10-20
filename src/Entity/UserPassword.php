@@ -18,28 +18,17 @@ class UserPassword
     #[ORM\Column(type: Types::STRING, length: 512)]
     private string $password;
 
-    /**
-     * @param User $user
-     * @param ValueGeneratorInterface $generator
-     */
     public function __construct(User $user, ValueGeneratorInterface $generator)
     {
         $this->user = $user;
         $this->password = $generator->generate();
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
     public function setUser(User $user): static
     {
         $this->user = $user;
@@ -47,18 +36,11 @@ class UserPassword
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param ValueGeneratorInterface $generator
-     * @return $this
-     */
     public function setPassword(ValueGeneratorInterface $generator): static
     {
         $this->password = $generator->generate();

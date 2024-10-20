@@ -33,13 +33,6 @@ class UserInformation
     #[ORM\Column(type: Types::INTEGER)]
     private int $loginAttempts = 0;
 
-    /**
-     * @param User $user
-     * @param string $email
-     * @param string $phoneNumber
-     * @param string $firstname
-     * @param string $lastname
-     */
     public function __construct(User $user, string $email, string $phoneNumber, string $firstname, string $lastname)
     {
         $this->user = $user;
@@ -49,18 +42,11 @@ class UserInformation
         $this->lastname = $lastname;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
     public function setUser(User $user): static
     {
         $this->user = $user;
@@ -68,18 +54,10 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail(): string
     {
         return $this->email;
     }
-
-    /**
-     * @param string $email
-     * @return $this
-     */
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -87,18 +65,11 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getPhoneNumber(): string
     {
         return $this->phoneNumber;
     }
 
-    /**
-     * @param string $phoneNumber
-     * @return $this
-     */
     public function setPhoneNumber(string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
@@ -106,18 +77,10 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstname(): string
     {
         return $this->firstname;
     }
-
-    /**
-     * @param string $firstname
-     * @return $this
-     */
     public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
@@ -125,18 +88,11 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLastname(): string
     {
         return $this->lastname;
     }
 
-    /**
-     * @param string $lastname
-     * @return $this
-     */
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;

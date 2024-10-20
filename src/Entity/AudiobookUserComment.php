@@ -42,11 +42,6 @@ class AudiobookUserComment
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
 
-    /**
-     * @param string $comment
-     * @param Audiobook $audiobook
-     * @param User $user
-     */
     public function __construct(string $comment, Audiobook $audiobook, User $user)
     {
         $this->comment = $comment;

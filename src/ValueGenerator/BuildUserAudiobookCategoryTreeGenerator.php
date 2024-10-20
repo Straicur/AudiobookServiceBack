@@ -7,7 +7,6 @@ namespace App\ValueGenerator;
 use App\Entity\AudiobookCategory;
 use App\Model\User\UserCategoryTreeModel;
 use App\Repository\AudiobookCategoryRepository;
-use Symfony\Component\Uid\Uuid;
 
 class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
@@ -15,7 +14,7 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
      * @param AudiobookCategory[] $elements
      */
     public function __construct(
-        private array                                $elements,
+        private array $elements,
         private readonly AudiobookCategoryRepository $categoryRepository,
     ) {
     }

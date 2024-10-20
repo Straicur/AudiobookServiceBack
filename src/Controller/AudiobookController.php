@@ -22,7 +22,7 @@ use App\Query\Common\AudiobookCoversQuery;
 use App\Query\Common\AudiobookPartQuery;
 use App\Repository\AudiobookRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -56,9 +56,10 @@ use Throwable;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Audiobook')]
+#[Route('/api')]
 class AudiobookController extends AbstractController
 {
-    #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
+    #[Route('/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning specific part of audiobook',
@@ -82,7 +83,7 @@ class AudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
@@ -146,7 +147,7 @@ class AudiobookController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
+    #[Route('/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning covers paths for given audiobooks',
@@ -170,7 +171,7 @@ class AudiobookController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 

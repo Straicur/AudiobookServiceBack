@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\TechnicalBreak;
 use App\Enums\TechnicalBreakOrder;
+use App\Model\Serialization\AdminTechnicalBreaksSearchModel;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -55,36 +56,36 @@ class TechnicalBreakRepository extends ServiceEntityRepository
     /**
      * @return TechnicalBreak[]
      */
-    public function getTechnicalBreakByPage(?string $nameOrLastname, ?bool $active, ?int $order, ?DateTime $dateFrom, ?DateTime $dateTo): array
+    public function getTechnicalBreakByPage(AdminTechnicalBreaksSearchModel $adminTechnicalBreaksSearchModel): array
     {
         $qb = $this->createQueryBuilder('tb');
 
-        if ($nameOrLastname !== null) {
+        if ($adminTechnicalBreaksSearchModel->getNameOrLastname() !== null) {
             $qb->innerJoin('tb.user', 'u', Join::WITH, 'u.id = tb.user')
                 ->innerJoin('u.userInformation', 'ui', Join::WITH, 'ui.user = u.id')
                 ->andWhere('((ui.firstname LIKE :nameOrLastname) OR (ui.lastname LIKE :nameOrLastname) )')
-                ->setParameter('nameOrLastname', '%' . $nameOrLastname. '%');
+                ->setParameter('nameOrLastname', '%' . $adminTechnicalBreaksSearchModel->getNameOrLastname() . '%');
         }
 
-        if ($active !== null) {
+        if ($adminTechnicalBreaksSearchModel->getActive() !== null) {
             $qb->andWhere('tb.active = :active')
-                ->setParameter('active', $active);
+                ->setParameter('active', $adminTechnicalBreaksSearchModel->getActive());
         }
 
-        if ($dateFrom !== null && $dateTo !== null) {
+        if ($adminTechnicalBreaksSearchModel->getDateFrom() !== null && $adminTechnicalBreaksSearchModel->getDateTo() !== null) {
             $qb->andWhere('((tb.dateFrom > :dateFrom) AND (tb.dateFrom < :dateTo))')
-                ->setParameter('dateFrom', $dateFrom)
-                ->setParameter('dateTo', $dateTo);
-        } elseif ($dateTo !== null) {
+                ->setParameter('dateFrom', $adminTechnicalBreaksSearchModel->getDateFrom())
+                ->setParameter('dateTo', $adminTechnicalBreaksSearchModel->getDateTo());
+        } elseif ($adminTechnicalBreaksSearchModel->getDateTo() !== null) {
             $qb->andWhere('(tb.dateFrom < :dateTo)')
-                ->setParameter('dateTo', $dateTo);
-        } elseif ($dateFrom !== null) {
+                ->setParameter('dateTo', $adminTechnicalBreaksSearchModel->getDateTo());
+        } elseif ($adminTechnicalBreaksSearchModel->getDateFrom() !== null) {
             $qb->andWhere('(tb.dateFrom > :dateFrom)')
-                ->setParameter('dateFrom', $dateFrom);
+                ->setParameter('dateFrom', $adminTechnicalBreaksSearchModel->getDateFrom());
         }
 
-        if ($order !== null) {
-            switch ($order) {
+        if ($adminTechnicalBreaksSearchModel->getOrder() !== null) {
+            switch ($adminTechnicalBreaksSearchModel->getOrder()) {
                 case TechnicalBreakOrder::LATEST->value:
                 {
                     $qb->orderBy('tb.dateFrom', 'DESC');

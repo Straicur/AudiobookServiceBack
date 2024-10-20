@@ -28,11 +28,6 @@ class AudiobookRating
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    /**
-     * @param Audiobook $audiobook
-     * @param bool $rating
-     * @param User $user
-     */
     public function __construct(Audiobook $audiobook, int $rating, User $user)
     {
         $this->audiobook = $audiobook;

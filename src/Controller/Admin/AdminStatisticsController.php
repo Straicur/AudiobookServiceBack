@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Enums\Cache\AdminCacheKeys;
@@ -53,9 +53,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminStatistics')]
+#[Route('/api/admin')]
 class AdminStatisticsController extends AbstractController
 {
-    #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
+    #[Route('/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning main statistic data',
@@ -77,13 +78,15 @@ class AdminStatisticsController extends AbstractController
         TechnicalBreakRepository $technicalBreakRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
-        [$users,
+        [
+            $users,
             $categories,
             $audiobooks,
             $lastWeekRegistered,
             $lastWeekLogins,
             $lastWeekNotifications,
-            $lastWeekSystemBreaks] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
+            $lastWeekSystemBreaks,
+        ] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
                 $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
                 $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
@@ -103,19 +106,31 @@ class AdminStatisticsController extends AbstractController
                 $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
                 $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeek();
                 $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
-                return [$users,
+            return [
+                $users,
                 $categories,
                 $audiobooks,
                 $lastWeekRegistered,
                 $lastWeekLogins,
                 $lastWeekNotifications,
-                $lastWeekSystemBreaks];
-            });
+                $lastWeekSystemBreaks,
+            ];
+        });
 
-        return ResponseTool::getResponse(new AdminStatisticMainSuccessModel($users, $categories, $audiobooks, $lastWeekRegistered, $lastWeekLogins, $lastWeekNotifications, $lastWeekSystemBreaks));
+        return ResponseTool::getResponse(
+            new AdminStatisticMainSuccessModel(
+                $users,
+                $categories,
+                $audiobooks,
+                $lastWeekRegistered,
+                $lastWeekLogins,
+                $lastWeekNotifications,
+                $lastWeekSystemBreaks
+            )
+        );
     }
 
-    #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
+    #[Route('/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint  is returning most liked audiobooks statistics',

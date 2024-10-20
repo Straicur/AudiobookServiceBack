@@ -38,6 +38,9 @@ class RemoveNotUsedAudiobooksCommand extends Command
             ]);
 
             if ($isInRepo === null) {
+                /**
+                 * Delete if there is no audiobook file path in database
+                 */
                 $this->audiobookService->removeFolder($each);
             }
         }

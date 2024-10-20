@@ -82,19 +82,6 @@ class Audiobook
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $imgFileChangeDate = null;
 
-    /**
-     * @param string $title
-     * @param string $author
-     * @param string $version
-     * @param string $album
-     * @param DateTime $year
-     * @param int $duration
-     * @param string $size
-     * @param int $parts
-     * @param string $description
-     * @param AudiobookAgeRange $age
-     * @param string $fileName
-     */
     public function __construct(
         string $title,
         string $author,

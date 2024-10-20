@@ -60,11 +60,11 @@ class AdminReportListQuery
                 ]),
                 'dateFrom'    => new Assert\Optional([
                     new Assert\NotBlank(),
-                    new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
+                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'dateTo'      => new Assert\Optional([
                     new Assert\NotBlank(),
-                    new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
+                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
                 'order'       => new Assert\Optional([
                     new Assert\NotBlank(message: 'Order is empty'),
@@ -85,8 +85,8 @@ class AdminReportListQuery
         new OA\Property(property: 'user', type: 'string', example: true, nullable: true),
         new OA\Property(property: 'accepted', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'denied', type: 'boolean', example: false, nullable: true),
-        new OA\Property(property: 'dateFrom', type: 'datetime', example: 'd.m.Y', nullable: true),
-        new OA\Property(property: 'dateTo', type: 'datetime', example: 'd.m.Y', nullable: true),
+        new OA\Property(property: 'dateFrom', type: 'string', example: 'd.m.Y', nullable: true),
+        new OA\Property(property: 'dateTo', type: 'string', example: 'd.m.Y', nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
@@ -111,14 +111,6 @@ class AdminReportListQuery
             $searchData['order'] !== ReportOrderSearch::LATEST->value
         ) {
             $searchData['order'] = ReportOrderSearch::LATEST->value;
-        }
-
-        if (array_key_exists('dateFrom', $searchData)) {
-            $searchData['dateFrom'] = DateTime::createFromFormat('d.m.Y', $searchData['dateFrom']);
-        }
-
-        if (array_key_exists('dateTo', $searchData)) {
-            $searchData['dateTo'] = DateTime::createFromFormat('d.m.Y', $searchData['dateTo']);
         }
 
         $this->searchData = $searchData;

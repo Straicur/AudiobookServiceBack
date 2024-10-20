@@ -25,7 +25,7 @@ use App\Repository\NotificationCheckRepository;
 use App\Repository\NotificationRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -58,9 +58,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Tag(name: 'Notification')]
+#[Route('/api')]
 class NotificationController extends AbstractController
 {
-    #[Route('/api/notifications', name: 'notifications', methods: ['POST'])]
+    #[Route('/notifications', name: 'notifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method get all notifications from the system for logged user',
@@ -85,7 +86,7 @@ class NotificationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         NotificationRepository $notificationRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationCheckRepository $checkRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -141,7 +142,7 @@ class NotificationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/notification/activate', name: 'notificationActivate', methods: ['PUT'])]
+    #[Route('/notification/activate', name: 'notificationActivate', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Method get is activating given notification so user can see if he read this notification',
@@ -165,7 +166,7 @@ class NotificationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         NotificationRepository $notificationRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationCheckRepository $checkRepository,
     ): Response {
         $systemNotificationActivateQuery = $requestServiceInterface->getRequestBodyContent($request, SystemNotificationActivateQuery::class);
@@ -197,7 +198,7 @@ class NotificationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/new/notifications', name: 'newNotifications', methods: ['POST'])]
+    #[Route('/new/notifications', name: 'newNotifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method get amount of new notifications for logged user',

@@ -28,9 +28,6 @@ class UserCategoryModel
         return $this->audiobooks;
     }
 
-    /**
-     * @param array $audiobooks
-     */
     public function setAudiobooks(array $audiobooks): void
     {
         $this->audiobooks = $audiobooks;

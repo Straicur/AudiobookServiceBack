@@ -70,7 +70,7 @@ class AdminAudiobooksQuery
                 ]),
                 'year'       => new Assert\Optional([
                     new Assert\NotBlank(message: 'Year is empty'),
-                    new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
+                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
                 ]),
             ],
         ]));
@@ -87,7 +87,7 @@ class AdminAudiobooksQuery
         new OA\Property(property: 'parts', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'age', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'order', type: 'integer', example: 1, nullable: true),
-        new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),
+        new OA\Property(property: 'year', type: 'string', example: 'd.m.Y', nullable: true),
     ], type    : 'object')]
     public function setSearchData(array $searchData): void
     {
@@ -114,10 +114,6 @@ class AdminAudiobooksQuery
             $searchData['order'] !== AudiobookOrderSearch::WORST_RATED->value
         ) {
             $searchData['order'] = AudiobookOrderSearch::POPULAR->value;
-        }
-
-        if (array_key_exists('year', $searchData)) {
-            $searchData['year'] = DateTime::createFromFormat('d.m.Y', $searchData['year']);
         }
 
         $this->searchData = $searchData;

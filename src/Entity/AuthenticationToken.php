@@ -32,10 +32,6 @@ class AuthenticationToken
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateExpired;
 
-    /**
-     * @param User $user
-     * @param ValueGeneratorInterface $tokenGenerator
-     */
     public function __construct(User $user, ValueGeneratorInterface $tokenGenerator)
     {
         $this->user = $user;

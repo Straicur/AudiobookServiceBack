@@ -50,10 +50,6 @@ class RegisterCodeRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
     public function setCodesToNotActive(User $user): void
     {
         $qb = $this->createQueryBuilder('rc')

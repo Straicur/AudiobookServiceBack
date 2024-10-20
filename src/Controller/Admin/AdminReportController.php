@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Entity\UserBanHistory;
@@ -23,6 +23,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminReportsSearchModel;
 use App\Query\Admin\AdminReportAcceptQuery;
 use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
@@ -31,10 +32,10 @@ use App\Repository\ReportRepository;
 use App\Repository\UserBanHistoryRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
-use App\Service\Admin\Report\AdminReportAcceptService;
-use App\Service\Admin\Report\AdminReportRejectService;
+use App\Service\Admin\Report\AdminReportAcceptServiceInterface;
+use App\Service\Admin\Report\AdminReportRejectServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -46,6 +47,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[OA\Response(
     response   : 400,
@@ -68,9 +72,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminReport')]
+#[Route('/api/admin')]
 class AdminReportController extends AbstractController
 {
-    #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
+    #[Route('/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
@@ -92,13 +97,13 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
         MailerInterface $mailer,
         AudiobookUserCommentRepository $commentRepository,
         UserRepository $userRepository,
         UserBanHistoryRepository $banHistoryRepository,
-        AdminReportAcceptService $adminReportService,
+        AdminReportAcceptServiceInterface $adminReportService,
     ): Response {
         $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
@@ -142,7 +147,8 @@ class AdminReportController extends AbstractController
                     $banPeriod = (new DateTime())->modify($periodTo);
 
                     if ($periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin() && (!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod))) {
-                        $user->setBanned(true)
+                        $user
+                            ->setBanned(true)
                             ->setBannedTo($banPeriod);
 
                         $userRepository->add($user);
@@ -190,7 +196,7 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
+    #[Route('/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',
@@ -212,9 +218,9 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
-        AdminReportRejectService $adminReportService,
+        AdminReportRejectServiceInterface $adminReportService,
     ): Response {
         $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
@@ -245,7 +251,7 @@ class AdminReportController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
+    #[Route('/report/list', name: 'apiAdminReportList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get report list',
@@ -268,65 +274,31 @@ class AdminReportController extends AbstractController
         Request $request,
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         ReportRepository $reportRepository,
         UserDeleteRepository $userDeleteRepository,
         AudiobookUserCommentRepository $commentRepository,
+        SerializerInterface $serializer,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
             $reportSearchData = $adminReportListQuery->getSearchData();
 
-            $actionId = null;
-            $desc = null;
-            $email = null;
-            $ip = null;
-            $type = null;
-            $user = null;
-            $accepted = null;
-            $denied = null;
-            $dateFrom = null;
-            $dateTo = null;
-            $order = null;
-
-            if (array_key_exists('desc', $reportSearchData)) {
-                $desc = ($reportSearchData['desc'] && '' !== $reportSearchData['desc']) ? '%' . $reportSearchData['desc'] . '%' : null;
-            }
-            if (array_key_exists('email', $reportSearchData)) {
-                $email = ($reportSearchData['email'] && '' !== $reportSearchData['email']) ? '%' . $reportSearchData['email'] . '%' : null;
-            }
-            if (array_key_exists('ip', $reportSearchData)) {
-                $ip = ($reportSearchData['ip'] && '' !== $reportSearchData['ip']) ? '%' . $reportSearchData['ip'] . '%' : null;
-            }
-            if (array_key_exists('actionId', $reportSearchData)) {
-                $actionId = ($reportSearchData['actionId'] && '' !== $reportSearchData['actionId']) ? '%' . $reportSearchData['actionId'] . '%' : null;
-            }
-            if (array_key_exists('type', $reportSearchData)) {
-                $type = $reportSearchData['type'];
-            }
-            if (array_key_exists('user', $reportSearchData)) {
-                $user = $reportSearchData['user'];
-            }
-            if (array_key_exists('accepted', $reportSearchData)) {
-                $accepted = $reportSearchData['accepted'];
-            }
-            if (array_key_exists('denied', $reportSearchData)) {
-                $denied = $reportSearchData['denied'];
-            }
-            if (array_key_exists('order', $reportSearchData)) {
-                $order = $reportSearchData['order'];
-            }
-            if (array_key_exists('dateFrom', $reportSearchData) && $reportSearchData['dateFrom']) {
-                $dateFrom = $reportSearchData['dateFrom'];
-            }
-            if (array_key_exists('dateTo', $reportSearchData) && $reportSearchData['dateTo']) {
-                $dateTo = $reportSearchData['dateTo'];
-            }
+            $reportSearchModel = new AdminReportsSearchModel();
+            $serializer->deserialize(
+                json_encode($reportSearchData),
+                AdminReportsSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $reportSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminReportListSuccessModel();
 
-            $reports = $reportRepository->getReportsByPage($actionId, $desc, $email, $ip, $type, $user, $accepted, $denied, $dateFrom, $dateTo, $order);
+            $reports = $reportRepository->getReportsByPage($reportSearchModel);
 
             $minResult = $adminReportListQuery->getPage() * $adminReportListQuery->getLimit();
             $maxResult = $adminReportListQuery->getLimit() + $minResult;

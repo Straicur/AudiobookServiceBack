@@ -18,7 +18,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
  */
 #[AsCommand(
     name       : 'audiobookservice:notifications:activate',
-    description: 'Activate Notifications',
+    description: 'Activate Notifications where date of activation is smaller than now',
 )]
 class ActivateNotificationsCommand extends Command
 {

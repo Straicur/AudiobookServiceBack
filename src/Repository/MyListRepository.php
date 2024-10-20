@@ -52,11 +52,6 @@ class MyListRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @param Audiobook $audiobook
-     * @return bool
-     */
     public function getAudiobookInMyList(User $user, Audiobook $audiobook): bool
     {
         $qb = $this->createQueryBuilder('ml')

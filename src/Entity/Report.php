@@ -54,9 +54,6 @@ class Report
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $settleDate = null;
 
-    /**
-     * @param ReportType $type
-     */
     public function __construct(ReportType $type)
     {
         $this->type = $type->value;

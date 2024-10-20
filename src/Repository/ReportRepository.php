@@ -8,6 +8,7 @@ use App\Entity\Report;
 use App\Entity\User;
 use App\Enums\ReportOrderSearch;
 use App\Enums\ReportType;
+use App\Model\Serialization\AdminReportsSearchModel;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -101,77 +102,66 @@ class ReportRepository extends ServiceEntityRepository
     /**
      * @return Report[]
      */
-    public function getReportsByPage(
-        string $actionId = null,
-        string $desc = null,
-        string $email = null,
-        string $ip = null,
-        int $type = null,
-        bool $user = null,
-        bool $accepted = null,
-        bool $denied = null,
-        DateTime $dateFrom = null,
-        DateTime $dateTo = null,
-        int $order = null
-    ): array {
+    public function getReportsByPage(AdminReportsSearchModel $adminReportsSearchModel): array
+    {
         $qb = $this->createQueryBuilder('r');
 
-        if ($actionId !== null) {
+        if ($adminReportsSearchModel->getActionId() !== null) {
             $qb->andWhere('r.actionId LIKE :actionId')
-                ->setParameter('actionId', $actionId);
+                ->setParameter('actionId', $adminReportsSearchModel->getActionId());
         }
 
-        if ($desc !== null) {
+        if ($adminReportsSearchModel->getDesc() !== null) {
             $qb->andWhere('r.description LIKE :desc')
-                ->setParameter('desc', $desc);
+                ->setParameter('desc', $adminReportsSearchModel->getDesc());
         }
 
-        if ($email !== null) {
+        if ($adminReportsSearchModel->getEmail()  !== null) {
             $qb->andWhere('r.email LIKE :email')
-                ->setParameter('email', $email);
+                ->setParameter('email', $adminReportsSearchModel->getEmail());
         }
 
-        if ($ip !== null) {
+        if ($adminReportsSearchModel->getIp() !== null) {
             $qb->andWhere('r.ip LIKE :ip')
-                ->setParameter('ip', $ip);
+                ->setParameter('ip', $adminReportsSearchModel->getIp());
         }
 
-        if ($type !== null) {
+        if ($adminReportsSearchModel->getType() !== null) {
             $qb->andWhere('r.type = :type')
-                ->setParameter('type', $type);
+                ->setParameter('type', $adminReportsSearchModel->getType());
         }
 
-        if ($user) {
+        if ($adminReportsSearchModel->getUser()) {
             $qb->andWhere('r.user IS NOT NULL');
         }
 
-        if ($user !== null && !$user) {
+        if ($adminReportsSearchModel->getUser() !== null && !$adminReportsSearchModel->getUser()) {
             $qb->andWhere('r.user IS NULL');
         }
 
-        if ($accepted) {
+        if ($adminReportsSearchModel->getAccepted()) {
             $qb->andWhere('r.accepted = :accepted')
-                ->setParameter('accepted', $accepted);
+                ->setParameter('accepted', $adminReportsSearchModel->getAccepted());
         }
 
-        if ($denied) {
+        if ($adminReportsSearchModel->getDenied()) {
             $qb->andWhere('r.denied = :denied')
-                ->setParameter('denied', $denied);
+                ->setParameter('denied', $adminReportsSearchModel->getDenied());
         }
 
-        if ($dateFrom !== null && $dateTo !== null) {
+        if ($adminReportsSearchModel->getDateFrom() !== null && $adminReportsSearchModel->getDateTo() !== null) {
             $qb->andWhere('((r.dateAdd >= :dateFrom) AND (r.dateAdd <= :dateTo))')
-                ->setParameter('dateFrom', $dateFrom)
-                ->setParameter('dateTo', $dateTo);
-        } elseif ($dateTo !== null) {
+                ->setParameter('dateFrom', $adminReportsSearchModel->getDateFrom())
+                ->setParameter('dateTo', $adminReportsSearchModel->getDateTo());
+        } elseif ($adminReportsSearchModel->getDateTo() !== null) {
             $qb->andWhere('(r.dateAdd <= :dateTo)')
-                ->setParameter('dateTo', $dateTo);
-        } elseif ($dateFrom !== null) {
+                ->setParameter('dateTo', $adminReportsSearchModel->getDateTo());
+        } elseif ($adminReportsSearchModel->getDateFrom() !== null) {
             $qb->andWhere('(r.dateAdd >= :dateFrom)')
-                ->setParameter('dateFrom', $dateFrom);
+                ->setParameter('dateFrom', $adminReportsSearchModel->getDateFrom());
         }
 
-        if ($order !== null && $order === ReportOrderSearch::OLDEST->value) {
+        if ($adminReportsSearchModel->getOrder() !== null && $adminReportsSearchModel->getOrder() === ReportOrderSearch::OLDEST->value) {
             $qb->orderBy('r.dateAdd', 'ASC');
         } else {
             $qb->orderBy('r.dateAdd', 'DESC');

@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enums\NotificationOrderSearch;
+use App\Model\Serialization\AdminNotificationsSearchModel;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -74,7 +75,6 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param User $user
      * @return Notification[]
      */
     public function getUserNotifications(User $user): array
@@ -89,10 +89,6 @@ class NotificationRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param User $user
-     * @return int
-     */
     public function getUserActiveNotifications(User $user): int
     {
         $qb = $this->createQueryBuilder('n')
@@ -112,36 +108,31 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string|null $text
-     * @param int|null $type
-     * @param bool|null $deleted
-     * @param int|null $order
      * @return Notification[]
      */
-    public function getSearchNotifications(?string $text = null, ?int $type = null, ?bool $deleted = null, int $order = null): array
+    public function getSearchNotifications(AdminNotificationsSearchModel $adminNotificationsSearchModel): array
     {
         $qb = $this->createQueryBuilder('n');
 
-        if ($text !== null) {
+        if ($adminNotificationsSearchModel->getText() !== null) {
             $qb->andWhere('n.metaData LIKE :text')
-                ->setParameter('text', '%' . $text . '%');
+                ->setParameter('text', '%' . $adminNotificationsSearchModel->getText() . '%');
         }
-        if ($type !== null) {
+        if ($adminNotificationsSearchModel->getType() !== null) {
             $qb->andWhere('n.type = :type')
-                ->setParameter('type', $type);
+                ->setParameter('type', $adminNotificationsSearchModel->getType());
         }
-        if (is_bool($deleted)) {
+        if (is_bool($adminNotificationsSearchModel->getDeleted())) {
             $qb->andWhere('n.deleted = :deleted')
-                ->setParameter('deleted', $deleted);
+                ->setParameter('deleted', $adminNotificationsSearchModel->getDeleted());
         }
 
-        switch ($order) {
+        switch ($adminNotificationsSearchModel->getOrder()) {
             case NotificationOrderSearch::OLDEST->value:
             {
                 $qb->orderBy('n.dateAdd', 'ASC');
                 break;
             }
-            case NotificationOrderSearch::LATEST->value:
             default:
             {
                 $qb->orderBy('n.dateAdd', 'DESC');
@@ -152,10 +143,6 @@ class NotificationRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param Uuid $actionId
-     * @return void
-     */
     public function updateDeleteNotificationsByAction(Uuid $actionId): void
     {
         $qb = $this->createQueryBuilder('n')

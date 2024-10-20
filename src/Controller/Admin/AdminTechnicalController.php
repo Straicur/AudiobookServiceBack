@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Entity\TechnicalBreak;
@@ -19,13 +19,14 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminTechnicalBreaksSearchModel;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
 use App\Query\Admin\AdminTechnicalCacheClearQuery;
 use App\Repository\TechnicalBreakRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -39,6 +40,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
@@ -62,9 +66,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminTechnical')]
+#[Route('/api/admin')]
 class AdminTechnicalController extends AbstractController
 {
-    #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPut', methods: ['PUT'])]
+    #[Route('/technical/break', name: 'adminTechnicalBreakPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is used to add Technical Break for admin',
@@ -95,7 +100,7 @@ class AdminTechnicalController extends AbstractController
         return ResponseTool::getResponse(httpCode: 201);
     }
 
-    #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]
+    #[Route('/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to edit Technical Break by admin',
@@ -119,7 +124,7 @@ class AdminTechnicalController extends AbstractController
         AuthorizedUserServiceInterface $authorizedUserService,
         TechnicalBreakRepository $technicalBreakRepository,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
@@ -133,9 +138,10 @@ class AdminTechnicalController extends AbstractController
                 throw new DataNotFoundException([$translateService->getTranslation('TechnicalBreakDontExists')]);
             }
 
-            $technicalBreak->setUser($authorizedUserService::getAuthorizedUser());
-            $technicalBreak->setDateTo(new DateTime());
-            $technicalBreak->setActive(false);
+            $technicalBreak
+                ->setUser($authorizedUserService::getAuthorizedUser())
+                ->setDateTo(new DateTime())
+                ->setActive(false);
 
             $technicalBreakRepository->add($technicalBreak);
 
@@ -149,7 +155,7 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/technical/break/list', name: 'adminTechnicalBreakList', methods: ['POST'])]
+    #[Route('/technical/break/list', name: 'adminTechnicalBreakList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get list of Technical Breaks for admin',
@@ -173,38 +179,28 @@ class AdminTechnicalController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         TechnicalBreakRepository $technicalBreakRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
         if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
             $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
 
-            $nameOrLastname = null;
-            $active = null;
-            $order = null;
-            $dateFrom = null;
-            $dateTo = null;
-
-            if (array_key_exists('nameOrLastname', $technicalBreakListData)) {
-                $nameOrLastname = $technicalBreakListData['nameOrLastname'];
-            }
-            if (array_key_exists('active', $technicalBreakListData)) {
-                $active = $technicalBreakListData['active'];
-            }
-            if (array_key_exists('order', $technicalBreakListData)) {
-                $order = $technicalBreakListData['order'];
-            }
-            if (array_key_exists('dateFrom', $technicalBreakListData)) {
-                $dateFrom = $technicalBreakListData['dateFrom'];
-            }
-            if (array_key_exists('dateTo', $technicalBreakListData) && $technicalBreakListData['dateTo'] !== false) {
-                $dateTo = $technicalBreakListData['dateTo'];
-            }
+            $reportSearchModel = new AdminTechnicalBreaksSearchModel();
+            $serializer->deserialize(
+                json_encode($technicalBreakListData),
+                AdminTechnicalBreaksSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $reportSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminTechnicalBreakSuccessModel();
 
-            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($nameOrLastname, $active, $order, $dateFrom, $dateTo);
+            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($reportSearchModel);
 
             $minResult = $adminTechnicalBreakListQuery->getPage() * $adminTechnicalBreakListQuery->getLimit();
             $maxResult = $adminTechnicalBreakListQuery->getLimit() + $minResult;
@@ -244,7 +240,7 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/technical/cache/clear', name: 'adminTechnicalCacheClear', methods: ['PATCH'])]
+    #[Route('/technical/cache/clear', name: 'adminTechnicalCacheClear', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to clear cache pools by admin',
@@ -267,7 +263,7 @@ class AdminTechnicalController extends AbstractController
         RequestServiceInterface $requestService,
         TagAwareCacheInterface $stockCache,
         LoggerInterface $endpointLogger,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         KernelInterface $kernel,
     ): Response {
         $adminTechnicalCacheClearQuery = $requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);
@@ -335,7 +331,7 @@ class AdminTechnicalController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
+    #[Route('/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to clear cache pools by admin',

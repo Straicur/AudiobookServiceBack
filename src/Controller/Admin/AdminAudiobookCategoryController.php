@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Annotation\AuthValidation;
 use App\Entity\AudiobookCategory;
@@ -33,7 +33,7 @@ use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
 use App\Repository\NotificationRepository;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAdminAudiobookCategoryTreeGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
@@ -68,9 +68,10 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminAudiobookCategory')]
+#[Route('/api/admin')]
 class AdminAudiobookCategoryController extends AbstractController
 {
-    #[Route('/api/admin/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
+    #[Route('/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding new category',
@@ -93,7 +94,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAddQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
@@ -129,7 +130,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
+    #[Route('/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given category',
@@ -152,7 +153,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
@@ -180,7 +181,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
+    #[Route('/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is removing given category',
@@ -203,7 +204,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         NotificationRepository $notificationRepository,
         TagAwareCacheInterface $stockCache,
     ): Response {
@@ -231,7 +232,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
+    #[Route('/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding audiobook to given category',
@@ -255,7 +256,7 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAddAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
@@ -293,7 +294,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
+    #[Route('/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is removing audiobook from given category',
@@ -317,7 +318,7 @@ class AdminAudiobookCategoryController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
         AudiobookRepository $audiobookRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryRemoveAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
@@ -356,7 +357,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
+    #[Route('/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning all audiobooks in given category',
@@ -380,7 +381,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
@@ -448,7 +449,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
+    #[Route('/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system as a tree',
@@ -482,7 +483,7 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/admin/categories', name: 'adminCategories', methods: ['GET'])]
+    #[Route('/categories', name: 'adminCategories', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system',
@@ -518,7 +519,7 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/api/admin/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
+    #[Route('/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given category',
@@ -541,7 +542,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryActiveQuery = $requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
@@ -569,7 +570,7 @@ class AdminAudiobookCategoryController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/admin/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
+    #[Route('/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning category details',
@@ -593,7 +594,7 @@ class AdminAudiobookCategoryController extends AbstractController
         RequestServiceInterface $requestService,
         LoggerInterface $endpointLogger,
         AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateService $translateService,
+        TranslateServiceInterface $translateService,
         TagAwareCacheInterface $stockCache,
     ): Response {
         $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);

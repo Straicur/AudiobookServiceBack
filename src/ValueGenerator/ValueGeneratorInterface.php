@@ -2,9 +2,6 @@
 
 namespace App\ValueGenerator;
 
-/**
- * ValueGeneratorInterface
- */
 interface ValueGeneratorInterface
 {
     /**

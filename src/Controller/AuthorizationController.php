@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Annotation\AuthValidation;
-use App\Entity\AuthenticationToken;
-use App\Entity\UserBanHistory;
-use App\Enums\BanPeriodRage;
-use App\Enums\UserBanType;
-use App\Enums\UserLogin;
 use App\Enums\UserRolesNames;
-use App\Exception\DataNotFoundException;
 use App\Exception\InvalidJsonDataException;
-use App\Exception\PermissionException;
 use App\Model\Common\AuthorizationRoleModel;
 use App\Model\Common\AuthorizationRolesModel;
 use App\Model\Common\AuthorizationSuccessModel;
@@ -22,26 +15,17 @@ use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
 use App\Query\Common\AuthorizeQuery;
-use App\Repository\AuthenticationTokenRepository;
-use App\Repository\UserBanHistoryRepository;
-use App\Repository\UserInformationRepository;
-use App\Repository\UserPasswordRepository;
-use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
+use App\Service\User\UserLoginServiceInterface;
 use App\Tool\ResponseTool;
-use App\ValueGenerator\AuthTokenGenerator;
-use App\ValueGenerator\PasswordHashGenerator;
-use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Response(
@@ -65,9 +49,10 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Authorize')]
+#[Route('/api')]
 class AuthorizationController extends AbstractController
 {
-    #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
+    #[Route('/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to authorize user credentials. Return authorized token',
         security   : [],
@@ -91,122 +76,30 @@ class AuthorizationController extends AbstractController
         RequestServiceInterface $requestServiceInterface,
         LoggerInterface $usersLogger,
         LoggerInterface $endpointLogger,
-        UserInformationRepository $userInformationRepository,
-        UserPasswordRepository $userPasswordRepository,
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        TranslateService $translateService,
-        UserBanHistoryRepository $banHistoryRepository,
-        UserRepository $userRepository,
-        MailerInterface $mailer,
+        UserLoginServiceInterface $loginService,
+        TranslateServiceInterface $translateService,
     ): Response {
         $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
-            $passwordHashGenerator = new PasswordHashGenerator($authenticationQuery->getPassword());
-
-            $userInformationEntity = $userInformationRepository->findOneBy([
-                'email' => $authenticationQuery->getEmail(),
-            ]);
-
-            if ($userInformationEntity === null) {
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('EmailDontExists')]);
-            }
-
-            $user = $userInformationEntity->getUser();
-
-            if ($user->isBanned()) {
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserBanned')]);
-            }
-
-            if (!$user->isActive()) {
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('ActivateAccount')]);
-            }
-
-            $roles = $user->getRoles();
-            $isUser = false;
-
-            foreach ($roles as $role) {
-                if ($role->getName() !== UserRolesNames::GUEST->value) {
-                    $isUser = true;
-                }
-            }
-
-            if (!$isUser) {
-                throw new PermissionException();
-            }
-
-            $passwordEntity = $userPasswordRepository->findOneBy([
-                'user' => $user->getId(),
-                'password' => $passwordHashGenerator->generate(),
-            ]);
-
-            if ($passwordEntity === null) {
-                $translateService->setPreferredLanguage($request);
-
-                $loginAttempts = $userInformationEntity->getLoginAttempts();
-
-                if ($loginAttempts < UserLogin::MAX_LOGIN_ATTEMPTS->value) {
-                    $userInformationEntity->setLoginAttempts($loginAttempts + 1);
-                    $userInformationRepository->add($userInformationEntity);
-                } else {
-                    $userInformationEntity->setLoginAttempts(0);
-                    $userInformationRepository->add($userInformationEntity);
-
-                    $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
-
-                    $banHistory = new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::MAX_LOGINS_BREAK);
-                    $banHistoryRepository->add($banHistory);
-
-                    $user->setBanned(true)
-                        ->setBannedTo($banPeriod);
-
-                    $userRepository->add($user);
-
-                    $email = (new TemplatedEmail())
-                        ->from($_ENV['INSTITUTION_EMAIL'])
-                        ->to($userInformationEntity->getEmail())
-                        ->subject($translateService->getTranslation('MaxLoginsMailAttempts'))
-                        ->htmlTemplate('emails/userBanTooManyLoginsAttempts.html.twig')
-                        ->context([
-                            'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                            'banPeriod' => BanPeriodRage::HOUR_BAN->value,
-                            'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
-                        ]);
-                    $mailer->send($email);
-
-                    throw new DataNotFoundException([$translateService->getTranslation('BannedForBreakMaxLogins')]);
-                }
-
-                throw new DataNotFoundException([$translateService->getTranslation('NotActivePassword')]);
-            }
-
-            $authenticationToken = $authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
-
-            if ($authenticationToken === null) {
-                $authTokenGenerator = new AuthTokenGenerator($user);
-                $authenticationToken = new AuthenticationToken($user, $authTokenGenerator);
-                $authenticationTokenRepository->add($authenticationToken);
-            }
+            $userInformation = $loginService->getUserInformation($authenticationQuery->getEmail(), $request);
+            $user = $loginService->getValidUser($userInformation, $request);
+            $loginService->loginToService($userInformation, $request, $authenticationQuery->getPassword());
+            $loginService->resetLoginAttempts($userInformation);
+            $authenticationToken = $loginService->getAuthenticationToken($user);
 
             $usersLogger->info('LOGIN', [$user->getId()->__toString()]);
 
             $rolesModel = new AuthorizationRolesModel();
-
             $isAdmin = false;
 
-            foreach ($roles as $role) {
+            foreach ($user->getRoles() as $role) {
                 $rolesModel->addAuthorizationRoleModel(new AuthorizationRoleModel($role->getName()));
 
                 if ($role->getName() === UserRolesNames::ADMINISTRATOR->value || $role->getName() === UserRolesNames::RECRUITER->value) {
                     $isAdmin = true;
                 }
             }
-
-            $userInformationEntity->setLoginAttempts(0);
-            $userInformationRepository->add($userInformationEntity);
 
             $responseModel = new AuthorizationSuccessModel($authenticationToken->getToken(), $rolesModel, $isAdmin);
 
@@ -219,7 +112,7 @@ class AuthorizationController extends AbstractController
         throw new InvalidJsonDataException($translateService);
     }
 
-    #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
+    #[Route('/logout', name: 'apiLogout', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method used to logout user',
@@ -243,7 +136,7 @@ class AuthorizationController extends AbstractController
         return ResponseTool::getResponse();
     }
 
-    #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
+    #[Route('/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method is checking if given token is authorized',

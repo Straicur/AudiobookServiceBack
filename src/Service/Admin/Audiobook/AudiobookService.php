@@ -7,7 +7,7 @@ namespace App\Service\Admin\Audiobook;
 use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddFileInterface;
-use App\Service\TranslateService;
+use App\Service\TranslateServiceInterface;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -22,8 +22,8 @@ class AudiobookService implements AudiobookServiceInterface
     private string $whole_zip_path = '';
 
     public function __construct(
-        private readonly AudiobooksID3TagsReaderService $audiobooksID3TagsReaderService,
-        private readonly TranslateService $translateService,
+        private readonly AudiobooksID3TagsReaderServiceInterface $audiobooksID3TagsReaderService,
+        private readonly TranslateServiceInterface $translateService,
     ) {
     }
 
@@ -187,48 +187,44 @@ class AudiobookService implements AudiobookServiceInterface
         $mp3Size = 0;
         $mp3Duration = 0;
         $parts = 0;
+        $imgDir = null;
 
         if ($handle = opendir($folderDir)) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry !== '.' && $entry !== '..') {
                     $file_parts = pathinfo($entry);
-                    if ($file_parts['extension'] === 'mp3') {
+                    if ($file_parts['extension'] === 'mp3' && !empty($entry)) {
                         $mp3file = $entry;
-                        if ($mp3file !== '') {
-                            $parts++;
+                        $parts++;
 
-                            $mp3Dir = $folderDir . '/' . $mp3file;
+                        $mp3Dir = $folderDir . '/' . $mp3file;
 
-                            $mp3Size += filesize($mp3Dir);
+                        $mp3Size += filesize($mp3Dir);
 
-                            $this->audiobooksID3TagsReaderService->setFileName($mp3Dir);
-                            $id3TrackData = $this->audiobooksID3TagsReaderService->getTagsInfo();
+                        $this->audiobooksID3TagsReaderService->setFileName($mp3Dir);
+                        $id3TrackData = $this->audiobooksID3TagsReaderService->getTagsInfo();
 
-                            $mp3Duration += (int)$id3TrackData['playtime_seconds'];
+                        $mp3Duration += (int)$id3TrackData['playtime_seconds'];
 
-                            if (empty($id3Data)) {
-                                foreach ($id3TrackData as $key => $index) {
-                                    $id3Data[$key] = $index;
+                        if (array_key_exists('tags', $id3TrackData) && !empty($id3TrackData['tags'])) {
+                            $id3Tags =  current($id3TrackData['tags']);
+
+                            $sameKeys = array_intersect_key($id3Data, $id3Tags);
+
+                            $keys = array_keys($id3Tags);
+
+                            foreach ($keys as $key => $index) {
+                                if (array_key_exists($key, $sameKeys)) {
+                                    continue;
                                 }
-                            } else {
-                                $sameKeys = array_intersect_key($id3Data, $id3TrackData);
 
-                                $keys = array_keys($id3TrackData);
-
-                                foreach ($keys as $key => $index) {
-                                    if (array_key_exists($key, $sameKeys)) {
-                                        continue;
-                                    }
-
-                                    $id3Data[$index] = $id3TrackData[$index];
-                                }
+                                $id3Data[$index] = current($id3Tags[$index]);
                             }
                         }
                     } elseif ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
                         $img = $entry;
-                        if ($img !== '') {
+                        if ($img !== '' && $imgDir === null) {
                             $imgDir = '/files/' . pathinfo($folderDir)['filename'] . '/' . $img;
-                            $id3Data['imgFileDir'] = $imgDir;
                         }
                     }
                 }
@@ -240,6 +236,10 @@ class AudiobookService implements AudiobookServiceInterface
         $id3Data['size'] = number_format($mp3Size / 1048576, 2);
         $id3Data['parts'] = $parts;
         $id3Data['title'] = $this->query->getFileName();
+
+        if ($imgDir !== null) {
+            $id3Data['imgFileDir'] = $imgDir;
+        }
 
         return $id3Data;
     }

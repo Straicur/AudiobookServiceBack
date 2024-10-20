@@ -25,45 +25,28 @@ class Role
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'roles', cascade: ['persist', 'remove'])]
     private Collection $users;
 
-    /**
-     * @param string $name
-     */
     public function __construct(string $name)
     {
         $this->name = $name;
         $this->users = new ArrayCollection();
     }
 
-    /**
-     * @return Uuid
-     */
     public function getId(): Uuid
     {
         return $this->id;
     }
 
-    /**
-     * @param Uuid $id
-     * @return Role
-     */
     public function setId(Uuid $id): Role
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return Role
-     */
     public function setName(string $name): Role
     {
         $this->name = $name;

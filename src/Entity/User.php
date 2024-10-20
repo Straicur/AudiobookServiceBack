@@ -68,90 +68,55 @@ class User
         $this->notifications = new ArrayCollection();
     }
 
-    /**
-     * @return Uuid
-     */
     public function getId(): Uuid
     {
         return $this->id;
     }
 
-    /**
-     * @param Uuid $id
-     * @return User
-     */
     public function setId(Uuid $id): User
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDateCreate(): DateTime
     {
         return $this->dateCreate;
     }
 
-    /**
-     * @param DateTime $dateCreate
-     * @return User
-     */
     public function setDateCreate(DateTime $dateCreate): User
     {
         $this->dateCreate = $dateCreate;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isActive(): bool
     {
         return $this->active;
     }
 
-    /**
-     * @param bool $active
-     * @return User
-     */
     public function setActive(bool $active): User
     {
         $this->active = $active;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isBanned(): bool
     {
         return $this->banned;
     }
 
-    /**
-     * @param bool $banned
-     * @return User
-     */
     public function setBanned(bool $banned): User
     {
         $this->banned = $banned;
         return $this;
     }
 
-    /**
-     * @return UserInformation
-     */
     public function getUserInformation(): UserInformation
     {
         return $this->userInformation;
     }
 
-    /**
-     * @param UserInformation $userInformation
-     * @return $this
-     */
     public function setUserInformation(UserInformation $userInformation): static
     {
         // set the owning side of the relation if necessary
