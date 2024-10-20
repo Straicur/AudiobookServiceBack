@@ -87,7 +87,7 @@ class RegisterController extends AbstractController
             $registerService->sendMail($newUser, $registerCode, $request);
 
             $usersLogger->info('user.' . $newUser->getUserInformation()->getEmail() . 'registered');
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

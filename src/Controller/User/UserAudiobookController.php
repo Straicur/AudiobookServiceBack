@@ -736,7 +736,7 @@ class UserAudiobookController extends AbstractController
 
             $audiobookInfoRepository->add($audiobookInfo);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');
@@ -816,7 +816,7 @@ class UserAudiobookController extends AbstractController
 
             $ratingRepository->add($rating);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

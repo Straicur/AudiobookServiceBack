@@ -97,7 +97,7 @@ class AdminTechnicalController extends AbstractController
             $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
         }
 
-        return ResponseTool::getResponse(httpCode: 201);
+        return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
     }
 
     #[Route('/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]

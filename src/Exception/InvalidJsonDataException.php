@@ -47,6 +47,6 @@ class InvalidJsonDataException extends Exception implements ResponseExceptionInt
             }
         }
 
-        return ResponseTool::getResponse(new JsonDataInvalidModel($this->message, $validationErrors), 400);
+        return ResponseTool::getResponse(new JsonDataInvalidModel($this->message, $validationErrors), Response::HTTP_BAD_REQUEST);
     }
 }

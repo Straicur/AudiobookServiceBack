@@ -13,6 +13,6 @@ class TechnicalBreakException extends Exception implements ResponseExceptionInte
 {
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new TechnicalBreakExceptionModel(), 503);
+        return ResponseTool::getResponse(new TechnicalBreakExceptionModel(), Response::HTTP_SERVICE_UNAVAILABLE);
     }
 }

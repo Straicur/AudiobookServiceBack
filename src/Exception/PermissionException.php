@@ -13,6 +13,6 @@ class PermissionException extends Exception implements ResponseExceptionInterfac
 {
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new PermissionNotGrantedModel(), 403);
+        return ResponseTool::getResponse(new PermissionNotGrantedModel(), Response::HTTP_FORBIDDEN);
     }
 }

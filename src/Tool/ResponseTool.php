@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ResponseTool
 {
-    public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = 200): Response
+    public static function getResponse(?ModelInterface $responseModel = null, int $httpCode = Response::HTTP_OK): Response
     {
         $headers = [
             'Content-Type' => 'application/json',
