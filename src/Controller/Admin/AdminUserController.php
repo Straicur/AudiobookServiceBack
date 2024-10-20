@@ -28,6 +28,8 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminAudiobooksSearchModel;
+use App\Model\Serialization\AdminUsersSearchModel;
 use App\Query\Admin\AdminUserActivateQuery;
 use App\Query\Admin\AdminUserBanQuery;
 use App\Query\Admin\AdminUserChangePasswordQuery;
@@ -60,6 +62,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -535,6 +540,7 @@ class AdminUserController extends AbstractController
         UserDeleteRepository $userDeleteRepository,
         UserBanHistoryRepository $banHistoryRepository,
         TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
@@ -543,40 +549,21 @@ class AdminUserController extends AbstractController
 
             $usersSearchData = $adminUsersQuery->getSearchData();
 
-            $email = null;
-            $phoneNumber = null;
-            $firstname = null;
-            $lastname = null;
-            $active = null;
-            $banned = null;
-            $order = null;
-
-            if (array_key_exists('email', $usersSearchData)) {
-                $email = ($usersSearchData['email'] && '' !== $usersSearchData['email']) ? '%' . $usersSearchData['email'] . '%' : null;
-            }
-            if (array_key_exists('phoneNumber', $usersSearchData)) {
-                $phoneNumber = ($usersSearchData['phoneNumber'] && '' !== $usersSearchData['phoneNumber']) ? '%' . $usersSearchData['phoneNumber'] . '%' : null;
-            }
-            if (array_key_exists('firstname', $usersSearchData)) {
-                $firstname = ($usersSearchData['firstname'] && '' !== $usersSearchData['firstname']) ? '%' . $usersSearchData['firstname'] . '%' : null;
-            }
-            if (array_key_exists('lastname', $usersSearchData)) {
-                $lastname = ($usersSearchData['lastname'] && '' !== $usersSearchData['lastname']) ? '%' . $usersSearchData['lastname'] . '%' : null;
-            }
-            if (array_key_exists('active', $usersSearchData)) {
-                $active = $usersSearchData['active'];
-            }
-            if (array_key_exists('banned', $usersSearchData)) {
-                $banned = $usersSearchData['banned'];
-            }
-            if (array_key_exists('order', $usersSearchData)) {
-                $order = $usersSearchData['order'];
-            }
+            $userSearchModel = new AdminUsersSearchModel();
+            $serializer->deserialize(
+                json_encode($usersSearchData),
+                AdminUsersSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $userSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $minResult = $adminUsersQuery->getPage() * $adminUsersQuery->getLimit();
             $maxResult = $adminUsersQuery->getLimit() + $minResult;
 
-            $allUsers = $userRepository->searchUsers($email, $phoneNumber, $firstname, $lastname, $active, $banned, $order);
+            $allUsers = $userRepository->searchUsers($userSearchModel);
 
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult) {

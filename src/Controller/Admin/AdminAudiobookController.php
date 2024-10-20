@@ -27,6 +27,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminAudiobooksSearchModel;
 use App\Query\Admin\AdminAudiobookActiveQuery;
 use App\Query\Admin\AdminAudiobookAddQuery;
 use App\Query\Admin\AdminAudiobookChangeCoverQuery;
@@ -54,7 +55,6 @@ use App\Service\RequestServiceInterface;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\BuildAudiobookCommentTreeGenerator;
-use DateTime;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -62,7 +62,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Throwable;
@@ -757,56 +759,27 @@ class AdminAudiobookController extends AbstractController
         LoggerInterface $endpointLogger,
         AudiobookRepository $audiobookRepository,
         TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminAudiobooksQuery::class);
 
         if ($adminAudiobooksQuery instanceof AdminAudiobooksQuery) {
             $audiobookSearchData = $adminAudiobooksQuery->getSearchData();
 
-            $categories = null;
-            $author = null;
-            $title = null;
-            $album = null;
-            $duration = null;
-            $parts = null;
-            $age = null;
-            $order = null;
-            $year = null;
-
-            if (array_key_exists('categories', $audiobookSearchData) && !empty($audiobookSearchData['categories'])) {
-                foreach ($audiobookSearchData['categories'] as $category) {
-                    $categories[] = Uuid::fromString($category)->toBinary();
-                }
-            }
-
-            if (array_key_exists('author', $audiobookSearchData)) {
-                $author = ($audiobookSearchData['author'] && '' !== $audiobookSearchData['author']) ? '%' . $audiobookSearchData['author'] . '%' : null;
-            }
-            if (array_key_exists('title', $audiobookSearchData)) {
-                $title = ($audiobookSearchData['title'] && '' !== $audiobookSearchData['title']) ? '%' . $audiobookSearchData['title'] . '%' : null;
-            }
-            if (array_key_exists('album', $audiobookSearchData)) {
-                $album = ($audiobookSearchData['album'] && '' !== $audiobookSearchData['album']) ? '%' . $audiobookSearchData['album'] . '%' : null;
-            }
-            if (array_key_exists('duration', $audiobookSearchData)) {
-                $duration = $audiobookSearchData['duration'];
-            }
-            if (array_key_exists('age', $audiobookSearchData)) {
-                $age = $audiobookSearchData['age'];
-            }
-            if (array_key_exists('parts', $audiobookSearchData)) {
-                $parts = $audiobookSearchData['parts'];
-            }
-            if (array_key_exists('order', $audiobookSearchData)) {
-                $order = $audiobookSearchData['order'];
-            }
-            if (array_key_exists('year', $audiobookSearchData) && $audiobookSearchData['year'] !== false) {
-                $year = $audiobookSearchData['year'];
-            }
+            $audiobookSearchModel = new AdminAudiobooksSearchModel();
+            $serializer->deserialize(
+                json_encode($audiobookSearchData),
+                AdminAudiobooksSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $audiobookSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminAudiobooksSuccessModel();
 
-            $audiobooks = $audiobookRepository->getAudiobooksByPage($categories, $author, $title, $album, $duration, $age, $year, $parts, $order);
+            $audiobooks = $audiobookRepository->getAudiobooksByPage($audiobookSearchModel);
 
             $minResult = $adminAudiobooksQuery->getPage() * $adminAudiobooksQuery->getLimit();
             $maxResult = $adminAudiobooksQuery->getLimit() + $minResult;

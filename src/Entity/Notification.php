@@ -46,10 +46,10 @@ class Notification
     private Collection $notificationChecks;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $dateDeleted;
+    private ?DateTime $dateDeleted = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTime $dateActive;
+    private ?DateTime $dateActive = null;
 
     public function __construct()
     {

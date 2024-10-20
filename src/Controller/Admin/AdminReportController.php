@@ -23,6 +23,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminReportsSearchModel;
 use App\Query\Admin\AdminReportAcceptQuery;
 use App\Query\Admin\AdminReportListQuery;
 use App\Query\Admin\AdminReportRejectQuery;
@@ -46,6 +47,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[OA\Response(
     response   : 400,
@@ -274,61 +278,27 @@ class AdminReportController extends AbstractController
         ReportRepository $reportRepository,
         UserDeleteRepository $userDeleteRepository,
         AudiobookUserCommentRepository $commentRepository,
+        SerializerInterface $serializer,
     ): Response {
         $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
             $reportSearchData = $adminReportListQuery->getSearchData();
 
-            $actionId = null;
-            $desc = null;
-            $email = null;
-            $ip = null;
-            $type = null;
-            $user = null;
-            $accepted = null;
-            $denied = null;
-            $dateFrom = null;
-            $dateTo = null;
-            $order = null;
-
-            if (array_key_exists('desc', $reportSearchData)) {
-                $desc = ($reportSearchData['desc'] && '' !== $reportSearchData['desc']) ? '%' . $reportSearchData['desc'] . '%' : null;
-            }
-            if (array_key_exists('email', $reportSearchData)) {
-                $email = ($reportSearchData['email'] && '' !== $reportSearchData['email']) ? '%' . $reportSearchData['email'] . '%' : null;
-            }
-            if (array_key_exists('ip', $reportSearchData)) {
-                $ip = ($reportSearchData['ip'] && '' !== $reportSearchData['ip']) ? '%' . $reportSearchData['ip'] . '%' : null;
-            }
-            if (array_key_exists('actionId', $reportSearchData)) {
-                $actionId = ($reportSearchData['actionId'] && '' !== $reportSearchData['actionId']) ? '%' . $reportSearchData['actionId'] . '%' : null;
-            }
-            if (array_key_exists('type', $reportSearchData)) {
-                $type = $reportSearchData['type'];
-            }
-            if (array_key_exists('user', $reportSearchData)) {
-                $user = $reportSearchData['user'];
-            }
-            if (array_key_exists('accepted', $reportSearchData)) {
-                $accepted = $reportSearchData['accepted'];
-            }
-            if (array_key_exists('denied', $reportSearchData)) {
-                $denied = $reportSearchData['denied'];
-            }
-            if (array_key_exists('order', $reportSearchData)) {
-                $order = $reportSearchData['order'];
-            }
-            if (array_key_exists('dateFrom', $reportSearchData) && $reportSearchData['dateFrom']) {
-                $dateFrom = $reportSearchData['dateFrom'];
-            }
-            if (array_key_exists('dateTo', $reportSearchData) && $reportSearchData['dateTo']) {
-                $dateTo = $reportSearchData['dateTo'];
-            }
+            $reportSearchModel = new AdminReportsSearchModel();
+            $serializer->deserialize(
+                json_encode($reportSearchData),
+                AdminReportsSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $reportSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminReportListSuccessModel();
 
-            $reports = $reportRepository->getReportsByPage($actionId, $desc, $email, $ip, $type, $user, $accepted, $denied, $dateFrom, $dateTo, $order);
+            $reports = $reportRepository->getReportsByPage($reportSearchModel);
 
             $minResult = $adminReportListQuery->getPage() * $adminReportListQuery->getLimit();
             $maxResult = $adminReportListQuery->getLimit() + $minResult;

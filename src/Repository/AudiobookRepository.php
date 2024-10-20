@@ -8,7 +8,7 @@ use App\Entity\Audiobook;
 use App\Entity\AudiobookCategory;
 use App\Enums\AudiobookAgeRange;
 use App\Enums\AudiobookOrderSearch;
-use DateTime;
+use App\Model\Serialization\AdminAudiobooksSearchModel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -59,36 +59,36 @@ class AudiobookRepository extends ServiceEntityRepository
      * @return Audiobook[]
      */
     public function getAudiobooksByPage(
-        ?array $categories = null,
-        ?string $author = null,
-        ?string $title = null,
-        ?string $album = null,
-        ?int $duration = null,
-        ?int $age = null,
-        ?DateTime $year = null,
-        ?int $parts = null,
-        ?int $order = null,
+        AdminAudiobooksSearchModel $audiobooksSearchModel,
     ): array {
         $qb = $this->createQueryBuilder('a');
 
-        if ($categories !== null) {
+        if (!empty($audiobooksSearchModel->getCategories())) {
+            $categories = [];
+            foreach ($audiobooksSearchModel->getCategories() as $category) {
+                if (Uuid::isValid($category)) {
+                    $categories[] = Uuid::fromString($category)->toBinary();
+                }
+            }
+
             $qb->innerJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
                 ->setParameter('categories', $categories);
         }
-        if ($author !== null) {
+        if ($audiobooksSearchModel->getAuthor() !== null) {
             $qb->andWhere('a.author LIKE :author')
-                ->setParameter('author', '%' . $author . '%');
+                ->setParameter('author', '%' . $audiobooksSearchModel->getAuthor() . '%');
         }
-        if ($title !== null) {
+        if ($audiobooksSearchModel->getTitle() !== null) {
             $qb->andWhere('a.title LIKE :title')
-                ->setParameter('title', '%' . $title . '%');
+                ->setParameter('title', '%' . $audiobooksSearchModel->getTitle() . '%');
         }
-        if ($album !== null) {
+        if ($audiobooksSearchModel->getAlbum() !== null) {
             $qb->andWhere('a.album LIKE :album')
-                ->setParameter('album', '%' . $album . '%');
+                ->setParameter('album', '%' . $audiobooksSearchModel->getAlbum() . '%');
         }
 
-        if ($duration !== null) {
+        if ($audiobooksSearchModel->getDuration() !== null) {
+            $duration = $audiobooksSearchModel->getDuration();
             $durationLow = $duration - 600;
             $durationHigh = $duration + 600;
 
@@ -97,16 +97,16 @@ class AudiobookRepository extends ServiceEntityRepository
                 ->setParameter('durationHigh', $durationHigh);
         }
 
-        if ($age !== null) {
+        if ($audiobooksSearchModel->getAge() !== null) {
             $qb->andWhere('a.age = :age')
-                ->setParameter('age', $age);
+                ->setParameter('age', $audiobooksSearchModel->getAge());
         }
 
-        if ($year !== null) {
-            $yearLow = clone $year;
+        if ($audiobooksSearchModel->getYear() !== null) {
+            $yearLow = clone $audiobooksSearchModel->getYear();
             $yearLow->modify('-1 year');
 
-            $yearHigh = clone $year;
+            $yearHigh = clone $audiobooksSearchModel->getYear();
             $yearHigh->modify('+1 year');
 
             $qb->andWhere('((a.year > :yearLow) AND (a.year < :yearHigh))')
@@ -114,7 +114,8 @@ class AudiobookRepository extends ServiceEntityRepository
                 ->setParameter('yearHigh', $yearHigh);
         }
 
-        if ($parts !== null) {
+        if ($audiobooksSearchModel->getParts() !== null) {
+            $parts = $audiobooksSearchModel->getParts();
             $partsLow = $parts - 1;
             $partsHigh = $parts + 1;
 
@@ -123,8 +124,8 @@ class AudiobookRepository extends ServiceEntityRepository
                 ->setParameter('partsHigh', $partsHigh);
         }
 
-        if ($order !== null) {
-            switch ($order) {
+        if ($audiobooksSearchModel->getOrder() !== null) {
+            switch ($audiobooksSearchModel->getOrder()) {
                 case AudiobookOrderSearch::POPULAR->value:
                 {
                     $qb->innerJoin('a.audiobookInfos', 'ai')

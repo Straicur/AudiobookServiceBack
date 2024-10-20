@@ -15,6 +15,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminNotificationsSearchModel;
 use App\Query\Admin\AdminUserNotificationDeleteQuery;
 use App\Query\Admin\AdminUserNotificationPatchQuery;
 use App\Query\Admin\AdminUserNotificationPutQuery;
@@ -32,6 +33,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
@@ -83,31 +87,25 @@ class AdminUserNotificationsController extends AbstractController
         LoggerInterface $endpointLogger,
         NotificationRepository $notificationRepository,
         TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
             $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
 
-            $text = null;
-            $type = null;
-            $deleted = null;
-            $order = null;
+            $notificationsSearchModel = new AdminNotificationsSearchModel();
+            $serializer->deserialize(
+                json_encode($notificationSearchData),
+                AdminNotificationsSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $notificationsSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
-            if (array_key_exists('text', $notificationSearchData)) {
-                $text = ($notificationSearchData['text'] && '' !== $notificationSearchData['text']) ? '%' . $notificationSearchData['text'] . '%' : null;
-            }
-            if (array_key_exists('type', $notificationSearchData)) {
-                $type = $notificationSearchData['type'];
-            }
-            if (array_key_exists('deleted', $notificationSearchData)) {
-                $deleted = $notificationSearchData['deleted'];
-            }
-            if (array_key_exists('order', $notificationSearchData)) {
-                $order = $notificationSearchData['order'];
-            }
-
-            $allUserSystemNotifications = $notificationRepository->getSearchNotifications($text, $type, $deleted, $order);
+            $allUserSystemNotifications = $notificationRepository->getSearchNotifications($notificationsSearchModel);
 
             $systemNotifications = [];
 

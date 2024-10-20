@@ -19,6 +19,7 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
+use App\Model\Serialization\AdminTechnicalBreaksSearchModel;
 use App\Query\Admin\AdminTechnicalBreakListQuery;
 use App\Query\Admin\AdminTechnicalBreakPatchQuery;
 use App\Query\Admin\AdminTechnicalCacheClearQuery;
@@ -39,6 +40,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[OA\Response(
@@ -176,37 +180,27 @@ class AdminTechnicalController extends AbstractController
         LoggerInterface $endpointLogger,
         TechnicalBreakRepository $technicalBreakRepository,
         TranslateServiceInterface $translateService,
+        SerializerInterface $serializer,
     ): Response {
         $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
         if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
             $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
 
-            $nameOrLastname = null;
-            $active = null;
-            $order = null;
-            $dateFrom = null;
-            $dateTo = null;
-
-            if (array_key_exists('nameOrLastname', $technicalBreakListData)) {
-                $nameOrLastname = $technicalBreakListData['nameOrLastname'];
-            }
-            if (array_key_exists('active', $technicalBreakListData)) {
-                $active = $technicalBreakListData['active'];
-            }
-            if (array_key_exists('order', $technicalBreakListData)) {
-                $order = $technicalBreakListData['order'];
-            }
-            if (array_key_exists('dateFrom', $technicalBreakListData)) {
-                $dateFrom = $technicalBreakListData['dateFrom'];
-            }
-            if (array_key_exists('dateTo', $technicalBreakListData) && $technicalBreakListData['dateTo'] !== false) {
-                $dateTo = $technicalBreakListData['dateTo'];
-            }
+            $reportSearchModel = new AdminTechnicalBreaksSearchModel();
+            $serializer->deserialize(
+                json_encode($technicalBreakListData),
+                AdminTechnicalBreaksSearchModel::class,
+                'json',
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE             => $reportSearchModel,
+                    AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+                ],
+            );
 
             $successModel = new AdminTechnicalBreakSuccessModel();
 
-            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($nameOrLastname, $active, $order, $dateFrom, $dateTo);
+            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($reportSearchModel);
 
             $minResult = $adminTechnicalBreakListQuery->getPage() * $adminTechnicalBreakListQuery->getLimit();
             $maxResult = $adminTechnicalBreakListQuery->getLimit() + $minResult;

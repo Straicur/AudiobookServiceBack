@@ -15,9 +15,8 @@ use Symfony\Component\Uid\Uuid;
 
 class AudiobookAddService implements AudiobookAddServiceInterface
 {
-
     public function __construct(
-        private readonly SerializerInterface         $serializer,
+        private readonly SerializerInterface $serializer,
         private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
     ) {
     }
