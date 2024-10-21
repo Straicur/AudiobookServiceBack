@@ -7,10 +7,6 @@ namespace App\Tests;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-/**
- * AbstractWebTest
- *
- */
 abstract class AbstractWebTest extends WebTestCase
 {
     protected static ?KernelBrowser $webClient = null;
@@ -18,6 +14,7 @@ abstract class AbstractWebTest extends WebTestCase
     protected ?object $entityManager;
 
     protected ?DatabaseMockManager $databaseMockManager = null;
+    protected ?TestTool $responseTool = null;
 
     protected function setUp(): void
     {
@@ -27,6 +24,10 @@ abstract class AbstractWebTest extends WebTestCase
 
         if ($this->databaseMockManager === null) {
             $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
+        }
+
+        if ($this->responseTool === null) {
+            $this->responseTool = new TestTool();
         }
 
         self::$webClient->disableReboot();

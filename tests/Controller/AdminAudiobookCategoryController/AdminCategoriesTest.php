@@ -76,16 +76,7 @@ class AdminCategoriesTest extends AbstractWebTest
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -112,15 +103,6 @@ class AdminCategoriesTest extends AbstractWebTest
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }
