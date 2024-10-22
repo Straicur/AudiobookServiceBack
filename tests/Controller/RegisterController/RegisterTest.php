@@ -42,7 +42,7 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
+        self::$webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -101,7 +101,7 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
+        self::$webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
@@ -149,19 +149,13 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
+        self::$webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
-        $response = self::$webClient->getResponse();
-
-        $responseContent = json_decode($response->getContent(), true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -184,19 +178,13 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
+        self::$webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
-        $response = self::$webClient->getResponse();
-
-        $responseContent = json_decode($response->getContent(), true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -228,17 +216,11 @@ class RegisterTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/register', content: json_encode($content));
+        self::$webClient->request('PUT', '/api/register', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
-        $response = self::$webClient->getResponse();
-
-        $responseContent = json_decode($response->getContent(), true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -253,16 +235,12 @@ class RegisterTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 1
-        $crawler = self::$webClient->request('PUT', '/api/register', server: [
+        self::$webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 2
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

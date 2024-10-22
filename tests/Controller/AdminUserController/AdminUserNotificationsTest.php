@@ -42,7 +42,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/user/notifications', server: [
+        self::$webClient->request('POST', '/api/admin/user/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -98,7 +98,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/user/notifications', server: [
+        self::$webClient->request('POST', '/api/admin/user/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -130,33 +130,26 @@ class AdminUserNotificationsTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
-        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
-        $user5 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test5@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test5@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
 
         /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/user/notifications', server: [
+        self::$webClient->request('POST', '/api/admin/user/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -170,10 +163,12 @@ class AdminUserNotificationsTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
-        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
-        $user5 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test5@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test5@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
 
         /// step 2
         $content = [
@@ -183,23 +178,14 @@ class AdminUserNotificationsTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/user/notifications', server: [
+        self::$webClient->request('POST', '/api/admin/user/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -212,33 +198,17 @@ class AdminUserNotificationsTest extends AbstractWebTest
     public function test_adminUserNotificationsLogOut(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
-        $user4 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test4@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
-        $user5 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test5@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
-
-        /// step 2
         $content = [
             'page' => 0,
             'limit' => 10,
         ];
 
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/user/notifications', content: json_encode($content));
+        self::$webClient->request('POST', '/api/admin/user/notifications', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

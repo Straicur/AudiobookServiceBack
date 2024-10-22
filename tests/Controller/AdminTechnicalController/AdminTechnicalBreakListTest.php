@@ -51,7 +51,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -84,29 +84,20 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -121,7 +112,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -141,22 +132,13 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -171,7 +153,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         /// step 2
         $dateFrom = new DateTime();
@@ -190,20 +172,11 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
+        self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

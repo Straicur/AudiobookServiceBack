@@ -36,7 +36,7 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -47,7 +47,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -89,8 +89,8 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
-        $report2 = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
-        $report3 = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
+        $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -100,7 +100,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => true,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server : [
+        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
@@ -146,7 +146,7 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -157,24 +157,14 @@ class AdminReportRejectTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -194,30 +184,21 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -237,7 +218,7 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -248,23 +229,14 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -284,7 +256,7 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
         /// step 2
@@ -294,20 +266,11 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

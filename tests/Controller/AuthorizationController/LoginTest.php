@@ -22,14 +22,14 @@ class LoginTest extends AbstractWebTest
     public function test_loginCorrect(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@asuri.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         /// step 2
         $content = [
-            'email' => 'test@asuri.pl',
+            'email' => 'test@audiobookback.icu',
             'password' => 'zaq12wsx'
         ];
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
+        self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
         /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
@@ -44,7 +44,7 @@ class LoginTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent where there is no email tester@asuri.pl
+     * step 1 - Preparing JsonBodyContent where there is no email tester@audiobookback.icu
      * step 2 - Sending Request
      * step 3 - Checking response
      * @return void
@@ -53,21 +53,15 @@ class LoginTest extends AbstractWebTest
     {
         /// step 1
         $content = [
-            'email' => 'tester@asuri.pl',
+            'email' => 'tester@audiobookback.icu',
             'password' => 'zaq12wsx'
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
+        self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(404);
 
-        $response = self::$webClient->getResponse();
-
-        $responseContent = json_decode($response->getContent(), true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -78,14 +72,10 @@ class LoginTest extends AbstractWebTest
     public function test_loginEmptyRequest(): void
     {
         /// step 1
-        $crawler = self::$webClient->request('POST', '/api/authorize');
+        self::$webClient->request('POST', '/api/authorize');
         /// step 2
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

@@ -29,10 +29,10 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         /// step 2
-        $content = [];
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -58,10 +58,9 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
         /// step 2
-        $content = [];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -88,22 +87,13 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
 
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -115,25 +105,12 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
      */
     public function test_adminTechnicalBreakPutLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-
         /// step 2
-        $crawler = self::$webClient->request('PUT', '/api/admin/technical/break');
+        self::$webClient->request('PUT', '/api/admin/technical/break');
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

@@ -33,7 +33,7 @@ class AdminReportListTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user1);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user1);
 
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
@@ -68,7 +68,7 @@ class AdminReportListTest extends AbstractWebTest
             'searchData' => []
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server: [
+        self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -108,7 +108,7 @@ class AdminReportListTest extends AbstractWebTest
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest',
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
 
@@ -119,7 +119,7 @@ class AdminReportListTest extends AbstractWebTest
             $category2], active: true);
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user2);
-        $comment2 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment2', $audiobook1, $user2, $comment1);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment2', $audiobook1, $user2, $comment1);
         $comment3 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user1, $comment1);
 
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-1 day'), ip: '198.0.0.1', actionId: (string)$comment3->getId());
@@ -132,7 +132,7 @@ class AdminReportListTest extends AbstractWebTest
             'searchData' => [],
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server : [
+        self::$webClient->request('POST', '/api/admin/report/list',            server : [
             'HTTP_authorization' => $token->getToken(),
         ],                                                                     content: json_encode($content));
 
@@ -178,7 +178,7 @@ class AdminReportListTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user1);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user1);
 
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
@@ -223,7 +223,7 @@ class AdminReportListTest extends AbstractWebTest
             ]
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server: [
+        self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -264,7 +264,7 @@ class AdminReportListTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -273,23 +273,14 @@ class AdminReportListTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server: [
+        self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -309,7 +300,7 @@ class AdminReportListTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
@@ -319,23 +310,14 @@ class AdminReportListTest extends AbstractWebTest
             'additionalData' => []
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', server: [
+        self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -355,7 +337,7 @@ class AdminReportListTest extends AbstractWebTest
 
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
 
-        $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
+        $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         /// step 2
         $content = [
@@ -364,20 +346,11 @@ class AdminReportListTest extends AbstractWebTest
             'additionalData' => []
         ];
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/report/list', content: json_encode($content));
+        self::$webClient->request('POST', '/api/admin/report/list', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

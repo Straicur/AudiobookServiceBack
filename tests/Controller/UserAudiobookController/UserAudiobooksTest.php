@@ -31,15 +31,18 @@ class UserAudiobooksTest extends AbstractWebTest
         $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t2', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2], active: true);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t3', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category2], active: true);
-        $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook('t4', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category1, $category2], active: true);
-        $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook('t5', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd5', [$category2], active: true);
-        $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook('t6', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd6', [$category5]);
-        $audiobook7 = $this->databaseMockManager->testFunc_addAudiobook('t7', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd7', [$category1, $category4], active: true);
-        $audiobook8 = $this->databaseMockManager->testFunc_addAudiobook('t8', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd8', [$category4]);
-        $audiobook9 = $this->databaseMockManager->testFunc_addAudiobook('t9', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd9', [$category4], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1,
+            $category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t2', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t3', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t4', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category1,
+            $category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t5', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd5', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t6', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd6', [$category5]);
+        $this->databaseMockManager->testFunc_addAudiobook('t7', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd7', [$category1,
+            $category4], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t8', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd8', [$category4]);
+        $this->databaseMockManager->testFunc_addAudiobook('t9', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd9', [$category4], active: true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -49,7 +52,7 @@ class UserAudiobooksTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/audiobooks', server: [
+        self::$webClient->request('POST', '/api/user/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -92,15 +95,18 @@ class UserAudiobooksTest extends AbstractWebTest
         $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
         $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM3TO7, 'd1', [$category1, $category2], active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t2', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM3TO7, 'd2', [$category2], active: true);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t3', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM7TO12, 'd3', [$category2], active: true);
-        $audiobook4 = $this->databaseMockManager->testFunc_addAudiobook('t4', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category1, $category2], active: true);
-        $audiobook5 = $this->databaseMockManager->testFunc_addAudiobook('t5', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM12TO16, 'd5', [$category2], active: true);
-        $audiobook6 = $this->databaseMockManager->testFunc_addAudiobook('t6', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM12TO16, 'd6', [$category5]);
-        $audiobook7 = $this->databaseMockManager->testFunc_addAudiobook('t7', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM16TO18, 'd7', [$category1, $category4], active: true);
-        $audiobook8 = $this->databaseMockManager->testFunc_addAudiobook('t8', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM16TO18, 'd8', [$category4]);
-        $audiobook9 = $this->databaseMockManager->testFunc_addAudiobook('t9', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd9', [$category4], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t1', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM3TO7, 'd1', [$category1,
+            $category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t2', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM3TO7, 'd2', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t3', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM7TO12, 'd3', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t4', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd4', [$category1,
+            $category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t5', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM12TO16, 'd5', [$category2], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t6', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM12TO16, 'd6', [$category5]);
+        $this->databaseMockManager->testFunc_addAudiobook('t7', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM16TO18, 'd7', [$category1,
+            $category4], active: true);
+        $this->databaseMockManager->testFunc_addAudiobook('t8', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::FROM16TO18, 'd8', [$category4]);
+        $this->databaseMockManager->testFunc_addAudiobook('t9', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd9', [$category4], active: true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -110,7 +116,7 @@ class UserAudiobooksTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/audiobooks', server: [
+        self::$webClient->request('POST', '/api/user/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -147,21 +153,12 @@ class UserAudiobooksTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2]);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category2]);
-
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/audiobooks', server: [
+        self::$webClient->request('POST', '/api/user/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -169,16 +166,7 @@ class UserAudiobooksTest extends AbstractWebTest
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -193,15 +181,6 @@ class UserAudiobooksTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2]);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category2]);
-
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         $content = [
             'page' => 0,
@@ -209,22 +188,13 @@ class UserAudiobooksTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/audiobooks', server: [
+        self::$webClient->request('POST', '/api/user/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -237,37 +207,17 @@ class UserAudiobooksTest extends AbstractWebTest
     public function test_userAudiobooksLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
-        $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1, $category2], active: true);
-        $audiobook2 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd2', [$category2]);
-        $audiobook3 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd3', [$category2]);
-
         $content = [
             'page' => 0,
             'limit' => 10
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/audiobooks', content: json_encode($content));
+        self::$webClient->request('POST', '/api/user/audiobooks', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

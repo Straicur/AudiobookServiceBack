@@ -39,7 +39,7 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -68,7 +68,7 @@ class AdminCategoryEditTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         /// step 2
         $content = [
@@ -78,24 +78,14 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -111,30 +101,21 @@ class AdminCategoryEditTest extends AbstractWebTest
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
         /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -159,23 +140,14 @@ class AdminCategoryEditTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -188,8 +160,6 @@ class AdminCategoryEditTest extends AbstractWebTest
     public function test_adminCategoryEditLogOut(): void
     {
         //// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
@@ -198,22 +168,12 @@ class AdminCategoryEditTest extends AbstractWebTest
             'name' => '3',
             'categoryId' => $category2->getId()
         ];
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/edit', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/admin/category/edit', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

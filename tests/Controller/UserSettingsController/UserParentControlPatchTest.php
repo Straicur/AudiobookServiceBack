@@ -6,6 +6,7 @@ namespace App\Tests\Controller\UserSettingsController;
 
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
+use DateTime;
 
 /**
  * UserParentControlPatchTest
@@ -39,7 +40,7 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -81,7 +82,7 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -89,7 +90,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $birthdayDate = \DateTime::createFromFormat('d.m.Y', '01.09.1998');
+        $birthdayDate = DateTime::createFromFormat('d.m.Y', '01.09.1998');
 
         $userAfter = $userRepository->findOneBy([
             'id' => $user->getId()
@@ -112,7 +113,9 @@ class UserParentControlPatchTest extends AbstractWebTest
     {
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
         /// step 2
         $content = [
             'smsCode' => 'A2312V4',
@@ -123,23 +126,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -158,22 +151,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -197,22 +181,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -225,8 +200,6 @@ class UserParentControlPatchTest extends AbstractWebTest
     public function test_userParentControlPatchLogOut(): void
     {
         /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
         $content = [
             'smsCode' => 'A2312V4',
             'additionalData' => [
@@ -235,19 +208,10 @@ class UserParentControlPatchTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/parent/control', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/user/parent/control', content: json_encode($content));
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

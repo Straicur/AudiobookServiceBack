@@ -32,7 +32,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -60,27 +60,17 @@ class UserSettingsDeleteTest extends AbstractWebTest
         /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user, true);
+        $this->databaseMockManager->testFunc_addUserDelete($user, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 4
         self::assertResponseStatusCodeSame(409);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -97,22 +87,13 @@ class UserSettingsDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -124,24 +105,11 @@ class UserSettingsDeleteTest extends AbstractWebTest
      */
     public function test_userSettingsDeleteLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/delete');
+        self::$webClient->request('PATCH', '/api/user/settings/delete');
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

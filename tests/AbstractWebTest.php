@@ -29,9 +29,7 @@ abstract class AbstractWebTest extends WebTestCase
         if ($this->responseTool === null) {
             $this->responseTool = new TestTool();
         }
-
-        self::$webClient->disableReboot();
-        self::$webClient->enableProfiler();
+        self::$webClient->disableReboot();        self::$webClient->enableProfiler();
 
         $this->entityManager = self::$webClient->getContainer()->get('doctrine.orm.entity_manager');
 

@@ -22,10 +22,10 @@ class AdminUserSystemRolesTest extends AbstractWebTest
     {
         /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        
+
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+        self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -57,23 +57,14 @@ class AdminUserSystemRolesTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         /// step 2
-        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+        self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -84,22 +75,12 @@ class AdminUserSystemRolesTest extends AbstractWebTest
      */
     public function test_adminUserSystemRolesLogOut(): void
     {
-
         /// step 1
-        $crawler = self::$webClient->request('GET', '/api/admin/user/system/roles');
+        self::$webClient->request('GET', '/api/admin/user/system/roles');
 
         /// step2
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

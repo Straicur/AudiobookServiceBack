@@ -44,7 +44,7 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -72,7 +72,9 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectEditExists(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -87,24 +89,14 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -118,7 +110,9 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectNewEmail(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -133,24 +127,14 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -164,7 +148,9 @@ class UserSettingsEmailTest extends AbstractWebTest
     public function test_userSettingsEmailIncorrectOldEmail(): void
     {
         /// step 1
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -179,24 +165,14 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
         /// step 3
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -215,23 +191,14 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -254,23 +221,14 @@ class UserSettingsEmailTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', server: [
+        self::$webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     /**
@@ -291,20 +249,11 @@ class UserSettingsEmailTest extends AbstractWebTest
         ];
 
         /// step 2
-        $crawler = self::$webClient->request('POST', '/api/user/settings/email', content: json_encode($content));
+        self::$webClient->request('POST', '/api/user/settings/email', content: json_encode($content));
 
         /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }
