@@ -10,9 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 abstract class AbstractWebTest extends WebTestCase
 {
     protected static ?KernelBrowser $webClient = null;
-
     protected ?object $entityManager;
-
     protected ?DatabaseMockManager $databaseMockManager = null;
     protected ?TestTool $responseTool = null;
 

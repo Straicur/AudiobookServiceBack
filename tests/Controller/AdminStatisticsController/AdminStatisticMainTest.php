@@ -25,7 +25,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $userRepository = $this->getService(UserRepository::class);
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
-        /// step 1
+
         $admin = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123129', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', (new DateTime())->modify('-9 day'));
@@ -54,19 +54,17 @@ class AdminStatisticMainTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($admin);
 
-        /// step 2
         self::$webClient->request('GET', '/api/admin/statistic/main', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('users', $responseContent);
@@ -89,7 +87,6 @@ class AdminStatisticMainTest extends AbstractWebTest
 
     public function test_adminStatisticMainLogout(): void
     {
-        /// step 2
         self::$webClient->request('GET', '/api/admin/statistic/main');
 
         self::assertResponseStatusCodeSame(401);

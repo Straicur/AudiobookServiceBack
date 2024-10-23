@@ -25,7 +25,6 @@ class ReportTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -36,7 +35,7 @@ class ReportTest extends AbstractWebTest
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::COMMENT->value,
             'ip' => '127.0.0.1',
@@ -46,16 +45,14 @@ class ReportTest extends AbstractWebTest
                 'actionId' => $comment1->getId(),
             ]
         ];
-        /// step 2
+
         self::$webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
-        /// step 5
         $this->assertCount(1, $reportRepository->findAll());
     }
     /**
@@ -68,7 +65,6 @@ class ReportTest extends AbstractWebTest
      */
     public function test_reportToManyReports(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -84,7 +80,7 @@ class ReportTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::SYSTEM_PROBLEM, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::SYSTEM_PROBLEM->value,
             'ip' => '127.0.0.1',
@@ -94,12 +90,10 @@ class ReportTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -107,22 +101,19 @@ class ReportTest extends AbstractWebTest
 
     public function test_reportEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::COMMENT->value,
             'ip' => '127.0.0.1',
         ];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);

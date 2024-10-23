@@ -27,23 +27,20 @@ class UserResetPasswordTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'));
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'));
 
-        /// step 2
         $content = [
             'email' => $user->getUserInformation()->getEmail()
         ];
 
-        /// step 3
         self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-        /// step 5
+
         $userAfter = $userRepository->findOneBy([
             'id' => $user->getId()
         ]);
@@ -67,16 +64,12 @@ class UserResetPasswordTest extends AbstractWebTest
      */
     public function test_userResetPasswordIncorrectEmail(): void
     {
-
-        /// step 2
         $content = [
             'email' => 'test2@cos.pl'
         ];
 
-
-        /// step 3
         self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -86,9 +79,8 @@ class UserResetPasswordTest extends AbstractWebTest
     {
         $content = [];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);

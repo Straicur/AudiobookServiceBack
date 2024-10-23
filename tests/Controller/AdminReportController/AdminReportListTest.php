@@ -20,7 +20,6 @@ class AdminReportListTest extends AbstractWebTest
      */
     public function test_adminReportListNoFilterCorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -58,25 +57,24 @@ class AdminReportListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-3 day'), user: $user2);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'page' => 0,
             'limit' => 10,
             'searchData' => []
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('reports', $responseContent);
@@ -98,7 +96,6 @@ class AdminReportListTest extends AbstractWebTest
      */
     public function test_adminReportListCommentsCorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -122,25 +119,24 @@ class AdminReportListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-1 day'), ip: '198.0.0.1', actionId: (string)$comment3->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'page'       => 0,
             'limit'      => 10,
             'searchData' => [],
         ];
-        /// step 2
-        self::$webClient->request('POST', '/api/admin/report/list',            server : [
-            'HTTP_authorization' => $token->getToken(),
-        ],                                                                     content: json_encode($content));
 
-        /// step 3
+        self::$webClient->request('POST', '/api/admin/report/list', server : [
+            'HTTP_authorization' => $token->getToken(),
+        ], content: json_encode($content));
+
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('reports', $responseContent);
@@ -165,7 +161,6 @@ class AdminReportListTest extends AbstractWebTest
      */
     public function test_adminReportListSpecificCorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -208,7 +203,6 @@ class AdminReportListTest extends AbstractWebTest
         $dateFrom = new DateTime();
         $dateTo = new DateTime();
 
-        /// step 2
         $content = [
             'page' => 0,
             'limit' => 10,
@@ -219,19 +213,18 @@ class AdminReportListTest extends AbstractWebTest
                 'type' => 2
             ]
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('reports', $responseContent);
@@ -246,7 +239,6 @@ class AdminReportListTest extends AbstractWebTest
 
     public function test_adminReportListEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -257,17 +249,15 @@ class AdminReportListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'page' => 0
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -275,7 +265,6 @@ class AdminReportListTest extends AbstractWebTest
 
     public function test_adminReportListPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -286,18 +275,17 @@ class AdminReportListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'page' => 0,
             'limit' => 10,
             'additionalData' => []
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -305,7 +293,6 @@ class AdminReportListTest extends AbstractWebTest
 
     public function test_adminReportListLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -315,16 +302,14 @@ class AdminReportListTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
-        /// step 2
         $content = [
             'page' => 0,
             'limit' => 10,
             'additionalData' => []
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/report/list', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

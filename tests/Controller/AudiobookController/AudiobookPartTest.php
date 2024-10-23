@@ -29,7 +29,7 @@ class AudiobookPartTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -38,7 +38,6 @@ class AudiobookPartTest extends AbstractWebTest
         $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -55,12 +54,11 @@ class AudiobookPartTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -75,18 +73,16 @@ class AudiobookPartTest extends AbstractWebTest
             'part' => 0
         ];
 
-        /// step 3
         self::$webClient->request('POST', '/api/audiobook/part', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('url', $responseContent);
@@ -103,7 +99,6 @@ class AudiobookPartTest extends AbstractWebTest
      */
     public function test_audiobookPartWrongAudiobookId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -113,11 +108,10 @@ class AudiobookPartTest extends AbstractWebTest
             'part' => 0
         ];
 
-        /// step 3
         self::$webClient->request('POST', '/api/audiobook/part', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
-        /// step 3
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -125,18 +119,16 @@ class AudiobookPartTest extends AbstractWebTest
 
     public function test_audiobookPartEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content2 = [];
 
-        /// step 3
         self::$webClient->request('POST', '/api/audiobook/part', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -144,7 +136,6 @@ class AudiobookPartTest extends AbstractWebTest
 
     public function test_audiobookPartPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -158,11 +149,11 @@ class AudiobookPartTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('POST', '/api/audiobook/part', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -170,7 +161,6 @@ class AudiobookPartTest extends AbstractWebTest
 
     public function test_audiobookPartLogOut(): void
     {
-        /// step 1
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [], active: true);
 
         $content2 = [
@@ -178,9 +168,8 @@ class AudiobookPartTest extends AbstractWebTest
             'part' => 0
         ];
 
-        /// step 3
         self::$webClient->request('POST', '/api/audiobook/part', content: json_encode($content2));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

@@ -35,7 +35,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -44,7 +44,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -63,12 +62,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -81,7 +79,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_RE_ADDING_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_RE_ADDING_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobookAfterFirst->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -101,12 +98,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                 'year' => '27.11.2022'
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -154,7 +150,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -174,7 +170,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_RE_ADDING_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_RE_ADDING_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -192,12 +187,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                 'author' => 'author2'
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -250,7 +244,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -259,7 +253,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content1 = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -276,12 +269,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content1));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -294,7 +286,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_FIRST_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_FIRST_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobookAfterFirst->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -312,12 +303,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                 'author' => 'author2'
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -350,7 +340,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -360,12 +349,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             'additionalData' => []
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -376,7 +364,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_RE_ADDING_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_RE_ADDING_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobookAfterFirst->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -389,12 +376,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             'additionalData' => [
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -423,7 +409,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -432,7 +418,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -449,12 +434,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -464,13 +448,12 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertNotNull($audiobookAfterFirst);
 
-        /// step 2
         $content = [];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -489,7 +472,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Recruiter'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -499,7 +482,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_RE_ADDING_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_RE_ADDING_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobookAfterFirst->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -519,11 +501,11 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -536,7 +518,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -548,7 +530,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_RE_ADDING_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_RE_ADDING_PART_FILE));
 
-        /// step 2
         $content = [
             'audiobookId' => $audiobookAfterFirst->getId(),
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
@@ -566,9 +547,9 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
                 'author' => 'author2'
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

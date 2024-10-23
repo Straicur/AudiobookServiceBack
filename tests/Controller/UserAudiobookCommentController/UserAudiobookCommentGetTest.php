@@ -19,7 +19,6 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
      */
     public function test_audiobookCommentGetCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -40,24 +39,23 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserCommentLike(true, $comment4, $user1);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category1->getCategoryKey()
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/audiobook/comment/get', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('comments', $responseContent);
@@ -73,7 +71,6 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
 
     public function test_audiobookCommentGetEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -90,15 +87,12 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 2
         $content = [];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobook/details', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -106,7 +100,6 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
 
     public function test_audiobookCommentGetPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -122,16 +115,16 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user2, $comment1);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category1->getCategoryKey()
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/audiobook/comment/get', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -139,7 +132,6 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
 
     public function test_audiobookCommentGetLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -154,16 +146,13 @@ class UserAudiobookCommentGetTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user2);
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment3', $audiobook1, $user2, $comment1);
 
-
-        /// step 2
         $content = [
             'audiobookId' => $audiobook1->getId(),
             'categoryKey' => $category1->getCategoryKey()
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/audiobook/comment/get', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

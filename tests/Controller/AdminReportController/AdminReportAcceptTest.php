@@ -26,7 +26,6 @@ class AdminReportAcceptTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -38,22 +37,20 @@ class AdminReportAcceptTest extends AbstractWebTest
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => $report->getId(),
             'banPeriod' => 2,
             'acceptOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $acceptedAfter = $reportRepository->findOneBy([
             'id' => $report->getId()
         ]);
@@ -74,7 +71,6 @@ class AdminReportAcceptTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -91,22 +87,20 @@ class AdminReportAcceptTest extends AbstractWebTest
         $report3 = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId'     => $report->getId(),
             'banPeriod'    => 2,
             'acceptOthers' => true,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $acceptedAfter = $reportRepository->findOneBy([
             'id' => $report->getId(),
         ]);
@@ -141,7 +135,6 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->assertInstanceOf(UserRepository::class, $userRepository);
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -156,22 +149,20 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUserBanHistory($user, (clone $newDate)->modify('-11 month'), (clone $newDate)->modify('-10 month'));
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => $report->getId(),
             'banPeriod' => 1,
             'acceptOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $acceptedAfter = $reportRepository->findOneBy([
             'id' => $report->getId()
         ]);
@@ -196,7 +187,6 @@ class AdminReportAcceptTest extends AbstractWebTest
      */
     public function test_adminAcceptIncorrectReportId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -207,19 +197,17 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'banPeriod' => 1,
             'acceptOthers' => false,
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -227,7 +215,6 @@ class AdminReportAcceptTest extends AbstractWebTest
 
     public function test_adminAcceptEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -238,15 +225,13 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -254,7 +239,6 @@ class AdminReportAcceptTest extends AbstractWebTest
 
     public function test_adminAcceptPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -266,17 +250,16 @@ class AdminReportAcceptTest extends AbstractWebTest
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId'     => $report->getId(),
             'acceptOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/accept', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -284,7 +267,6 @@ class AdminReportAcceptTest extends AbstractWebTest
 
     public function test_adminAcceptLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -295,15 +277,13 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
-        /// step 2
         $content = [
             'reportId'     => $report->getId(),
             'acceptOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/accept', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

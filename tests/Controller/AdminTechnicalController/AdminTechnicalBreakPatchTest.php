@@ -22,23 +22,21 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
         $this->assertInstanceOf(TechnicalBreakRepository::class, $technicalBreakRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
-        /// step 2
         $content = [
             'technicalBreakId' => $technicalBreak->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -60,7 +58,6 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
      */
     public function test_adminTechnicalBreakPatchIncorrectTechnicalBreakId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
@@ -71,11 +68,10 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
             'technicalBreakId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -83,7 +79,6 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakPatchEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
@@ -92,11 +87,10 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
         $content = [];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -104,7 +98,6 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakPatchPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
@@ -115,11 +108,10 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
             'technicalBreakId' => $technicalBreak->getId()
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -127,20 +119,16 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakPatchLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
-        /// step 2
         $content = [
             'technicalBreakId' => $technicalBreak->getId()
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/technical/break', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

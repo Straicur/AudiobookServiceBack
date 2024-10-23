@@ -19,7 +19,6 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
      */
     public function test_adminStatisticBestAudiobooksCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123129', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', (new DateTime())->modify('-9 day'));
@@ -46,21 +45,18 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookRating($audiobook2, 1, $user3);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
 
-        /// step 2
         self::$webClient->request('GET', '/api/admin/statistic/best/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('firstAudiobook', $responseContent);
@@ -85,7 +81,6 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
 
     public function test_adminStatisticBestAudiobooksLogout(): void
     {
-        /// step 2
         self::$webClient->request('GET', '/api/admin/statistic/best/audiobooks');
 
         self::assertResponseStatusCodeSame(401);

@@ -19,7 +19,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      */
     public function test_userAudiobooksSearchTitleCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -48,19 +47,17 @@ class UserAudiobooksSearchTest extends AbstractWebTest
             'categoryKey' => '',
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('audiobooks', $responseContent);
@@ -76,7 +73,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      */
     public function test_userAudiobooksSearchCategoryKeyCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -107,19 +103,17 @@ class UserAudiobooksSearchTest extends AbstractWebTest
             'categoryKey' => $category2->getCategoryKey(),
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('audiobooks', $responseContent);
@@ -136,7 +130,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
      */
     public function test_userAudiobooksSearchParentControlCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', birthday: (new DateTime())->modify('-14 year'));
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -165,19 +158,17 @@ class UserAudiobooksSearchTest extends AbstractWebTest
             'categoryKey' => '',
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('audiobooks', $responseContent);
@@ -186,20 +177,16 @@ class UserAudiobooksSearchTest extends AbstractWebTest
 
     public function test_userAudiobooksSearchEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -207,7 +194,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
 
     public function test_userAudiobooksSearchPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -216,11 +202,10 @@ class UserAudiobooksSearchTest extends AbstractWebTest
             'categoryKey' => '',
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -228,16 +213,13 @@ class UserAudiobooksSearchTest extends AbstractWebTest
 
     public function test_userAudiobooksSearchLogOut(): void
     {
-        /// step 1
         $content = [
             'title'       => 't',
             'categoryKey' => '',
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/audiobooks/search', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

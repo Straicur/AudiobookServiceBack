@@ -24,21 +24,19 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
         $userEditRepository = $this->getService(UserEditRepository::class);
 
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/user/settings/change/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -47,7 +45,7 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('code', $responseContent);
@@ -63,7 +61,6 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
      */
     public function test_userSettingsChangeCodeIncorrectCode(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -73,15 +70,14 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/user/settings/change/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -89,17 +85,16 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
 
     public function test_userSettingsChangeCodeChangePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PUT', '/api/user/settings/change/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -109,9 +104,8 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
     {
         $content = [];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/user/settings/change/code', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

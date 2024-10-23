@@ -19,7 +19,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
      */
     public function test_adminTechnicalBreakListCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('GOSC', 'COS', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -31,7 +30,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new DateTime())->modify('-12 day'), (new DateTime())->modify('-11 day'));
         $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new DateTime())->modify('-13 day'), (new DateTime())->modify('-12 day'));
 
-        /// step 2
         $dateFrom = new DateTime();
         $dateTo = clone $dateFrom;
 
@@ -47,12 +45,11 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -71,7 +68,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakListEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
@@ -80,11 +76,10 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
         $content = [];
 
-        /// step 2
         self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -92,7 +87,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakListPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
@@ -114,11 +108,10 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -126,12 +119,10 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakListLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
-        /// step 2
         $dateFrom = new DateTime();
         $dateTo = clone $dateFrom;
 
@@ -147,10 +138,8 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

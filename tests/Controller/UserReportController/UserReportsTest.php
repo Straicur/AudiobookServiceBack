@@ -20,7 +20,6 @@ class UserReportsTest extends AbstractWebTest
      */
     public function test_userReportsCorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -63,24 +62,23 @@ class UserReportsTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, dateAdd: (new DateTime())->modify('-3 day'), user: $user2);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'page'  => 0,
             'limit' => 10,
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('reports', $responseContent);
@@ -95,23 +93,20 @@ class UserReportsTest extends AbstractWebTest
 
     public function test_userReportsEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'page' => 0,
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -119,21 +114,19 @@ class UserReportsTest extends AbstractWebTest
 
     public function test_userReportsPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'page'  => 0,
             'limit' => 10,
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -141,15 +134,13 @@ class UserReportsTest extends AbstractWebTest
 
     public function test_userReportsLogOut(): void
     {
-        /// step 2
         $content = [
             'page'  => 0,
             'limit' => 10,
         ];
-        /// step 2
+
         self::$webClient->request('POST', '/api/user/reports', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

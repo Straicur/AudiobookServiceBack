@@ -26,17 +26,16 @@ class RegisterConfirmTest extends AbstractWebTest
 
         $this->assertInstanceOf(RegisterCodeRepository::class, $registerCodeRepository);
         $this->assertInstanceOf(UserRepository::class, $userRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $registerCode = $this->databaseMockManager->testFunc_addRegisterCode($user, code: '95b7tjxrnbs88xd');
-        /// step 2
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/register/' . $user->getUserInformation()->getEmail() . '/95b7tjxrnbs88xd', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 4
+
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -52,7 +51,6 @@ class RegisterConfirmTest extends AbstractWebTest
             }
         }
 
-        /// step 5
         $this->assertTrue($hasRole);
         $this->assertTrue($userAfter->isActive());
 
@@ -71,15 +69,14 @@ class RegisterConfirmTest extends AbstractWebTest
      */
     public function test_registerConfirmIncorrectCredentials(): void
     {
-
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user, code: '95b7tjxrnbs88xd', active: true, dateAccept: new DateTime());
-        /// step 1
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/register/' . $user->getUserInformation()->getEmail() . '/95b7tjxrnbs88xd', server: [
             'HTTP_authorization' => $token->getToken()
-        ]);         /// step 3
+        ]);         
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -93,16 +90,15 @@ class RegisterConfirmTest extends AbstractWebTest
      */
     public function test_registerConfirmIncorrectCodeStatusCredentials(): void
     {
-
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user);
-        /// step 1
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/register/' . $user->getUserInformation()->getEmail() . '/UPqFDj', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -116,16 +112,15 @@ class RegisterConfirmTest extends AbstractWebTest
      */
     public function test_registerConfirmIncorrectEmailCredentials(): void
     {
-
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user, code: '95b7tjxrnbs88xd');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/register/test2@cos.pl/UPqFDj', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -142,11 +137,11 @@ class RegisterConfirmTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addRegisterCode($user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 1
+
         self::$webClient->request('GET', '/api/register/', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 2
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);

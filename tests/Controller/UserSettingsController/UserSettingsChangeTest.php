@@ -24,12 +24,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         $userRepository = $this->getService(UserRepository::class);
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
@@ -38,12 +37,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -51,7 +49,6 @@ class UserSettingsChangeTest extends AbstractWebTest
             'id' => $user->getId()
         ]);
 
-        /// step 5
         $this->assertNotSame('+48123123123', $userAfter->getUserInformation()->getPhoneNumber());
         $this->assertNotSame('Test', $userAfter->getUserInformation()->getLastname());
         $this->assertNotSame('User', $userAfter->getUserInformation()->getFirstname());
@@ -68,7 +65,6 @@ class UserSettingsChangeTest extends AbstractWebTest
      */
     public function test_userSettingsIncorrectPhoneNumber(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
             'User',
@@ -76,7 +72,6 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48123123121',
             'firstName' => 'Damian',
@@ -85,11 +80,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -105,7 +100,6 @@ class UserSettingsChangeTest extends AbstractWebTest
      */
     public function test_userSettingsIncorrectCode(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
             'User',
@@ -113,7 +107,6 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
@@ -122,11 +115,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -134,17 +127,16 @@ class UserSettingsChangeTest extends AbstractWebTest
 
     public function test_userSettingsChangeEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -152,7 +144,6 @@ class UserSettingsChangeTest extends AbstractWebTest
 
     public function test_userSettingsChangePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [
@@ -162,11 +153,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -174,16 +165,14 @@ class UserSettingsChangeTest extends AbstractWebTest
 
     public function test_userSettingsChangeLogOut(): void
     {
-        /// step 1
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
             'lastName' => 'Mos',
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

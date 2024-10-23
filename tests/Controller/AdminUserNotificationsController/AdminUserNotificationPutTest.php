@@ -26,7 +26,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
@@ -48,7 +48,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook1);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::NORMAL->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -57,15 +56,14 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
@@ -82,7 +80,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
@@ -104,7 +102,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook1);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -114,15 +111,14 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
@@ -139,7 +135,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
@@ -161,7 +157,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user1, $audiobook1);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::NEW_CATEGORY->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -171,15 +166,14 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
@@ -196,7 +190,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
@@ -223,7 +217,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user2, $audiobook5);
         $this->databaseMockManager->testFunc_addProposedAudiobooks($user3, $audiobook6);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -234,15 +227,14 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
@@ -251,14 +243,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::USER_DELETE_DECLINE->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
@@ -269,11 +260,11 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -289,7 +280,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      */
     public function test_adminUserNotificationPutADMINIncorrectUserId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
             'User',
@@ -297,7 +287,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -307,11 +297,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -319,7 +308,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutIncorrectADMINEmptyUserId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
             'User',
@@ -327,7 +315,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationType' => NotificationType::ADMIN->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -336,11 +324,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -348,7 +335,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutIncorrectNEW_CATEGORYemptyCategoryKey(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
             'User',
@@ -357,7 +343,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::NEW_CATEGORY->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -367,11 +352,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -379,7 +363,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutNEW_AUDIOBOOKIncorrectAudiobookId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123177', ['Guest',
             'User',
@@ -387,7 +370,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -398,11 +381,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -410,7 +392,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKEmptyActionId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
             'User',
@@ -418,7 +399,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
@@ -428,11 +409,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -440,7 +420,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyActionId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
             'User',
@@ -449,7 +428,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::USER_DELETE_DECLINE->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
@@ -458,11 +436,11 @@ class AdminUserNotificationPutTest extends AbstractWebTest
                 'userId' => $user1->getId(),
             ]
         ];
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -470,7 +448,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyUserId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
@@ -478,7 +455,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
-        /// step 2
         $content = [
             'notificationType' => NotificationType::USER_DELETE_DECLINE->value,
             'notificationUserType' => NotificationUserType::SYSTEM->value,
@@ -488,11 +464,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -500,7 +475,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutEmptyRequestData(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
             'User',
@@ -510,11 +484,11 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -522,7 +496,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutPermission(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
             'User',
@@ -535,12 +508,11 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             'additionalData' => []
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         self::$webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -548,16 +520,14 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
     public function test_adminUserNotificationPutLogOut(): void
     {
-        /// step 1
         $content = [
             'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
             'notificationUserType' => NotificationUserType::ADMIN->value,
             'additionalData' => []
         ];
-        /// step 2
+
         self::$webClient->request('PUT', '/api/admin/user/notification', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

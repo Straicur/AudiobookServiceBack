@@ -18,7 +18,6 @@ class AdminUserToDeleteListTest extends AbstractWebTest
      */
     public function test_adminUserToDeleteListCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
@@ -29,26 +28,24 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addUserDelete($user2);
         $this->databaseMockManager->testFunc_addUserDelete($user3);
 
-        /// step 2
         $content = [
             'page' => 0,
             'limit' => 10
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('users', $responseContent);
@@ -60,17 +57,16 @@ class AdminUserToDeleteListTest extends AbstractWebTest
 
     public function test_adminUserToDeleteListEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -78,7 +74,7 @@ class AdminUserToDeleteListTest extends AbstractWebTest
 
     public function test_adminUserToDeleteListPermission(): void
     {
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
@@ -87,11 +83,11 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('POST', '/api/admin/user/to/delete/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -99,15 +95,13 @@ class AdminUserToDeleteListTest extends AbstractWebTest
 
     public function test_adminUserToDeleteListLogOut(): void
     {
-        /// step 1
         $content = [
             'page' => 0,
             'limit' => 10
         ];
 
-        /// step 2
         self::$webClient->request('POST', '/api/admin/user/to/delete/list', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

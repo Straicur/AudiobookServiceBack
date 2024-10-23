@@ -18,16 +18,14 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
      */
     public function test_adminTechnicalCachePoolsCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/admin/technical/cache/pools', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -46,16 +44,14 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
 
     public function test_adminTechnicalCachePoolsPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 2
         self::$webClient->request('GET', '/api/admin/technical/cache/pools', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -63,10 +59,8 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
 
     public function test_adminTechnicalCachePoolsLogOut(): void
     {
-        /// step 2
         self::$webClient->request('GET', '/api/admin/technical/cache/pools');
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

@@ -22,21 +22,18 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
         $this->assertInstanceOf(TechnicalBreakRepository::class, $technicalBreakRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
-
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
     /**
@@ -54,33 +51,29 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $this->assertInstanceOf(TechnicalBreakRepository::class, $technicalBreakRepository);
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
-        /// step 2
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
-        /// step 5
+
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
 
     public function test_adminTechnicalBreakPutPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-
-        /// step 2
         self::$webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -88,10 +81,8 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
     public function test_adminTechnicalBreakPutLogOut(): void
     {
-        /// step 2
         self::$webClient->request('PUT', '/api/admin/technical/break');
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

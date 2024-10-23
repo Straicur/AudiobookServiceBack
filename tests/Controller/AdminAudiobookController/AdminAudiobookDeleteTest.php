@@ -33,7 +33,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookUserCommentRepository::class, $audiobookUserCommentRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -42,7 +42,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -59,12 +58,11 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -80,12 +78,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $id = $audiobookAfter->getId();
         $dir = $audiobookAfter->getFileName();
 
-        /// step 3
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -114,7 +110,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
@@ -139,12 +135,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             'audiobookId' => $audiobook->getId(),
         ];
 
-        /// step 3
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -176,7 +170,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -185,7 +179,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -202,12 +195,11 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -221,11 +213,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        /// step 3
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -239,7 +230,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $this->assertInstanceOf(AudiobookService::class, $audiobookService);
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -248,7 +239,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        /// step 2
         $content = [
             'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
             'fileName' => 'Base',
@@ -265,12 +255,11 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -282,11 +271,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $content = [];
 
-        /// step 3
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -303,7 +291,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ];
 
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

@@ -25,7 +25,6 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -37,22 +36,20 @@ class AdminReportRejectTest extends AbstractWebTest
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => $report->getId(),
             'answer'       => 'dsa',
             'rejectOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $deniedAfter = $reportRepository->findOneBy([
             'id' => $report->getId()
         ]);
@@ -73,7 +70,6 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -90,22 +86,20 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', actionId: (string)$comment1->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId'     => $report->getId(),
             'answer'       => 'dsa',
             'rejectOthers' => true,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $deniedAfter = $reportRepository->findOneBy([
             'id' => $report->getId(),
         ]);
@@ -135,7 +129,6 @@ class AdminReportRejectTest extends AbstractWebTest
      */
     public function test_adminReportRejectIncorrectReportId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -146,19 +139,17 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'answer'       => 'dsa',
             'rejectOthers' => false,
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -166,7 +157,6 @@ class AdminReportRejectTest extends AbstractWebTest
 
     public function test_adminReportRejectEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -177,15 +167,13 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -193,7 +181,6 @@ class AdminReportRejectTest extends AbstractWebTest
 
     public function test_adminReportRejectPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -205,18 +192,17 @@ class AdminReportRejectTest extends AbstractWebTest
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'reportId' => $report->getId(),
             'answer'       => 'dsa',
             'rejectOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -224,7 +210,6 @@ class AdminReportRejectTest extends AbstractWebTest
 
     public function test_adminReportRejectLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -235,16 +220,14 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
         $report = $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, accepted: true, ip: '127.0.0.1');
 
-        /// step 2
         $content = [
             'reportId' => $report->getId(),
             'answer'       => 'dsa',
             'rejectOthers' => false,
         ];
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

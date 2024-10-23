@@ -17,7 +17,6 @@ class AdminCategoriesTest extends AbstractWebTest
      */
     public function test_adminCategoriesCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -28,19 +27,17 @@ class AdminCategoriesTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 2
         self::$webClient->request('GET', '/api/admin/categories', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('categories', $responseContent);
@@ -49,7 +46,6 @@ class AdminCategoriesTest extends AbstractWebTest
 
     public function test_adminCategoriesPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -59,11 +55,11 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('GET', '/api/admin/categories', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -71,10 +67,8 @@ class AdminCategoriesTest extends AbstractWebTest
 
     public function test_adminCategoriesLogOut(): void
     {
-        /// step 2
         self::$webClient->request('GET', '/api/admin/categories');
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

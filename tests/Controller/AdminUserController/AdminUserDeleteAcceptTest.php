@@ -23,29 +23,26 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
         $this->assertInstanceOf(UserDeleteRepository::class, $userDeleteRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $userDeleteAfter = $userDeleteRepository->findOneBy([
             'id' => $userDelete->getId()
         ]);
@@ -63,23 +60,20 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
      */
     public function test_adminUserDeleteAcceptIncorrectUserDeleted(): void
     {
-        /// step 1
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -95,25 +89,22 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
      */
     public function test_adminUserDeleteAcceptIncorrectUser(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user2, true, dateDeleted: new DateTime());
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -121,17 +112,16 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
 
     public function test_adminUserDeleteAcceptEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -139,7 +129,6 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
 
     public function test_adminUserDeleteAcceptPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
@@ -147,11 +136,11 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -159,16 +148,14 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
 
     public function test_adminUserDeleteAcceptLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [
             'userId' => $user->getId()
         ];
 
-        /// step 2
         self::$webClient->request('PATCH', '/api/admin/user/delete/accept', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

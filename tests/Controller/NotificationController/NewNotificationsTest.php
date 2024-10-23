@@ -22,7 +22,6 @@ class NewNotificationsTest extends AbstractWebTest
      */
     public function test_notificationsCorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -35,19 +34,18 @@ class NewNotificationsTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addNotificationCheck($user1, $notification1);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('POST', '/api/new/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertSame(2, $responseContent['newNotifications']);
@@ -55,19 +53,17 @@ class NewNotificationsTest extends AbstractWebTest
 
     public function test_notificationsPermission(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
+
         self::$webClient->request('POST', '/api/new/notifications', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -75,10 +71,8 @@ class NewNotificationsTest extends AbstractWebTest
 
     public function test_notificationsLogOut(): void
     {
-        /// step 3
         self::$webClient->request('POST', '/api/new/notifications');
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

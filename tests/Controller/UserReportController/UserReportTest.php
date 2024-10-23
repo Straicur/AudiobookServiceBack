@@ -25,7 +25,6 @@ class UserReportTest extends AbstractWebTest
 
         $this->assertInstanceOf(ReportRepository::class, $reportRepository);
 
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -36,7 +35,7 @@ class UserReportTest extends AbstractWebTest
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::COMMENT->value,
             'additionalData' => [
@@ -44,19 +43,17 @@ class UserReportTest extends AbstractWebTest
                 'actionId' => $comment1->getId(),
             ]
         ];
-        /// step 2
+
         self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
         $response = self::$webClient->getResponse();
 
         json_decode($response->getContent(), true);
-        /// step 5
 
         $this->assertCount(1, $reportRepository->findAll());
     }
@@ -71,7 +68,6 @@ class UserReportTest extends AbstractWebTest
      */
     public function test_userReportToManyReports(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -90,7 +86,7 @@ class UserReportTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addReport(ReportType::COMMENT, ip: '127.0.0.1', user: $user, actionId: (string)$comment1->getId());
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::COMMENT->value,
             'additionalData' => [
@@ -99,12 +95,10 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
@@ -112,22 +106,19 @@ class UserReportTest extends AbstractWebTest
 
     public function test_userReportEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'additionalData' => [
                 'description' => 'DESC',
             ]];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -135,7 +126,6 @@ class UserReportTest extends AbstractWebTest
 
     public function test_userReportPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -146,7 +136,7 @@ class UserReportTest extends AbstractWebTest
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         $content = [
             'type' => ReportType::COMMENT->value,
             'additionalData' => [
@@ -154,12 +144,11 @@ class UserReportTest extends AbstractWebTest
                 'actionId' => $comment1->getId(),
             ]
         ];
-        /// step 2
+
         self::$webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
@@ -167,7 +156,6 @@ class UserReportTest extends AbstractWebTest
 
     public function test_userReportLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
@@ -177,7 +165,6 @@ class UserReportTest extends AbstractWebTest
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
 
-        /// step 2
         $content = [
             'type' => ReportType::COMMENT->value,
             'additionalData' => [
@@ -185,10 +172,9 @@ class UserReportTest extends AbstractWebTest
                 'actionId' => $comment1->getId(),
             ]
         ];
-        /// step 2
+
         self::$webClient->request('PUT', '/api/user/report', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);
