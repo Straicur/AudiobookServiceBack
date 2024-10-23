@@ -8,9 +8,6 @@ use App\Enums\AudiobookAgeRange;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AudiobookCommentGetTest
- */
 class AdminAudiobookCommentGetTest extends AbstractWebTest
 {
     /**
@@ -73,13 +70,6 @@ class AdminAudiobookCommentGetTest extends AbstractWebTest
         $this->assertArrayHasKey('userModel', $responseContent['comments'][0]);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookCommentGetEmptyRequestData(): void
     {
         /// step 1
@@ -113,13 +103,6 @@ class AdminAudiobookCommentGetTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookCommentGetPermission(): void
     {
         /// step 1
@@ -152,13 +135,6 @@ class AdminAudiobookCommentGetTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookCommentGetLogOut(): void
     {
         /// step 1

@@ -14,9 +14,6 @@ use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminAudiobookReAddingTest
- */
 class AdminAudiobookReAddingTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
@@ -485,13 +482,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookAddPermission(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -539,13 +529,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookAddLogOut(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);

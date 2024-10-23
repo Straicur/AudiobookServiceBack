@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AuthorizationController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * LogoutTest
- */
 class LogoutTest extends AbstractWebTest
 {
     /**
@@ -40,11 +37,6 @@ class LogoutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    /**
-     * step 1 - Sending Request without token
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_logoutLogOut(): void
     {
         /// step 1

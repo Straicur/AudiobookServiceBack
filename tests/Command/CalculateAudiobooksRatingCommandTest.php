@@ -18,7 +18,6 @@ class CalculateAudiobooksRatingCommandTest extends AbstractKernelTestCase
 
         $this->assertInstanceOf(AudiobookRepository::class, $audiobookRepository);
 
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123124', ['Guest', 'User'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');

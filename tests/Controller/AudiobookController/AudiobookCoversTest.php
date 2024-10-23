@@ -10,9 +10,6 @@ use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AudiobookCoversTest
- */
 class AudiobookCoversTest extends AbstractWebTest
 {
     /**
@@ -100,6 +97,7 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request with bad data
@@ -135,13 +133,7 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $this->assertCount(0, $responseContent);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function test_audiobookCoverPermission(): void
     {
         /// step 1
@@ -164,13 +156,6 @@ class AudiobookCoversTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookCoverLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');

@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AdminTechnicalController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminTechnicalCacheClearTest
- */
 class AdminTechnicalCacheClearTest extends AbstractWebTest
 {
     /**
@@ -147,13 +144,6 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalCacheClearPermission(): void
     {
         /// step 1
@@ -180,13 +170,6 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalCacheClearLogOut(): void
     {
         /// step 2

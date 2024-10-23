@@ -24,21 +24,19 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
         $userEditRepository = $this->getService(UserEditRepository::class);
 
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -47,7 +45,7 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('code', $responseContent);
@@ -63,7 +61,6 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
      */
     public function test_userSettingsPasswordCodeIncorrectCode(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -73,58 +70,42 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_userSettingsPasswordCodeChangePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_userSettingsPasswordCodeChangeLogOut(): void
     {
-        /// step 1
         $content = [];
 
-        /// step 2
         self::$webClient->request('PUT', '/api/user/settings/password/code', content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

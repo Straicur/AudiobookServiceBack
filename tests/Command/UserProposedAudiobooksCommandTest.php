@@ -13,7 +13,6 @@ class UserProposedAudiobooksCommandTest extends AbstractKernelTestCase
 {
     public function test_userProposedAudiobooksSuccess(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');

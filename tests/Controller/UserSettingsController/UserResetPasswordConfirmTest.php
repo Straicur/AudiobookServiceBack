@@ -11,9 +11,6 @@ use App\Tests\AbstractWebTest;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
 
-/**
- * UserResetPasswordConfirmTest
- */
 class UserResetPasswordConfirmTest extends AbstractWebTest
 {
     /**
@@ -154,18 +151,8 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userResetPasswordConfirmEmptyRequestData(): void
     {
-        /// step 1
-
-        /// step 2
         $content = [];
 
         /// step 3

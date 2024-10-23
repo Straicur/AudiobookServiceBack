@@ -7,9 +7,6 @@ namespace App\Tests\Controller\UserSettingsController;
 use App\Repository\UserParentalControlCodeRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * UserParentControlPutTest
- */
 class UserParentControlPutTest extends AbstractWebTest
 {
     /**
@@ -81,13 +78,6 @@ class UserParentControlPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userParentControlPutPermission(): void
     {
         /// step 1
@@ -104,13 +94,6 @@ class UserParentControlPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userParentControlPutLogOut(): void
     {
         /// step 2

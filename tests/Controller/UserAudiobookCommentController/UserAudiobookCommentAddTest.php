@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\UserAudiobookController;
+namespace App\Tests\Controller\UserAudiobookCommentController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookUserCommentRepository;
@@ -10,9 +10,6 @@ use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserAudiobookCommentAddTest
- */
 class UserAudiobookCommentAddTest extends AbstractWebTest
 {
     /**
@@ -117,6 +114,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
+
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -331,13 +329,6 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookCommentAddEmptyRequestData(): void
     {
         /// step 1
@@ -358,13 +349,6 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookCommentAddPermission(): void
     {
         /// step 1
@@ -398,13 +382,6 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookCommentAddLogOut(): void
     {
         /// step 1

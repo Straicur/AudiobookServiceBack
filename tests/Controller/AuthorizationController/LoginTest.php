@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AuthorizationController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * LoginTest
- */
 class LoginTest extends AbstractWebTest
 {
     /**
@@ -64,11 +61,6 @@ class LoginTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without content
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_loginEmptyRequest(): void
     {
         /// step 1

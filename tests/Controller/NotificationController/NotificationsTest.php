@@ -9,9 +9,6 @@ use App\Enums\NotificationUserType;
 use App\Exception\NotificationException;
 use App\Tests\AbstractWebTest;
 
-/**
- * NotificationsTest
- */
 class NotificationsTest extends AbstractWebTest
 {
     /**
@@ -67,13 +64,6 @@ class NotificationsTest extends AbstractWebTest
         $this->assertNotNull($responseContent['systemNotifications'][0]['active']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationsEmptyRequestData(): void
     {
         /// step 1
@@ -97,13 +87,6 @@ class NotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationsPermission(): void
     {
         /// step 1
@@ -130,13 +113,6 @@ class NotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationsLogOut(): void
     {
         /// step 1

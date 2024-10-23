@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\AdminUserController;
+namespace App\Tests\Controller\AdminUserNotificationsController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
@@ -11,9 +11,6 @@ use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminUserNotificationPatchTest
- */
 class AdminUserNotificationPatchTest extends AbstractWebTest
 {
     /**
@@ -325,13 +322,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchEmptyRequestData(): void
     {
         /// step 1
@@ -354,13 +344,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchPermission(): void
     {
         /// step 1
@@ -391,13 +374,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchLogOut(): void
     {
         /// step 1

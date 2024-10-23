@@ -10,9 +10,6 @@ use App\Repository\AudiobookRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminCategoryDetailTest
- */
 class AdminCategoryDetailTest extends AbstractWebTest
 {
     /**
@@ -104,13 +101,6 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryDetailEmptyRequestData(): void
     {
         /// step 1
@@ -134,13 +124,6 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryDetailPermission(): void
     {
         /// step 1
@@ -165,13 +148,6 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryDetailLogOut(): void
     {
         /// step 1

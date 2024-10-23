@@ -9,9 +9,6 @@ use App\Enums\NotificationUserType;
 use App\Repository\NotificationCheckRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * NotificationActivateTest
- */
 class NotificationActivateTest extends AbstractWebTest
 {
     /**
@@ -103,13 +100,6 @@ class NotificationActivateTest extends AbstractWebTest
         ]));
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationActivateEmptyRequestData(): void
     {
         /// step 1
@@ -133,13 +123,6 @@ class NotificationActivateTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationActivatePermission(): void
     {
         /// step 1
@@ -165,13 +148,6 @@ class NotificationActivateTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_notificationActivateLogOut(): void
     {
         /// step 1

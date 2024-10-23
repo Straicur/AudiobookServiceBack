@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\AdminUserController;
+namespace App\Tests\Controller\AdminUserNotificationsController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
@@ -11,9 +11,6 @@ use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminUserNotificationPutTest
- */
 class AdminUserNotificationPutTest extends AbstractWebTest
 {
     /**
@@ -249,13 +246,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectCorrectNotificationType(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -327,14 +317,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectADMINEmptyUserId(): void
     {
         /// step 1
@@ -364,14 +346,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad actionId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectNEW_CATEGORYemptyCategoryKey(): void
     {
         /// step 1
@@ -403,14 +377,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutNEW_AUDIOBOOKIncorrectAudiobookId(): void
     {
         /// step 1
@@ -442,14 +408,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad actionId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKEmptyActionId(): void
     {
         /// step 1
@@ -480,14 +438,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad actionId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyActionId(): void
     {
         /// step 1
@@ -518,14 +468,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad actionId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyUserId(): void
     {
         /// step 1
@@ -556,13 +498,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutEmptyRequestData(): void
     {
         /// step 1
@@ -585,13 +520,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutPermission(): void
     {
         /// step 1
@@ -618,13 +546,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPutLogOut(): void
     {
         /// step 1

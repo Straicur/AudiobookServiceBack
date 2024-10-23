@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminTechnicalController;
 use App\Repository\TechnicalBreakRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminTechnicalBreakPutTest
- */
 class AdminTechnicalBreakPutTest extends AbstractWebTest
 {
     /**
@@ -71,13 +68,6 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalBreakPutPermission(): void
     {
         /// step 1
@@ -96,13 +86,6 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalBreakPutLogOut(): void
     {
         /// step 2

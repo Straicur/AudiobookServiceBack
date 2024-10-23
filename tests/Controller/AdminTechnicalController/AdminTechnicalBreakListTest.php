@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminTechnicalController;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminTechnicalBreakListTest
- */
 class AdminTechnicalBreakListTest extends AbstractWebTest
 {
     /**
@@ -72,13 +69,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['technicalBreaks']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalBreakListEmptyRequestData(): void
     {
         /// step 1
@@ -100,13 +90,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalBreakListPermission(): void
     {
         /// step 1
@@ -141,13 +124,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalBreakListLogOut(): void
     {
         /// step 1

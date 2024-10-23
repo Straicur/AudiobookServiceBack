@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AdminAudiobookCategoryController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminCategoriesTreeTest
- */
 class AdminCategoriesTest extends AbstractWebTest
 {
     /**
@@ -50,13 +47,6 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->assertCount(16, $responseContent['categories']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoriesPermission(): void
     {
         /// step 1
@@ -79,13 +69,6 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoriesLogOut(): void
     {
         /// step 2

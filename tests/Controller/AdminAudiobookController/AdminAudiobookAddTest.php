@@ -8,9 +8,6 @@ use App\Repository\AudiobookRepository;
 use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminAudiobookAddTest
- */
 class AdminAudiobookAddTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
@@ -194,13 +191,6 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobooksAfter[0]->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookAddEmptyRequestData(): void
     {
         /// step 1
@@ -222,13 +212,6 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookAddPermission(): void
     {
         /// step 1
@@ -265,13 +248,6 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookAddLogOut(): void
     {
         /// step 1

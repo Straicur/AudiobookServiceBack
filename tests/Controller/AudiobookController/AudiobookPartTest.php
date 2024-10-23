@@ -10,9 +10,6 @@ use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AudiobookPartTest
- */
 class AudiobookPartTest extends AbstractWebTest
 {
     /**
@@ -126,13 +123,6 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookPartEmptyRequestData(): void
     {
         /// step 1
@@ -152,13 +142,6 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookPartPermission(): void
     {
         /// step 1
@@ -185,13 +168,6 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_audiobookPartLogOut(): void
     {
         /// step 1

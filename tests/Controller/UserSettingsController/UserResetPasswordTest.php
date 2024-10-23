@@ -10,9 +10,6 @@ use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserResetPasswordTest
- */
 class UserResetPasswordTest extends AbstractWebTest
 {
     /**
@@ -85,16 +82,8 @@ class UserResetPasswordTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userResetPasswordEmptyRequestData(): void
     {
-
         $content = [];
 
         /// step 2

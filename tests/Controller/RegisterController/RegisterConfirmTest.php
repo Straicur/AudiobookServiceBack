@@ -9,9 +9,6 @@ use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * RegisterConfirmTest
- */
 class RegisterConfirmTest extends AbstractWebTest
 {
     /**

@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\UserAudiobookController;
+namespace App\Tests\Controller\UserAudiobookCommentController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserAudiobookCommentEditTest
- */
 class UserAudiobookCommentEditTest extends AbstractWebTest
 {
     /**
@@ -219,14 +216,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ParentId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
+
     public function test_userAudiobookCommentEditIncorrectAudiobookCommentId(): void
     {
         /// step 1
@@ -290,13 +280,6 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookCommentEditPermission(): void
     {
         /// step 1
@@ -336,13 +319,6 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookCommentEditLogOut(): void
     {
         /// step 1

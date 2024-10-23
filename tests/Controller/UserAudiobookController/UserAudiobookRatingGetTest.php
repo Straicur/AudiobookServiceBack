@@ -8,9 +8,6 @@ use App\Enums\AudiobookAgeRange;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserAudiobookRatingGetTest
- */
 class UserAudiobookRatingGetTest extends AbstractWebTest
 {
     /**
@@ -63,13 +60,6 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
         $this->assertSame($responseContent['ratingPercent'], 66);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookRatingGetEmptyRequestData(): void
     {
         /// step 1
@@ -158,13 +148,6 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookRatingGetPermission(): void
     {
         /// step 1
@@ -192,13 +175,6 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookRatingGetLogOut(): void
     {
         /// step 1

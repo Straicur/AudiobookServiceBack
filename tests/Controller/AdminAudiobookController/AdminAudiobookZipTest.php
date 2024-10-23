@@ -8,9 +8,6 @@ use App\Repository\AudiobookRepository;
 use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminAudiobookZipTest
- */
 class AdminAudiobookZipTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
@@ -165,13 +162,6 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookZipEmptyRequestData(): void
     {
         /// step 1
@@ -191,13 +181,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function test_adminAudiobookZipPermission(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -228,13 +212,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function test_adminAudiobookZipLogOut(): void
     {
         $content2 = [

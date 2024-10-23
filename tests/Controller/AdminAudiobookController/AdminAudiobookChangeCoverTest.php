@@ -8,9 +8,6 @@ use App\Repository\AudiobookRepository;
 use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminAudiobookChangeCoverTest
- */
 class AdminAudiobookChangeCoverTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
@@ -128,13 +125,6 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookChangeCoverEmptyRequestData(): void
     {
         /// step 1
@@ -156,13 +146,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function test_adminAudiobookChangeCoverPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'Recruiter'], true, 'zaq12wsx');
@@ -186,13 +170,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function test_adminAudiobookChangeCoverLogOut(): void
     {
         /// step 1

@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminAudiobookCategoryController;
 use App\Repository\AudiobookCategoryRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminCategoryEditTest
- */
 class AdminCategoryEditTest extends AbstractWebTest
 {
     /**
@@ -88,13 +85,6 @@ class AdminCategoryEditTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryEditEmptyRequestData(): void
     {
         /// step 1
@@ -118,13 +108,6 @@ class AdminCategoryEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryEditPermission(): void
     {
         /// step 1
@@ -150,13 +133,6 @@ class AdminCategoryEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryEditLogOut(): void
     {
         //// step 1

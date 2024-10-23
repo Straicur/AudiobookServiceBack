@@ -8,9 +8,6 @@ use App\Repository\UserDeleteRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminUserDeleteAcceptTest
- */
 class AdminUserDeleteAcceptTest extends AbstractWebTest
 {
     /**
@@ -122,13 +119,6 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDeleteAcceptEmptyRequestData(): void
     {
         /// step 1
@@ -147,13 +137,6 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDeleteAcceptPermission(): void
     {
         /// step 1
@@ -174,13 +157,6 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDeleteAcceptLogOut(): void
     {
         /// step 1

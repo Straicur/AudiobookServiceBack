@@ -8,9 +8,6 @@ use App\Repository\RegisterCodeRepository;
 use App\Repository\UserInformationRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * RegisterTest
- */
 class RegisterTest extends AbstractWebTest
 {
     /**
@@ -223,11 +220,6 @@ class RegisterTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without content
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_registerEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');

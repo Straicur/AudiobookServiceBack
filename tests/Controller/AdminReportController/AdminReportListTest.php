@@ -9,9 +9,6 @@ use App\Enums\ReportType;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * adminReportListTest
- */
 class AdminReportListTest extends AbstractWebTest
 {
     /**
@@ -247,13 +244,6 @@ class AdminReportListTest extends AbstractWebTest
         $this->assertSame(1, $responseContent['maxPage']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportListEmptyRequestData(): void
     {
         /// step 1
@@ -283,13 +273,6 @@ class AdminReportListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportListPermission(): void
     {
         /// step 1
@@ -320,13 +303,6 @@ class AdminReportListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportListLogOut(): void
     {
         /// step 1

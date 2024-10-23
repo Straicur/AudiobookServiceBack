@@ -7,9 +7,6 @@ namespace App\Tests\Controller\RegisterController;
 use App\Repository\RegisterCodeRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * RegisterCodeSendTest
- */
 class RegisterCodeSendTest extends AbstractWebTest
 {
     /**
@@ -105,11 +102,6 @@ class RegisterCodeSendTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without content
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_registerCodeEmptyRequest(): void
     {
         /// step 1

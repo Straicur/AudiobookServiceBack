@@ -10,9 +10,6 @@ use App\Repository\ReportRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * reportTest
- */
 class ReportTest extends AbstractWebTest
 {
     /**
@@ -108,13 +105,6 @@ class ReportTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_reportEmptyRequestData(): void
     {
         /// step 1

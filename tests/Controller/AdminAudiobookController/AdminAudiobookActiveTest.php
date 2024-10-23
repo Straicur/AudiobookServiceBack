@@ -11,9 +11,6 @@ use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminAudiobookActiveTest
- */
 class AdminAudiobookActiveTest extends AbstractWebTest
 {
     /**
@@ -287,13 +284,6 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookActiveEmptyRequestData(): void
     {
         /// step 1
@@ -321,13 +311,6 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookActivePermission(): void
     {
         /// step 1
@@ -358,13 +341,6 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookActiveLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');

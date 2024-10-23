@@ -11,9 +11,6 @@ use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminStatisticMainTest
- */
 class AdminStatisticMainTest extends AbstractWebTest
 {
     /**
@@ -89,12 +86,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertSame($responseContent['lastWeekNotifications'], 1);
         $this->assertSame($responseContent['lastWeekTechnicalBreaks'], 1);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     * @return void
-     */
+
     public function test_adminStatisticMainLogout(): void
     {
         /// step 2

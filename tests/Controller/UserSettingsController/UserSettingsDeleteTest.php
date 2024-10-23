@@ -8,9 +8,6 @@ use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * UserSettingsDeleteTest
- */
 class UserSettingsDeleteTest extends AbstractWebTest
 {
     /**
@@ -73,13 +70,6 @@ class UserSettingsDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userSettingsDeletePermission(): void
     {
         /// step 1
@@ -96,13 +86,6 @@ class UserSettingsDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userSettingsDeleteLogOut(): void
     {
         /// step 2

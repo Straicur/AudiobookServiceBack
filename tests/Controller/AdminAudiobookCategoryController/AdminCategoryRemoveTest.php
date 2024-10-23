@@ -13,44 +13,8 @@ use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminCategoryRemoveTest
- */
 class AdminCategoryRemoveTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminCategoryRemoveIncorrectCategoryId(): void
-    {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
-
-        /// step 2
-        $content = [
-            'categoryId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
-        ];
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        /// step 4
-        self::assertResponseStatusCodeSame(404);
-
-        $this->responseTool->testErrorResponseData(self::$webClient);
-    }
-
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
@@ -136,11 +100,37 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
     /**
      * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
+     * step 2 - Preparing JsonBodyContent with bad CategoryId
+     * step 3 - Sending Request
+     * step 4 - Checking response
      *
      * @return void
      */
+    public function test_adminCategoryRemoveIncorrectCategoryId(): void
+    {
+        /// step 1
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+
+        /// step 2
+        $content = [
+            'categoryId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+        ];
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+        /// step 3
+        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+
+        /// step 4
+        self::assertResponseStatusCodeSame(404);
+
+        $this->responseTool->testErrorResponseData(self::$webClient);
+    }
+
     public function test_adminCategoryRemoveEmptyRequestData(): void
     {
         /// step 1
@@ -164,13 +154,6 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryRemovePermission(): void
     {
         /// step 1
@@ -195,13 +178,6 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryRemoveLogOut(): void
     {
         /// step 1

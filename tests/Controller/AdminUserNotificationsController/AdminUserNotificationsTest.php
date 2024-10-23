@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\AdminUserController;
+namespace App\Tests\Controller\AdminUserNotificationsController;
 
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserNotificationsTest
- */
 class AdminUserNotificationsTest extends AbstractWebTest
 {
     /**
@@ -119,13 +116,6 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->assertCount(1, $responseContent['systemNotifications']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationsEmptyRequestData(): void
     {
         /// step 1
@@ -152,13 +142,6 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationsPermission(): void
     {
         /// step 1
@@ -188,13 +171,6 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationsLogOut(): void
     {
         /// step 1

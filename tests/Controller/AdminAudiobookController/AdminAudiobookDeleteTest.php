@@ -14,9 +14,6 @@ use App\Service\Admin\Audiobook\AudiobookService;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminAudiobookDeleteTest
- */
 class AdminAudiobookDeleteTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
@@ -235,13 +232,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookDeleteEmptyRequestData(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -304,13 +294,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookDeleteLogOut(): void
     {
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [], active: true);
@@ -318,9 +301,6 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $content = [
             'audiobookId' => $audiobook1->getId(),
         ];
-
-
-        /// step 3
 
         self::$webClient->request('DELETE', '/api/admin/audiobook/delete', content: json_encode($content));
         /// step 3

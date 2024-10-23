@@ -10,9 +10,6 @@ use App\Repository\ReportRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * adminReportRejectTest
- */
 class AdminReportRejectTest extends AbstractWebTest
 {
     /**
@@ -167,13 +164,6 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportRejectEmptyRequestData(): void
     {
         /// step 1
@@ -201,13 +191,6 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportRejectPermission(): void
     {
         /// step 1
@@ -239,13 +222,6 @@ class AdminReportRejectTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminReportRejectLogOut(): void
     {
         /// step 1

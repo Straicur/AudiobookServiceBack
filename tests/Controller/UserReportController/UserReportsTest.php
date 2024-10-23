@@ -93,12 +93,6 @@ class UserReportsTest extends AbstractWebTest
         $this->assertSame(1, $responseContent['maxPage']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_userReportsEmptyRequestData(): void
     {
         /// step 1
@@ -123,12 +117,6 @@ class UserReportsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_userReportsPermission(): void
     {
         /// step 1
@@ -151,12 +139,6 @@ class UserReportsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_userReportsLogOut(): void
     {
         /// step 2

@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AuthorizationController;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AuthorizeCheckTest
- */
 class AuthorizeCheckTest extends AbstractWebTest
 {
     /**
@@ -40,11 +37,6 @@ class AuthorizeCheckTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    /**
-     * step 1 - Sending Request with expired token
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_authorizeCheckTokenExpired(): void
     {
         /// step 1
@@ -66,11 +58,6 @@ class AuthorizeCheckTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without token
-     * step 2 - Checking response
-     * @return void
-     */
     public function test_authorizeCheckLogOut(): void
     {
         /// step 1

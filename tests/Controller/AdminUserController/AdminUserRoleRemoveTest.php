@@ -9,9 +9,6 @@ use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserRoleRemoveTest
- */
 class AdminUserRoleRemoveTest extends AbstractWebTest
 {
     /**
@@ -124,13 +121,6 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserRoleRemoveEmptyRequestData(): void
     {
         /// step 1
@@ -153,13 +143,6 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserRoleRemovePermission(): void
     {
         /// step 1
@@ -183,13 +166,6 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserRoleRemoveLogOut(): void
     {
         /// step 1

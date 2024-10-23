@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminUserController;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserChangePhoneTest
- */
 class AdminUserChangePhoneTest extends AbstractWebTest
 {
     /**
@@ -153,13 +150,6 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDetailsEmptyRequestData(): void
     {
         /// step 1
@@ -182,13 +172,6 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDetailsPermission(): void
     {
         /// step 1
@@ -212,13 +195,6 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserDetailsLogOut(): void
     {
         /// step 1

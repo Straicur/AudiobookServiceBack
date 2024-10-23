@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AdminUserController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserSystemRolesTest
- */
 class AdminUserSystemRolesTest extends AbstractWebTest
 {
     /**
@@ -43,13 +40,6 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['roles']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserSystemRolesPermission(): void
     {
         /// step 1
@@ -67,12 +57,6 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without token
-     * step 2 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserSystemRolesLogOut(): void
     {
         /// step 1

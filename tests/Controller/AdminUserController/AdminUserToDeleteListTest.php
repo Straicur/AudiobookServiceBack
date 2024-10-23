@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AdminUserController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserToDeleteListTest
- */
 class AdminUserToDeleteListTest extends AbstractWebTest
 {
     /**
@@ -61,13 +58,6 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['users']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserToDeleteListEmptyRequestData(): void
     {
         /// step 1
@@ -86,13 +76,6 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserToDeleteListPermission(): void
     {
         /// step 1
@@ -114,13 +97,6 @@ class AdminUserToDeleteListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserToDeleteListLogOut(): void
     {
         /// step 1

@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminUserController;
 use App\Repository\UserSettingsRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUsersTest
- */
 class AdminUsersTest extends AbstractWebTest
 {
     /**
@@ -178,13 +175,6 @@ class AdminUsersTest extends AbstractWebTest
         $this->assertCount(9, $responseContent['users']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUsersEmptyRequestData(): void
     {
         /// step 1
@@ -205,13 +195,6 @@ class AdminUsersTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUsersPermission(): void
     {
         /// step 1
@@ -235,13 +218,6 @@ class AdminUsersTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUsersLogOut(): void
     {
         /// step 2

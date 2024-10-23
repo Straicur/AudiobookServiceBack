@@ -9,9 +9,6 @@ use App\Repository\MyListRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserAudiobookLikeTest
- */
 class UserAudiobookLikeTest extends AbstractWebTest
 {
     /**
@@ -169,13 +166,6 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookLikeEmptyRequestData(): void
     {
         /// step 1
@@ -196,13 +186,6 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookLikePermission(): void
     {
         /// step 1
@@ -229,13 +212,6 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookLikeLogOut(): void
     {
         /// step 1

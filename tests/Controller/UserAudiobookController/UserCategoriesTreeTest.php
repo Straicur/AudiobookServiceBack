@@ -51,12 +51,6 @@ class UserCategoriesTreeTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['categories'][4]['children']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_adminCategoriesTreePermission(): void
     {
         /// step 1
@@ -73,12 +67,6 @@ class UserCategoriesTreeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     * @return void
-     */
     public function test_adminCategoriesTreeLogOut(): void
     {
         /// step 2

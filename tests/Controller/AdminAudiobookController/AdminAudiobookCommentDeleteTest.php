@@ -9,9 +9,6 @@ use App\Repository\AudiobookUserCommentRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminAudiobookCommentDeleteTest
- */
 class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 {
     /**
@@ -57,7 +54,8 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 
         $this->assertTrue($commentAfter->getDeleted());
     }
-/**
+
+    /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
      * step 3 - Sending Request
@@ -133,13 +131,6 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeleteEmptyRequestData(): void
     {
         /// step 1
@@ -161,13 +152,6 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeletePermission(): void
     {
         /// step 1
@@ -191,13 +175,6 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeleteLogOut(): void
     {
         $content = [

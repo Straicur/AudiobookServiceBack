@@ -8,9 +8,6 @@ use App\Enums\AudiobookAgeRange;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserProposedAudiobooksTest
- */
 class UserProposedAudiobooksTest extends AbstractWebTest
 {
     /**
@@ -77,13 +74,6 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['audiobooks'][0]['categories']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userProposedAudiobooksPermission(): void
     {
         /// step 1
@@ -100,13 +90,6 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userProposedAudiobooksLogOut(): void
     {
         /// step 2

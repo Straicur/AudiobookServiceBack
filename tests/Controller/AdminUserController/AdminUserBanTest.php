@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminUserController;
 use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminUserBanTest
- */
 class AdminUserBanTest extends AbstractWebTest
 {
     /**
@@ -118,13 +115,6 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserBanEmptyRequestData(): void
     {
         /// step 1
@@ -147,13 +137,6 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserBanPermission(): void
     {
         /// step 1
@@ -177,13 +160,6 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserBanLogOut(): void
     {
         /// step 1

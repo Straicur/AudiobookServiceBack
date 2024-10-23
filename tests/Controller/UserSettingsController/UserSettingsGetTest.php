@@ -6,9 +6,6 @@ namespace App\Tests\Controller\UserSettingsController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * UserSettingsGetTest
- */
 class UserSettingsGetTest extends AbstractWebTest
 {
     /**
@@ -21,23 +18,22 @@ class UserSettingsGetTest extends AbstractWebTest
      */
     public function test_userSettingsGetCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
+
         self::$webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
+
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('phoneNumber', $responseContent);
@@ -53,41 +49,25 @@ class UserSettingsGetTest extends AbstractWebTest
         $this->assertArrayHasKey('editableDate', $responseContent);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userSettingsGetPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
+
         self::$webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userSettingsGetLogOut(): void
     {
-        /// step 2
         self::$webClient->request('GET', '/api/user/settings');
-        /// step 3
+
         self::assertResponseStatusCodeSame(401);
 
         $this->responseTool->testBadResponseData(self::$webClient);

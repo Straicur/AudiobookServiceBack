@@ -8,9 +8,6 @@ use App\Enums\AudiobookAgeRange;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminStatisticBestAudiobooksTest
- */
 class AdminStatisticBestAudiobooksTest extends AbstractWebTest
 {
     /**
@@ -85,12 +82,7 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $this->assertArrayHasKey('categories', $responseContent['firstAudiobook']);
         $this->assertCount(2, $responseContent['firstAudiobook']['categories']);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     * @return void
-     */
+
     public function test_adminStatisticBestAudiobooksLogout(): void
     {
         /// step 2
