@@ -344,14 +344,14 @@ class AdminAudiobookController extends AbstractController
                         AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
                         AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
-                    return ResponseTool::getResponse($successModel, 201);
+                    return ResponseTool::getResponse($successModel, Response::HTTP_CREATED);
                 }
             } catch (Throwable $e) {
                 $usersLogger->error($e->getMessage());
-                return ResponseTool::getResponse(httpCode: 500);
+                return ResponseTool::getResponse(httpCode: Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $usersLogger->error('Invalid given Query');

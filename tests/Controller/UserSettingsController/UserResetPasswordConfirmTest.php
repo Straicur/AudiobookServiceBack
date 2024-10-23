@@ -11,9 +11,6 @@ use App\Tests\AbstractWebTest;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
 
-/**
- * UserResetPasswordConfirmTest
- */
 class UserResetPasswordConfirmTest extends AbstractWebTest
 {
     /**
@@ -31,16 +28,13 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         $this->assertInstanceOf(UserEditRepository::class, $userEditRepository);
         $this->assertInstanceOf(UserPasswordRepository::class, $userPasswordRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
         $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD_RESET, (new DateTime())->modify('+1 day'), true);
 
         $passwordGenerator = new PasswordHashGenerator('zaq12WSX');
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        /// step 2
         $content = [
             'userId' => $user->getId(),
             'password' => 'zaq12WSX',
@@ -48,13 +42,11 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         $newPassword = $passwordGenerator->generate();
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-        /// step 5
+
         $password = $userPasswordRepository->findOneBy([
             'user' => $user->getId()
         ]);
@@ -82,37 +74,20 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      */
     public function test_userResetPasswordConfirmIncorrectId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD_RESET, (new DateTime())->modify('+1 day'), true);
 
-        $passwordGenerator = new PasswordHashGenerator('zaq12WSX');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        $newPassword = $passwordGenerator->generate();
-        /// step 2
         $content = [
             'userId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'password' => 'zaq12WSX',
         ];
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
-        /// step 4
+
+        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -125,36 +100,20 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      */
     public function test_userResetPasswordConfirmIncorrectUserEditFlag(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', editableDate: (new DateTime())->modify('-1 month'));
 
         $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::PASSWORD_RESET, (new DateTime())->modify('+1 day'), true);
-        $passwordGenerator = new PasswordHashGenerator('zaq12WSX');
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        $newPassword = $passwordGenerator->generate();
-        /// step 2
         $content = [
             'userId' => $user->getId(),
             'password' => 'zaq12WSX',
         ];
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
-        /// step 4
+
+        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -167,73 +126,30 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      */
     public function test_userResetPasswordConfirmIncorrectUserEditableDate(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('-1 month'));
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD_RESET, (new DateTime())->modify('-1 day'), true);
 
-        $passwordGenerator = new PasswordHashGenerator('zaq12WSX');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        $newPassword = $passwordGenerator->generate();
-        /// step 2
         $content = [
             'userId' => $user->getId(),
             'password' => 'zaq12WSX',
         ];
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
-        /// step 4
+
+        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userResetPasswordConfirmEmptyRequestData(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
-
-        $passwordGenerator = new PasswordHashGenerator('zaq12WSX');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        $newPassword = $passwordGenerator->generate();
-        /// step 2
         $content = [];
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
-        /// step 3
+        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

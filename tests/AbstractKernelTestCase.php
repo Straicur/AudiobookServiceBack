@@ -10,9 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 abstract class AbstractKernelTestCase extends KernelTestCase
 {
     protected ?object $entityManager = null;
-
     protected ?DatabaseMockManager $databaseMockManager = null;
-
     protected Application $commandApplication;
 
     protected function setUp(): void

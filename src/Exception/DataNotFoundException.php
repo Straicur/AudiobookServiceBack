@@ -25,6 +25,6 @@ class DataNotFoundException extends Exception implements ResponseExceptionInterf
 
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new DataNotFoundModel($this->dataStrings), 404);
+        return ResponseTool::getResponse(new DataNotFoundModel($this->dataStrings), Response::HTTP_NOT_FOUND);
     }
 }

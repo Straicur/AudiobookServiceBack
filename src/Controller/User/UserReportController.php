@@ -130,7 +130,7 @@ class UserReportController extends AbstractController
 
             $reportRepository->add($newReport);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');
@@ -204,7 +204,7 @@ class UserReportController extends AbstractController
 
             $reportRepository->add($newReport);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

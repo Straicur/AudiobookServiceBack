@@ -13,6 +13,6 @@ class CacheException extends Exception implements ResponseExceptionInterface
 {
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new CacheExceptionModel(), 500);
+        return ResponseTool::getResponse(new CacheExceptionModel(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

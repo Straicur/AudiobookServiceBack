@@ -7,6 +7,7 @@ namespace App\Tests\Tool;
 use App\Model\Error\NotAuthorizeModel;
 use App\Tool\ResponseTool;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class ResponseToolTest extends TestCase
 {
@@ -43,7 +44,7 @@ class ResponseToolTest extends TestCase
 
     public function testResponseContentJson(): void
     {
-        $response = ResponseTool::getResponse(new NotAuthorizeModel(), 401);
+        $response = ResponseTool::getResponse(new NotAuthorizeModel(), Response::HTTP_UNAUTHORIZED);
 
         $content = $response->getContent();
 

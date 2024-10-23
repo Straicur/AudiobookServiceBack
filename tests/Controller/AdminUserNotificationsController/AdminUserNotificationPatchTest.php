@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\AdminUserController;
+namespace App\Tests\Controller\AdminUserNotificationsController;
 
 use App\Enums\AudiobookAgeRange;
 use App\Enums\NotificationType;
@@ -11,9 +11,6 @@ use App\Repository\NotificationRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminUserNotificationPatchTest
- */
 class AdminUserNotificationPatchTest extends AbstractWebTest
 {
     /**
@@ -29,7 +26,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest'], true, 'zaq12wsx', notActive: true);
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
@@ -57,7 +54,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
 
         $not1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2, $user3], NotificationType::ADMIN, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
-        /// step 2
         $content = [
             'notificationId' => $not1->getId(),
             'notificationType' => NotificationType::PROPOSED->value,
@@ -69,15 +65,14 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-        /// step 5
+
         $not1After = $notificationRepository->findOneBy([
             'id' => $not1->getId()
         ]);
@@ -106,7 +101,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -140,7 +135,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             $user2,
             $user3], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
-        /// step 2
         $content = [
             'notificationId'       => $not1->getId(),
             'notificationType'     => NotificationType::ADMIN->value,
@@ -152,15 +146,14 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server : [
+
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-        /// step 5
+
         $not1After = $notificationRepository->findOneBy([
             'id' => $not1->getId(),
         ]);
@@ -186,13 +179,14 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      */
     public function test_adminUserNotificationPatchIncorrectNotificationId(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
             'notificationType' => NotificationType::ADMIN->value,
@@ -203,24 +197,13 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
@@ -235,7 +218,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $notificationRepository = $this->getService(NotificationRepository::class);
 
         $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-        /// step 1
+
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',
             'Administrator'], true, 'zaq12wsx');
@@ -270,7 +253,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             $user3], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationId'       => $not1->getId(),
             'notificationType'     => NotificationType::ADMIN->value,
@@ -282,24 +265,13 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             ],
         ];
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server : [
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
 
@@ -313,7 +285,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      */
     public function test_adminUserNotificationPatchToAdminIncorrect(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
@@ -321,7 +292,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $not1 = $this->databaseMockManager->testFunc_addNotifications([$user1, $user2, $user3], NotificationType::PROPOSED, $user1->getProposedAudiobooks()->getId(), NotificationUserType::SYSTEM);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
+
         $content = [
             'notificationId' => $not1->getId(),
             'notificationType' => NotificationType::ADMIN->value,
@@ -332,76 +303,43 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             ]
         ];
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchEmptyRequestData(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchPermission(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
@@ -413,39 +351,23 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminUserNotificationPatchLogOut(): void
     {
-        /// step 1
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user3 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123177', ['Guest', 'User'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123177', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
             'notificationId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
@@ -456,21 +378,11 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
                 'actionId' => $user1->getProposedAudiobooks()->getId(),
             ]
         ];
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/notification', content: json_encode($content));
 
-        /// step 3
+        self::$webClient->request('PATCH', '/api/admin/user/notification', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

@@ -13,6 +13,6 @@ class AudiobookConfigServiceException extends Exception implements ResponseExcep
 {
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new AudiobookConfigServiceModel(), 500);
+        return ResponseTool::getResponse(new AudiobookConfigServiceModel(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

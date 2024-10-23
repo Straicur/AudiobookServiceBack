@@ -5,14 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Controller\AdminAudiobookController;
 
 use App\Enums\AudiobookAgeRange;
-use App\Repository\AudiobookRepository;
 use App\Repository\AudiobookUserCommentRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminAudiobookCommentDeleteTest
- */
 class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 {
     /**
@@ -28,7 +24,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $audiobookCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
         $this->assertInstanceOf(AudiobookUserCommentRepository::class, $audiobookCommentRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -37,28 +33,27 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd', [$category1, $category2], null, (new DateTime())->modify('- 1 month'), active: true);
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user);
-        
-        /// step 2
+
         $content = [
-            'audiobookCommentId'=>$comment1->getId()
+            'audiobookCommentId' => $comment1->getId()
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $commentAfter = $audiobookCommentRepository->findOneBy([
             'id' => $comment1->getId()
         ]);
-        
+
         $this->assertTrue($commentAfter->getDeleted());
     }
-/**
+
+    /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent
      * step 3 - Sending Request
@@ -71,7 +66,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $audiobookCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
         $this->assertInstanceOf(AudiobookUserCommentRepository::class, $audiobookCommentRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
@@ -80,26 +75,24 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd', [$category1, $category2], null, (new DateTime())->modify('- 1 month'), active: true);
 
         $comment1 = $this->databaseMockManager->testFunc_addAudiobookUserComment('comment1', $audiobook1, $user, deleted: true);
-        
-        /// step 2
+
         $content = [
-            'audiobookCommentId'=>$comment1->getId()
+            'audiobookCommentId' => $comment1->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $commentAfter = $audiobookCommentRepository->findOneBy([
             'id' => $comment1->getId()
         ]);
-        
+
         $this->assertFalse($commentAfter->getDeleted());
     }
 
@@ -113,146 +106,69 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
      */
     public function test_adminAudiobookCommentDeleteIncorrectCommentId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
-            'audiobookCommentId'=>'66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
+            'audiobookCommentId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeleteEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeletePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
-            'audiobookCommentId'=>'66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
+            'audiobookCommentId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminAudiobookCommentDeleteLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        /// step 2
         $content = [
-            'audiobookCommentId'=>'66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
+            'audiobookCommentId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

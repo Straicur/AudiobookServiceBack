@@ -122,7 +122,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');
@@ -286,7 +286,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 AdminStockCacheTags::ADMIN_CATEGORY->value,
                 AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

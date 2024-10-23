@@ -30,6 +30,6 @@ class NotificationException extends Exception implements ResponseExceptionInterf
             'serviceData' => $this->serviceData
         ];
 
-        return ResponseTool::getResponse(new ServiceUnavailableModel($serviceDataArray), 503);
+        return ResponseTool::getResponse(new ServiceUnavailableModel($serviceDataArray), Response::HTTP_SERVICE_UNAVAILABLE);
     }
 }

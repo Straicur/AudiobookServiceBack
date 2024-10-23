@@ -22,6 +22,6 @@ class UserDeletedException extends Exception implements ResponseExceptionInterfa
 
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new UserDeletedExceptionModel($this->dataStrings), 409);
+        return ResponseTool::getResponse(new UserDeletedExceptionModel($this->dataStrings), Response::HTTP_CONFLICT);
     }
 }

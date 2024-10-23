@@ -7,9 +7,6 @@ namespace App\Tests\Controller\AdminAudiobookCategoryController;
 use App\Repository\AudiobookCategoryRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminCategoryActiveTest
- */
 class AdminCategoryActiveTest extends AbstractWebTest
 {
     /**
@@ -25,24 +22,22 @@ class AdminCategoryActiveTest extends AbstractWebTest
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1', null, true);
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'categoryId' => $category1->getId(),
             'active' => true
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/category/active', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -66,24 +61,22 @@ class AdminCategoryActiveTest extends AbstractWebTest
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'categoryId' => $category1->getId(),
             'active' => false
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/category/active', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -104,14 +97,13 @@ class AdminCategoryActiveTest extends AbstractWebTest
      */
     public function test_adminCategoryActiveIncorrectCategoryId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
         $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -120,85 +112,48 @@ class AdminCategoryActiveTest extends AbstractWebTest
             'active' => true
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/active', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryActiveEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
         $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/active', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryActivePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
         $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -207,64 +162,28 @@ class AdminCategoryActiveTest extends AbstractWebTest
             'active' => true
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', server: [
+        self::$webClient->request('PATCH', '/api/admin/category/active', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminCategoryActiveLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
-        $category3 = $this->databaseMockManager->testFunc_addAudiobookCategory('3', $category1);
-        $category4 = $this->databaseMockManager->testFunc_addAudiobookCategory('4', $category3);
-        $category5 = $this->databaseMockManager->testFunc_addAudiobookCategory('5', $category2, true);
 
-        /// step 2
         $content = [
             'categoryId' => $category1->getId(),
             'active' => true
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/category/active', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/admin/category/active', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

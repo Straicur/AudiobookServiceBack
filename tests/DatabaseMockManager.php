@@ -33,7 +33,6 @@ use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanType;
 use App\Enums\UserEditType;
-use App\Exception\NotificationException;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
@@ -203,25 +202,6 @@ class DatabaseMockManager
         return $newRegisterCode;
     }
 
-    /**
-     * @param string $title
-     * @param string $author
-     * @param string $version
-     * @param string $album
-     * @param DateTime$year
-     * @param int $duration
-     * @param string $size
-     * @param int $parts
-     * @param string $description
-     * @param AudiobookAgeRange $age
-     * @param string $fileName
-     * @param AudiobookCategory[] $categories
-     * @param string|null $encoded
-     * @param \DateTime|null $dateAdd
-     * @param bool $active
-     * @param float|null $rating
-     * @return Audiobook
-     */
     public function testFunc_addAudiobook(string $title, string $author, string $version, string $album, DateTime $year, int $duration, string $size, int $parts, string $description, AudiobookAgeRange $age, string $fileName, array $categories, string $encoded = null, DateTime $dateAdd = null, bool $active = false, float $rating = null): Audiobook
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -344,17 +324,6 @@ class DatabaseMockManager
         return $newUserDelete;
     }
 
-    /**
-     * @param User[] $users
-     * @param NotificationType $notificationType
-     * @param Uuid $actionId
-     * @param NotificationUserType $userAction
-     * @param string|null $text
-     * @param bool $deleted
-     * @param string|null $categoryKey
-     * @return Notification
-     * @throws NotificationException
-     */
     public function testFunc_addNotifications(array $users, NotificationType $notificationType, Uuid $actionId, NotificationUserType $userAction, ?string $text = null, bool $deleted = false, ?string $categoryKey = null, ?bool $active = null, ?DateTime $dateActive = null): Notification
     {
         $systemNotificationRepository = $this->getService(NotificationRepository::class);
@@ -398,11 +367,6 @@ class DatabaseMockManager
         return $newSystemNotification;
     }
 
-    /**
-     * @param User $user
-     * @param Notification $notification
-     * @return NotificationCheck
-     */
     public function testFunc_addNotificationCheck(User $user, Notification $notification): NotificationCheck
     {
         $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);

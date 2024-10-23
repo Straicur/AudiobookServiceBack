@@ -190,7 +190,7 @@ class NotificationController extends AbstractController
                 $checkRepository->add($notificationCheck);
             }
 
-            return ResponseTool::getResponse(null, 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

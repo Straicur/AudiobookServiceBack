@@ -6,9 +6,6 @@ namespace App\Tests\Controller\AdminTechnicalController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminTechnicalCacheClearTest
- */
 class AdminTechnicalCacheClearTest extends AbstractWebTest
 {
     /**
@@ -21,10 +18,8 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      */
     public function test_adminTechnicalCacheClearCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'cacheData' => [
                 'pools' => ['AdminCategory', 'AdminAudiobookComments', 'AudiobookComments', 'UserAudiobooks', 'UserAudiobookRating'],
@@ -35,15 +30,13 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-
     }
 
     /**
@@ -56,10 +49,8 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      */
     public function test_adminTechnicalCacheClearAdminCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'cacheData' => [
                 'pools' => [],
@@ -70,15 +61,13 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-
     }
 
     /**
@@ -91,10 +80,8 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      */
     public function test_adminTechnicalCacheClearUserCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'cacheData' => [
                 'pools' => [],
@@ -105,15 +92,13 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-
     }
 
     /**
@@ -126,10 +111,8 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      */
     public function test_adminTechnicalCacheClearAllCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'cacheData' => [
                 'pools' => [],
@@ -140,27 +123,17 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
-
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalCacheClearPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
@@ -174,38 +147,17 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_adminTechnicalCacheClearLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        /// step 2
         $content = [
             'cacheData' => [
                 'pools' => [],
@@ -215,21 +167,10 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', content: json_encode($content));
+        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

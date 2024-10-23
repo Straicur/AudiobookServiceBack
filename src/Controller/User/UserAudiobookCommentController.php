@@ -177,7 +177,7 @@ class UserAudiobookCommentController extends AbstractController
                 UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId(),
             ]);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');
