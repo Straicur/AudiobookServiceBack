@@ -15,7 +15,7 @@ class AdminCategoriesTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminCategoriesCorrect(): void
+    public function testAdminCategoriesCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -44,7 +44,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->assertCount(16, $responseContent['categories']);
     }
 
-    public function test_adminCategoriesPermission(): void
+    public function testAdminCategoriesPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -65,7 +65,7 @@ class AdminCategoriesTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoriesLogOut(): void
+    public function testAdminCategoriesLogOut(): void
     {
         self::$webClient->request('GET', '/api/admin/categories');
 

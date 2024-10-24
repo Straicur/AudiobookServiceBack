@@ -19,7 +19,7 @@ class UserSettingsChangeTest extends AbstractWebTest
      * step 5 - Checking response if all data has changed
      * @return void
      */
-    public function test_userSettingsChangeCorrect(): void
+    public function testUserSettingsChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -63,7 +63,7 @@ class UserSettingsChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsIncorrectPhoneNumber(): void
+    public function testUserSettingsIncorrectPhoneNumber(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
@@ -98,7 +98,7 @@ class UserSettingsChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsIncorrectCode(): void
+    public function testUserSettingsIncorrectCode(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
@@ -125,7 +125,7 @@ class UserSettingsChangeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsChangeEmptyRequestData(): void
+    public function testUserSettingsChangeEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -142,7 +142,7 @@ class UserSettingsChangeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsChangePermission(): void
+    public function testUserSettingsChangePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -163,7 +163,7 @@ class UserSettingsChangeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsChangeLogOut(): void
+    public function testUserSettingsChangeLogOut(): void
     {
         $content = [
             'phoneNumber' => '+48124124124',

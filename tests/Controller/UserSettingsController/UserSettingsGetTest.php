@@ -16,7 +16,7 @@ class UserSettingsGetTest extends AbstractWebTest
      * step 5 - Checking response if all data has changed
      * @return void
      */
-    public function test_userSettingsGetCorrect(): void
+    public function testUserSettingsGetCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -49,7 +49,7 @@ class UserSettingsGetTest extends AbstractWebTest
         $this->assertArrayHasKey('editableDate', $responseContent);
     }
 
-    public function test_userSettingsGetPermission(): void
+    public function testUserSettingsGetPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -64,7 +64,7 @@ class UserSettingsGetTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsGetLogOut(): void
+    public function testUserSettingsGetLogOut(): void
     {
         self::$webClient->request('GET', '/api/user/settings');
 

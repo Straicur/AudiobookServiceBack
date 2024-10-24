@@ -21,7 +21,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminAudiobookActiveCorrect(): void
+    public function testAdminAudiobookActiveCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -55,7 +55,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->assertTrue($audiobook1After->getActive());
     }
 
-    public function test_adminAudiobookActiveAdditionalInfoCorrect(): void
+    public function testAdminAudiobookActiveAdditionalInfoCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -101,7 +101,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
         $this->assertTrue($audiobook1After->getActive());
     }
-    public function test_adminAudiobookActiveAdditionalInfoProposedCorrect(): void
+    public function testAdminAudiobookActiveAdditionalInfoProposedCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -147,7 +147,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
         $this->assertTrue($audiobook1After->getActive());
     }
-    public function test_adminAudiobookActiveAdditionalInfoMyListCorrect(): void
+    public function testAdminAudiobookActiveAdditionalInfoMyListCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -201,7 +201,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
      * step 5 - Checking response if category is not active
      * @return void
      */
-    public function test_adminCategoryNotActiveCorrect(): void
+    public function estAdminAudiobookActiveDeActiveCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
@@ -244,7 +244,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookActiveIncorrectAudiobookId(): void
+    public function testAdminAudiobookActiveIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -272,7 +272,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookActiveEmptyRequestData(): void
+    public function testAdminAudiobookActiveEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -297,7 +297,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookActivePermission(): void
+    public function testAdminAudiobookActivePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -325,7 +325,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookActiveLogOut(): void
+    public function testAdminAudiobookActiveLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
 

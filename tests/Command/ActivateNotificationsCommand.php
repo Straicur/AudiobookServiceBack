@@ -13,7 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ActivateNotificationsCommand extends AbstractKernelTestCase
 {
-    public function test_userProposedAudiobooksSuccess(): void
+    public function testUserProposedAudiobooksSuccess(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 

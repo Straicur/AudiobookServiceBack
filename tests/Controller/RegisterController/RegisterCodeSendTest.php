@@ -17,7 +17,7 @@ class RegisterCodeSendTest extends AbstractWebTest
      * step 5 - Checking response if user is registered
      * @return void
      */
-    public function test_registerCodeCorrect(): void
+    public function testRegisterCodeCorrect(): void
     {
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
 
@@ -49,7 +49,7 @@ class RegisterCodeSendTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerCodeIncorrectActiveUserCredentials(): void
+    public function testRegisterCodeIncorrectActiveUserCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -76,7 +76,7 @@ class RegisterCodeSendTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerCodeIncorrectCredentials(): void
+    public function testRegisterCodeIncorrectCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -97,7 +97,7 @@ class RegisterCodeSendTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_registerCodeEmptyRequest(): void
+    public function testRegisterCodeEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 

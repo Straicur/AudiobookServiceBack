@@ -20,7 +20,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookZipCorrect(): void
+    public function testAdminAudiobookZipCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -87,7 +87,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookZipWrongAudiobookId(): void
+    public function testAdminAudiobookZipWrongAudiobookId(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -154,7 +154,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    public function test_adminAudiobookZipEmptyRequestData(): void
+    public function testAdminAudiobookZipEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -173,7 +173,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookZipPermission(): void
+    public function testAdminAudiobookZipPermission(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -203,7 +203,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookZipLogOut(): void
+    public function testAdminAudiobookZipLogOut(): void
     {
         $content2 = [
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',

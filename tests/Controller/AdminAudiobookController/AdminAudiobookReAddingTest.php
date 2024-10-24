@@ -28,7 +28,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookAddCorrect(): void
+    public function testAdminAudiobookAddCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -139,7 +139,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookAddDeleteCommentsAndNotificationsCorrect(): void
+    public function testAdminAudiobookAddDeleteCommentsAndNotificationsCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -237,7 +237,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookAddFirstPartCorrect(): void
+    public function testAdminAudiobookAddFirstPartCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -329,7 +329,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added without additional data
      * @return void
      */
-    public function test_adminAudiobookAddNoAdditionalDataCorrect(): void
+    public function testAdminAudiobookAddNoAdditionalDataCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -402,7 +402,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookAddEmptyRequestData(): void
+    public function testAdminAudiobookAddEmptyRequestData(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -465,7 +465,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    public function test_adminAudiobookAddPermission(): void
+    public function testAdminAudiobookAddPermission(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -511,7 +511,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookAddLogOut(): void
+    public function testAdminAudiobookAddLogOut(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);

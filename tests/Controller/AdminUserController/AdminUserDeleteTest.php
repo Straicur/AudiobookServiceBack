@@ -18,7 +18,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      * step 5 - Checking response if user is deleted
      * @return void
      */
-    public function test_adminUserDeleteCorrect(): void
+    public function testAdminUserDeleteCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
@@ -59,7 +59,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDeleteIncorrectAdminUser(): void
+    public function testAdminUserDeleteIncorrectAdminUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -90,7 +90,7 @@ class AdminUserDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDeleteIncorrectUserId(): void
+    public function testAdminUserDeleteIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -113,7 +113,7 @@ class AdminUserDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteEmptyRequestData(): void
+    public function testAdminUserDeleteEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -134,7 +134,7 @@ class AdminUserDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeletePermission(): void
+    public function testAdminUserDeletePermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -154,7 +154,7 @@ class AdminUserDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteLogOut(): void
+    public function testAdminUserDeleteLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',

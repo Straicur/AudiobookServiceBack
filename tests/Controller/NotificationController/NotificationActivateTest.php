@@ -19,7 +19,7 @@ class NotificationActivateTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_notificationActivateCorrect(): void
+    public function testNotificationActivateCorrect(): void
     {
         $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
 
@@ -60,7 +60,7 @@ class NotificationActivateTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_notificationActivateCorrectAdd(): void
+    public function testNotificationActivateCorrectAdd(): void
     {
         $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
 
@@ -95,7 +95,7 @@ class NotificationActivateTest extends AbstractWebTest
         ]));
     }
 
-    public function test_notificationActivateEmptyRequestData(): void
+    public function testNotificationActivateEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -115,7 +115,7 @@ class NotificationActivateTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_notificationActivatePermission(): void
+    public function testNotificationActivatePermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -137,7 +137,7 @@ class NotificationActivateTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_notificationActivateLogOut(): void
+    public function testNotificationActivateLogOut(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

@@ -21,7 +21,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPatchCorrect(): void
+    public function testAdminUserNotificationPatchCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -96,7 +96,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPatchToAdminCorrect(): void
+    public function testAdminUserNotificationPatchToAdminCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -177,7 +177,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationPatchIncorrectNotificationId(): void
+    public function testAdminUserNotificationPatchIncorrectNotificationId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -213,7 +213,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminUserNotificationPatchIncorrectActivate(): void
+    public function testAdminUserNotificationPatchIncorrectActivate(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -283,7 +283,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationPatchToAdminIncorrect(): void
+    public function testAdminUserNotificationPatchToAdminIncorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -312,7 +312,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPatchEmptyRequestData(): void
+    public function testAdminUserNotificationPatchEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -333,7 +333,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPatchPermission(): void
+    public function testAdminUserNotificationPatchPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -361,7 +361,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPatchLogOut(): void
+    public function testAdminUserNotificationPatchLogOut(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',

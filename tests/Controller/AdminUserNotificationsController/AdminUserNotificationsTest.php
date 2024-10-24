@@ -18,7 +18,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminUserNotificationsCorrect(): void
+    public function testAdminUserNotificationsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -64,7 +64,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminUserNotificationsSpecificSearchCorrect(): void
+    public function testAdminUserNotificationsSpecificSearchCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -110,7 +110,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->assertCount(1, $responseContent['systemNotifications']);
     }
 
-    public function test_adminUserNotificationsEmptyRequestData(): void
+    public function testAdminUserNotificationsEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
@@ -133,7 +133,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationsPermission(): void
+    public function testAdminUserNotificationsPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
@@ -159,7 +159,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationsLogOut(): void
+    public function testAdminUserNotificationsLogOut(): void
     {
         $content = [
             'page' => 0,

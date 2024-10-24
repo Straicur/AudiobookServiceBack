@@ -17,7 +17,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalBreakListCorrect(): void
+    public function testAdminTechnicalBreakListCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('GOSC', 'COS', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -66,7 +66,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['technicalBreaks']);
     }
 
-    public function test_adminTechnicalBreakListEmptyRequestData(): void
+    public function testAdminTechnicalBreakListEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -85,7 +85,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakListPermission(): void
+    public function testAdminTechnicalBreakListPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -117,7 +117,7 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakListLogOut(): void
+    public function testAdminTechnicalBreakListLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

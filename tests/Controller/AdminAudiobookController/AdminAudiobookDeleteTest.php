@@ -26,7 +26,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookDeleteCorrect(): void
+    public function testAdminAudiobookDeleteCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
@@ -103,7 +103,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
      * step 5 - Checking response if audiobook notifications are deleted
      * @return void
      */
-    public function test_adminAudiobookDeleteAllNotificationsCorrect(): void
+    public function testAdminAudiobookDeleteAllNotificationsCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -163,7 +163,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookDeleteWrongAudiobookId(): void
+    public function testAdminAudiobookDeleteWrongAudiobookId(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -223,7 +223,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    public function test_adminAudiobookDeleteEmptyRequestData(): void
+    public function testAdminAudiobookDeleteEmptyRequestData(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -282,7 +282,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    public function test_adminAudiobookDeleteLogOut(): void
+    public function testAdminAudiobookDeleteLogOut(): void
     {
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [], active: true);
 

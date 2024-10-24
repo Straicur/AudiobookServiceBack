@@ -18,7 +18,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
      * step 4 - Checking response if comment is eddited
      * @return void
      */
-    public function test_userAudiobookCommentEditCorrect(): void
+    public function testUserAudiobookCommentEditCorrect(): void
     {
         $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
@@ -76,7 +76,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentEditIncorrectCategoryKey(): void
+    public function testUserAudiobookCommentEditIncorrectCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -122,7 +122,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentEditIncorrectAudiobookId(): void
+    public function testUserAudiobookCommentEditIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -168,7 +168,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentEditIncorrectParentId(): void
+    public function testUserAudiobookCommentEditIncorrectParentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -206,7 +206,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentEditIncorrectAudiobookCommentId(): void
+    public function testUserAudiobookCommentEditIncorrectAudiobookCommentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -246,7 +246,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentEditEmptyRequestData(): void
+    public function testUserAudiobookCommentEditEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -263,7 +263,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentEditPermission(): void
+    public function testUserAudiobookCommentEditPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest',
@@ -300,7 +300,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentEditLogOut(): void
+    public function testUserAudiobookCommentEditLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest',

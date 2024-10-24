@@ -19,7 +19,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      * step 4 - Checking response if all data has changed
      * @return void
      */
-    public function test_userSettingsEmailChangeCorrect(): void
+    public function testUserSettingsEmailChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userEditRepository = $this->getService(UserEditRepository::class);
@@ -59,7 +59,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailChangeIncorrectEditableDate(): void
+    public function testUserSettingsEmailChangeIncorrectEditableDate(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('-1 month'));
 
@@ -79,7 +79,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailChangeIncorrectEditFlag(): void
+    public function testUserSettingsEmailChangeIncorrectEditFlag(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', editableDate: (new DateTime())->modify('-1 month'));
 
@@ -99,7 +99,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailChangeIncorrectUserId(): void
+    public function testUserSettingsEmailChangeIncorrectUserId(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -119,7 +119,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailChangeIncorrectEmail(): void
+    public function testUserSettingsEmailChangeIncorrectEmail(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -134,7 +134,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailChangeEmptyRequestData(): void
+    public function testUserSettingsEmailChangeEmptyRequestData(): void
     {
         self::$webClient->request('GET', '/api/user/settings/email/change//');
 

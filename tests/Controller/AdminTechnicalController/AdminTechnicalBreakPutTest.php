@@ -17,7 +17,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
      * step 5 - Checking response if count of TechnicalBreak is correct
      * @return void
      */
-    public function test_adminTechnicalBreakPutCorrect(): void
+    public function testAdminTechnicalBreakPutCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
@@ -44,7 +44,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
      * step 5 - Checking response if count of TechnicalBreak is correct
      * @return void
      */
-    public function test_adminTechnicalBreakPutOnlyOneExistsdCorrect(): void
+    public function testAdminTechnicalBreakPutOnlyOneExistsdCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
@@ -64,7 +64,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
 
-    public function test_adminTechnicalBreakPutPermission(): void
+    public function testAdminTechnicalBreakPutPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -79,7 +79,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakPutLogOut(): void
+    public function testAdminTechnicalBreakPutLogOut(): void
     {
         self::$webClient->request('PUT', '/api/admin/technical/break');
 

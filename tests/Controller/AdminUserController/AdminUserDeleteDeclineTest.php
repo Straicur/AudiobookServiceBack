@@ -20,7 +20,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
      * step 5 - Checking response if user flags changed
      * @return void
      */
-    public function test_adminUserDeleteAcceptCorrect(): void
+    public function testAdminUserDeleteAcceptCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
@@ -72,7 +72,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDeleteAcceptIncorrectUserDeleted(): void
+    public function testAdminUserDeleteAcceptIncorrectUserDeleted(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -101,7 +101,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDeleteAcceptIncorrectUser(): void
+    public function testAdminUserDeleteAcceptIncorrectUser(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -124,7 +124,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteAcceptEmptyRequestData(): void
+    public function testAdminUserDeleteAcceptEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -141,7 +141,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteAcceptPermission(): void
+    public function testAdminUserDeleteAcceptPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123128', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -160,7 +160,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteAcceptLogOut(): void
+    public function testAdminUserDeleteAcceptLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

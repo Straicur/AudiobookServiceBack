@@ -19,7 +19,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
      * step 5 - Checking response if password and editable flag has changed
      * @return void
      */
-    public function test_userSettingsEmailSmsCodeCorrect(): void
+    public function testUserSettingsEmailSmsCodeCorrect(): void
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 
@@ -59,7 +59,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
      *  step 4 - Checking response
      * @return void
      */
-    public function test_userSettingsEmailSmsCodeIncorrectCode(): void
+    public function testUserSettingsEmailSmsCodeIncorrectCode(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -83,7 +83,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailSmsCodeChangePermission(): void
+    public function testUserSettingsEmailSmsCodeChangePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -100,7 +100,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailSmsCodeChangeLogOut(): void
+    public function testUserSettingsEmailSmsCodeChangeLogOut(): void
     {
         $content = [];
 

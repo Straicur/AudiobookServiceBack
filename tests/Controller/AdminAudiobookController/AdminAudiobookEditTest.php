@@ -19,7 +19,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminAudiobookEditCorrect(): void
+    public function testAdminAudiobookEditCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -80,7 +80,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookEditIncorrectAudiobookId(): void
+    public function testAdminAudiobookEditIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -118,7 +118,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookEditEmptyRequestData(): void
+    public function testAdminAudiobookEditEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -143,7 +143,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookEditPermission(): void
+    public function testAdminAudiobookEditPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -181,7 +181,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookEditLogOut(): void
+    public function testAdminAudiobookEditLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',

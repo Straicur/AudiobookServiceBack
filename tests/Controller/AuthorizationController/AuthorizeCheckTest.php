@@ -17,7 +17,7 @@ class AuthorizeCheckTest extends AbstractWebTest
      * step 5 - Checking response is correct
      * @return void
      */
-    public function test_authorizeCheckCorrect(): void
+    public function testAuthorizeCheckCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -36,7 +36,7 @@ class AuthorizeCheckTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    public function test_authorizeCheckTokenExpired(): void
+    public function testAuthorizeCheckTokenExpired(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -56,7 +56,7 @@ class AuthorizeCheckTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_authorizeCheckLogOut(): void
+    public function testAuthorizeCheckLogOut(): void
     {
         self::$webClient->request('POST', '/api/authorize/check');
 

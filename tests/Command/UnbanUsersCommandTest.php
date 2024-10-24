@@ -10,7 +10,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class UnbanUsersCommandTest extends AbstractKernelTestCase
 {
-    public function test_userProposedAudiobooksSuccess(): void
+    public function testUserProposedAudiobooksSuccess(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123125', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');

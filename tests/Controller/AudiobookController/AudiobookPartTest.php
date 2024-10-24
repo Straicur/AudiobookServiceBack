@@ -20,7 +20,7 @@ class AudiobookPartTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_audiobookPartCorrect(): void
+    public function testAudiobookPartCorrect(): void
     {
         $base64OnePartFile = str_replace('AudiobookController', '', __DIR__) . 'AdminAudiobookController/onePartFile.txt';
 
@@ -97,7 +97,7 @@ class AudiobookPartTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_audiobookPartWrongAudiobookId(): void
+    public function testAudiobookPartWrongAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -117,7 +117,7 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_audiobookPartEmptyRequestData(): void
+    public function testAudiobookPartEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -134,7 +134,7 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_audiobookPartPermission(): void
+    public function testAudiobookPartPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -159,7 +159,7 @@ class AudiobookPartTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_audiobookPartLogOut(): void
+    public function testAudiobookPartLogOut(): void
     {
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [], active: true);
 

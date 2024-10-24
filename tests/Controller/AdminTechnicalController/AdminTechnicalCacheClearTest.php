@@ -16,7 +16,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalCacheClearCorrect(): void
+    public function testAdminTechnicalCacheClearCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -47,7 +47,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalCacheClearAdminCorrect(): void
+    public function testAdminTechnicalCacheClearAdminCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -78,7 +78,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalCacheClearUserCorrect(): void
+    public function testAdminTechnicalCacheClearUserCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -109,7 +109,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalCacheClearAllCorrect(): void
+    public function testAdminTechnicalCacheClearAllCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -132,7 +132,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    public function test_adminTechnicalCacheClearPermission(): void
+    public function testAdminTechnicalCacheClearPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -156,7 +156,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalCacheClearLogOut(): void
+    public function testAdminTechnicalCacheClearLogOut(): void
     {
         $content = [
             'cacheData' => [

@@ -20,7 +20,7 @@ class NotificationsTest extends AbstractWebTest
      * @return void
      * @throws NotificationException
      */
-    public function test_notificationsCorrect(): void
+    public function testNotificationsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -61,7 +61,7 @@ class NotificationsTest extends AbstractWebTest
         $this->assertNotNull($responseContent['systemNotifications'][0]['active']);
     }
 
-    public function test_notificationsEmptyRequestData(): void
+    public function testNotificationsEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -81,7 +81,7 @@ class NotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_notificationsPermission(): void
+    public function testNotificationsPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -104,7 +104,7 @@ class NotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_notificationsLogOut(): void
+    public function testNotificationsLogOut(): void
     {
         $content = [
             'page' => 0,

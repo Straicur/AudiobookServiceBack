@@ -17,7 +17,7 @@ class UserProposedAudiobooksTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userProposedAudiobooksCorrect(): void
+    public function testUserProposedAudiobooksCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -71,7 +71,7 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['audiobooks'][0]['categories']);
     }
 
-    public function test_userProposedAudiobooksPermission(): void
+    public function testUserProposedAudiobooksPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -86,7 +86,7 @@ class UserProposedAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userProposedAudiobooksLogOut(): void
+    public function testUserProposedAudiobooksLogOut(): void
     {
         self::$webClient->request('GET', '/api/user/proposed/audiobooks');
 

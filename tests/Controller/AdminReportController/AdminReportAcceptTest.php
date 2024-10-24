@@ -20,7 +20,7 @@ class AdminReportAcceptTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminAcceptCorrect(): void
+    public function testAdminAcceptCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
 
@@ -65,7 +65,7 @@ class AdminReportAcceptTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminAcceptOthersCorrect(): void
+    public function testAdminAcceptOthersCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
 
@@ -127,7 +127,7 @@ class AdminReportAcceptTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminAcceptSystemBanCorrect(): void
+    public function testAdminAcceptSystemBanCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
         $userRepository = $this->getService(UserRepository::class);
@@ -185,7 +185,7 @@ class AdminReportAcceptTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAcceptIncorrectReportId(): void
+    public function testAdminAcceptIncorrectReportId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -213,7 +213,7 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminAcceptEmptyRequestData(): void
+    public function testAdminAcceptEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -237,7 +237,7 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAcceptPermission(): void
+    public function testAdminAcceptPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -265,7 +265,7 @@ class AdminReportAcceptTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAcceptLogOut(): void
+    public function testAdminAcceptLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

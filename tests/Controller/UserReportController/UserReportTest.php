@@ -19,7 +19,7 @@ class UserReportTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_userReportCorrect(): void
+    public function testUserReportCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
 
@@ -66,7 +66,7 @@ class UserReportTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userReportToManyReports(): void
+    public function testUserReportToManyReports(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -104,7 +104,7 @@ class UserReportTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userReportEmptyRequestData(): void
+    public function testUserReportEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -124,7 +124,7 @@ class UserReportTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userReportPermission(): void
+    public function testUserReportPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -154,7 +154,7 @@ class UserReportTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userReportLogOut(): void
+    public function testUserReportLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

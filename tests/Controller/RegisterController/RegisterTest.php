@@ -18,7 +18,7 @@ class RegisterTest extends AbstractWebTest
      * step 5 - Checking response if user is registered
      * @return void
      */
-    public function test_registerCorrect(): void
+    public function testRegisterCorrect(): void
     {
         $userInformationRepository = $this->getService(UserInformationRepository::class);
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
@@ -72,7 +72,7 @@ class RegisterTest extends AbstractWebTest
      * step 5 - Checking response if user is registered
      * @return void
      */
-    public function test_registerParentalControlCorrect(): void
+    public function testRegisterParentalControlCorrect(): void
     {
         $userInformationRepository = $this->getService(UserInformationRepository::class);
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
@@ -128,7 +128,7 @@ class RegisterTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerIncorrectEmailCredentials(): void
+    public function testRegisterIncorrectEmailCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -157,7 +157,7 @@ class RegisterTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerIncorrectNumberCredentials(): void
+    public function testRegisterIncorrectNumberCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -186,7 +186,7 @@ class RegisterTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerIncorrectInstitutionCredentials(): void
+    public function testRegisterIncorrectInstitutionCredentials(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@1cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@2cos.pl', '+48123123124', ['Guest', 'User'], true, 'zaq12wsx');
@@ -214,7 +214,7 @@ class RegisterTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_registerEmptyRequest(): void
+    public function testRegisterEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 

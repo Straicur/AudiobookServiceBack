@@ -17,7 +17,7 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminStatisticBestAudiobooksCorrect(): void
+    public function testAdminStatisticBestAudiobooksCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -79,7 +79,7 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['firstAudiobook']['categories']);
     }
 
-    public function test_adminStatisticBestAudiobooksLogout(): void
+    public function testAdminStatisticBestAudiobooksLogout(): void
     {
         self::$webClient->request('GET', '/api/admin/statistic/best/audiobooks');
 

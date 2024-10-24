@@ -18,7 +18,7 @@ class AdminAudiobooksTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminAudiobooksCorrect(): void
+    public function testAdminAudiobooksCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -91,7 +91,7 @@ class AdminAudiobooksTest extends AbstractWebTest
      * step 5 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminAudiobooksNoFilterCorrect(): void
+    public function testAdminAudiobooksNoFilterCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -142,7 +142,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['audiobooks']);
     }
 
-    public function test_adminAudiobooksEmptyRequestData(): void
+    public function testAdminAudiobooksEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -167,7 +167,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobooksPermission(): void
+    public function testAdminAudiobooksPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -195,7 +195,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobooksLogOut(): void
+    public function testAdminAudiobooksLogOut(): void
     {
         $content = [
             'page' => 0,

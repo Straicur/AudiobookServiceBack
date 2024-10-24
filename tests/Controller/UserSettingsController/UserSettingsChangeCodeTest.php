@@ -19,7 +19,7 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
      * step 5 - Checking response if password and editable flag has changed
      * @return void
      */
-    public function test_userSettingsChangeCodeCorrect(): void
+    public function testUserSettingsChangeCodeCorrect(): void
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
 
@@ -59,7 +59,7 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
      *  step 4 - Checking response
      * @return void
      */
-    public function test_userSettingsChangeCodeIncorrectCode(): void
+    public function testUserSettingsChangeCodeIncorrectCode(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -83,7 +83,7 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsChangeCodeChangePermission(): void
+    public function testUserSettingsChangeCodeChangePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -100,7 +100,7 @@ class UserSettingsChangeCodeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsChangeCodeChangeLogOut(): void
+    public function testUserSettingsChangeCodeChangeLogOut(): void
     {
         $content = [];
 

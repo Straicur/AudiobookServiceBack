@@ -17,7 +17,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
      * step 4 - Checking response all data changed correctly
      * @return void
      */
-    public function test_userSettingsDeleteCorrect(): void
+    public function testUserSettingsDeleteCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
@@ -51,7 +51,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsDeleteIncorrectUser(): void
+    public function testUserSettingsDeleteIncorrectUser(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -68,7 +68,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsDeletePermission(): void
+    public function testUserSettingsDeletePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -83,7 +83,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsDeleteLogOut(): void
+    public function testUserSettingsDeleteLogOut(): void
     {
         self::$webClient->request('PATCH', '/api/user/settings/delete');
 

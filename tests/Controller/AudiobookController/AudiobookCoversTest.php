@@ -20,7 +20,7 @@ class AudiobookCoversTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_audiobookCoverCorrect(): void
+    public function testAudiobookCoverCorrect(): void
     {
         $base64OnePartFile = str_replace('AudiobookController', '', __DIR__) . 'AdminAudiobookController/onePartFile.txt';
 
@@ -102,7 +102,7 @@ class AudiobookCoversTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_audiobookCoverIncorrectData(): void
+    public function testAudiobookCoverIncorrectData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest','User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'tes3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
@@ -130,7 +130,7 @@ class AudiobookCoversTest extends AbstractWebTest
         $this->assertCount(0, $responseContent);
     }
 
-    public function test_audiobookCoverPermission(): void
+    public function testAudiobookCoverPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -151,7 +151,7 @@ class AudiobookCoversTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_audiobookCoverLogOut(): void
+    public function testAudiobookCoverLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $audiobook1 = $this->databaseMockManager->testFunc_addAudiobook('t', 'a', '2', 'd', new DateTime(), 20, '20', 2, 'desc', AudiobookAgeRange::ABOVE18, 'd1', [$category1], active: true);

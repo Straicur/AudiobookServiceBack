@@ -19,7 +19,7 @@ class ReportTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_reportCorrect(): void
+    public function testReportCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
 
@@ -63,7 +63,7 @@ class ReportTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_reportToManyReports(): void
+    public function testReportToManyReports(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -99,7 +99,7 @@ class ReportTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_reportEmptyRequestData(): void
+    public function testReportEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

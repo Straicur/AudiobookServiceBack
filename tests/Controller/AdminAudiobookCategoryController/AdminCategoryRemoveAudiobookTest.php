@@ -19,7 +19,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
      * step 5 - Checking response if category is deleted from audiobook
      * @return void
      */
-    public function test_adminCategoryRemoveAudiobookCorrect(): void
+    public function testAdminCategoryRemoveAudiobookCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 
@@ -70,7 +70,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemoveAudiobookIncorrectCategoryId(): void
+    public function testAdminCategoryRemoveAudiobookIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -102,7 +102,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemoveAudiobookIncorrectAudiobookId(): void
+    public function testAdminCategoryRemoveAudiobookIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -127,7 +127,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemoveAudiobookEmptyRequestData(): void
+    public function testAdminCategoryRemoveAudiobookEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -149,7 +149,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemoveAudiobookPermission(): void
+    public function testAdminCategoryRemoveAudiobookPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -174,7 +174,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemoveAudiobookLogOut(): void
+    public function testAdminCategoryRemoveAudiobookLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

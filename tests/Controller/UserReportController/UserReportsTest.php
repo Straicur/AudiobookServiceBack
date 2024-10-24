@@ -18,7 +18,7 @@ class UserReportsTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_userReportsCorrect(): void
+    public function testUserReportsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -91,7 +91,7 @@ class UserReportsTest extends AbstractWebTest
         $this->assertSame(1, $responseContent['maxPage']);
     }
 
-    public function test_userReportsEmptyRequestData(): void
+    public function testUserReportsEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -112,7 +112,7 @@ class UserReportsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userReportsPermission(): void
+    public function testUserReportsPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -132,7 +132,7 @@ class UserReportsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userReportsLogOut(): void
+    public function testUserReportsLogOut(): void
     {
         $content = [
             'page'  => 0,

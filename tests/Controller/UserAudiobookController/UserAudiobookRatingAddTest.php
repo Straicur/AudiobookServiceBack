@@ -21,7 +21,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      * step 4 - Checking if rating was added
      * @return void
      */
-    public function test_userAudiobookRatingAddCorrect(): void
+    public function testUserAudiobookRatingAddCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -66,7 +66,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookRatingAddBadAudiobookInfos(): void
+    public function testUserAudiobookRatingAddBadAudiobookInfos(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -102,7 +102,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookRatingAddBadAudiobookId(): void
+    public function testUserAudiobookRatingAddBadAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -133,7 +133,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookRatingAddBadCategoryKey(): void
+    public function testUserAudiobookRatingAddBadCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -166,7 +166,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookRatingAddEmptyRequestData(): void
+    public function testUserAudiobookRatingAddEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -183,7 +183,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookRatingAddPermission(): void
+    public function testUserAudiobookRatingAddPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -209,7 +209,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookRatingAddLogOut(): void
+    public function testUserAudiobookRatingAddLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

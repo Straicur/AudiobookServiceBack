@@ -20,7 +20,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
      * step 5 - Checking response if category is POSTd from system and audiobooks
      * @return void
      */
-    public function test_adminCategoryDetailCorrect(): void
+    public function testAdminCategoryDetailCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -74,7 +74,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryDetailIncorrectCategoryKey(): void
+    public function testAdminCategoryDetailIncorrectCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -96,7 +96,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryDetailEmptyRequestData(): void
+    public function testAdminCategoryDetailEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -116,7 +116,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryDetailPermission(): void
+    public function testAdminCategoryDetailPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -137,7 +137,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryDetailLogOut(): void
+    public function testAdminCategoryDetailLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

@@ -21,7 +21,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
      * step 5 - Checking response if notification was deleted
      * @return void
      */
-    public function test_adminUserNotificationDeleteCorrect(): void
+    public function testAdminUserNotificationDeleteCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -83,7 +83,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationDeleteIncorrectNotificationId(): void
+    public function testAdminUserNotificationDeleteIncorrectNotificationId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -107,7 +107,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationDeleteEmptyRequestData(): void
+    public function testAdminUserNotificationDeleteEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -128,7 +128,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationDeletePermission(): void
+    public function testAdminUserNotificationDeletePermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -151,7 +151,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationDeleteLogOut(): void
+    public function testAdminUserNotificationDeleteLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',

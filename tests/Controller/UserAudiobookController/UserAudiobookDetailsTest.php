@@ -17,7 +17,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobookDetailsCorrect(): void
+    public function testUserAudiobookDetailsCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -75,7 +75,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookDetailsIncorrectCategoryKey(): void
+    public function testUserAudiobookDetailsIncorrectCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -110,7 +110,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookDetailsIncorrectAudiobookId(): void
+    public function testUserAudiobookDetailsIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -138,7 +138,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookDetailsEmptyRequestData(): void
+    public function testUserAudiobookDetailsEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -155,7 +155,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookDetailsPermission(): void
+    public function testUserAudiobookDetailsPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -180,7 +180,7 @@ class UserAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookDetailsLogOut(): void
+    public function testUserAudiobookDetailsLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

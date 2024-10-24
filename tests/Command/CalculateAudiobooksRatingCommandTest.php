@@ -12,7 +12,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CalculateAudiobooksRatingCommandTest extends AbstractKernelTestCase
 {
-    public function test_userProposedAudiobooksSuccess(): void
+    public function testUserProposedAudiobooksSuccess(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
 

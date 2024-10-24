@@ -17,7 +17,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminCategoryActiveCorrect(): void
+    public function testAdminCategoryActiveCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
@@ -56,7 +56,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
      * step 5 - Checking response if category is not active
      * @return void
      */
-    public function test_adminCategoryNotActiveCorrect(): void
+    public function testAdminCategoryActiveDeactivateCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
@@ -95,7 +95,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryActiveIncorrectCategoryId(): void
+    public function testAdminCategoryActiveIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -121,7 +121,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryActiveEmptyRequestData(): void
+    public function testAdminCategoryActiveEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -145,7 +145,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryActivePermission(): void
+    public function testAdminCategoryActivePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -171,7 +171,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryActiveLogOut(): void
+    public function testAdminCategoryActiveLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
 

@@ -17,7 +17,7 @@ class UserAudiobooksTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobooksCorrect(): void
+    public function testUserAudiobooksCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -78,7 +78,7 @@ class UserAudiobooksTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobooksParentControlCorrect(): void
+    public function testUserAudiobooksParentControlCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', birthday: (new DateTime())->modify('-14 year'));
 
@@ -132,7 +132,7 @@ class UserAudiobooksTest extends AbstractWebTest
         $this->assertSame($category2->getCategoryKey(), $responseContent['categories'][0]['categoryKey']);
     }
 
-    public function test_userAudiobooksEmptyRequestData(): void
+    public function testUserAudiobooksEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -149,7 +149,7 @@ class UserAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobooksPermission(): void
+    public function testUserAudiobooksPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -168,7 +168,7 @@ class UserAudiobooksTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobooksLogOut(): void
+    public function testUserAudiobooksLogOut(): void
     {
         $content = [
             'page' => 0,

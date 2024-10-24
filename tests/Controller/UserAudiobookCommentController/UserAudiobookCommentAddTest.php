@@ -19,7 +19,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
      * step 4 - Checking response if comment was added
      * @return void
      */
-    public function test_userAudiobookCommentAddCorrect(): void
+    public function testUserAudiobookCommentAddCorrect(): void
     {
         $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
@@ -73,7 +73,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentAddIncorrectCategoryKey(): void
+    public function testUserAudiobookCommentAddIncorrectCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -118,7 +118,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentAddToManyComments(): void
+    public function testUserAudiobookCommentAddToManyComments(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -234,7 +234,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentAddIncorrectAudiobookId(): void
+    public function testUserAudiobookCommentAddIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -279,7 +279,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentAddIncorrectParentId(): void
+    public function testUserAudiobookCommentAddIncorrectParentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -316,7 +316,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentAddEmptyRequestData(): void
+    public function testUserAudiobookCommentAddEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -333,7 +333,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentAddPermission(): void
+    public function testUserAudiobookCommentAddPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -364,7 +364,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentAddLogOut(): void
+    public function testUserAudiobookCommentAddLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

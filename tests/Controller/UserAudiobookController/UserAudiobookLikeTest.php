@@ -18,7 +18,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobookLikeCorrect(): void
+    public function testUserAudiobookLikeCorrect(): void
     {
         $myListRepository = $this->getService(MyListRepository::class);
 
@@ -60,7 +60,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_userAudiobookUnLikeCorrect(): void
+    public function testUserAudiobookUnLikeCorrect(): void
     {
         $myListRepository = $this->getService(MyListRepository::class);
 
@@ -105,7 +105,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookLikeIncorrectCategoryKey(): void
+    public function testUserAudiobookLikeIncorrectCategoryKey(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -138,7 +138,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookLikeIncorrectAudiobookId(): void
+    public function testUserAudiobookLikeIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -160,7 +160,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookLikeEmptyRequestData(): void
+    public function testUserAudiobookLikeEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -177,7 +177,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookLikePermission(): void
+    public function testUserAudiobookLikePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -202,7 +202,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookLikeLogOut(): void
+    public function testUserAudiobookLikeLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

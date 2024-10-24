@@ -17,7 +17,7 @@ class AdminCategoryAddTest extends AbstractWebTest
      * step 5 - Checking response if category was added
      * @return void
      */
-    public function test_adminCategoryAddCorrect(): void
+    public function testAdminCategoryAddCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
@@ -54,7 +54,7 @@ class AdminCategoryAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryAddIncorrectCategoryId(): void
+    public function testAdminCategoryAddIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -78,7 +78,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryAddEmptyRequestData(): void
+    public function testAdminCategoryAddEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -98,7 +98,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryAddPermission(): void
+    public function testAdminCategoryAddPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -122,7 +122,7 @@ class AdminCategoryAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryAddLogOut(): void
+    public function testAdminCategoryAddLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

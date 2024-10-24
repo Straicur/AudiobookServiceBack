@@ -20,7 +20,7 @@ class AdminStatisticMainTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminStatisticMainCorrect(): void
+    public function testAdminStatisticMainCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -85,7 +85,7 @@ class AdminStatisticMainTest extends AbstractWebTest
         $this->assertSame($responseContent['lastWeekTechnicalBreaks'], 1);
     }
 
-    public function test_adminStatisticMainLogout(): void
+    public function testAdminStatisticMainLogout(): void
     {
         self::$webClient->request('GET', '/api/admin/statistic/main');
 

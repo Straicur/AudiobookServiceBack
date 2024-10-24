@@ -17,7 +17,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
      * step 5 - Checking response if technicalBreak changed
      * @return void
      */
-    public function test_adminTechnicalBreakPatchCorrect(): void
+    public function testAdminTechnicalBreakPatchCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 
@@ -56,7 +56,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminTechnicalBreakPatchIncorrectTechnicalBreakId(): void
+    public function testAdminTechnicalBreakPatchIncorrectTechnicalBreakId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -77,7 +77,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakPatchEmptyRequestData(): void
+    public function testAdminTechnicalBreakPatchEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -96,7 +96,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakPatchPermission(): void
+    public function testAdminTechnicalBreakPatchPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -117,7 +117,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalBreakPatchLogOut(): void
+    public function testAdminTechnicalBreakPatchLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

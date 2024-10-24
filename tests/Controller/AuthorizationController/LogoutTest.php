@@ -16,7 +16,7 @@ class LogoutTest extends AbstractWebTest
      * step 5 - Checking response if responseContent has key token
      * @return void
      */
-    public function test_logoutCorrect(): void
+    public function testLogoutCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest',
             'User'], true, 'zaq12wsx');
@@ -36,7 +36,7 @@ class LogoutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
     }
 
-    public function test_logoutLogOut(): void
+    public function testLogoutLogOut(): void
     {
         self::$webClient->request('PATCH', '/api/logout');
 

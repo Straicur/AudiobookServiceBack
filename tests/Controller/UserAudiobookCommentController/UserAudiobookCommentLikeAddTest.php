@@ -18,7 +18,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
      * step 4 - Checking response if comment is eddited
      * @return void
      */
-    public function test_userAudiobookCommentLikeCorrect(): void
+    public function testUserAudiobookCommentLikeCorrect(): void
     {
         $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
 
@@ -65,7 +65,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentLikeIncorrectAudiobookCommentId(): void
+    public function testUserAudiobookCommentLikeIncorrectAudiobookCommentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -85,7 +85,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentLikeEmptyRequestData(): void
+    public function testUserAudiobookCommentLikeEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -102,7 +102,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentLikePermission(): void
+    public function testUserAudiobookCommentLikePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest',
@@ -134,7 +134,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentLikeLogOut(): void
+    public function testUserAudiobookCommentLikeLogOut(): void
     {
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest',
             'User',

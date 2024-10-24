@@ -18,7 +18,7 @@ class AdminReportListTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminReportListNoFilterCorrect(): void
+    public function testAdminReportListNoFilterCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -94,7 +94,7 @@ class AdminReportListTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminReportListCommentsCorrect(): void
+    public function testAdminReportListCommentsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -159,7 +159,7 @@ class AdminReportListTest extends AbstractWebTest
      * step 4 - Checking response
      * @return void
      */
-    public function test_adminReportListSpecificCorrect(): void
+    public function testAdminReportListSpecificCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -237,7 +237,7 @@ class AdminReportListTest extends AbstractWebTest
         $this->assertSame(1, $responseContent['maxPage']);
     }
 
-    public function test_adminReportListEmptyRequestData(): void
+    public function testAdminReportListEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -263,7 +263,7 @@ class AdminReportListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminReportListPermission(): void
+    public function testAdminReportListPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -291,7 +291,7 @@ class AdminReportListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminReportListLogOut(): void
+    public function testAdminReportListLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

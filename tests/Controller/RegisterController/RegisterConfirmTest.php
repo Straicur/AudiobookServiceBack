@@ -19,7 +19,7 @@ class RegisterConfirmTest extends AbstractWebTest
      * step 5 - Checking response if user is active
      * @return void
      */
-    public function test_registerConfirmCorrect(): void
+    public function testRegisterConfirmCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
@@ -67,7 +67,7 @@ class RegisterConfirmTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerConfirmIncorrectCredentials(): void
+    public function testRegisterConfirmIncorrectCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user, code: '95b7tjxrnbs88xd', active: true, dateAccept: new DateTime());
@@ -88,7 +88,7 @@ class RegisterConfirmTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerConfirmIncorrectCodeStatusCredentials(): void
+    public function testRegisterConfirmIncorrectCodeStatusCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user);
@@ -110,7 +110,7 @@ class RegisterConfirmTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_registerConfirmIncorrectEmailCredentials(): void
+    public function testRegisterConfirmIncorrectEmailCredentials(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user, code: '95b7tjxrnbs88xd');
@@ -131,7 +131,7 @@ class RegisterConfirmTest extends AbstractWebTest
      * step 2 - Checking response
      * @return void
      */
-    public function test_registerConfirmEmptyRequest(): void
+    public function testRegisterConfirmEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addRegisterCode($user);

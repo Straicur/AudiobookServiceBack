@@ -16,7 +16,7 @@ class UserParentControlPutTest extends AbstractWebTest
      * step 4 - Checking response if all data has changed
      * @return void
      */
-    public function test_userParentControlPutCorrect(): void
+    public function testUserParentControlPutCorrect(): void
     {
         $userParentalControlCodeRepository = $this->getService(UserParentalControlCodeRepository::class);
 
@@ -53,7 +53,7 @@ class UserParentControlPutTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsIncorrectAmountOfAttempts(): void
+    public function testUserSettingsIncorrectAmountOfAttempts(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
@@ -76,7 +76,7 @@ class UserParentControlPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userParentControlPutPermission(): void
+    public function testUserParentControlPutPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -91,7 +91,7 @@ class UserParentControlPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userParentControlPutLogOut(): void
+    public function testUserParentControlPutLogOut(): void
     {
         self::$webClient->request('PUT', '/api/user/parent/control');
 

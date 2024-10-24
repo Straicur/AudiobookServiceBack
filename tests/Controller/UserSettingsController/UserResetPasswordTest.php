@@ -20,7 +20,7 @@ class UserResetPasswordTest extends AbstractWebTest
      * step 5 - Checking response if all data change correctly
      * @return void
      */
-    public function test_userResetPasswordCorrect(): void
+    public function testUserResetPasswordCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userEditRepository = $this->getService(UserEditRepository::class);
@@ -62,7 +62,7 @@ class UserResetPasswordTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userResetPasswordIncorrectEmail(): void
+    public function testUserResetPasswordIncorrectEmail(): void
     {
         $content = [
             'email' => 'test2@cos.pl'
@@ -75,7 +75,7 @@ class UserResetPasswordTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userResetPasswordEmptyRequestData(): void
+    public function testUserResetPasswordEmptyRequestData(): void
     {
         $content = [];
 

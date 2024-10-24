@@ -16,7 +16,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
      * step 5 - Checking response if returned data is correct
      * @return void
      */
-    public function test_adminUserDeleteListCorrect(): void
+    public function testAdminUserDeleteListCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123127', ['Guest', 'User',], true, 'zaq12wsx');
@@ -55,7 +55,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
         $this->assertCount(1, $responseContent['users']);
     }
 
-    public function test_adminUserDeleteListEmptyRequestData(): void
+    public function testAdminUserDeleteListEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
@@ -80,7 +80,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteListPermission(): void
+    public function testAdminUserDeleteListPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123128', ['Guest', 'User',], true, 'zaq12wsx');
@@ -108,7 +108,7 @@ class AdminUserDeleteListTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDeleteListLogOut(): void
+    public function testAdminUserDeleteListLogOut(): void
     {
         $content = [
             'page' => 0,

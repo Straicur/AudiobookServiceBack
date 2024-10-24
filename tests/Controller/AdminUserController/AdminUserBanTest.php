@@ -17,7 +17,7 @@ class AdminUserBanTest extends AbstractWebTest
      * step 5 - Checking response if user is banned
      * @return void
      */
-    public function test_adminUserBanCorrect(): void
+    public function testAdminUserBanCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -57,7 +57,7 @@ class AdminUserBanTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserBanIncorrectAdminUser(): void
+    public function testAdminUserBanIncorrectAdminUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -88,7 +88,7 @@ class AdminUserBanTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserBanIncorrectUserId(): void
+    public function testAdminUserBanIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -113,7 +113,7 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserBanEmptyRequestData(): void
+    public function testAdminUserBanEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123129', ['Guest',
@@ -134,7 +134,7 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserBanPermission(): void
+    public function testAdminUserBanPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -156,7 +156,7 @@ class AdminUserBanTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserBanLogOut(): void
+    public function testAdminUserBanLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',

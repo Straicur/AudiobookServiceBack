@@ -17,7 +17,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminAudiobookDetailsCorrect(): void
+    public function testAdminAudiobookDetailsCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -71,7 +71,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_AdminAudiobookDetailsIncorrectAudiobookId(): void
+    public function testAdminAudiobookDetailsIncorrectAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -98,7 +98,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_AdminAudiobookDetailsEmptyRequestData(): void
+    public function testAdminAudiobookDetailsEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -128,7 +128,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookDetailsPermission(): void
+    public function testAdminAudiobookDetailsPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -154,7 +154,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookDetailsLogOut(): void
+    public function testAdminAudiobookDetailsLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

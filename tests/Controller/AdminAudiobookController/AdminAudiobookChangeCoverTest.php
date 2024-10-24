@@ -20,7 +20,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookChangeCoverCorrect(): void
+    public function testAdminAudiobookChangeCoverCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -92,7 +92,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookChangeCoverWrongAudiobookId(): void
+    public function testAdminAudiobookChangeCoverWrongAudiobookId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -119,7 +119,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookChangeCoverEmptyRequestData(): void
+    public function testAdminAudiobookChangeCoverEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -139,7 +139,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookChangeCoverPermission(): void
+    public function testAdminAudiobookChangeCoverPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'Recruiter'], true, 'zaq12wsx');
         $fileBase2 = fopen(self::base64ImgFile, 'rb');
@@ -162,7 +162,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookChangeCoverLogOut(): void
+    public function testAdminAudiobookChangeCoverLogOut(): void
     {
         $content2 = [
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',

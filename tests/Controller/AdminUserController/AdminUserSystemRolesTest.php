@@ -15,7 +15,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminUserSystemRolesCorrect(): void
+    public function testAdminUserSystemRolesCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -38,7 +38,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['roles']);
     }
 
-    public function test_adminUserSystemRolesPermission(): void
+    public function testAdminUserSystemRolesPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User',], true, 'zaq12wsx', notActive: true);
 
@@ -53,7 +53,7 @@ class AdminUserSystemRolesTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserSystemRolesLogOut(): void
+    public function testAdminUserSystemRolesLogOut(): void
     {
         self::$webClient->request('GET', '/api/admin/user/system/roles');
 

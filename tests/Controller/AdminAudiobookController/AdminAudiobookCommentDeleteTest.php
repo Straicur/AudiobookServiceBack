@@ -19,7 +19,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminAudiobookCommentDeleteCorrect(): void
+    public function testAdminAudiobookCommentDeleteCorrect(): void
     {
         $audiobookCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
@@ -61,7 +61,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminAudiobookCommentRestoreCorrect(): void
+    public function testAdminAudiobookCommentDeleteRestoreCorrect(): void
     {
         $audiobookCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
 
@@ -104,7 +104,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminAudiobookCommentDeleteIncorrectCommentId(): void
+    public function testAdminAudiobookCommentDeleteIncorrectCommentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -123,7 +123,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookCommentDeleteEmptyRequestData(): void
+    public function testAdminAudiobookCommentDeleteEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -140,7 +140,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookCommentDeletePermission(): void
+    public function testAdminAudiobookCommentDeletePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -159,7 +159,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookCommentDeleteLogOut(): void
+    public function testAdminAudiobookCommentDeleteLogOut(): void
     {
         $content = [
             'audiobookCommentId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'

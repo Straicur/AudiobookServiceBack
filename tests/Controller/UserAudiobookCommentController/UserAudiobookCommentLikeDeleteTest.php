@@ -18,7 +18,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
      * step 4 - Checking response if comment is eddited
      * @return void
      */
-    public function test_userAudiobookCommentLikeCorrect(): void
+    public function testUserAudiobookCommentLikeCorrect(): void
     {
         $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
 
@@ -60,7 +60,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
         $this->assertTrue($commentLikeAfter->getDeleted());
     }
 
-    public function test_userAudiobookCommentLikeIncorrectAudiobookCommentLike(): void
+    public function testUserAudiobookCommentLikeIncorrectAudiobookCommentLike(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -99,7 +99,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookCommentLikeEmptyRequestData(): void
+    public function testUserAudiobookCommentLikeEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -116,7 +116,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentLikePermission(): void
+    public function testUserAudiobookCommentLikePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest',
@@ -145,7 +145,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userAudiobookCommentLikeLogOut(): void
+    public function testUserAudiobookCommentLikeLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

@@ -21,7 +21,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      * step 5 - Checking response if password and editable flag has changed
      * @return void
      */
-    public function test_userResetPasswordConfirmCorrect(): void
+    public function testUserResetPasswordConfirmCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
         $userEditRepository = $this->getService(UserEditRepository::class);
@@ -72,7 +72,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userResetPasswordConfirmIncorrectId(): void
+    public function testUserResetPasswordConfirmIncorrectId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
@@ -98,7 +98,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userResetPasswordConfirmIncorrectUserEditFlag(): void
+    public function testUserResetPasswordConfirmIncorrectUserEditFlag(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', editableDate: (new DateTime())->modify('-1 month'));
 
@@ -124,7 +124,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userResetPasswordConfirmIncorrectUserEditableDate(): void
+    public function testUserResetPasswordConfirmIncorrectUserEditableDate(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('-1 month'));
 
@@ -142,7 +142,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userResetPasswordConfirmEmptyRequestData(): void
+    public function testUserResetPasswordConfirmEmptyRequestData(): void
     {
         $content = [];
 

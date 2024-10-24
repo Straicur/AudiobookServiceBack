@@ -18,7 +18,7 @@ class UserParentControlPatchTest extends AbstractWebTest
      * step 5 - Checking response if all data has changed
      * @return void
      */
-    public function test_userParentControlPatchCorrect(): void
+    public function testUserParentControlPatchCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -58,7 +58,7 @@ class UserParentControlPatchTest extends AbstractWebTest
      * step 5 - Checking response if all data has changed
      * @return void
      */
-    public function test_userParentControlPatchBirthdayCorrect(): void
+    public function testUserParentControlPatchBirthdayCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -101,7 +101,7 @@ class UserParentControlPatchTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsIncorrectSmsCode(): void
+    public function testUserSettingsIncorrectSmsCode(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
@@ -126,7 +126,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userParentControlPatchEmptyRequestData(): void
+    public function testUserParentControlPatchEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -143,7 +143,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userParentControlPatchPermission(): void
+    public function testUserParentControlPatchPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -165,7 +165,7 @@ class UserParentControlPatchTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userParentControlPatchLogOut(): void
+    public function testUserParentControlPatchLogOut(): void
     {
         $content = [
             'smsCode' => 'A2312V4',

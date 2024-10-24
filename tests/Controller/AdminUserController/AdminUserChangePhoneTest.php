@@ -17,7 +17,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
      * step 5 - Checking response if phone number changed
      * @return void
      */
-    public function test_adminUserDetailsCorrect(): void
+    public function testAdminUserDetailsCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
@@ -55,7 +55,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectAdminUser(): void
+    public function testAdminUserDetailsIncorrectAdminUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
@@ -86,7 +86,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectPhoneNumberUser(): void
+    public function testAdminUserDetailsIncorrectPhoneNumberUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
@@ -118,7 +118,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserDetailsIncorrectUserId(): void
+    public function testAdminUserDetailsIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123125', ['Guest',
@@ -142,7 +142,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserDetailsEmptyRequestData(): void
+    public function testAdminUserDetailsEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -163,7 +163,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDetailsPermission(): void
+    public function testAdminUserDetailsPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123129', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -184,7 +184,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserDetailsLogOut(): void
+    public function testAdminUserDetailsLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest',
             'User',

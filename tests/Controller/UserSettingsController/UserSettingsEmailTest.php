@@ -20,7 +20,7 @@ class UserSettingsEmailTest extends AbstractWebTest
      * step 5 - Checking response if all data change correctly
      * @return void
      */
-    public function test_userSettingsEmailCorrect(): void
+    public function testUserSettingsEmailCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $userEditRepository = $this->getService(UserEditRepository::class);
@@ -64,7 +64,7 @@ class UserSettingsEmailTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectEditExists(): void
+    public function testUserSettingsEmailIncorrectEditExists(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -99,7 +99,7 @@ class UserSettingsEmailTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectNewEmail(): void
+    public function testUserSettingsEmailIncorrectNewEmail(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -134,7 +134,7 @@ class UserSettingsEmailTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsEmailIncorrectOldEmail(): void
+    public function testUserSettingsEmailIncorrectOldEmail(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -162,7 +162,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailEmptyRequestData(): void
+    public function testUserSettingsEmailEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -179,7 +179,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailPermission(): void
+    public function testUserSettingsEmailPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -199,7 +199,7 @@ class UserSettingsEmailTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsEmailLogOut(): void
+    public function testUserSettingsEmailLogOut(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

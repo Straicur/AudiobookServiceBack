@@ -20,7 +20,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
      * step 5 - Checking response if password has changed
      * @return void
      */
-    public function test_userSettingsPasswordCorrect(): void
+    public function testUserSettingsPasswordCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
 
@@ -62,7 +62,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsPasswordIncorrectPassword(): void
+    public function testUserSettingsPasswordIncorrectPassword(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -92,7 +92,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userSettingsPasswordIncorrectCode(): void
+    public function testUserSettingsPasswordIncorrectCode(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::PASSWORD, (new DateTime())->modify('+1 day'), true);
@@ -114,7 +114,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_userSettingsPasswordEmptyRequestData(): void
+    public function testUserSettingsPasswordEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -131,7 +131,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsPasswordPermission(): void
+    public function testUserSettingsPasswordPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -151,7 +151,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_userSettingsPasswordLogOut(): void
+    public function testUserSettingsPasswordLogOut(): void
     {
         $content = [
             'oldPassword' => 'zaq12wsx',

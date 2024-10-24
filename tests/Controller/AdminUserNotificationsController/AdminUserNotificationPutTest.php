@@ -21,7 +21,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPutNORMALCorrect(): void
+    public function testAdminUserNotificationPutNormalCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -75,7 +75,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPutADMINCorrect(): void
+    public function testAdminUserNotificationPutAdminCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -130,7 +130,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPutNEW_CATEGORYCorrect(): void
+    public function testAdminUserNotificationPutNewCategoryCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -185,7 +185,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      * step 5 - Checking response if notification was added
      * @return void
      */
-    public function test_adminUserNotificationPutNEW_AUDIOBOOKCorrect(): void
+    public function testAdminUserNotificationPutNewAudiobookCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -246,7 +246,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserNotificationPutADMINIncorrectUserId(): void
+    public function testAdminUserNotificationPutAdminIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -274,7 +274,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutNEW_AUDIOBOOKIncorrectAudiobookId(): void
+    public function testAdminUserNotificationPutNewAudiobookIncorrectAudiobookId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123177', ['Guest',
@@ -303,7 +303,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectCorrectNotificationType(): void
+    public function testAdminUserNotificationPutIncorrectCorrectNotificationType(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 
@@ -335,7 +335,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectADMINEmptyUserId(): void
+    public function testAdminUserNotificationPutIncorrectAdminEmptyUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -362,7 +362,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectNEW_CATEGORYemptyCategoryKey(): void
+    public function testAdminUserNotificationPutIncorrectNewCategoryEmptyCategoryKey(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -390,7 +390,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKEmptyActionId(): void
+    public function testAdminUserNotificationPutIncorrectNewAudiobookEmptyActionId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -418,7 +418,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyActionId(): void
+    public function testAdminUserNotificationPutIncorrectUserDeleteDeclineEmptyActionId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -446,7 +446,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutIncorrectUSER_DELETE_DECLINEmptyUserId(): void
+    public function testAdminUserNotificationPutIncorrectUserDeleteDeclineEmptyUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -473,7 +473,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutEmptyRequestData(): void
+    public function testAdminUserNotificationPutEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -494,7 +494,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutPermission(): void
+    public function testAdminUserNotificationPutPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -518,7 +518,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserNotificationPutLogOut(): void
+    public function testAdminUserNotificationPutLogOut(): void
     {
         $content = [
             'notificationType' => NotificationType::NEW_AUDIOBOOK->value,

@@ -20,7 +20,7 @@ class NewNotificationsTest extends AbstractWebTest
      * @return void
      * @throws NotificationException
      */
-    public function test_newNotificationsCorrect(): void
+    public function testNewNotificationsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -51,7 +51,7 @@ class NewNotificationsTest extends AbstractWebTest
         $this->assertSame(2, $responseContent['newNotifications']);
     }
 
-    public function test_notificationsPermission(): void
+    public function testNewNotificationsPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123126', ['Guest',
@@ -69,7 +69,7 @@ class NewNotificationsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_notificationsLogOut(): void
+    public function testNewNotificationsLogOut(): void
     {
         self::$webClient->request('POST', '/api/new/notifications');
 

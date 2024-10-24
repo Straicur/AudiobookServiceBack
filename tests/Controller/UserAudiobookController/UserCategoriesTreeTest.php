@@ -15,7 +15,7 @@ class UserCategoriesTreeTest extends AbstractWebTest
      * step 4 - Checking response has returned correct data
      * @return void
      */
-    public function test_adminCategoriesTreeCorrect(): void
+    public function testAdminCategoriesTreeCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
             'User',
@@ -48,7 +48,7 @@ class UserCategoriesTreeTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['categories'][4]['children']);
     }
 
-    public function test_adminCategoriesTreePermission(): void
+    public function testAdminCategoriesTreePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
@@ -63,7 +63,7 @@ class UserCategoriesTreeTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoriesTreeLogOut(): void
+    public function testAdminCategoriesTreeLogOut(): void
     {
         self::$webClient->request('GET', '/api/user/categories/tree');
 

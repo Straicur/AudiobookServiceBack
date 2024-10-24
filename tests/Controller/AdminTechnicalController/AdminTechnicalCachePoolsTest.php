@@ -16,7 +16,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
      * step 5 - Checking response if category is active
      * @return void
      */
-    public function test_adminTechnicalCachePoolsCorrect(): void
+    public function testAdminTechnicalCachePoolsCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -42,7 +42,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $this->assertCount(6, $responseContent['adminCachePools']);
     }
 
-    public function test_adminTechnicalCachePoolsPermission(): void
+    public function testAdminTechnicalCachePoolsPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -57,7 +57,7 @@ class AdminTechnicalCachePoolsTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminTechnicalCachePoolsLogOut(): void
+    public function testAdminTechnicalCachePoolsLogOut(): void
     {
         self::$webClient->request('GET', '/api/admin/technical/cache/pools');
 

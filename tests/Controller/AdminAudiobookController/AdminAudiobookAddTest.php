@@ -21,7 +21,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookAddCorrect(): void
+    public function testAdminAudiobookActiveCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -95,7 +95,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added and categories are correct
      * @return void
      */
-    public function test_adminAudiobookAddFirstPartCorrect(): void
+    public function testAdminAudiobookActiveFirstPartCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -146,7 +146,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
      * step 5 - Checking response if audiobook is added without additional data
      * @return void
      */
-    public function test_adminAudiobookAddNoAdditionalDataCorrect(): void
+    public function testAdminAudiobookActiveNoAdditionalDataCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
         $audiobookService = $this->getService(AudiobookService::class);
@@ -186,7 +186,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobooksAfter[0]->getFileName());
     }
 
-    public function test_adminAudiobookAddEmptyRequestData(): void
+    public function testAdminAudiobookActiveEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -206,7 +206,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookAddPermission(): void
+    public function testAdminAudiobookActivePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Recruiter'], true, 'zaq12wsx');
 
@@ -241,7 +241,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminAudiobookAddLogOut(): void
+    public function testAdminAudiobookActiveLogOut(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

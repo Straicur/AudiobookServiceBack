@@ -16,7 +16,7 @@ class LoginTest extends AbstractWebTest
      * step 5 - Checking response if responseContent has key token
      * @return void
      */
-    public function test_loginCorrect(): void
+    public function testLoginCorrect(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -45,7 +45,7 @@ class LoginTest extends AbstractWebTest
      * step 3 - Checking response
      * @return void
      */
-    public function test_loginIncorrectCredentials(): void
+    public function testLoginIncorrectCredentials(): void
     {
         $content = [
             'email' => 'tester@audiobookback.icu',
@@ -59,7 +59,7 @@ class LoginTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_loginEmptyRequest(): void
+    public function testLoginEmptyRequest(): void
     {
         self::$webClient->request('POST', '/api/authorize');
 

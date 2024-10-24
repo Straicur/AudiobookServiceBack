@@ -19,7 +19,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
      * step 5 - Checking response if role is deleted
      * @return void
      */
-    public function test_adminUserRoleRemoveCorrect(): void
+    public function testAdminUserRoleRemoveCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $roleRepository = $this->getService(RoleRepository::class);
@@ -58,7 +58,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserRoleRemoveIncorrectAdminUser(): void
+    public function testAdminUserRoleRemoveIncorrectAdminUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -90,7 +90,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserRoleRemoveIncorrectUserId(): void
+    public function testAdminUserRoleRemoveIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -114,7 +114,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleRemoveEmptyRequestData(): void
+    public function testAdminUserRoleRemoveEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123129', ['Guest',
@@ -135,7 +135,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleRemovePermission(): void
+    public function testAdminUserRoleRemovePermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -156,7 +156,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleRemoveLogOut(): void
+    public function testAdminUserRoleRemoveLogOut(): void
     {
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123129', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 

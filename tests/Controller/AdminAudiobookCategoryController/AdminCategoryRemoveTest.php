@@ -23,7 +23,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
      * step 5 - Checking response if category is deleted from system and audiobooks
      * @return void
      */
-    public function test_adminCategoryRemoveCorrect(): void
+    public function testAdminCategoryRemoveAudiobookCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -104,7 +104,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminCategoryRemoveIncorrectCategoryId(): void
+    public function testAdminCategoryRemoveAudiobookIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -126,7 +126,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemoveEmptyRequestData(): void
+    public function testAdminCategoryRemoveAudiobookEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -146,7 +146,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemovePermission(): void
+    public function testAdminCategoryRemoveAudiobookPermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -167,7 +167,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminCategoryRemoveLogOut(): void
+    public function testAdminCategoryRemoveAudiobookLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);

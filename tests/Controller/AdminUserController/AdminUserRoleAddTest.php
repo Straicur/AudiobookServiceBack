@@ -19,7 +19,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
      * step 5 - Checking response if role was added
      * @return void
      */
-    public function test_adminUserRoleAddCorrect(): void
+    public function testAdminUserRoleAddCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
         $roleRepository = $this->getService(RoleRepository::class);
@@ -58,7 +58,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserRoleAddIncorrectAdminUser(): void
+    public function testAdminUserRoleAddIncorrectAdminUser(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -90,7 +90,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_adminUserRoleAddIncorrectUserId(): void
+    public function testAdminUserRoleAddIncorrectUserId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest',
@@ -114,7 +114,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleAddEmptyRequestData(): void
+    public function testAdminUserRoleAddEmptyRequestData(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', notActive: true);
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest',
@@ -135,7 +135,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleAddPermission(): void
+    public function testAdminUserRoleAddPermission(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx', notActive: true);
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -156,7 +156,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    public function test_adminUserRoleAddLogOut(): void
+    public function testAdminUserRoleAddLogOut(): void
     {
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
