@@ -66,30 +66,6 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
      *
      * @return void
      */
-    public function test_userAudiobookRatingAddEmptyRequestData(): void
-    {
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        $content = [];
-
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseStatusCodeSame(400);
-
-        $this->responseTool->testBadResponseData(self::$webClient);
-    }
-
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function test_userAudiobookRatingAddBadAudiobookInfos(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -181,6 +157,30 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
+    }
+
+    /**
+     * step 1 - Preparing data
+     * step 2 - Sending Request without content
+     * step 3 - Checking response
+     *
+     * @return void
+     */
+    public function test_userAudiobookRatingAddEmptyRequestData(): void
+    {
+        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user);
+
+        $content = [];
+
+        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+
+        self::assertResponseStatusCodeSame(400);
+
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     public function test_userAudiobookRatingAddPermission(): void

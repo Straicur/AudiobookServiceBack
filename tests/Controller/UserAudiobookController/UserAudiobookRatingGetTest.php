@@ -57,23 +57,6 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
         $this->assertSame($responseContent['ratingPercent'], 66);
     }
 
-    public function test_userAudiobookRatingGetEmptyRequestData(): void
-    {
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user1);
-
-        $content = [];
-
-        self::$webClient->request('POST', '/api/user/audiobook/rating/get', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseStatusCodeSame(400);
-
-        $this->responseTool->testBadResponseData(self::$webClient);
-    }
-
     /**
      * step 1 - Preparing data
      * step 2 - Sending Request without content
@@ -134,6 +117,23 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
+    }
+
+    public function test_userAudiobookRatingGetEmptyRequestData(): void
+    {
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+
+        $content = [];
+
+        self::$webClient->request('POST', '/api/user/audiobook/rating/get', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+
+        self::assertResponseStatusCodeSame(400);
+
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     public function test_userAudiobookRatingGetPermission(): void

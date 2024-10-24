@@ -238,38 +238,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
-    public function test_adminUserNotificationPutIncorrectCorrectNotificationType(): void
-    {
-        $notificationRepository = $this->getService(NotificationRepository::class);
-
-        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
-
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
-        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
-
-        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
-
-        $content = [
-            'notificationType' => NotificationType::USER_DELETE_DECLINE->value,
-            'notificationUserType' => NotificationUserType::SYSTEM->value,
-            'additionalData' => [
-                'text' => 'Nowy text',
-                'actionId' => $userDelete->getId(),
-                'userId' => $user1->getId(),
-            ]
-        ];
-        $token = $this->databaseMockManager->testFunc_loginUser($user1);
-
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseStatusCodeSame(400);
-
-        $this->responseTool->testBadResponseData(self::$webClient);
-    }
-
     /**
      * step 1 - Preparing data
      * step 2 - Preparing JsonBodyContent with bad Admin user
@@ -304,6 +272,67 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
+    }
+
+    public function test_adminUserNotificationPutNEW_AUDIOBOOKIncorrectAudiobookId(): void
+    {
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123177', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
+
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+
+        $content = [
+            'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
+            'notificationUserType' => NotificationUserType::ADMIN->value,
+            'additionalData' => [
+                'text' => 'Nowy text',
+                'actionId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+                'userId' => $user1->getId(),
+            ]
+        ];
+
+        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+
+        self::assertResponseStatusCodeSame(404);
+
+        $this->responseTool->testErrorResponseData(self::$webClient);
+    }
+
+    public function test_adminUserNotificationPutIncorrectCorrectNotificationType(): void
+    {
+        $notificationRepository = $this->getService(NotificationRepository::class);
+
+        $this->assertInstanceOf(NotificationRepository::class, $notificationRepository);
+
+        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest'], true, 'zaq12wsx', notActive: true);
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
+
+        $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
+
+        $content = [
+            'notificationType' => NotificationType::USER_DELETE_DECLINE->value,
+            'notificationUserType' => NotificationUserType::SYSTEM->value,
+            'additionalData' => [
+                'text' => 'Nowy text',
+                'actionId' => $userDelete->getId(),
+                'userId' => $user1->getId(),
+            ]
+        ];
+        $token = $this->databaseMockManager->testFunc_loginUser($user1);
+
+        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+            'HTTP_authorization' => $token->getToken()
+        ], content: json_encode($content));
+
+        self::assertResponseStatusCodeSame(400);
+
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
     public function test_adminUserNotificationPutIncorrectADMINEmptyUserId(): void
@@ -359,35 +388,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(400);
 
         $this->responseTool->testBadResponseData(self::$webClient);
-    }
-
-    public function test_adminUserNotificationPutNEW_AUDIOBOOKIncorrectAudiobookId(): void
-    {
-        $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123177', ['Guest',
-            'User',
-            'Administrator'], true, 'zaq12wsx');
-        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test3@cos.pl', '+48123123126', ['Guest', 'User'], true, 'zaq12wsx');
-
-        $token = $this->databaseMockManager->testFunc_loginUser($user1);
-
-        $content = [
-            'notificationType' => NotificationType::NEW_AUDIOBOOK->value,
-            'notificationUserType' => NotificationUserType::ADMIN->value,
-            'additionalData' => [
-                'text' => 'Nowy text',
-                'actionId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
-                'userId' => $user1->getId(),
-            ]
-        ];
-
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseStatusCodeSame(404);
-
-        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     public function test_adminUserNotificationPutIncorrectNEW_AUDIOBOOKEmptyActionId(): void
