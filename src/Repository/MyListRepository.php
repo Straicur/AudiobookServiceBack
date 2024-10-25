@@ -55,9 +55,8 @@ class MyListRepository extends ServiceEntityRepository
     public function getAudiobookInMyList(User $user, Audiobook $audiobook): bool
     {
         $qb = $this->createQueryBuilder('ml')
-            ->innerJoin('ml.audiobooks', 'a', Join::WITH, 'a.id = :audiobook')
-            ->where('a.active = true')
-            ->andWhere('ml.user = :user')
+            ->innerJoin('ml.audiobooks', 'a', Join::WITH, 'a.id = :audiobook and a.active = true')
+            ->where('ml.user = :user')
             ->setParameter('audiobook', $audiobook->getId()->toBinary())
             ->setParameter('user', $user->getId()->toBinary());
 

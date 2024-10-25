@@ -71,7 +71,7 @@ class UserDeleteRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('ud');
 
-        $qb->innerJoin('ud.user', 'u', Join::WITH, 'u.active = false')
+        $qb->innerJoin('ud.user', 'u', Join::WITH, 'ud.user = u.id and u.active = false')
             ->where('ud.deleted = false')
             ->andWhere('ud.dateDeleted IS NULL');
 

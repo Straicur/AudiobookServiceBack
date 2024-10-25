@@ -89,9 +89,8 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
     public function getAllActiveChildrenAudiobookComments(Audiobook $audiobook): array
     {
         $qb = $this->createQueryBuilder('c')
-            ->innerJoin('c.parent', 'parent')
+            ->innerJoin('c.parent', 'parent', Join::WITH, 'c.parent = parent.id and parent.deleted = false')
             ->where('c.deleted = false and c.parent IS NOT NULL')
-            ->andWhere('parent.deleted = false')
             ->andWhere('c.audiobook = :audiobook')
             ->setParameter('audiobook', $audiobook->getId()->toBinary());
 

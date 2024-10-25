@@ -117,9 +117,8 @@ class UserRepository extends ServiceEntityRepository
 
         $qb->leftJoin('u.proposedAudiobooks', 'pa')
             ->leftJoin('pa.audiobooks', 'a')
-            ->leftJoin('a.categories', 'c')
-            ->where('c.id IN (:categories)')
-            ->andWhere('u.banned = false')
+            ->leftJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
+            ->where('u.banned = false')
             ->andWhere('u.active = true')
             ->setParameter('categories', $audiobookCategories);
 
@@ -160,10 +159,9 @@ class UserRepository extends ServiceEntityRepository
 
         $qb->innerJoin('u.proposedAudiobooks', 'pa')
             ->innerJoin('pa.audiobooks', 'a')
-            ->innerJoin('a.categories', 'c')
+            ->innerJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
             ->leftJoin('u.notifications', 'n', Join::WITH, 'n.id = :notificationId')
-            ->where('c.id IN (:categories)')
-            ->andWhere('u.banned = false')
+            ->where('u.banned = false')
             ->andWhere('u.active = true')
             ->andWhere('n.id IS NULL')
             ->setParameters(new ArrayCollection([
@@ -188,9 +186,8 @@ class UserRepository extends ServiceEntityRepository
 
         $qb->leftJoin('u.myList', 'ml')
             ->leftJoin('ml.audiobooks', 'a')
-            ->leftJoin('a.categories', 'c')
-            ->where('c.id IN (:categories)')
-            ->andWhere('u.banned = false')
+            ->leftJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
+            ->where('u.banned = false')
             ->andWhere('u.active = true')
             ->setParameter('categories', $audiobookCategories);
 
