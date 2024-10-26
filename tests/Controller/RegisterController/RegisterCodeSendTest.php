@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class RegisterCodeSendTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is registered
-     * @return void
-     */
     public function testRegisterCodeCorrect(): void
     {
         $registerCodeRepository = $this->getService(RegisterCodeRepository::class);
@@ -44,10 +36,7 @@ class RegisterCodeSendTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad title
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given email(user with this email don't exist)
      */
     public function testRegisterCodeIncorrectActiveUserCredentials(): void
     {
@@ -71,10 +60,7 @@ class RegisterCodeSendTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad title
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given email(user is active)
      */
     public function testRegisterCodeIncorrectCredentials(): void
     {
@@ -83,7 +69,7 @@ class RegisterCodeSendTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addRegisterCode($user);
 
         $content = [
-            'email' => 'test2@cos.pl',
+            'email' => 'test@cos.pl',
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);

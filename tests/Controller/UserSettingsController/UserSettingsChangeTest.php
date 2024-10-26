@@ -11,14 +11,6 @@ use DateTime;
 
 class UserSettingsChangeTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data has changed
-     * @return void
-     */
     public function testUserSettingsChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -55,13 +47,7 @@ class UserSettingsChangeTest extends AbstractWebTest
     }
 
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given phoneNumber
      */
     public function testUserSettingsIncorrectPhoneNumber(): void
     {
@@ -89,14 +75,9 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
+
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given code
      */
     public function testUserSettingsIncorrectCode(): void
     {

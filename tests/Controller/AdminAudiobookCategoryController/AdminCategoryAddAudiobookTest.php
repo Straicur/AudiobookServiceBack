@@ -11,14 +11,6 @@ use DateTime;
 
 class AdminCategoryAddAudiobookTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is added to audiobook
-     * @return void
-     */
     public function testAdminCategoryAddAudiobookCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -55,12 +47,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryId
      */
     public function testAdminCategoryAddAudiobookIncorrectCategoryId(): void
     {
@@ -87,12 +74,7 @@ class AdminCategoryAddAudiobookTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminCategoryAddAudiobookIncorrectAudiobookId(): void
     {

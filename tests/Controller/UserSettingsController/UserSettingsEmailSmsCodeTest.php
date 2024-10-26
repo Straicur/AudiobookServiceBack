@@ -11,14 +11,6 @@ use DateTime;
 
 class UserSettingsEmailSmsCodeTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if password and editable flag has changed
-     * @return void
-     */
     public function testUserSettingsEmailSmsCodeCorrect(): void
     {
         $userEditRepository = $this->getService(UserEditRepository::class);
@@ -52,12 +44,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
     }
 
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     * @return void
+     * Test checks bad request without email
      */
     public function testUserSettingsEmailSmsCodeIncorrectCode(): void
     {

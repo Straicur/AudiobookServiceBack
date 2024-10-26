@@ -12,14 +12,6 @@ use DateTime;
 
 class UserResetPasswordTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data change correctly
-     * @return void
-     */
     public function testUserResetPasswordCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -55,12 +47,7 @@ class UserResetPasswordTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Email
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given email
      */
     public function testUserResetPasswordIncorrectEmail(): void
     {

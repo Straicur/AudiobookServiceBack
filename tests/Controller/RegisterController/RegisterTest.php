@@ -10,14 +10,6 @@ use App\Tests\AbstractWebTest;
 
 class RegisterTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is registered
-     * @return void
-     */
     public function testRegisterCorrect(): void
     {
         $userInformationRepository = $this->getService(UserInformationRepository::class);
@@ -64,14 +56,6 @@ class RegisterTest extends AbstractWebTest
         $this->assertCount(1, $registerCodeRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is registered
-     * @return void
-     */
     public function testRegisterParentalControlCorrect(): void
     {
         $userInformationRepository = $this->getService(UserInformationRepository::class);
@@ -123,10 +107,7 @@ class RegisterTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad email
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given email(user with this email exist)
      */
     public function testRegisterIncorrectEmailCredentials(): void
     {
@@ -152,10 +133,7 @@ class RegisterTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad number
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given email(user with this phone exist)
      */
     public function testRegisterIncorrectNumberCredentials(): void
     {
@@ -180,11 +158,9 @@ class RegisterTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
+
     /**
-     * step 1 - Preparing JsonBodyContent with bad institution max users
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks if institution has not hit a max users
      */
     public function testRegisterIncorrectInstitutionCredentials(): void
     {

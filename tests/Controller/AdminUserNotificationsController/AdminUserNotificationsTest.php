@@ -10,14 +10,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserNotificationsTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
-     */
     public function testAdminUserNotificationsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -56,14 +48,7 @@ class AdminUserNotificationsTest extends AbstractWebTest
         $this->assertArrayHasKey('maxPage', $responseContent);
         $this->assertCount(3, $responseContent['systemNotifications']);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
-     */
+
     public function testAdminUserNotificationsSpecificSearchCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

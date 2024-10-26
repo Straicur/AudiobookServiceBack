@@ -11,14 +11,6 @@ use DateTime;
 
 class RegisterConfirmTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is active
-     * @return void
-     */
     public function testRegisterConfirmCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -62,10 +54,7 @@ class RegisterConfirmTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad registerCode
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given register code dont exists
      */
     public function testRegisterConfirmIncorrectCredentials(): void
     {
@@ -76,17 +65,14 @@ class RegisterConfirmTest extends AbstractWebTest
 
         self::$webClient->request('GET', '/api/register/' . $user->getUserInformation()->getEmail() . '/95b7tjxrnbs88xd', server: [
             'HTTP_authorization' => $token->getToken()
-        ]);         
+        ]);
         self::assertResponseStatusCodeSame(404);
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad registerCode status
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given register code(code is not active)
      */
     public function testRegisterConfirmIncorrectCodeStatusCredentials(): void
     {
@@ -105,10 +91,7 @@ class RegisterConfirmTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent with bad registerCode
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given register code
      */
     public function testRegisterConfirmIncorrectEmailCredentials(): void
     {
@@ -126,11 +109,6 @@ class RegisterConfirmTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Sending Request without content
-     * step 2 - Checking response
-     * @return void
-     */
     public function testRegisterConfirmEmptyRequest(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');

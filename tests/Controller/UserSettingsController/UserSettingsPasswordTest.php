@@ -12,14 +12,6 @@ use DateTime;
 
 class UserSettingsPasswordTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if password has changed
-     * @return void
-     */
     public function testUserSettingsPasswordCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -55,12 +47,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Password
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given oldPassword
      */
     public function testUserSettingsPasswordIncorrectPassword(): void
     {
@@ -84,13 +71,9 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Password
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given code
      */
     public function testUserSettingsPasswordIncorrectCode(): void
     {

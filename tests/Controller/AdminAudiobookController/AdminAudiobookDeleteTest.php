@@ -19,12 +19,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
+     * Test checks a correct audiobook delete
      */
     public function testAdminAudiobookDeleteCorrect(): void
     {
@@ -96,12 +91,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook notifications are deleted
-     * @return void
+     * Test checks a correct audiobook delete and delete all notifications
      */
     public function testAdminAudiobookDeleteAllNotificationsCorrect(): void
     {
@@ -157,11 +147,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminAudiobookDeleteWrongAudiobookId(): void
     {

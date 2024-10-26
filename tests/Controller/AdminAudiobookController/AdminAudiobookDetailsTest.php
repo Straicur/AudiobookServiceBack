@@ -10,13 +10,6 @@ use DateTime;
 
 class AdminAudiobookDetailsTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testAdminAudiobookDetailsCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -64,12 +57,7 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminAudiobookDetailsIncorrectAudiobookId(): void
     {

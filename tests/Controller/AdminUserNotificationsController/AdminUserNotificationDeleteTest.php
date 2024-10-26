@@ -13,14 +13,6 @@ use DateTime;
 
 class AdminUserNotificationDeleteTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was deleted
-     * @return void
-     */
     public function testAdminUserNotificationDeleteCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -76,12 +68,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad notificationId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given notificationId
      */
     public function testAdminUserNotificationDeleteIncorrectNotificationId(): void
     {

@@ -13,13 +13,6 @@ use DateTime;
 
 class AdminStatisticMainTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testAdminStatisticMainCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);

@@ -11,13 +11,6 @@ use DateTime;
 
 class UserReportsTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
-     */
     public function testUserReportsCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',

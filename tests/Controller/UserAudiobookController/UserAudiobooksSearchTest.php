@@ -10,13 +10,6 @@ use DateTime;
 
 class UserAudiobooksSearchTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobooksSearchTitleCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -64,13 +57,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $this->assertCount(5, $responseContent['audiobooks']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobooksSearchCategoryKeyCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest',
@@ -121,13 +107,6 @@ class UserAudiobooksSearchTest extends AbstractWebTest
         $this->assertCount(5, $responseContent['audiobooks']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobooksSearchParentControlCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx', birthday: (new DateTime())->modify('-14 year'));

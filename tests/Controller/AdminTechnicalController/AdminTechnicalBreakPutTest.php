@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminTechnicalBreakPutTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if count of TechnicalBreak is correct
-     * @return void
-     */
     public function testAdminTechnicalBreakPutCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
@@ -36,15 +28,11 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
         $this->assertCount(1, $technicalBreakRepository->findAll());
     }
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if count of TechnicalBreak is correct
-     * @return void
+     * Test checks a correct add technical break but there is one existing
      */
-    public function testAdminTechnicalBreakPutOnlyOneExistsdCorrect(): void
+    public function testAdminTechnicalBreakPutOnlyOneExistedCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
 

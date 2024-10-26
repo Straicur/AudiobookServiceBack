@@ -10,13 +10,6 @@ use DateTime;
 
 class UserAudiobookCommentGetTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testAudiobookCommentGetCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

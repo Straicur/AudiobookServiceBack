@@ -10,12 +10,7 @@ use App\Tests\AbstractWebTest;
 class AdminCategoryActiveTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct activation
      */
     public function testAdminCategoryActiveCorrect(): void
     {
@@ -49,12 +44,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is not active
-     * @return void
+     * Test checks a correct deactivation
      */
     public function testAdminCategoryActiveDeactivateCorrect(): void
     {
@@ -88,12 +78,7 @@ class AdminCategoryActiveTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ServiceId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryId
      */
     public function testAdminCategoryActiveIncorrectCategoryId(): void
     {

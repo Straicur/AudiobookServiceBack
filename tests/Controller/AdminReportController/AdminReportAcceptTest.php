@@ -13,13 +13,6 @@ use DateTime;
 
 class AdminReportAcceptTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
-     */
     public function testAdminAcceptCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
@@ -59,11 +52,7 @@ class AdminReportAcceptTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
+     * Test checks a correct accept with ban with accepting others reports
      */
     public function testAdminAcceptOthersCorrect(): void
     {
@@ -121,11 +110,7 @@ class AdminReportAcceptTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
+     * Test checks a correct accept with ban
      */
     public function testAdminAcceptSystemBanCorrect(): void
     {
@@ -178,12 +163,7 @@ class AdminReportAcceptTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad reportId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given reportId
      */
     public function testAdminAcceptIncorrectReportId(): void
     {

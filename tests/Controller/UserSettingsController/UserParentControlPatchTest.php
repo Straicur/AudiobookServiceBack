@@ -10,14 +10,6 @@ use DateTime;
 
 class UserParentControlPatchTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data has changed
-     * @return void
-     */
     public function testUserParentControlPatchCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -50,14 +42,6 @@ class UserParentControlPatchTest extends AbstractWebTest
         $this->assertNull($userAfter->getUserInformation()->getBirthday());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data has changed
-     * @return void
-     */
     public function testUserParentControlPatchBirthdayCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -93,13 +77,7 @@ class UserParentControlPatchTest extends AbstractWebTest
     }
 
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad SmsCode
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given smsCode
      */
     public function testUserSettingsIncorrectSmsCode(): void
     {

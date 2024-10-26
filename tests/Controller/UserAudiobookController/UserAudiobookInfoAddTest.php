@@ -11,14 +11,6 @@ use DateTime;
 
 class UserAudiobookInfoAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category was added
-     * @return void
-     */
     public function testUserAudiobookInfoAddCorrect(): void
     {
         $audiobookInfoRepository = $this->getService(AudiobookInfoRepository::class);
@@ -54,14 +46,6 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         $this->assertCount(1, $audiobookInfoRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category was added
-     * @return void
-     */
     public function testUserAudiobookInfoAddCorrectDeactivation(): void
     {
         $audiobookInfoRepository = $this->getService(AudiobookInfoRepository::class);
@@ -107,12 +91,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookInfoAddIncorrectAudiobookId(): void
     {
@@ -139,12 +118,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookInfoAddIncorrectCategoryKey(): void
     {

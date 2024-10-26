@@ -11,13 +11,6 @@ use DateTime;
 
 class UserAudiobookCommentLikeAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response if comment is eddited
-     * @return void
-     */
     public function testUserAudiobookCommentLikeCorrect(): void
     {
         $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
@@ -58,12 +51,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ParentId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given commentId
      */
     public function testUserAudiobookCommentLikeIncorrectAudiobookCommentId(): void
     {

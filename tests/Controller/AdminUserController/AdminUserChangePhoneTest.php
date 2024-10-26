@@ -48,12 +48,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserDetailsIncorrectAdminUser(): void
     {
@@ -78,13 +73,9 @@ class AdminUserChangePhoneTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given newPhone(it exists in system)
      */
     public function testAdminUserDetailsIncorrectPhoneNumberUser(): void
     {
@@ -111,12 +102,7 @@ class AdminUserChangePhoneTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserDetailsIncorrectUserId(): void
     {

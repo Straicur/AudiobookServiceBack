@@ -12,11 +12,7 @@ use DateTime;
 class AdminReportListTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
+     * Test checks a correct report search with no filters
      */
     public function testAdminReportListNoFilterCorrect(): void
     {
@@ -88,11 +84,7 @@ class AdminReportListTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
+     * Test checks a correct report search with comments filters
      */
     public function testAdminReportListCommentsCorrect(): void
     {
@@ -153,11 +145,7 @@ class AdminReportListTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
+     * Test checks a correct report search with specific filters
      */
     public function testAdminReportListSpecificCorrect(): void
     {

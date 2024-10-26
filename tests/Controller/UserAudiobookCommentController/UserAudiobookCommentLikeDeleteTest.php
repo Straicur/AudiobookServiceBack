@@ -11,13 +11,6 @@ use DateTime;
 
 class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response if comment is eddited
-     * @return void
-     */
     public function testUserAudiobookCommentLikeCorrect(): void
     {
         $audiobookUserCommentLikeRepository = $this->getService(AudiobookUserCommentLikeRepository::class);
@@ -60,6 +53,9 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
         $this->assertTrue($commentLikeAfter->getDeleted());
     }
 
+    /**
+     * Test checks bad given commentId(like Dont exists))
+     */
     public function testUserAudiobookCommentLikeIncorrectAudiobookCommentLike(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -92,13 +88,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
+
     public function testUserAudiobookCommentLikeEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

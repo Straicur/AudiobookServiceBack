@@ -12,14 +12,6 @@ use DateTime;
 
 class AdminCategoryDetailTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is POSTd from system and audiobooks
-     * @return void
-     */
     public function testAdminCategoryDetailCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
@@ -67,12 +59,7 @@ class AdminCategoryDetailTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad categoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testAdminCategoryDetailIncorrectCategoryKey(): void
     {

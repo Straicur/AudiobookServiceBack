@@ -11,14 +11,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserRoleRemoveTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if role is deleted
-     * @return void
-     */
     public function testAdminUserRoleRemoveCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -51,12 +43,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserRoleRemoveIncorrectAdminUser(): void
     {
@@ -83,12 +70,7 @@ class AdminUserRoleRemoveTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserRoleRemoveIncorrectUserId(): void
     {

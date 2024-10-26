@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminCategoryEditTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category name changed
-     * @return void
-     */
     public function testAdminCategoryEditCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
@@ -50,12 +42,7 @@ class AdminCategoryEditTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ServiceId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryId
      */
     public function testAdminCategoryEditIncorrectCategoryId(): void
     {

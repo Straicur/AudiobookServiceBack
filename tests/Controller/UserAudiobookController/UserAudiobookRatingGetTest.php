@@ -10,13 +10,6 @@ use DateTime;
 
 class UserAudiobookRatingGetTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobookRatingGetCorrect(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -58,11 +51,7 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookRatingGetBadAudiobookId(): void
     {
@@ -88,11 +77,7 @@ class UserAudiobookRatingGetTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookRatingGetBadCategoryKey(): void
     {

@@ -11,14 +11,6 @@ use App\Tests\AbstractWebTest;
 
 class NotificationActivateTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
-     */
     public function testNotificationActivateCorrect(): void
     {
         $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);
@@ -52,14 +44,6 @@ class NotificationActivateTest extends AbstractWebTest
         $this->assertCount(1, $notificationCheckRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
-     */
     public function testNotificationActivateCorrectAdd(): void
     {
         $notificationCheckRepository = $this->getService(NotificationCheckRepository::class);

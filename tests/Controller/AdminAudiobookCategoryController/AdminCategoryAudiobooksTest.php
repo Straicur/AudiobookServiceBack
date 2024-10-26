@@ -10,14 +10,6 @@ use DateTime;
 
 class AdminCategoryAudiobooksTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
-     */
     public function testAdminCategoryAudiobooksCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -71,12 +63,7 @@ class AdminCategoryAudiobooksTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testAdminCategoryAudiobooksIncorrectCategoryKey(): void
     {

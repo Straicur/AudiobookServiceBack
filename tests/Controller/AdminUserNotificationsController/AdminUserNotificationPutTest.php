@@ -13,14 +13,6 @@ use DateTime;
 
 class AdminUserNotificationPutTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPutNormalCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -67,14 +59,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPutAdminCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -122,14 +106,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPutNewCategoryCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -177,14 +153,6 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->assertCount(1, $notificationRepository->findAll());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPutNewAudiobookCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -239,12 +207,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user
      */
     public function testAdminUserNotificationPutAdminIncorrectUserId(): void
     {
@@ -274,6 +237,9 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
+    /**
+     * Test checks bad given actionId
+     */
     public function testAdminUserNotificationPutNewAudiobookIncorrectAudiobookId(): void
     {
         $user1 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test1@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

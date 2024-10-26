@@ -13,14 +13,6 @@ use DateTime;
 
 class UserResetPasswordConfirmTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if password and editable flag has changed
-     * @return void
-     */
     public function testUserResetPasswordConfirmCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -65,12 +57,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad UserId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testUserResetPasswordConfirmIncorrectId(): void
     {
@@ -91,12 +78,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad user edit flag
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId(he has no edit flag in database)
      */
     public function testUserResetPasswordConfirmIncorrectUserEditFlag(): void
     {
@@ -117,12 +99,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad EditableDate
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId(His code expires)
      */
     public function testUserResetPasswordConfirmIncorrectUserEditableDate(): void
     {

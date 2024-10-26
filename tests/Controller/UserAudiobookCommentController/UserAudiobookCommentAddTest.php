@@ -12,13 +12,6 @@ use DateTime;
 
 class UserAudiobookCommentAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response if comment was added
-     * @return void
-     */
     public function testUserAudiobookCommentAddCorrect(): void
     {
         $audiobookUserCommentRepository = $this->getService(AudiobookUserCommentRepository::class);
@@ -66,12 +59,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookCommentAddIncorrectCategoryKey(): void
     {
@@ -111,12 +99,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks if user has not break a limit of max comments
      */
     public function testUserAudiobookCommentAddToManyComments(): void
     {
@@ -227,12 +210,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookCommentAddIncorrectAudiobookId(): void
     {
@@ -254,8 +232,8 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            'audiobookId' => $audiobook1->getId(),
-            'categoryKey' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+            'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+            'categoryKey' => $category2->getCategoryKey(),
             'comment' => 'comment',
             'additionalData' => [
                 'parentId' => $comment1->getId()
@@ -272,12 +250,7 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ParentId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given parentId
      */
     public function testUserAudiobookCommentAddIncorrectParentId(): void
     {

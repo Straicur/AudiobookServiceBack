@@ -10,14 +10,6 @@ use App\ValueGenerator\PasswordHashGenerator;
 
 class AdminUserChangePasswordTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if password changed
-     * @return void
-     */
     public function testAdminUserDetailsCorrect(): void
     {
         $userPasswordRepository = $this->getService(UserPasswordRepository::class);
@@ -51,12 +43,7 @@ class AdminUserChangePasswordTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserDetailsIncorrectAdminUser(): void
     {
@@ -83,12 +70,7 @@ class AdminUserChangePasswordTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserDetailsIncorrectUserId(): void
     {

@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserActivateTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is active
-     * @return void
-     */
     public function testAdminUserActivateCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -48,12 +40,7 @@ class AdminUserActivateTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserActivateIncorrectAdminUser(): void
     {
@@ -77,12 +64,7 @@ class AdminUserActivateTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserActivateIncorrectUserId(): void
     {

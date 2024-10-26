@@ -12,13 +12,6 @@ use DateTime;
 
 class ReportTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response
-     * @return void
-     */
     public function testReportCorrect(): void
     {
         $reportRepository = $this->getService(ReportRepository::class);
@@ -55,13 +48,9 @@ class ReportTest extends AbstractWebTest
 
         $this->assertCount(1, $reportRepository->findAll());
     }
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks if user don't break a max reports limit
      */
     public function testReportToManyReports(): void
     {

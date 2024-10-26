@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminTechnicalBreakPatchTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if technicalBreak changed
-     * @return void
-     */
     public function testAdminTechnicalBreakPatchCorrect(): void
     {
         $technicalBreakRepository = $this->getService(TechnicalBreakRepository::class);
@@ -49,12 +41,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad audiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given technicalBreakId
      */
     public function testAdminTechnicalBreakPatchIncorrectTechnicalBreakId(): void
     {

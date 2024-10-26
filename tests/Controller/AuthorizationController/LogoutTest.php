@@ -8,14 +8,6 @@ use App\Tests\AbstractWebTest;
 
 class LogoutTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if responseContent has key token
-     * @return void
-     */
     public function testLogoutCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest',

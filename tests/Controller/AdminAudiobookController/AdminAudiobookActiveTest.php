@@ -14,12 +14,7 @@ use DateTime;
 class AdminAudiobookActiveTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct deactivation
      */
     public function testAdminAudiobookActiveCorrect(): void
     {
@@ -55,6 +50,9 @@ class AdminAudiobookActiveTest extends AbstractWebTest
         $this->assertTrue($audiobook1After->getActive());
     }
 
+    /**
+     * Test checks a correct with notification
+     */
     public function testAdminAudiobookActiveAdditionalInfoCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -101,6 +99,10 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
         $this->assertTrue($audiobook1After->getActive());
     }
+
+    /**
+     * Test checks a correct with notification
+     */
     public function testAdminAudiobookActiveAdditionalInfoProposedCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -147,6 +149,10 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
         $this->assertTrue($audiobook1After->getActive());
     }
+
+    /**
+     * Test checks a correct with notification
+     */
     public function testAdminAudiobookActiveAdditionalInfoMyListCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -193,13 +199,9 @@ class AdminAudiobookActiveTest extends AbstractWebTest
 
         $this->assertTrue($audiobook1After->getActive());
     }
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is not active
-     * @return void
+     * Test checks a correct deactivation
      */
     public function estAdminAudiobookActiveDeActiveCorrect(): void
     {
@@ -237,12 +239,7 @@ class AdminAudiobookActiveTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad audiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminAudiobookActiveIncorrectAudiobookId(): void
     {

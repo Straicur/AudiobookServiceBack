@@ -11,14 +11,6 @@ use DateTime;
 
 class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is deleted from audiobook
-     * @return void
-     */
     public function testAdminCategoryRemoveAudiobookCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -63,12 +55,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryId
      */
     public function testAdminCategoryRemoveAudiobookIncorrectCategoryId(): void
     {
@@ -95,12 +82,7 @@ class AdminCategoryRemoveAudiobookTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminCategoryRemoveAudiobookIncorrectAudiobookId(): void
     {

@@ -11,14 +11,6 @@ use DateTime;
 
 class AdminAudiobookEditTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
-     */
     public function testAdminAudiobookEditCorrect(): void
     {
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -73,12 +65,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad audiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminAudiobookEditIncorrectAudiobookId(): void
     {

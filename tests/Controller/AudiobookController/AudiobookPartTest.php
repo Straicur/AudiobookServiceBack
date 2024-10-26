@@ -12,14 +12,6 @@ use DateTime;
 
 class AudiobookPartTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
-     */
     public function testAudiobookPartCorrect(): void
     {
         $base64OnePartFile = str_replace('AudiobookController', '', __DIR__) . 'AdminAudiobookController/onePartFile.txt';
@@ -91,11 +83,7 @@ class AudiobookPartTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAudiobookPartWrongAudiobookId(): void
     {

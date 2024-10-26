@@ -11,14 +11,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserRoleAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if role was added
-     * @return void
-     */
     public function testAdminUserRoleAddCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -51,12 +43,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserRoleAddIncorrectAdminUser(): void
     {
@@ -83,12 +70,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserRoleAddIncorrectUserId(): void
     {

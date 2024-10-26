@@ -10,14 +10,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserDeleteTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is deleted
-     * @return void
-     */
     public function testAdminUserDeleteCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -52,12 +44,7 @@ class AdminUserDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserDeleteIncorrectAdminUser(): void
     {
@@ -83,12 +70,7 @@ class AdminUserDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserDeleteIncorrectUserId(): void
     {

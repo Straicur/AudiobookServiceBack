@@ -12,14 +12,6 @@ use DateTime;
 
 class AdminUserDeleteDeclineTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user flags changed
-     * @return void
-     */
     public function testAdminUserDeleteAcceptCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -65,12 +57,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with user that is not in deleteUserList
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is not in deleted users)
      */
     public function testAdminUserDeleteAcceptIncorrectUserDeleted(): void
     {
@@ -94,12 +81,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with user that is deleted
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is deleted)
      */
     public function testAdminUserDeleteAcceptIncorrectUser(): void
     {

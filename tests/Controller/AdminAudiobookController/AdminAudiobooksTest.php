@@ -11,12 +11,7 @@ use DateTime;
 class AdminAudiobooksTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
+     * Test checks a correct audiobook search with filters
      */
     public function testAdminAudiobooksCorrect(): void
     {
@@ -84,12 +79,7 @@ class AdminAudiobooksTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContentz
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
+     * Test checks a correct audiobook search with no filters
      */
     public function testAdminAudiobooksNoFilterCorrect(): void
     {

@@ -12,14 +12,6 @@ use DateTime;
 
 class UserSettingsEmailTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data change correctly
-     * @return void
-     */
     public function testUserSettingsEmailCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -57,12 +49,7 @@ class UserSettingsEmailTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with existing Edit
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given email(User flag dont exists)
      */
     public function testUserSettingsEmailIncorrectEditExists(): void
     {
@@ -92,12 +79,7 @@ class UserSettingsEmailTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad NewEmail
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given newEmail
      */
     public function testUserSettingsEmailIncorrectNewEmail(): void
     {
@@ -127,12 +109,7 @@ class UserSettingsEmailTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad OldEmail
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given oldEmail
      */
     public function testUserSettingsEmailIncorrectOldEmail(): void
     {

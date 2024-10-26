@@ -13,14 +13,6 @@ use DateTime;
 
 class AdminUserNotificationPatchTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPatchCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -88,14 +80,6 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
         $this->assertCount(6, $not1After->getUsers());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if notification was added
-     * @return void
-     */
     public function testAdminUserNotificationPatchToAdminCorrect(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
@@ -170,12 +154,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad notificationId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given notificationId
      */
     public function testAdminUserNotificationPatchIncorrectNotificationId(): void
     {
@@ -207,11 +186,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad notificationId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * @return void
+     * Test checks bad given notificationId
      */
     public function testAdminUserNotificationPatchIncorrectActivate(): void
     {
@@ -276,12 +251,7 @@ class AdminUserNotificationPatchTest extends AbstractWebTest
 
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad notificationId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given notificationId and patch to Admin
      */
     public function testAdminUserNotificationPatchToAdminIncorrect(): void
     {

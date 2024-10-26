@@ -9,14 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserBanTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user is banned
-     * @return void
-     */
     public function testAdminUserBanCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -50,12 +42,7 @@ class AdminUserBanTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad Admin user
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
     public function testAdminUserBanIncorrectAdminUser(): void
     {
@@ -81,12 +68,7 @@ class AdminUserBanTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad userId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testAdminUserBanIncorrectUserId(): void
     {

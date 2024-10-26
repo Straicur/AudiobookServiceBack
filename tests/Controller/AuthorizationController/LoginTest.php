@@ -8,14 +8,6 @@ use App\Tests\AbstractWebTest;
 
 class LoginTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if responseContent has key token
-     * @return void
-     */
     public function testLoginCorrect(): void
     {
         $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@audiobookback.icu', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
@@ -40,10 +32,7 @@ class LoginTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing JsonBodyContent where there is no email tester@audiobookback.icu
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * @return void
+     * Test checks bad given email(user with this email don't existS)
      */
     public function testLoginIncorrectCredentials(): void
     {

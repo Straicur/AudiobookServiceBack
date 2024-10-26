@@ -11,13 +11,6 @@ use DateTime;
 
 class UserAudiobookLikeTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobookLikeCorrect(): void
     {
         $myListRepository = $this->getService(MyListRepository::class);
@@ -53,13 +46,6 @@ class UserAudiobookLikeTest extends AbstractWebTest
         $this->assertCount(1, $userMyList->getAudiobooks());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response has returned correct data
-     * @return void
-     */
     public function testUserAudiobookUnLikeCorrect(): void
     {
         $myListRepository = $this->getService(MyListRepository::class);
@@ -98,12 +84,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookLikeIncorrectCategoryKey(): void
     {
@@ -131,12 +112,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookLikeIncorrectAudiobookId(): void
     {

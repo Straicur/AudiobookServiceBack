@@ -12,13 +12,9 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 {
     private const BASE64_ONE_PART_FILE = __DIR__ . '/onePartFile.txt';
     private const base64ImgFile = __DIR__ . '/imgFile.txt';
+
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
+     * Test checks a correct add of a one part audiobook and then changing a cover
      */
     public function testAdminAudiobookChangeCoverCorrect(): void
     {
@@ -86,11 +82,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testAdminAudiobookChangeCoverWrongAudiobookId(): void
     {

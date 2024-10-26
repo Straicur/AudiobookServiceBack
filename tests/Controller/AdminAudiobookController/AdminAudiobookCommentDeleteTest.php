@@ -12,12 +12,7 @@ use DateTime;
 class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct delete comment
      */
     public function testAdminAudiobookCommentDeleteCorrect(): void
     {
@@ -54,12 +49,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct restore comment
      */
     public function testAdminAudiobookCommentDeleteRestoreCorrect(): void
     {
@@ -97,12 +87,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad audiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookCommentId
      */
     public function testAdminAudiobookCommentDeleteIncorrectCommentId(): void
     {

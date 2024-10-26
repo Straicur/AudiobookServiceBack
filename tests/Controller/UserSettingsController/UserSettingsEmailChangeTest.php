@@ -12,13 +12,6 @@ use DateTime;
 
 class UserSettingsEmailChangeTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Checking response
-     * step 4 - Checking response if all data has changed
-     * @return void
-     */
     public function testUserSettingsEmailChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -53,11 +46,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad Editable date
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId(link expires)
      */
     public function testUserSettingsEmailChangeIncorrectEditableDate(): void
     {
@@ -73,11 +62,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad EditFlag
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId(he has no edit flag)
      */
     public function testUserSettingsEmailChangeIncorrectEditFlag(): void
     {
@@ -93,11 +78,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad CategoryKey
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given userId
      */
     public function testUserSettingsEmailChangeIncorrectUserId(): void
     {
@@ -113,11 +94,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad CategoryKey
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given email
      */
     public function testUserSettingsEmailChangeIncorrectEmail(): void
     {

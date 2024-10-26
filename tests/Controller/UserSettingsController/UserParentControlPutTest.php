@@ -9,13 +9,6 @@ use App\Tests\AbstractWebTest;
 
 class UserParentControlPutTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response if all data has changed
-     * @return void
-     */
     public function testUserParentControlPutCorrect(): void
     {
         $userParentalControlCodeRepository = $this->getService(UserParentalControlCodeRepository::class);
@@ -45,13 +38,7 @@ class UserParentControlPutTest extends AbstractWebTest
     }
 
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing Data with bad AmountOfAttempts
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks if user don't break a max attempts limit
      */
     public function testUserSettingsIncorrectAmountOfAttempts(): void
     {

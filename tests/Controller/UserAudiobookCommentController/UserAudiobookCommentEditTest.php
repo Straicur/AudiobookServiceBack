@@ -69,12 +69,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryKey
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookCommentEditIncorrectCategoryKey(): void
     {
@@ -115,12 +110,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad AudiobookId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookCommentEditIncorrectAudiobookId(): void
     {
@@ -141,8 +131,8 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [
-            'audiobookId' => $audiobook1->getId(),
-            'categoryKey' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+            'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
+            'categoryKey' => $category2->getCategoryKey(),
             'audiobookCommentId' => $comment2->getId(),
             'comment' => 'comment',
             'deleted' => false,
@@ -161,12 +151,7 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad ParentId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given parentId
      */
     public function testUserAudiobookCommentEditIncorrectParentId(): void
     {
@@ -206,6 +191,9 @@ class UserAudiobookCommentEditTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
+    /**
+     * Test checks bad given audiobookCommentId
+     */
     public function testUserAudiobookCommentEditIncorrectAudiobookCommentId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

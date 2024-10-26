@@ -9,18 +9,8 @@ use App\Repository\AudiobookRatingRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserAudiobookRatingGetTest
- */
 class UserAudiobookRatingAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking if rating was added
-     * @return void
-     */
     public function testUserAudiobookRatingAddCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
@@ -60,11 +50,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId(he cant do rating)
      */
     public function testUserAudiobookRatingAddBadAudiobookInfos(): void
     {
@@ -96,11 +82,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given audiobookId
      */
     public function testUserAudiobookRatingAddBadAudiobookId(): void
     {
@@ -127,11 +109,7 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks bad given categoryKey
      */
     public function testUserAudiobookRatingAddBadCategoryKey(): void
     {
@@ -159,13 +137,6 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
     public function testUserAudiobookRatingAddEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

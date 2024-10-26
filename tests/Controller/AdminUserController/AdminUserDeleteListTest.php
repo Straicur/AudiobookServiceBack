@@ -8,14 +8,6 @@ use App\Tests\AbstractWebTest;
 
 class AdminUserDeleteListTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if returned data is correct
-     * @return void
-     */
     public function testAdminUserDeleteListCorrect(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');

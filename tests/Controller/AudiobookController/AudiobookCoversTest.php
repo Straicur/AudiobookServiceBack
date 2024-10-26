@@ -12,14 +12,6 @@ use DateTime;
 
 class AudiobookCoversTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
-     */
     public function testAudiobookCoverCorrect(): void
     {
         $base64OnePartFile = str_replace('AudiobookController', '', __DIR__) . 'AdminAudiobookController/onePartFile.txt';
@@ -95,13 +87,6 @@ class AudiobookCoversTest extends AbstractWebTest
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad data
-     * step 3 - Checking response if length is correct
-     *
-     * @return void
-     */
     public function testAudiobookCoverIncorrectData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest','User'], true, 'zaq12wsx');

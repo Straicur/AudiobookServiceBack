@@ -10,13 +10,6 @@ use App\Tests\AbstractWebTest;
 
 class UserSettingsDeleteTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request
-     * step 3 - Checking response
-     * step 4 - Checking response all data changed correctly
-     * @return void
-     */
     public function testUserSettingsDeleteCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
@@ -45,11 +38,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request where user is in userDelete
-     * step 3 - Checking response
-     *
-     * @return void
+     * Test checks if user is deleted
      */
     public function testUserSettingsDeleteIncorrectUser(): void
     {

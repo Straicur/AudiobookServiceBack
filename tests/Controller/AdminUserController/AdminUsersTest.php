@@ -10,12 +10,7 @@ use App\Tests\AbstractWebTest;
 class AdminUsersTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
+     * Test checks a correct user search with filters
      */
     public function testAdminUsersCorrect(): void
     {
@@ -64,12 +59,7 @@ class AdminUsersTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
+     * Test checks a correct user search with specific filters
      */
     public function testAdminUsersSpecificSearchCorrect(): void
     {
@@ -118,12 +108,7 @@ class AdminUsersTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response has returned correct data
-     * @return void
+     * Test checks a correct user search with no filters
      */
     public function testAdminUsersNoFilterCorrect(): void
     {

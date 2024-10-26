@@ -9,12 +9,7 @@ use App\Tests\AbstractWebTest;
 class AdminTechnicalCacheClearTest extends AbstractWebTest
 {
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct technical cache clear for selected redis keys
      */
     public function testAdminTechnicalCacheClearCorrect(): void
     {
@@ -40,12 +35,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct technical cache clear for admin redis keys
      */
     public function testAdminTechnicalCacheClearAdminCorrect(): void
     {
@@ -71,12 +61,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct technical cache clear for user redis keys
      */
     public function testAdminTechnicalCacheClearUserCorrect(): void
     {
@@ -102,12 +87,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
+     * Test checks a correct technical cache clear for all redis keys
      */
     public function testAdminTechnicalCacheClearAllCorrect(): void
     {

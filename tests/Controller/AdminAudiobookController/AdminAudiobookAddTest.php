@@ -14,12 +14,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
     private const BASE64_FIRST_PART_FILE = __DIR__ . '/firstPartFile.txt';
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
+     * Test checks a correct add of a one part audiobook
      */
     public function testAdminAudiobookAddCorrect(): void
     {
@@ -88,12 +83,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added and categories are correct
-     * @return void
+     * Test checks a correct add of a one part
      */
     public function testAdminAudiobookAddFirstPartCorrect(): void
     {
@@ -139,12 +129,7 @@ class AdminAudiobookAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if audiobook is added without additional data
-     * @return void
+     * Test checks a correct add of a one part audiobook with no additional data
      */
     public function testAdminAudiobookAddNoAdditionalDataCorrect(): void
     {
