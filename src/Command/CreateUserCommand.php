@@ -107,32 +107,16 @@ class CreateUserCommand extends Command
             $userEntity->addRole($roleEntity);
         }
 
-        $userMyList = new MyList($userEntity);
-
-        $this->myListRepository->add($userMyList);
-
-        $userProposedAudiobooks = new ProposedAudiobooks($userEntity);
-
-        $this->proposedAudiobooksRepository->add($userProposedAudiobooks);
-
-        $userInformationEntity = new UserInformation($userEntity, $email, $phone, $firstname, $lastname);
-
-        $this->userInformationRepository->add($userInformationEntity, false);
-
-        $userSettingsEntity = new UserSettings($userEntity);
-
-        $this->userSettingsRepository->add($userSettingsEntity, false);
-
-        $userPasswordEntity = new UserPassword($userEntity, $passwordGenerator);
-        $this->userPasswordRepository->add($userPasswordEntity);
+        $this->myListRepository->add(new MyList($userEntity), false);
+        $this->proposedAudiobooksRepository->add(new ProposedAudiobooks($userEntity), false);
+        $this->userInformationRepository->add(new UserInformation($userEntity, $email, $phone, $firstname, $lastname), false);
+        $this->userSettingsRepository->add(new UserSettings($userEntity), false);
+        $this->userPasswordRepository->add(new UserPassword($userEntity, $passwordGenerator));
 
         $io->info('Database flushed');
 
         $io->text([
             'UserEntity:            ' . $userEntity->getId(),
-            'UserInformationEntity: ' . $userInformationEntity->getUser()->getId(),
-            'UserSettingEntity:     ' . $userSettingsEntity->getUser()->getId(),
-            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId(),
         ]);
 
         $io->success('User added');

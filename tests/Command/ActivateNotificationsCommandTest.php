@@ -11,7 +11,7 @@ use App\Tests\AbstractKernelTestCase;
 use DateTime;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ActivateNotificationsCommand extends AbstractKernelTestCase
+class ActivateNotificationsCommandTest extends AbstractKernelTestCase
 {
     public function testUserProposedAudiobooksSuccess(): void
     {
