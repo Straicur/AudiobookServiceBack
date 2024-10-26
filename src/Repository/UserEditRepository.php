@@ -59,16 +59,14 @@ class UserEditRepository extends ServiceEntityRepository
 
         $date = new DateTime();
 
-        $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
+        return $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
             ->where('((ue.edited = false) AND (ue.editableDate IS NOT NULL AND ue.editableDate > :date))')
             ->andWhere('ue.type = :type')
             ->setParameter('type', $type->value)
             ->setParameter('date', $date)
-            ->setParameter('user', $user->getId()->toBinary());
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->setParameter('user', $user->getId()->toBinary())
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function checkIfUserCanChangeWithCode(User $user, UserEditType $type, string $code): ?UserEdit
@@ -77,18 +75,16 @@ class UserEditRepository extends ServiceEntityRepository
 
         $date = new DateTime();
 
-        $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
+        return $qb->innerJoin('ue.user', 'u', Join::WITH, 'u.id = :user')
             ->where('((ue.edited = false) AND (ue.editableDate IS NOT NULL AND ue.editableDate > :date))')
             ->andWhere('ue.type = :type')
             ->andWhere('ue.code = :code')
             ->setParameter('type', $type->value)
             ->setParameter('date', $date)
             ->setParameter('code', $code)
-            ->setParameter('user', $user->getId()->toBinary());
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->setParameter('user', $user->getId()->toBinary())
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function changeResetPasswordEdits(User $user): void

@@ -55,34 +55,30 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
 
     public function findActiveToken(string $authorizationHeaderField): ?AuthenticationToken
     {
-        $qb = $this->createQueryBuilder('a')
+        return $this->createQueryBuilder('a')
             ->where('a.token = :token')
             ->andWhere('a.dateExpired > :dateNow')
             ->setParameter('token', $authorizationHeaderField)
             ->setParameter('dateNow', new DateTime())
             ->addOrderBy('a.dateExpired', 'DESC')
             ->setFirstResult(0)
-            ->setMaxResults(1);
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function getLastActiveUserAuthenticationToken(User $user): ?AuthenticationToken
     {
-        $qb = $this->createQueryBuilder('at')
+        return $this->createQueryBuilder('at')
             ->where('at.user = :user')
             ->andWhere('at.dateExpired > :today')
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('today', new DateTime())
             ->addOrderBy('at.dateExpired', 'DESC')
             ->setFirstResult(0)
-            ->setMaxResults(1);
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function getNumberOfAuthenticationTokensFromLast7Days(): int
