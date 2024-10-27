@@ -205,7 +205,7 @@ class UserSettingsController extends AbstractController
             $mailer->send($email);
         }
 
-        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), Response::HTTP_CREATED);
     }
 
     #[Route('/settings/email/smsCode', name: 'userSettingsEmailSmsCode', methods: ['PUT'])]
@@ -263,7 +263,7 @@ class UserSettingsController extends AbstractController
 
         $userRepository->add($user);
 
-        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), Response::HTTP_CREATED);
     }
 
     #[Route('/settings/email', name: 'userSettingsEmail', methods: ['POST'])]
@@ -563,7 +563,7 @@ class UserSettingsController extends AbstractController
             $mailer->send($email);
         }
 
-        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), 201);
+        return ResponseTool::getResponse(new UserChangeCodeSuccessModel($newEditedUser->getCode()), Response::HTTP_CREATED);
     }
 
     #[Route('/settings/change', name: 'userSettingsChange', methods: ['PATCH'])]

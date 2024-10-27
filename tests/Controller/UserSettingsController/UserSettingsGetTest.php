@@ -6,38 +6,26 @@ namespace App\Tests\Controller\UserSettingsController;
 
 use App\Tests\AbstractWebTest;
 
-/**
- * UserSettingsGetTest
- */
 class UserSettingsGetTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data has changed
-     * @return void
-     */
-    public function test_userSettingsGetCorrect(): void
+    public function testUserSettingsGetCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('GET', '/api/user/settings', server: [
+
+        self::$webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
-        /// step 4
+
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
         $response = self::$webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
-        /// step 5
+
         $this->assertIsArray($responseContent);
 
         $this->assertArrayHasKey('phoneNumber', $responseContent);
@@ -53,64 +41,27 @@ class UserSettingsGetTest extends AbstractWebTest
         $this->assertArrayHasKey('editableDate', $responseContent);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsGetPermission(): void
+    public function testUserSettingsGetPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('GET', '/api/user/settings', server: [
+
+        self::$webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsGetLogOut(): void
+    public function testUserSettingsGetLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        self::$webClient->request('GET', '/api/user/settings');
 
-        /// step 2
-        $crawler = self::$webClient->request('GET', '/api/user/settings');
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

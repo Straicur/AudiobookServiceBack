@@ -13,6 +13,6 @@ class AuthenticationException extends Exception implements ResponseExceptionInte
 {
     public function getResponse(): Response
     {
-        return ResponseTool::getResponse(new NotAuthorizeModel(), 401);
+        return ResponseTool::getResponse(new NotAuthorizeModel(), Response::HTTP_UNAUTHORIZED);
     }
 }

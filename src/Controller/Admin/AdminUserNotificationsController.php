@@ -174,7 +174,7 @@ class AdminUserNotificationsController extends AbstractController
 
             $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
-            return ResponseTool::getResponse(httpCode: 201);
+            return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
         $endpointLogger->error('Invalid given Query');

@@ -8,47 +8,33 @@ use App\Repository\UserDeleteRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminUserDeleteAcceptTest
- */
 class AdminUserDeleteAcceptTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if user flags changed
-     * @return void
-     */
-    public function test_adminUserDeleteAcceptCorrect(): void
+    public function testAdminUserDeleteAcceptCorrect(): void
     {
         $userDeleteRepository = $this->getService(UserDeleteRepository::class);
 
         $this->assertInstanceOf(UserDeleteRepository::class, $userDeleteRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $userDelete = $this->databaseMockManager->testFunc_addUserDelete($user2);
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        /// step 5
         $userDeleteAfter = $userDeleteRepository->findOneBy([
             'id' => $userDelete->getId()
         ]);
@@ -57,135 +43,74 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with user that is not in deleteUserList
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is an admin)
      */
-    public function test_adminUserDeleteAcceptIncorrectUserDeleted(): void
+    public function testAdminUserDeleteAcceptIncorrectUserDeleted(): void
     {
-        /// step 1
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with user that is deleted
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given user(he is deleted)
      */
-    public function test_adminUserDeleteAcceptIncorrectUser(): void
+    public function testAdminUserDeleteAcceptIncorrectUser(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123127', ['Guest', 'User'], true, 'zaq12wsx');
 
         $this->databaseMockManager->testFunc_addUserDelete($user2, true, dateDeleted: new DateTime());
 
-        /// step 2
         $content = [
             'userId' => $user2->getId()
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminUserDeleteAcceptEmptyRequestData(): void
+    public function testAdminUserDeleteAcceptEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminUserDeleteAcceptPermission(): void
+    public function testAdminUserDeleteAcceptPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $content = [
@@ -193,56 +118,28 @@ class AdminUserDeleteAcceptTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server: [
+
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminUserDeleteAcceptLogOut(): void
+    public function testAdminUserDeleteAcceptLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [
             'userId' => $user->getId()
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/admin/user/delete/accept', content: json_encode($content));
-        /// step 3
+        self::$webClient->request('PATCH', '/api/admin/user/delete/accept', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

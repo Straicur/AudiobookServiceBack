@@ -208,16 +208,13 @@ class AudiobookRepository extends ServiceEntityRepository
 
     public function getAudiobookByCategoryKeyAndId(Uuid $audiobookId, string $categoryKey): ?Audiobook
     {
-        $qb = $this->createQueryBuilder('a')
+        return $this->createQueryBuilder('a')
             ->innerJoin('a.categories', 'c', Join::WITH, 'c.categoryKey = :categoryKey')
-            ->where('a.id = :audiobookId');
-
-        $qb->setParameter('audiobookId', $audiobookId->toBinary())
-            ->setParameter('categoryKey', $categoryKey);
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->where('a.id = :audiobookId')
+            ->setParameter('audiobookId', $audiobookId->toBinary())
+            ->setParameter('categoryKey', $categoryKey)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

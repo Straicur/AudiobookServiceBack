@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\UserInformation;
 use App\Entity\UserPassword;
 use App\Entity\UserSettings;
+use App\Enums\UserRolesNames;
 use App\Repository\InstitutionRepository;
 use App\Repository\MyListRepository;
 use App\Repository\ProposedAudiobooksRepository;
@@ -69,7 +70,7 @@ class AddAdminCommand extends Command
         ]);
 
         $administrator = $this->roleRepository->findOneBy([
-            'name' => 'Administrator',
+            'name' => UserRolesNames::ADMINISTRATOR->value,
         ]);
 
         if ($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator))) {
@@ -111,7 +112,7 @@ class AddAdminCommand extends Command
 
         $this->userRepository->add($userEntity, false);
 
-        $roles = ['Administrator', 'User', 'Guest'];
+        $roles = [UserRolesNames::ADMINISTRATOR->value, UserRolesNames::USER->value, UserRolesNames::GUEST->value];
 
         $roleEntities = $this->roleRepository->findBy([
             'name' => $roles,
@@ -120,25 +121,16 @@ class AddAdminCommand extends Command
         $isAdministrator = false;
 
         foreach ($roleEntities as $roleEntity) {
-            if ($roleEntity->getName() === 'Administrator') {
+            if ($roleEntity->getName() === UserRolesNames::ADMINISTRATOR->value) {
                 $isAdministrator = true;
             }
 
             $userEntity->addRole($roleEntity);
         }
 
-        $userMyList = new MyList($userEntity);
-
-        $this->myListRepository->add($userMyList);
-
-        $userProposedAudiobooks = new ProposedAudiobooks($userEntity);
-
-        $this->proposedAudiobooksRepository->add($userProposedAudiobooks);
-
-        $userInformationEntity = new UserInformation($userEntity, $email, $phone, $firstname, $lastname);
-
-        $this->userInformationRepository->add($userInformationEntity, false);
-
+        $this->myListRepository->add(new MyList($userEntity), false);
+        $this->proposedAudiobooksRepository->add(new ProposedAudiobooks($userEntity), false);
+        $this->userInformationRepository->add(new UserInformation($userEntity, $email, $phone, $firstname, $lastname), false);
         $userSettingsEntity = new UserSettings($userEntity);
 
         if ($isAdministrator) {
@@ -146,17 +138,12 @@ class AddAdminCommand extends Command
         }
 
         $this->userSettingsRepository->add($userSettingsEntity, false);
-
-        $userPasswordEntity = new UserPassword($userEntity, $passwordGenerator);
-        $this->userPasswordRepository->add($userPasswordEntity);
+        $this->userPasswordRepository->add(new UserPassword($userEntity, $passwordGenerator));
 
         $io->info('Database flushed');
 
         $io->text([
             'UserEntity:            ' . $userEntity->getId(),
-            'UserInformationEntity: ' . $userInformationEntity->getUser()->getId(),
-            'UserSettingEntity:     ' . $userSettingsEntity->getUser()->getId(),
-            'UserPasswordEntity:    ' . $userPasswordEntity->getUser()->getId(),
         ]);
 
         $io->success('Admin user added');

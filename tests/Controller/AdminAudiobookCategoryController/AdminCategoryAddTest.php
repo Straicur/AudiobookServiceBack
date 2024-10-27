@@ -7,31 +7,19 @@ namespace App\Tests\Controller\AdminAudiobookCategoryController;
 use App\Repository\AudiobookCategoryRepository;
 use App\Tests\AbstractWebTest;
 
-/**
- * AdminCategoryAddTest
- */
 class AdminCategoryAddTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category was added
-     * @return void
-     */
-    public function test_adminCategoryAddCorrect(): void
+    public function testAdminCategoryAddCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
 
         $this->assertInstanceOf(AudiobookCategoryRepository::class, $audiobookCategoryRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'name' => '3',
             'additionalData' => [
@@ -39,12 +27,11 @@ class AdminCategoryAddTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/category/add', server: [
+
+        self::$webClient->request('PUT', '/api/admin/category/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
@@ -52,22 +39,15 @@ class AdminCategoryAddTest extends AbstractWebTest
     }
 
     /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent with bad CategoryId
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given parentId category Id
      */
-    public function test_adminCategoryAddIncorrectCategoryId(): void
+    public function testAdminCategoryAddIncorrectCategoryId(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'name' => '3',
             'additionalData' => [
@@ -75,82 +55,43 @@ class AdminCategoryAddTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/category/add', server: [
+
+        self::$webClient->request('PUT', '/api/admin/category/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminCategoryAddEmptyRequestData(): void
+    public function testAdminCategoryAddEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
-        $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
+        $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/category/add', server: [
+
+        self::$webClient->request('PUT', '/api/admin/category/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminCategoryAddPermission(): void
+    public function testAdminCategoryAddPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'name' => '3',
             'additionalData' => [
@@ -158,42 +99,21 @@ class AdminCategoryAddTest extends AbstractWebTest
             ]
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/category/add', server: [
+
+        self::$webClient->request('PUT', '/api/admin/category/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminCategoryAddLogOut(): void
+    public function testAdminCategoryAddLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
 
-        /// step 2
         $content = [
             'name' => '3',
             'additionalData' => [
@@ -201,22 +121,10 @@ class AdminCategoryAddTest extends AbstractWebTest
             ]
         ];
 
-        $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PUT', '/api/admin/category/add', content: json_encode($content));
+        self::$webClient->request('PUT', '/api/admin/category/add', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

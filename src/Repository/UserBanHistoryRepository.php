@@ -55,14 +55,12 @@ class UserBanHistoryRepository extends ServiceEntityRepository
     {
         $today = new DateTime();
 
-        $qb = $this->createQueryBuilder('ub')
+        return $this->createQueryBuilder('ub')
             ->where('ub.user = :userId')
             ->andWhere('ub.dateTo >= :today')
             ->setParameter('userId', $user->getId()->toBinary())
-            ->setParameter('today', $today);
-
-        $res = $qb->getQuery()->execute();
-
-        return count($res) > 0 ? current($res) : null;
+            ->setParameter('today', $today)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

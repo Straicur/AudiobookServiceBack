@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Fired once a month
+ * Fired once a week
  */
 #[AsCommand(
     name       : 'audiobookservice:audioobooks:remove:notused',

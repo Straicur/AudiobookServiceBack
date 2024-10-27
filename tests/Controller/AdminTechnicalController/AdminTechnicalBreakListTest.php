@@ -7,22 +7,10 @@ namespace App\Tests\Controller\AdminTechnicalController;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * AdminTechnicalBreakListTest
- */
 class AdminTechnicalBreakListTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if category is active
-     * @return void
-     */
-    public function test_adminTechnicalBreakListCorrect(): void
+    public function testAdminTechnicalBreakListCorrect(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
         $user2 = $this->databaseMockManager->testFunc_addUser('GOSC', 'COS', 'test2@cos.pl', '+48123123125', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -34,7 +22,6 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new DateTime())->modify('-12 day'), (new DateTime())->modify('-11 day'));
         $this->databaseMockManager->testFunc_addTechnicalBreak(false, $user, (new DateTime())->modify('-13 day'), (new DateTime())->modify('-12 day'));
 
-        /// step 2
         $dateFrom = new DateTime();
         $dateTo = clone $dateFrom;
 
@@ -50,12 +37,11 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -72,56 +58,30 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
         $this->assertCount(2, $responseContent['technicalBreaks']);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminTechnicalBreakListEmptyRequestData(): void
+    public function testAdminTechnicalBreakListEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
         $content = [];
 
-        /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminTechnicalBreakListPermission(): void
+    public function testAdminTechnicalBreakListPermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
@@ -140,40 +100,21 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_adminTechnicalBreakListLogOut(): void
+    public function testAdminTechnicalBreakListLogOut(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        $technicalBreak = $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
+        $this->databaseMockManager->testFunc_addTechnicalBreak(true, $user);
 
-        /// step 2
         $dateFrom = new DateTime();
         $dateTo = clone $dateFrom;
 
@@ -189,21 +130,10 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
+        self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
 
-        /// step 3
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }

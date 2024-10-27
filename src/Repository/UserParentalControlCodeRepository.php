@@ -58,7 +58,7 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         $lastDate->modify('-7 day');
 
         $qb = $this->createQueryBuilder('upcc')
-            ->where('( :dateFrom <= upcc.dateAdd AND :dateTo >= upcc.dateAdd)')
+            ->where('(:dateFrom <= upcc.dateAdd AND :dateTo >= upcc.dateAdd)')
             ->andWhere('upcc.user = :user')
             ->setParameter('user', $user->getId()->toBinary())
             ->setParameter('dateTo', $today)

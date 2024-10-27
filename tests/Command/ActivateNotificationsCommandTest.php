@@ -11,9 +11,9 @@ use App\Tests\AbstractKernelTestCase;
 use DateTime;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ActivateNotificationsCommand extends AbstractKernelTestCase
+class ActivateNotificationsCommandTest extends AbstractKernelTestCase
 {
-    public function test_userProposedAudiobooksSuccess()
+    public function testUserProposedAudiobooksSuccess(): void
     {
         $notificationRepository = $this->getService(NotificationRepository::class);
 

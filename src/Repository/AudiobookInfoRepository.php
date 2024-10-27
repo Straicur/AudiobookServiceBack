@@ -95,12 +95,9 @@ class AudiobookInfoRepository extends ServiceEntityRepository
 
         $qb->select('u.id')
             ->distinct()
-            ->innerJoin('ai.user', 'u', Join::WITH, 'u.id = ai.user')
+            ->innerJoin('ai.user', 'u', Join::WITH, 'u.id = ai.user and u.banned = false and u.active = true')
             ->innerJoin('ai.audiobook', 'a')
-            ->innerJoin('a.categories', 'c')
-            ->where('c.id IN (:categories)')
-            ->andWhere('u.banned = false')
-            ->andWhere('u.active = true')
+            ->innerJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
             ->setParameter('categories', $audiobookCategories);
 
         $results = $qb->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY);

@@ -9,30 +9,18 @@ use App\Repository\UserRepository;
 use App\Tests\AbstractWebTest;
 use DateTime;
 
-/**
- * UserSettingsChangeTest
- */
 class UserSettingsChangeTest extends AbstractWebTest
 {
-    /**
-     * step 1 - Preparing data
-     * step 2 - Preparing JsonBodyContent
-     * step 3 - Sending Request
-     * step 4 - Checking response
-     * step 5 - Checking response if all data has changed
-     * @return void
-     */
-    public function test_userSettingsChangeCorrect(): void
+    public function testUserSettingsChangeCorrect(): void
     {
         $userRepository = $this->getService(UserRepository::class);
 
         $this->assertInstanceOf(UserRepository::class, $userRepository);
-        /// step 1
+
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
@@ -41,12 +29,11 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+
+        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
-        /// step 4
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
@@ -54,30 +41,23 @@ class UserSettingsChangeTest extends AbstractWebTest
             'id' => $user->getId()
         ]);
 
-        /// step 5
-        $this->assertNotSame($userAfter->getUserInformation()->getPhoneNumber(), '+48123123123');
-        $this->assertNotSame($userAfter->getUserInformation()->getLastname(), 'Test');
-        $this->assertNotSame($userAfter->getUserInformation()->getFirstname(), 'User');
+        $this->assertNotSame('+48123123123', $userAfter->getUserInformation()->getPhoneNumber());
+        $this->assertNotSame('Test', $userAfter->getUserInformation()->getLastname());
+        $this->assertNotSame('User', $userAfter->getUserInformation()->getFirstname());
     }
 
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given phoneNumber
      */
-    public function test_userSettingsIncorrectPhoneNumber(): void
+    public function testUserSettingsIncorrectPhoneNumber(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
 
         $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48123123121',
             'firstName' => 'Damian',
@@ -86,43 +66,28 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+
+        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
+
     /**
-     * /**
-     *  step 1 - Preparing data
-     *  step 2 - Preparing JsonBodyContent with bad PhoneNumber
-     *  step 3 - Sending Request
-     *  step 4 - Checking response
-     *
-     * @return void
+     * Test checks bad given code
      */
-    public function test_userSettingsIncorrectCode(): void
+    public function testUserSettingsIncorrectCode(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-        $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
+        $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123121', ['Guest',
+            'User',
+            'Administrator'], true, 'zaq12wsx');
 
-        $userEdit1 = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
+        $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::USER_DATA, (new DateTime())->modify('+1 day'), true);
 
-        /// step 2
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
@@ -131,70 +96,35 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 3
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+
+        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 4
+
         self::assertResponseStatusCodeSame(404);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
-        $this->assertArrayHasKey('data', $responseContent);
+        $this->responseTool->testErrorResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without content
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsChangeEmptyRequestData(): void
+    public function testUserSettingsChangeEmptyRequestData(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
         $content = [];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+
+        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(400);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request with bad permission
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsChangePermission(): void
+    public function testUserSettingsChangePermission(): void
     {
-        /// step 1
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest'], true, 'zaq12wsx');
 
         $content = [
@@ -204,57 +134,28 @@ class UserSettingsChangeTest extends AbstractWebTest
         ];
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+
+        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
-        /// step 3
+
         self::assertResponseStatusCodeSame(403);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 
-    /**
-     * step 1 - Preparing data
-     * step 2 - Sending Request without token
-     * step 3 - Checking response
-     *
-     * @return void
-     */
-    public function test_userSettingsChangeLogOut(): void
+    public function testUserSettingsChangeLogOut(): void
     {
-        /// step 1
-        $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
-
         $content = [
             'phoneNumber' => '+48124124124',
             'firstName' => 'Damian',
             'lastName' => 'Mos',
         ];
 
-        /// step 2
-        $crawler = self::$webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
-        /// step 3
+        self::$webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
+
         self::assertResponseStatusCodeSame(401);
 
-        $responseContent = self::$webClient->getResponse()->getContent();
-
-        $this->assertNotNull($responseContent);
-        $this->assertNotEmpty($responseContent);
-        $this->assertJson($responseContent);
-
-        $responseContent = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseContent);
-        $this->assertArrayHasKey('error', $responseContent);
+        $this->responseTool->testBadResponseData(self::$webClient);
     }
 }
