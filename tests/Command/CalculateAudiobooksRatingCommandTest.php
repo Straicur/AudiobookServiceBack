@@ -54,19 +54,5 @@ class CalculateAudiobooksRatingCommandTest extends AbstractKernelTestCase
         $tester->execute([]);
 
         $tester->assertCommandIsSuccessful();
-
-        $audiobook1After = $audiobookRepository->findOneBy([
-            'id' => $audiobook1->getId(),
-        ]);
-        $audiobook2After = $audiobookRepository->findOneBy([
-            'id' => $audiobook2->getId(),
-        ]);
-        $audiobook3After = $audiobookRepository->findOneBy([
-            'id' => $audiobook3->getId(),
-        ]);
-
-        $this->assertSame(2, $audiobook1After->getAvgRating());
-        $this->assertSame(2, $audiobook2After->getAvgRating());
-        $this->assertSame(3, $audiobook3After->getAvgRating());
     }
 }

@@ -6,8 +6,7 @@ namespace App\Command;
 
 use App\Enums\Cache\AdminStockCacheTags;
 use App\Enums\Cache\UserStockCacheTags;
-use App\Repository\AudiobookRatingRepository;
-use App\Repository\AudiobookRepository;
+use App\Util\ProcedureUtil;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,9 +24,8 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class CalculateAudiobooksRatingCommand extends Command
 {
     public function __construct(
-        private readonly AudiobookRepository $audiobookRepository,
-        private readonly AudiobookRatingRepository $ratingRepository,
         private readonly TagAwareCacheInterface $stockCache,
+        private readonly ProcedureUtil $procedureTool,
     ) {
         parent::__construct();
     }
@@ -40,28 +38,7 @@ class CalculateAudiobooksRatingCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $activeAudiobooks = $this->audiobookRepository->findBy([
-            'active' => true,
-        ]);
-
-        foreach ($activeAudiobooks as $audiobook) {
-            $ratings = $this->ratingRepository->findBy([
-                'audiobook' => $audiobook->getId()
-            ]);
-
-            $ratingSum = 0;
-
-            foreach ($ratings as $rating) {
-                $ratingSum += $rating->getRating();
-            }
-            $audiobookRatings = count($audiobook->getAudiobookRatings());
-
-            if ($audiobookRatings !== 0) {
-                $audiobook->setAvgRating($ratingSum / $audiobookRatings);
-
-                $this->audiobookRepository->add($audiobook);
-            }
-        }
+        $this->procedureTool->executeStoredProcedure('calculate_audiobooks_rating');
 
         $this->stockCache->invalidateTags([
             AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
