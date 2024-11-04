@@ -10,6 +10,7 @@ Technologies used in the project:
 *   Symfoy 6.4 (Rest Api)
 *   Redis
 *   MySql
+*   Docker
 
 <h2>🚀 Demo</h2>
 
@@ -51,7 +52,7 @@ You have to be an admin to do these things. Admins are added with special comman
 
 <p>2. Install MySql server and redis</p>
 
-<p>3. Install maker</p>
+<p>3. Install maker and Docker</p>
 
 <p>4. Clone project and create a .env.local file and complete the file with the appropriate data based on the .env file. You need to remember about secrets like MAILER_DSN (I was using a gmail) and smsapi SMS_KEY and SMS_SECRET for Vonage. These are free versions so you can set them up. Without them, the system will not work properly in all places </p>
 
