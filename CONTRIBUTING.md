@@ -13,15 +13,9 @@ pull request for each branch. This allows me to review and pull in new features 
 
 All pull requests must adhere to the [PSR-12 standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-12-extended-coding-style-guide.md).
 
-You may lint the codebase manually using the following commands:
-
-``` bash
-make tests
-```
-
 ## Integration Testing
 
-All pull requests must be accompanied by passing integration tests and complete code coverage.
+All pull requests must be accompanied by passing integration tests and complete code coverage. Tests are required for each endpoint, generator and command.
 
 To run all the tests and coding standards checks, execute the following from the
 command line, while in the project root directory:
