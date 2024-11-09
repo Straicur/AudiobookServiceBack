@@ -20,6 +20,11 @@ class AudiobookId3TagsModel
     public ?int $parts = 0;
     public ?string $imgFileDir = null;
 
+    public function __construct(
+    ) {
+        $this->year = new DateTime();
+    }
+
     public function getAlbum(): string
     {
 
@@ -98,14 +103,8 @@ class AudiobookId3TagsModel
 
     public function setYear(?string $year): void
     {
-        if ($year === null) {
-            $this->year = new DateTime();
-            return;
-        }
-
-        $year = '01.01.' . $year;
-        if (!DateTime::createFromFormat('d.m.Y', $year)) {
-            $this->year = new DateTime();
+        $testYear = '01.01.' . $year;
+        if (empty($year) || !DateTime::createFromFormat('d.m.Y', $testYear)) {
             return;
         }
 
