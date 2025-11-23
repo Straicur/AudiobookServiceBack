@@ -3,8 +3,6 @@ FROM php:8.2-fpm AS base
 
 WORKDIR /var/www/html
 
-# 1. Zależności systemowe i rozszerzenia PHP
-# hadolint ignore=DL3008,DL3015
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
@@ -13,14 +11,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libgmp-dev \
     libpq-dev \
-    # Instalacja narzędzi do kompilacji rozszerzeń
     && docker-php-ext-install -j$(nproc) intl pdo_mysql zip curl gmp \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 2. Instalacja Composera (w kontenerze FPM)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Ustawienie użytkownika (dla lepszej kontroli uprawnień)
 RUN usermod -u 1000 www-data
 
 # Dev/Test Stage (opcjonalny)
@@ -28,18 +23,14 @@ FROM base AS dev
 
 # Prod Stage
 FROM base AS prod
-
-# Konfiguracja
 ENV APP_ENV=prod
 
-# 3. Instalacja zależności Composera i kopiowanie źródeł
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
     composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 COPY --link . /var/www/html/
 
-# 4. Optymalizacja autoloadera i czyszczenie cache
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative --no-dev; \
     composer dump-env prod; \
@@ -49,5 +40,4 @@ RUN set -eux; \
 
 USER www-data
 
-# Domyślny CMD dla php-fpm
 CMD ["php-fpm"]
