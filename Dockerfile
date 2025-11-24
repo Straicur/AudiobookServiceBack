@@ -25,6 +25,8 @@ FROM base AS dev
 FROM base AS prod
 ENV APP_ENV=prod
 
+COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
+
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
     composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress

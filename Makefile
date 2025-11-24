@@ -16,9 +16,9 @@ start:
 	@echo '	lint      		- phpcs'
 	@echo '	lint-fix        - phpcbf'
 clearStock:
-	php bin/console  cache:pool:clear stock_cache
+	php bin/console cache:pool:clear stock_cache
 unitTests:
-	symfony run bin/phpunit
+	php vendor/bin/phpunit
 tests: clearStock unitTests
 	php bin/console  cache:pool:clear stock_cache
 	@echo 'Test Completed'
@@ -28,9 +28,9 @@ migrate:
 	php bin/console doctrine:migrations:migrate
 	APP_ENV=test php bin/console doctrine:migrations:migrate
 serverStart:
-	symfony server:start -d
+	php bin/console server:start -d
 serverStop:
-	symfony server:stop
+	php bin/console server:stop
 entity:
 	php bin/console make:entity
 installTest:

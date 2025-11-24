@@ -12,6 +12,7 @@ services:
       SERVER_NAME: ${SERVER_NAME:-localhost}
       REDIS_URL: 'redis://redis:6379'
       DATABASE_URL: mysql://${MYSQL_USER:-user}:${MYSQL_PASSWORD:-pass}@db:3306/${MYSQL_DATABASE:-mydatabase}?serverVersion=10.11&charset=utf8mb4
+      PHP_INI_MEMORY_LIMIT: 512M
     volumes:
       - .:/var/www/html
 
