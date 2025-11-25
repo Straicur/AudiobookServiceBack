@@ -21,6 +21,11 @@ RUN usermod -u 1000 www-data
 # Dev/Test Stage (opcjonalny)
 FROM base AS dev
 
+#RUN pecl install xdebug \
+#    && docker-php-ext-enable xdebug
+#  TODO tu chyba jeszcze zend potrzebny będzie
+#COPY --link docker/php/xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
+
 # Prod Stage
 FROM base AS prod
 ENV APP_ENV=prod
