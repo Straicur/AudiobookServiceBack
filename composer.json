@@ -50,6 +50,7 @@
   "config": {
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
+      "phpstan/extension-installer": true,
       "symfony/flex": true,
       "symfony/runtime": true
     },
@@ -109,8 +110,14 @@
     "fakerphp/faker": "*",
     "friendsofphp/php-cs-fixer": "^3.90",
     "guzzlehttp/psr7": "^2.8",
+    "kubawerlos/php-cs-fixer-custom-fixers": "^3.35",
     "nelmio/api-doc-bundle": "^5.8",
+    "phpstan/extension-installer": "^1.4",
     "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpstan/phpstan-doctrine": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
+    "phpstan/phpstan-symfony": "^2.0",
     "phpunit/phpunit": "^9.5",
     "rector/rector": "^2.2",
     "roave/security-advisories": "dev-master",
