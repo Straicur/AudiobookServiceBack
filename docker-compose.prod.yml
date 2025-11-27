@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      target: prod # Użycie etapu 'prod' z Dockerfile
+    environment:
+      SERVER_NAME: your.domain.com # Prawdziwa domena produkcyjna
+      APP_ENV: prod # Ustawienie środowiska na prod
+      # APP_SECRET, tokeny API itp. (ważne, aby były w zmiennych środowiskowych)
+      APP_SECRET: ${APP_SECRET}
+
+  nginx:
+    volumes:
+      # W prod wolumen Nginx powinien wskazywać na folder publiczny,
+      # a kod jest już w obrazie app (w celu optymalizacji i bezpieczeństwa)
+      - ./public:/var/www/html/public:ro
