@@ -51,7 +51,7 @@ use App\Tool\ResponseTool;
 use App\Tool\UserParentalControlTool;
 use App\ValueGenerator\BuildUserAudiobookCategoryTreeGenerator;
 use DateTime;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

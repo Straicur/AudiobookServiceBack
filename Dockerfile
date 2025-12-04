@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install -j$(nproc) intl pdo_mysql zip curl gmp \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN echo "date.timezone = UTC" > /usr/local/etc/php/conf.d/timezone.ini
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN usermod -u 1000 www-data
@@ -33,8 +35,9 @@ ENV APP_ENV=prod
 COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
 
 COPY --link composer.* symfony.* ./
+# TODO tu było dodatkowo w composer install --no-dev
 RUN set -eux; \
-    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+    composer install --no-cache --prefer-dist --no-autoloader --no-scripts --no-progress
 
 COPY --link . /var/www/html/
 

@@ -38,7 +38,7 @@ use App\Service\RequestServiceInterface;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
