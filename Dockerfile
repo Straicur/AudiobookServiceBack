@@ -40,9 +40,9 @@ RUN set -eux; \
     composer install --no-cache --prefer-dist --no-autoloader --no-scripts --no-progress
 
 COPY --link . /var/www/html/
-
+# TODO tu było dodatkowo w composer dump-autoload --no-dev
 RUN set -eux; \
-    composer dump-autoload --classmap-authoritative --no-dev; \
+    composer dump-autoload --classmap-authoritative; \
     composer dump-env prod; \
     composer run-script --no-dev post-install-cmd; \
     chown -R www-data:www-data /var/www/html; \
