@@ -14,7 +14,7 @@ class UserSettingsGetTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('GET', '/api/user/settings', server: [
+        $this->webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -22,7 +22,7 @@ class UserSettingsGetTest extends AbstractWebTest
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -47,21 +47,21 @@ class UserSettingsGetTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('GET', '/api/user/settings', server: [
+        $this->webClient->request('GET', '/api/user/settings', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsGetLogOut(): void
     {
-        self::$webClient->request('GET', '/api/user/settings');
+        $this->webClient->request('GET', '/api/user/settings');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

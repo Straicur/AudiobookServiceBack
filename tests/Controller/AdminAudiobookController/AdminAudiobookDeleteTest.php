@@ -54,7 +54,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -73,7 +73,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         $id = $audiobookAfter->getId();
         $dir = $audiobookAfter->getFileName();
 
-        self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+        $this->webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -125,7 +125,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             'audiobookId' => $audiobook->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+        $this->webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -182,7 +182,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -199,13 +199,13 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+        $this->webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
 
@@ -242,7 +242,7 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -257,13 +257,13 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
+        $this->webClient->request('DELETE', '/api/admin/audiobook/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }
@@ -276,10 +276,10 @@ class AdminAudiobookDeleteTest extends AbstractWebTest
             'audiobookId' => $audiobook1->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/admin/audiobook/delete', content: json_encode($content));
+        $this->webClient->request('DELETE', '/api/admin/audiobook/delete', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

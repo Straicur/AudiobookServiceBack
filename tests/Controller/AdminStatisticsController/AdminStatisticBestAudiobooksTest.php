@@ -39,14 +39,14 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('GET', '/api/admin/statistic/best/audiobooks', server: [
+        $this->webClient->request('GET', '/api/admin/statistic/best/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -74,10 +74,10 @@ class AdminStatisticBestAudiobooksTest extends AbstractWebTest
 
     public function testAdminStatisticBestAudiobooksLogout(): void
     {
-        self::$webClient->request('GET', '/api/admin/statistic/best/audiobooks');
+        $this->webClient->request('GET', '/api/admin/statistic/best/audiobooks');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

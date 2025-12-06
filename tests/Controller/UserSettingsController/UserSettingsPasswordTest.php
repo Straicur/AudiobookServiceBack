@@ -32,7 +32,7 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/password', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -63,13 +63,13 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/password', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -88,13 +88,13 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/password', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsPasswordEmptyRequestData(): void
@@ -105,13 +105,13 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/password', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsPasswordPermission(): void
@@ -125,13 +125,13 @@ class UserSettingsPasswordTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/password', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsPasswordLogOut(): void
@@ -141,9 +141,9 @@ class UserSettingsPasswordTest extends AbstractWebTest
             'newPassword' => 'zaq12WSX',
         ];
 
-        self::$webClient->request('PATCH', '/api/user/settings/password', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/settings/password', content: json_encode($content));
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

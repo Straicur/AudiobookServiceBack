@@ -34,7 +34,7 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
 
         $newPassword = $passwordGenerator->generate();
 
-        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
@@ -70,11 +70,11 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             'password' => 'zaq12WSX',
         ];
 
-        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -91,11 +91,11 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             'password' => 'zaq12WSX',
         ];
 
-        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -112,21 +112,21 @@ class UserResetPasswordConfirmTest extends AbstractWebTest
             'password' => 'zaq12WSX',
         ];
 
-        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserResetPasswordConfirmEmptyRequestData(): void
     {
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/reset/password/confirm', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

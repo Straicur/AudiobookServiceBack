@@ -40,7 +40,7 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
             'like' => true
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -64,13 +64,13 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
             'like' => true
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikeEmptyRequestData(): void
@@ -81,13 +81,13 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikePermission(): void
@@ -113,13 +113,13 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
             'like' => true
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/comment/like/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikeLogOut(): void
@@ -140,10 +140,10 @@ class UserAudiobookCommentLikeAddTest extends AbstractWebTest
             'like' => true
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/comment/like/add', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/audiobook/comment/like/add', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

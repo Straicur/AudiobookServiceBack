@@ -8,6 +8,7 @@ use App\Entity\Audiobook;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\Serialization\AudiobookId3TagsModel;
 use App\Repository\AudiobookCategoryRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,6 +19,7 @@ class AudiobookAddService implements AudiobookAddServiceInterface
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
+        private readonly LoggerInterface $requestLogger,
     ) {
     }
 

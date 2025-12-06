@@ -32,7 +32,7 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -69,13 +69,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -99,13 +99,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -129,14 +129,14 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailEmptyRequestData(): void
@@ -147,13 +147,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailPermission(): void
@@ -167,13 +167,13 @@ class UserSettingsEmailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/user/settings/email', server: [
+        $this->webClient->request('POST', '/api/user/settings/email', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailLogOut(): void
@@ -185,10 +185,10 @@ class UserSettingsEmailTest extends AbstractWebTest
             'oldEmail' => $user->getUserInformation()->getEmail(),
         ];
 
-        self::$webClient->request('POST', '/api/user/settings/email', content: json_encode($content));
+        $this->webClient->request('POST', '/api/user/settings/email', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

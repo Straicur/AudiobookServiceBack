@@ -31,14 +31,14 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         json_decode($response->getContent(), true);
 
@@ -72,13 +72,13 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -99,13 +99,13 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -128,13 +128,13 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookRatingAddEmptyRequestData(): void
@@ -145,13 +145,13 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookRatingAddPermission(): void
@@ -171,13 +171,13 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookRatingAddLogOut(): void
@@ -193,10 +193,10 @@ class UserAudiobookRatingAddTest extends AbstractWebTest
             'rating' => 2
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/rating/add', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/audiobook/rating/add', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

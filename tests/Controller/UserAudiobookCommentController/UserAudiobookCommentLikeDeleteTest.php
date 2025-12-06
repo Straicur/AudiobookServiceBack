@@ -39,7 +39,7 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
             'commentId' => $comment2->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
+        $this->webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -80,13 +80,13 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
             'commentId' => $comment2->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
+        $this->webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikeEmptyRequestData(): void
@@ -97,13 +97,13 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
+        $this->webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikePermission(): void
@@ -126,13 +126,13 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
             'commentId' => $comment2->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
+        $this->webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentLikeLogOut(): void
@@ -151,10 +151,10 @@ class UserAudiobookCommentLikeDeleteTest extends AbstractWebTest
             'commentId' => $comment2->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', content: json_encode($content));
+        $this->webClient->request('DELETE', '/api/user/audiobook/comment/like/delete', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

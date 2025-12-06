@@ -48,7 +48,7 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -65,14 +65,14 @@ class AudiobookCoversTest extends AbstractWebTest
             'audiobooks' => [$audiobookAfter->getId()],
         ];
 
-        self::$webClient->request('POST', '/api/audiobook/covers', server : [
+        $this->webClient->request('POST', '/api/audiobook/covers', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -99,14 +99,14 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/audiobook/covers', server : [
+        $this->webClient->request('POST', '/api/audiobook/covers', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -127,13 +127,13 @@ class AudiobookCoversTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/audiobook/covers', server : [
+        $this->webClient->request('POST', '/api/audiobook/covers', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAudiobookCoverLogOut(): void
@@ -145,10 +145,10 @@ class AudiobookCoversTest extends AbstractWebTest
             'audiobooks' => [$audiobook1->getId()],
         ];
 
-        self::$webClient->request('POST', '/api/audiobook/covers', content: json_encode($content2));
+        $this->webClient->request('POST', '/api/audiobook/covers', content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

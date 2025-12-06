@@ -30,7 +30,7 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/register', server: [
+        $this->webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -79,7 +79,7 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/register', server: [
+        $this->webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -123,13 +123,13 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/register', server: [
+        $this->webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -149,13 +149,13 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/register', server: [
+        $this->webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
 
@@ -183,11 +183,11 @@ class RegisterTest extends AbstractWebTest
             'password' => 'zaq12wsx'
         ];
 
-        self::$webClient->request('PUT', '/api/register', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/register', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testRegisterEmptyRequest(): void
@@ -196,12 +196,12 @@ class RegisterTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/register', server: [
+        $this->webClient->request('PUT', '/api/register', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

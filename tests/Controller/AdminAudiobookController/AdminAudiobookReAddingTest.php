@@ -58,7 +58,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -94,7 +94,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -178,7 +178,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -255,7 +255,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content1));
 
@@ -289,7 +289,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -330,7 +330,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -357,7 +357,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -408,7 +408,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server : [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -423,13 +423,13 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
 
         $audiobookAfter = $audiobookRepository->findAll()[0];
 
@@ -475,13 +475,13 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', server : [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookReAddingLogOut(): void
@@ -521,10 +521,10 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/reAdding', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/audiobook/reAdding', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

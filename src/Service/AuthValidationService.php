@@ -30,11 +30,12 @@ class AuthValidationService implements AuthValidationServiceInterface
 {
     public function __construct(
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
-        private readonly TechnicalBreakRepository $technicalBreakRepository,
-        private readonly UserRepository $userRepository,
-        private readonly UserDeleteRepository $deleteRepository,
-        private readonly TagAwareCacheInterface $stockCache,
-    ) {
+        private readonly TechnicalBreakRepository      $technicalBreakRepository,
+        private readonly UserRepository                $userRepository,
+        private readonly UserDeleteRepository          $deleteRepository,
+        private readonly TagAwareCacheInterface        $stockCache
+    )
+    {
     }
 
     public function getAuthenticatedUserToken(Request $request): AuthenticationToken
@@ -61,7 +62,7 @@ class AuthValidationService implements AuthValidationServiceInterface
             $item->tag(UserStockCacheTags::USER_DELETED->value);
 
             return $this->deleteRepository->findOneBy([
-                'user'    => $user->getId(),
+                'user' => $user->getId(),
                 'deleted' => true,
             ]);
         });

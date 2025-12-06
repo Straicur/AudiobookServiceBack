@@ -20,7 +20,7 @@ class LogoutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/logout', server: [
+        $this->webClient->request('PATCH', '/api/logout', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -30,10 +30,10 @@ class LogoutTest extends AbstractWebTest
 
     public function testLogoutLogOut(): void
     {
-        self::$webClient->request('PATCH', '/api/logout');
+        $this->webClient->request('PATCH', '/api/logout');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

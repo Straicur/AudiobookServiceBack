@@ -108,7 +108,7 @@ class AudiobookId3TagsModel
             return;
         }
 
-        $this->year = DateTime::createFromFormat('d.m.Y', $year);
+        $this->year = DateTime::createFromFormat('d.m.Y', $testYear);
     }
 
     public function getDuration(): int

@@ -17,12 +17,12 @@ class LoginTest extends AbstractWebTest
             'password' => 'zaq12wsx'
         ];
 
-        self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
+        $this->webClient->request('POST', '/api/authorize', content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -41,19 +41,19 @@ class LoginTest extends AbstractWebTest
             'password' => 'zaq12wsx'
         ];
 
-        self::$webClient->request('POST', '/api/authorize', content: json_encode($content));
+        $this->webClient->request('POST', '/api/authorize', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testLoginEmptyRequest(): void
     {
-        self::$webClient->request('POST', '/api/authorize');
+        $this->webClient->request('POST', '/api/authorize');
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

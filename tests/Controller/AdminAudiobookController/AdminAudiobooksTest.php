@@ -60,7 +60,7 @@ class AdminAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/audiobooks', server: [
+        $this->webClient->request('POST', '/api/admin/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -68,7 +68,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -114,7 +114,7 @@ class AdminAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/audiobooks', server: [
+        $this->webClient->request('POST', '/api/admin/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -122,7 +122,7 @@ class AdminAudiobooksTest extends AbstractWebTest
         self::assertResponseStatusCodeSame(200);
 
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -148,13 +148,13 @@ class AdminAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/audiobooks', server: [
+        $this->webClient->request('POST', '/api/admin/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobooksPermission(): void
@@ -176,13 +176,13 @@ class AdminAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/audiobooks', server: [
+        $this->webClient->request('POST', '/api/admin/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobooksLogOut(): void
@@ -192,10 +192,10 @@ class AdminAudiobooksTest extends AbstractWebTest
             'limit' => 10,
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobooks', content: json_encode($content));
+        $this->webClient->request('POST', '/api/admin/audiobooks', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

@@ -45,7 +45,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -62,7 +62,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
             'audiobookId' => $audiobookAfter->getId(),
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/zip', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/zip', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
@@ -108,7 +108,7 @@ class AdminAudiobookZipTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
+        $this->webClient->request('PUT', '/api/admin/audiobook/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -125,13 +125,13 @@ class AdminAudiobookZipTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/zip', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/zip', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
 
         $audiobookAfter = $audiobookRepository->findOneBy([
             'title' => $content['additionalData']['title']
@@ -152,13 +152,13 @@ class AdminAudiobookZipTest extends AbstractWebTest
         $content2 = [];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/audiobook/zip', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/zip', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookZipPermission(): void
@@ -182,13 +182,13 @@ class AdminAudiobookZipTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user2);
 
-        self::$webClient->request('POST', '/api/admin/audiobook/zip', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/zip', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookZipLogOut(): void
@@ -197,10 +197,10 @@ class AdminAudiobookZipTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/zip', content: json_encode($content2));
+        $this->webClient->request('POST', '/api/admin/audiobook/zip', content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

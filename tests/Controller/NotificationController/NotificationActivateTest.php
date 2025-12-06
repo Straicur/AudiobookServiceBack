@@ -34,7 +34,7 @@ class NotificationActivateTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/notification/activate', server: [
+        $this->webClient->request('PUT', '/api/notification/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -67,7 +67,7 @@ class NotificationActivateTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/notification/activate', server: [
+        $this->webClient->request('PUT', '/api/notification/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -90,13 +90,13 @@ class NotificationActivateTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/notification/activate', server: [
+        $this->webClient->request('PUT', '/api/notification/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testNotificationActivatePermission(): void
@@ -112,13 +112,13 @@ class NotificationActivateTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/notification/activate', server: [
+        $this->webClient->request('PUT', '/api/notification/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testNotificationActivateLogOut(): void
@@ -132,10 +132,10 @@ class NotificationActivateTest extends AbstractWebTest
             'notificationId' => $notification1->getId()
         ];
 
-        self::$webClient->request('PUT', '/api/notification/activate', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/notification/activate', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

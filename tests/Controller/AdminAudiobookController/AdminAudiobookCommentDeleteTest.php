@@ -34,7 +34,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -72,7 +72,7 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -99,13 +99,13 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminAudiobookCommentDeleteEmptyRequestData(): void
@@ -116,13 +116,13 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookCommentDeletePermission(): void
@@ -135,13 +135,13 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookCommentDeleteLogOut(): void
@@ -150,10 +150,10 @@ class AdminAudiobookCommentDeleteTest extends AbstractWebTest
             'audiobookCommentId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/comment/delete', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/audiobook/comment/delete', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

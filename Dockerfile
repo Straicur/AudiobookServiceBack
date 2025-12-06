@@ -32,6 +32,15 @@ FROM base AS dev
 FROM base AS prod
 ENV APP_ENV=prod
 
+ARG MAIN_DIR=/default/path
+
+# 2. Utwórz katalog na podstawie zmiennej ARG i nadaj uprawnienia użytkownikowi www-data
+RUN set -eux; \
+    mkdir -p ${MAIN_DIR}; \
+    chown -R www-data:www-data ${MAIN_DIR};
+
+COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
+
 COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
 
 COPY --link composer.* symfony.* ./

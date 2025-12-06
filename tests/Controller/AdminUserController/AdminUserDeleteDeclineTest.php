@@ -34,7 +34,7 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -71,13 +71,13 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -97,13 +97,13 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminUserDeleteAcceptEmptyRequestData(): void
@@ -114,13 +114,13 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserDeleteAcceptPermission(): void
@@ -133,13 +133,13 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserDeleteAcceptLogOut(): void
@@ -150,10 +150,10 @@ class AdminUserDeleteDeclineTest extends AbstractWebTest
             'userId' => $user->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/delete/decline', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/user/delete/decline', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

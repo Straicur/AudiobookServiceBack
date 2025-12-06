@@ -30,7 +30,7 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -67,13 +67,13 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -97,13 +97,13 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsChangeEmptyRequestData(): void
@@ -114,13 +114,13 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsChangePermission(): void
@@ -135,13 +135,13 @@ class UserSettingsChangeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/change', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsChangeLogOut(): void
@@ -152,10 +152,10 @@ class UserSettingsChangeTest extends AbstractWebTest
             'lastName' => 'Mos',
         ];
 
-        self::$webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/settings/change', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

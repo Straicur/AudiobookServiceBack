@@ -27,14 +27,14 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
             'audiobookId' => $audiobook1->getId(),
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/details', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/details', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -77,13 +77,13 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/details', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/details', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminAudiobookDetailsEmptyRequestData(): void
@@ -107,13 +107,13 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/details', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/details', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookDetailsPermission(): void
@@ -133,13 +133,13 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
             'audiobookId' => $audiobook1->getId(),
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/details', server: [
+        $this->webClient->request('POST', '/api/admin/audiobook/details', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookDetailsLogOut(): void
@@ -153,10 +153,10 @@ class AdminAudiobookDetailsTest extends AbstractWebTest
             'audiobookId' => $audiobook1->getId(),
         ];
 
-        self::$webClient->request('POST', '/api/admin/audiobook/details', content: json_encode($content));
+        $this->webClient->request('POST', '/api/admin/audiobook/details', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

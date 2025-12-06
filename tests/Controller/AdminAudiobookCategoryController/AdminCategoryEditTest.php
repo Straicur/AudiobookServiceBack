@@ -27,7 +27,7 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -58,13 +58,13 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminCategoryEditEmptyRequestData(): void
@@ -78,13 +78,13 @@ class AdminCategoryEditTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminCategoryEditPermission(): void
@@ -100,13 +100,13 @@ class AdminCategoryEditTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/category/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/category/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminCategoryEditLogOut(): void
@@ -119,10 +119,10 @@ class AdminCategoryEditTest extends AbstractWebTest
             'categoryId' => $category2->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/category/edit', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/category/edit', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

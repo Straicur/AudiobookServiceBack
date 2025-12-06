@@ -53,7 +53,7 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -85,13 +85,13 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
             'delete' => true,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationDeleteEmptyRequestData(): void
@@ -106,13 +106,13 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationDeletePermission(): void
@@ -129,13 +129,13 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/notification/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationDeleteLogOut(): void
@@ -153,10 +153,10 @@ class AdminUserNotificationDeleteTest extends AbstractWebTest
             'delete' => true,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/notification/delete', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/user/notification/delete', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

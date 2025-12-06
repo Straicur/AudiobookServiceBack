@@ -14,14 +14,14 @@ class AdminUserSystemRolesTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+        $this->webClient->request('GET', '/api/admin/user/system/roles', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -37,21 +37,21 @@ class AdminUserSystemRolesTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('GET', '/api/admin/user/system/roles', server: [
+        $this->webClient->request('GET', '/api/admin/user/system/roles', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserSystemRolesLogOut(): void
     {
-        self::$webClient->request('GET', '/api/admin/user/system/roles');
+        $this->webClient->request('GET', '/api/admin/user/system/roles');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

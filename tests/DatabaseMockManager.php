@@ -65,19 +65,21 @@ use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class DatabaseMockManager
 {
-    private KernelInterface $kernel;
+    private ContainerInterface $container;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(ContainerInterface $container)
     {
-        $this->kernel = $kernel;
+        $this->container = $container;
     }
 
     protected function getService(string $serviceName): object
     {
-        return $this->kernel->getContainer()->get($serviceName);
+        return $this->container->get($serviceName);
     }
 
     private function testFunc_addRole(User $user, array $rolesNames): void

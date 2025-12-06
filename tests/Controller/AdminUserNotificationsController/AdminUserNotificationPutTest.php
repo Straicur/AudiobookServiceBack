@@ -49,7 +49,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -96,7 +96,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -143,7 +143,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -196,7 +196,7 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -228,13 +228,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -260,13 +260,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectCorrectNotificationType(): void
@@ -292,13 +292,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectAdminEmptyUserId(): void
@@ -319,13 +319,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectNewCategoryEmptyCategoryKey(): void
@@ -347,13 +347,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectNewAudiobookEmptyActionId(): void
@@ -375,13 +375,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectUserDeleteDeclineEmptyActionId(): void
@@ -403,13 +403,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutIncorrectUserDeleteDeclineEmptyUserId(): void
@@ -430,13 +430,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutEmptyRequestData(): void
@@ -451,13 +451,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutPermission(): void
@@ -475,13 +475,13 @@ class AdminUserNotificationPutTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', server: [
+        $this->webClient->request('PUT', '/api/admin/user/notification', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserNotificationPutLogOut(): void
@@ -492,10 +492,10 @@ class AdminUserNotificationPutTest extends AbstractWebTest
             'additionalData' => []
         ];
 
-        self::$webClient->request('PUT', '/api/admin/user/notification', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/admin/user/notification', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

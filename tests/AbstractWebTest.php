@@ -6,33 +6,29 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 abstract class AbstractWebTest extends WebTestCase
 {
-    protected static ?KernelBrowser $webClient = null;
+    protected KernelBrowser $webClient;
     protected ?object $entityManager;
     protected ?DatabaseMockManager $databaseMockManager = null;
     protected ?TestTool $responseTool = null;
 
     protected function setUp(): void
     {
-        if (self::$webClient === null) {
-            self::$webClient = static::createClient(['environment' => 'test']);
-        }
+        self::ensureKernelShutdown();
 
-        if ($this->databaseMockManager === null) {
-            $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
-        }
+        $this->webClient = static::createClient(['environment' => 'test']);
+        $this->webClient->enableProfiler();
 
-        if ($this->responseTool === null) {
-            $this->responseTool = new TestTool();
-        }
-        self::$webClient->disableReboot();        self::$webClient->enableProfiler();
+        $this->databaseMockManager = new DatabaseMockManager(static::getContainer());
+        $this->responseTool = new TestTool('AbstractWebTest');
 
-        $this->entityManager = self::$webClient->getContainer()->get('doctrine.orm.entity_manager');
-
-        $connection = $this->entityManager->getConnection();
-        $connection->beginTransaction();
+        $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
+        $this->entityManager->getConnection()->beginTransaction();
     }
 
     protected function tearDown(): void
@@ -40,10 +36,25 @@ abstract class AbstractWebTest extends WebTestCase
         if ($this->entityManager->getConnection()->isTransactionActive()) {
             $this->entityManager->getConnection()->rollback();
         }
+
+        $application = new Application();
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command' => 'cache:pool:clear',
+            '--all' => true,
+        ]);
+        $application->run($input, new BufferedOutput());
+
+        $input = new ArrayInput([
+            'command' => 'doctrine:cache:clear-metadata'
+        ]);
+        $application->run($input, new BufferedOutput());
+
     }
 
     protected function getService(string $serviceName): object
     {
-        return self::$webClient->getContainer()->get($serviceName);
+        return $this->webClient->getContainer()->get($serviceName);
     }
 }

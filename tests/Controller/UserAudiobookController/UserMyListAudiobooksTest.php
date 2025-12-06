@@ -37,14 +37,14 @@ class UserMyListAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('GET', '/api/user/myList/audiobooks', server: [
+        $this->webClient->request('GET', '/api/user/myList/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -68,21 +68,21 @@ class UserMyListAudiobooksTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('GET', '/api/user/myList/audiobooks', server: [
+        $this->webClient->request('GET', '/api/user/myList/audiobooks', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserMyListAudiobookLogOut(): void
     {
-        self::$webClient->request('GET', '/api/user/myList/audiobooks');
+        $this->webClient->request('GET', '/api/user/myList/audiobooks');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

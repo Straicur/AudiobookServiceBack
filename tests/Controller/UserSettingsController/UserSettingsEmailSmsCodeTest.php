@@ -25,7 +25,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
+        $this->webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
@@ -34,7 +34,7 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
 
         $this->assertCount(1, $userEditRepository->findAll());
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -61,13 +61,13 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
+        $this->webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailSmsCodeChangePermission(): void
@@ -78,23 +78,23 @@ class UserSettingsEmailSmsCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
+        $this->webClient->request('PUT', '/api/user/settings/email/smsCode', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailSmsCodeChangeLogOut(): void
     {
         $content = [];
 
-        self::$webClient->request('PUT', '/api/user/settings/email/smsCode', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/settings/email/smsCode', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

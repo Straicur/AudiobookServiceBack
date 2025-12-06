@@ -36,7 +36,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -73,7 +73,7 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -108,13 +108,13 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -138,13 +138,13 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookInfoAddEmptyRequestData(): void
@@ -155,13 +155,13 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookInfoAddPermission(): void
@@ -182,13 +182,13 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookInfoAddLogOut(): void
@@ -208,10 +208,10 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
             'watched' => true
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/info/add', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/audiobook/info/add', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }
