@@ -33,6 +33,7 @@ use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
 use App\Enums\UserBanType;
 use App\Enums\UserEditType;
+use App\Query\Admin\AdminAudiobookAddQuery;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookInfoRepository;
 use App\Repository\AudiobookRatingRepository;
@@ -56,6 +57,8 @@ use App\Repository\UserParentalControlCodeRepository;
 use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserSettingsRepository;
+use App\Service\Admin\Audiobook\AudiobookAddService;
+use App\Service\Admin\Audiobook\AudiobookServiceInterface;
 use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\CategoryKeyGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
@@ -63,10 +66,8 @@ use App\ValueGenerator\RegisterCodeGenerator;
 use App\ValueGenerator\UserEditConfirmGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;
 use DateTime;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Component\Uid\Uuid;
 
 class DatabaseMockManager
 {
@@ -268,7 +269,7 @@ class DatabaseMockManager
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, (string) $endedTime, $watched);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, (string)$endedTime, $watched);
 
         if ($watched) {
             $newRegisterCode->setWatched($watched);
@@ -533,5 +534,101 @@ class DatabaseMockManager
         $userParentalControlCodeRepository->add($newUserParentalControlCode);
 
         return $newUserParentalControlCode;
+    }
+
+    public function testFunc_addAudiobookFromFileInOnePart(
+        string  $hashName,
+        string  $fileName,
+        string  $base64,
+        array   $categories = [],
+        ?string $title = null,
+        ?string $author = null,
+        ?string $year = null,
+        ?string $age = null,
+    ): Audiobook
+    {
+        $adminAudiobookAddQuery = new AdminAudiobookAddQuery();
+        $adminAudiobookAddQuery->setHashName($hashName);
+        $adminAudiobookAddQuery->setFileName($fileName);
+        $adminAudiobookAddQuery->setBase64($base64);
+        $adminAudiobookAddQuery->setPart(1);
+        $adminAudiobookAddQuery->setParts(1);
+        $adminAudiobookAddQuery->setHashName($hashName);
+        $adminAudiobookAddQuery->setAdditionalData([
+            'categories' => $categories,
+            'title' => $title,
+            'author' => $author,
+            'year' => $year,
+            'age' => $age,
+        ]);
+
+        $audiobookService = $this->getService(AudiobookServiceInterface::class);
+        $addService = $this->getService(AudiobookAddService::class);
+        $audiobookRepository = $this->getService(AudiobookRepository::class);
+
+        $audiobookService->configure($adminAudiobookAddQuery);
+        $audiobookService->checkAndAddFile();
+
+        $audiobookService->combineFiles();
+        $folderDir = $audiobookService->unzip();
+        $ID3JsonData = $audiobookService->createAudiobookJsonData($folderDir);
+
+        $additionalData = $adminAudiobookAddQuery->getAdditionalData();
+
+        $id3TagsModel = $addService->getAudiobookId3Tags($ID3JsonData);
+
+        $title = $id3TagsModel->getTitle();
+        $author = $id3TagsModel->getArtist();
+
+        if (array_key_exists('title', $additionalData)) {
+            $title = $additionalData['title'];
+        }
+
+        if (array_key_exists('author', $additionalData)) {
+            $author = $additionalData['author'];
+        }
+
+        $age = null;
+
+        if (array_key_exists('age', $additionalData)) {
+            $age = match ($additionalData['age']) {
+                1 => AudiobookAgeRange::FROM3TO7,
+                2 => AudiobookAgeRange::FROM7TO12,
+                3 => AudiobookAgeRange::FROM12TO16,
+                4 => AudiobookAgeRange::FROM16TO18,
+                default => AudiobookAgeRange::ABOVE18
+            };
+        }
+
+        $newAudiobook = new Audiobook(
+            $title,
+            $author,
+            $id3TagsModel->getVersion(),
+            $id3TagsModel->getAlbum(),
+            $id3TagsModel->getYear(),
+            $id3TagsModel->getDuration(),
+            $id3TagsModel->getSize(),
+            $id3TagsModel->getParts(),
+            $id3TagsModel->getComment(),
+            $age ?? AudiobookAgeRange::ABOVE18,
+            $folderDir,
+        );
+
+        if ($id3TagsModel->getEncoded() !== "") {
+            $newAudiobook->setEncoded($id3TagsModel->getEncoded());
+        }
+
+        if (!empty($id3TagsModel->getImgFileDir())) {
+            $newAudiobook
+                ->setImgFile($id3TagsModel->getImgFileDir())
+                ->setImgFileChangeDate();
+        }
+
+        $audiobookCategories = [];
+
+        $addService->addAudiobookCategories($newAudiobook, $additionalData, $audiobookCategories);
+
+        $audiobookRepository->add($newAudiobook);
+        return $newAudiobook;
     }
 }

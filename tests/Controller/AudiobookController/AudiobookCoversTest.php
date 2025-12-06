@@ -30,34 +30,19 @@ class AudiobookCoversTest extends AbstractWebTest
         $fileBase = fopen($base64OnePartFile, 'rb');
         $readData = fread($fileBase, filesize($base64OnePartFile));
 
-        $content = [
-            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
-            'fileName' => 'Base',
-            'base64' => $readData,
-            'part' => 1,
-            'parts' => 1,
-            'additionalData' => [
-                'categories' => [
-                    $category2->getId(),
-                    $category1->getId()
-                ],
-                'title' => 'tytul',
-                'author' => 'author'
-            ]
-        ];
-
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        $this->webClient->request('PUT', '/api/admin/audiobook/add', server : [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(201);
-
-        $audiobookAfter = $audiobookRepository->findOneBy([
-            'title' => $content['additionalData']['title']
-        ]);
+        $audiobookAfter = $this->databaseMockManager->testFunc_addAudiobookFromFileInOnePart(
+            hashName: 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            fileName: 'Base',
+            base64: $readData,
+            categories: [
+                $category2->getId()->__toString(),
+                $category1->getId()->__toString()
+            ],
+            title: 'tytul',
+            author: 'author'
+        );
 
         $this->assertNotNull($audiobookAfter);
 

@@ -82,12 +82,18 @@ class UserAudiobookInfoAddTest extends AbstractWebTest
 
         $this->assertCount(2, $audiobookInfoRepository->findAll());
 
-        $this->assertCount(1, $audiobookInfoRepository->findBy([
-            'active' => true
-        ]));
-        $this->assertCount(1, $audiobookInfoRepository->findBy([
-            'active' => false
-        ]));
+        $active = 0;
+        $noActive = 0;
+        foreach ($audiobookInfoRepository->findAll() as $item) {
+            if ($item->getActive()) {
+                ++$active;
+            } else {
+                ++$noActive;
+            }
+        }
+
+        $this->assertSame(1, $active);
+        $this->assertSame(1, $noActive);
     }
 
     /**

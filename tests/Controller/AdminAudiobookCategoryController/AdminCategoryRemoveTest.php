@@ -15,7 +15,7 @@ use DateTime;
 
 class AdminCategoryRemoveTest extends AbstractWebTest
 {
-    public function testAdminCategoryRemoveAudiobookCorrect(): void
+    public function testAdminCategoryRemoveCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -91,7 +91,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
     /**
      * Test checks bad given categoryId
      */
-    public function testAdminCategoryRemoveAudiobookIncorrectCategoryId(): void
+    public function testAdminCategoryRemoveIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -113,7 +113,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testErrorResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookEmptyRequestData(): void
+    public function testAdminCategoryRemoveEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -133,7 +133,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookPermission(): void
+    public function testAdminCategoryRemovePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -154,7 +154,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         $this->responseTool->testBadResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookLogOut(): void
+    public function testAdminCategoryRemoveLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
