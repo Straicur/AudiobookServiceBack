@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Audiobook;
 
@@ -8,7 +8,8 @@ use getID3;
 
 class AudiobooksID3TagsReaderService implements AudiobooksID3TagsReaderServiceInterface
 {
-    public string $fileName = "";
+    public string $fileName = '';
+
     public readonly getID3 $ID3;
 
     public function __construct()

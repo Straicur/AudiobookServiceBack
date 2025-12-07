@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,31 +8,7 @@ use App\Model\ModelInterface;
 
 class AdminStatisticMainSuccessModel implements ModelInterface
 {
-    private int $users;
-    private int $categories;
-    private int $audiobooks;
-    private int $lastWeekRegistered;
-    private int $lastWeekLogins;
-    private int $lastWeekNotifications;
-    private int $lastWeekTechnicalBreaks;
-
-    public function __construct(
-        int $users,
-        int $categories,
-        int $audiobooks,
-        int $lastWeekRegistered,
-        int $lastWeekLogins,
-        int $lastWeekNotifications,
-        int $lastWeekTechnicalBreaks
-    ) {
-        $this->users = $users;
-        $this->categories = $categories;
-        $this->audiobooks = $audiobooks;
-        $this->lastWeekRegistered = $lastWeekRegistered;
-        $this->lastWeekLogins = $lastWeekLogins;
-        $this->lastWeekNotifications = $lastWeekNotifications;
-        $this->lastWeekTechnicalBreaks = $lastWeekTechnicalBreaks;
-    }
+    public function __construct(private int $users, private int $categories, private int $audiobooks, private int $lastWeekRegistered, private int $lastWeekLogins, private int $lastWeekNotifications, private int $lastWeekTechnicalBreaks) {}
 
     public function getUsers(): int
     {

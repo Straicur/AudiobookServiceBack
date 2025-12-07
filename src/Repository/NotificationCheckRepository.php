@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -23,11 +23,6 @@ class NotificationCheckRepository extends ServiceEntityRepository
         parent::__construct($registry, NotificationCheck::class);
     }
 
-    /**
-     * @param NotificationCheck $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(NotificationCheck $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -36,11 +31,6 @@ class NotificationCheckRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param NotificationCheck $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(NotificationCheck $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Enums\AudiobookAgeRange;
@@ -68,8 +70,10 @@ class Audiobook
 
     #[ORM\OneToMany(targetEntity: AudiobookRating::class, mappedBy: 'audiobook')]
     private Collection $audiobookRatings;
+
     #[ORM\OneToMany(targetEntity: AudiobookUserComment::class, mappedBy: 'audiobook')]
     private Collection $audiobookUserComments;
+
     #[ORM\OneToMany(targetEntity: AudiobookInfo::class, mappedBy: 'audiobook')]
     private Collection $audiobookInfos;
 
@@ -93,7 +97,7 @@ class Audiobook
         int $parts,
         string $description,
         AudiobookAgeRange $age,
-        string $fileName
+        string $fileName,
     ) {
         $this->title = $title;
         $this->author = $author;
@@ -338,11 +342,9 @@ class Audiobook
 
     public function removeAudiobookRating(AudiobookRating $AudiobookRating): self
     {
-        if ($this->audiobookRatings->removeElement($AudiobookRating)) {
-            // set the owning side to null (unless already changed)
-            if ($AudiobookRating->getAudiobook() === $this) {
-                $AudiobookRating->setAudiobook(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->audiobookRatings->removeElement($AudiobookRating) && $AudiobookRating->getAudiobook() === $this) {
+            $AudiobookRating->setAudiobook(null);
         }
 
         return $this;
@@ -368,11 +370,9 @@ class Audiobook
 
     public function removeAudiobookUserComment(AudiobookUserComment $audiobookUserComment): self
     {
-        if ($this->audiobookUserComments->removeElement($audiobookUserComment)) {
-            // set the owning side to null (unless already changed)
-            if ($audiobookUserComment->getAudiobook() === $this) {
-                $audiobookUserComment->setAudiobook(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->audiobookUserComments->removeElement($audiobookUserComment) && $audiobookUserComment->getAudiobook() === $this) {
+            $audiobookUserComment->setAudiobook(null);
         }
 
         return $this;
@@ -398,11 +398,9 @@ class Audiobook
 
     public function removeAudiobookInfo(AudiobookInfo $audiobookInfo): self
     {
-        if ($this->audiobookInfos->removeElement($audiobookInfo)) {
-            // set the owning side to null (unless already changed)
-            if ($audiobookInfo->getAudiobook() === $this) {
-                $audiobookInfo->setAudiobook(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->audiobookInfos->removeElement($audiobookInfo) && $audiobookInfo->getAudiobook() === $this) {
+            $audiobookInfo->setAudiobook(null);
         }
 
         return $this;
@@ -410,7 +408,7 @@ class Audiobook
 
     public function getAvgRating(): int
     {
-        return (int)ceil($this->avgRating);
+        return (int) ceil($this->avgRating);
     }
 
     public function setAvgRating(float $avgRating): self

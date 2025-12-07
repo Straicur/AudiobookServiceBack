@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Exception;
 
@@ -11,13 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserDeletedException extends Exception implements ResponseExceptionInterface
 {
-    private array $dataStrings;
-
-    public function __construct(array $dataStrings = [])
+    public function __construct(private readonly array $dataStrings = [])
     {
         parent::__construct('User is Delted');
-
-        $this->dataStrings = $dataStrings;
     }
 
     public function getResponse(): Response

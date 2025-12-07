@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -45,6 +45,9 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+use function count;
+
 #[OA\Response(
     response   : 400,
     description: 'JSON Data Invalid',
@@ -66,10 +69,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminTechnical')]
-#[Route('/api/admin')]
 class AdminTechnicalController extends AbstractController
 {
-    #[Route('/technical/break', name: 'adminTechnicalBreakPut', methods: ['PUT'])]
+    public function __construct(private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly TechnicalBreakRepository $technicalBreakRepository, private readonly TagAwareCacheInterface $stockCache, private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly TranslateServiceInterface $translateService, private readonly SerializerInterface $serializer, private readonly KernelInterface $kernel) {}
+
+    #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is used to add Technical Break for admin',
@@ -81,26 +85,21 @@ class AdminTechnicalController extends AbstractController
             ),
         ]
     )]
-    public function adminTechnicalBreakPut(
-        AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository $technicalBreakRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $user = $authorizedUserService::getAuthorizedUser();
-
-        $activeTechnicalBreak = $technicalBreakRepository->findOneBy([
+    public function adminTechnicalBreakPut(): Response
+    {
+        $user = $this->authorizedUserService::getAuthorizedUser();
+        $activeTechnicalBreak = $this->technicalBreakRepository->findOneBy([
             'active' => true,
         ]);
-
-        if ($activeTechnicalBreak === null) {
-            $technicalBreakRepository->add(new TechnicalBreak(true, $user));
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
+        if (null === $activeTechnicalBreak) {
+            $this->technicalBreakRepository->add(new TechnicalBreak(true, $user));
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
         }
 
         return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
     }
 
-    #[Route('/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]
+    #[Route('/api/admin/technical/break', name: 'adminTechnicalBreakPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to edit Technical Break by admin',
@@ -120,42 +119,36 @@ class AdminTechnicalController extends AbstractController
     )]
     public function adminTechnicalBreakPatch(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        TechnicalBreakRepository $technicalBreakRepository,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminTechnicalBreakPatchQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
+        $adminTechnicalBreakPatchQuery = $this->requestService->getRequestBodyContent($request, AdminTechnicalBreakPatchQuery::class);
 
         if ($adminTechnicalBreakPatchQuery instanceof AdminTechnicalBreakPatchQuery) {
-            $technicalBreak = $technicalBreakRepository->find($adminTechnicalBreakPatchQuery->getTechnicalBreakId());
+            $technicalBreak = $this->technicalBreakRepository->find($adminTechnicalBreakPatchQuery->getTechnicalBreakId());
 
-            if ($technicalBreak === null) {
-                $endpointLogger->error('TechnicalBreak dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('TechnicalBreakDontExists')]);
+            if (null === $technicalBreak) {
+                $this->endpointLogger->error('TechnicalBreak dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('TechnicalBreakDontExists')]);
             }
 
             $technicalBreak
-                ->setUser($authorizedUserService::getAuthorizedUser())
+                ->setUser($this->authorizedUserService::getAuthorizedUser())
                 ->setDateTo(new DateTime())
                 ->setActive(false);
 
-            $technicalBreakRepository->add($technicalBreak);
+            $this->technicalBreakRepository->add($technicalBreak);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/technical/break/list', name: 'adminTechnicalBreakList', methods: ['POST'])]
+    #[Route('/api/admin/technical/break/list', name: 'adminTechnicalBreakList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get list of Technical Breaks for admin',
@@ -176,19 +169,14 @@ class AdminTechnicalController extends AbstractController
     )]
     public function adminTechnicalBreakList(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TechnicalBreakRepository $technicalBreakRepository,
-        TranslateServiceInterface $translateService,
-        SerializerInterface $serializer,
     ): Response {
-        $adminTechnicalBreakListQuery = $requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
+        $adminTechnicalBreakListQuery = $this->requestService->getRequestBodyContent($request, AdminTechnicalBreakListQuery::class);
 
         if ($adminTechnicalBreakListQuery instanceof AdminTechnicalBreakListQuery) {
             $technicalBreakListData = $adminTechnicalBreakListQuery->getSearchData();
 
             $reportSearchModel = new AdminTechnicalBreaksSearchModel();
-            $serializer->deserialize(
+            $this->serializer->deserialize(
                 json_encode($technicalBreakListData),
                 AdminTechnicalBreaksSearchModel::class,
                 'json',
@@ -200,7 +188,7 @@ class AdminTechnicalController extends AbstractController
 
             $successModel = new AdminTechnicalBreakSuccessModel();
 
-            $technicalBreaks = $technicalBreakRepository->getTechnicalBreakByPage($reportSearchModel);
+            $technicalBreaks = $this->technicalBreakRepository->getTechnicalBreakByPage($reportSearchModel);
 
             $minResult = $adminTechnicalBreakListQuery->getPage() * $adminTechnicalBreakListQuery->getLimit();
             $maxResult = $adminTechnicalBreakListQuery->getLimit() + $minResult;
@@ -212,7 +200,7 @@ class AdminTechnicalController extends AbstractController
 
                 if ($index < $maxResult) {
                     $technicalBreakModel = new AdminTechnicalBreakModel(
-                        (string)$technicalBreak->getId(),
+                        (string) $technicalBreak->getId(),
                         $technicalBreak->getActive(),
                         $technicalBreak->getDateFrom(),
                         $technicalBreak->getUser()->getUserInformation()->getFirstname() . ' ' . $technicalBreak->getUser()->getUserInformation()->getLastname(),
@@ -230,17 +218,17 @@ class AdminTechnicalController extends AbstractController
 
             $successModel->setPage($adminTechnicalBreakListQuery->getPage());
             $successModel->setLimit($adminTechnicalBreakListQuery->getLimit());
-            $successModel->setMaxPage((int)ceil(count($technicalBreaks) / $adminTechnicalBreakListQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($technicalBreaks) / $adminTechnicalBreakListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/technical/cache/clear', name: 'adminTechnicalCacheClear', methods: ['PATCH'])]
+    #[Route('/api/admin/technical/cache/clear', name: 'adminTechnicalCacheClear', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is used to clear cache pools by admin',
@@ -260,30 +248,25 @@ class AdminTechnicalController extends AbstractController
     )]
     public function adminTechnicalCacheClear(
         Request $request,
-        RequestServiceInterface $requestService,
-        TagAwareCacheInterface $stockCache,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        KernelInterface $kernel,
     ): Response {
-        $adminTechnicalCacheClearQuery = $requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);
+        $adminTechnicalCacheClearQuery = $this->requestService->getRequestBodyContent($request, AdminTechnicalCacheClearQuery::class);
 
         if ($adminTechnicalCacheClearQuery instanceof AdminTechnicalCacheClearQuery) {
             $cacheData = $adminTechnicalCacheClearQuery->getCacheData();
 
             if (array_key_exists('all', $cacheData) && $cacheData['all']) {
-                $application = new Application($kernel);
+                $application = new Application($this->kernel);
                 $application->setAutoExit(false);
 
                 $output = new BufferedOutput();
                 $application->run(new ArrayInput([
                     'command' => 'cache:pool:clear',
-                    '--all' => true,
+                    '--all'   => true,
                 ]), $output);
             }
 
             if (array_key_exists('admin', $cacheData) && $cacheData['admin']) {
-                $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value,
+                $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value,
                     AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
                     AdminStockCacheTags::ADMIN_AUDIOBOOK->value,
                     AdminStockCacheTags::ADMIN_STATISTICS->value,
@@ -291,7 +274,7 @@ class AdminTechnicalController extends AbstractController
                     AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]);
             } else {
                 if (array_key_exists('user', $cacheData) && $cacheData['user']) {
-                    $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_PART->value,
+                    $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_PART->value,
                         UserStockCacheTags::USER_NOTIFICATIONS->value,
                         UserStockCacheTags::USER_AUDIOBOOKS->value,
                         UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value,
@@ -300,24 +283,24 @@ class AdminTechnicalController extends AbstractController
                         UserStockCacheTags::AUDIOBOOK_COMMENTS->value,
                         UserStockCacheTags::USER_CATEGORIES_TREE->value]);
                 }
+
                 if (array_key_exists('pools', $cacheData) && !empty($cacheData['pools'])) {
                     foreach ($cacheData['pools'] as $pool) {
                         match ($pool) {
-                            AdminStockCacheTags::ADMIN_CATEGORY->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]),
-                            AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]),
-                            AdminStockCacheTags::ADMIN_AUDIOBOOK->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]),
-                            AdminStockCacheTags::ADMIN_STATISTICS->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_STATISTICS->value]),
-                            AdminStockCacheTags::ADMIN_ROLES->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_ROLES->value]),
-                            AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value => $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]),
-                            UserStockCacheTags::USER_AUDIOBOOK_PART->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_PART->value]),
-                            UserStockCacheTags::USER_NOTIFICATIONS->value => $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]),
-                            UserStockCacheTags::USER_AUDIOBOOKS->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOKS->value]),
-                            UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value]),
-                            UserStockCacheTags::USER_AUDIOBOOK_RATING->value => $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_RATING->value]),
-                            UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value => $stockCache->invalidateTags([UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]),
-                            UserStockCacheTags::USER_CATEGORIES_TREE->value => $stockCache->invalidateTags([UserStockCacheTags::USER_CATEGORIES_TREE->value]),
-                            default =>
-                            $stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value])
+                            AdminStockCacheTags::ADMIN_CATEGORY->value            => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]),
+                            AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value]),
+                            AdminStockCacheTags::ADMIN_AUDIOBOOK->value           => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_AUDIOBOOK->value]),
+                            AdminStockCacheTags::ADMIN_STATISTICS->value          => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_STATISTICS->value]),
+                            AdminStockCacheTags::ADMIN_ROLES->value               => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_ROLES->value]),
+                            AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value     => $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_TECHNICAL_BREAK->value]),
+                            UserStockCacheTags::USER_AUDIOBOOK_PART->value        => $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_PART->value]),
+                            UserStockCacheTags::USER_NOTIFICATIONS->value         => $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]),
+                            UserStockCacheTags::USER_AUDIOBOOKS->value            => $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOKS->value]),
+                            UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value      => $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value]),
+                            UserStockCacheTags::USER_AUDIOBOOK_RATING->value      => $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_RATING->value]),
+                            UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value   => $this->stockCache->invalidateTags([UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value]),
+                            UserStockCacheTags::USER_CATEGORIES_TREE->value       => $this->stockCache->invalidateTags([UserStockCacheTags::USER_CATEGORIES_TREE->value]),
+                            default                                               => $this->stockCache->invalidateTags([UserStockCacheTags::AUDIOBOOK_COMMENTS->value]),
                         };
                     }
                 }
@@ -326,12 +309,12 @@ class AdminTechnicalController extends AbstractController
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
+    #[Route('/api/admin/technical/cache/pools', name: 'adminTechnicalCachePools', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to clear cache pools by admin',

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -9,7 +9,9 @@ use App\Model\ModelInterface;
 class AdminTechnicalBreakSuccessModel implements ModelInterface
 {
     public int $page;
+
     public int $limit;
+
     public int $maxPage;
 
     /**

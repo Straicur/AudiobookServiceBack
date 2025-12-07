@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\ValueGenerator;
 
 use App\Entity\AudiobookCategory;
 use App\Model\User\UserCategoryTreeModel;
 use App\Repository\AudiobookCategoryRepository;
+use Override;
 
 class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
@@ -14,13 +15,13 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
      * @param AudiobookCategory[] $elements
      */
     public function __construct(
-        private array $elements,
+        private readonly array $elements,
         private readonly AudiobookCategoryRepository $categoryRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * @param AudiobookCategory[] $elements
+     *
      * @return UserCategoryTreeModel[]
      */
     private function buildTree(array $elements, ?string $parentKey = null): array
@@ -37,7 +38,7 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
                 $child = new UserCategoryTreeModel(
                     $element->getName(),
                     $element->getCategoryKey(),
-                    (string)$parentKey,
+                    (string) $parentKey,
                 );
 
                 if (!empty($children)) {
@@ -55,6 +56,7 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
         return $branch;
     }
 
+    #[Override]
     public function generate(): array
     {
         return $this->buildTree($this->getElements());
@@ -66,10 +68,5 @@ class BuildUserAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
     private function getElements(): array
     {
         return $this->elements;
-    }
-
-    private function setElements(array $elements): void
-    {
-        $this->elements = $elements;
     }
 }

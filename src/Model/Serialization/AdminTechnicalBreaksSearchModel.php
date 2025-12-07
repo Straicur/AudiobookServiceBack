@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
 
@@ -9,9 +9,13 @@ use DateTime;
 class AdminTechnicalBreaksSearchModel
 {
     public ?string $nameOrLastname = null;
+
     public ?bool $active = null;
+
     public ?int $order = null;
+
     public ?DateTime $dateFrom = null;
+
     public ?DateTime $dateTo = null;
 
     public function getNameOrLastname(): ?string

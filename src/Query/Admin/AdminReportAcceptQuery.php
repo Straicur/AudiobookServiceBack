@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use App\Enums\BanPeriodRage;
@@ -31,7 +33,7 @@ class AdminReportAcceptQuery
 
     public function getBanPeriod(): ?BanPeriodRage
     {
-        if ($this->banPeriod !== null) {
+        if (null !== $this->banPeriod) {
             return match ($this->banPeriod) {
                 1 => BanPeriodRage::SYSTEM,
                 2 => BanPeriodRage::NOT_BANNED,
@@ -43,6 +45,7 @@ class AdminReportAcceptQuery
                 8 => BanPeriodRage::ONE_YEAR_BAN,
             };
         }
+
         return null;
     }
 

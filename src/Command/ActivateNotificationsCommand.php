@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
 use App\Enums\Cache\UserStockCacheTags;
 use App\Repository\NotificationRepository;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function count;
+
 /**
- * Fired every 5 minutes
+ * Fired every 5 minutes.
  */
 #[AsCommand(
     name       : 'audiobookservice:notifications:activate',
@@ -29,10 +32,12 @@ class ActivateNotificationsCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -45,11 +50,11 @@ class ActivateNotificationsCommand extends Command
             $this->notificationRepository->add($notification);
         }
 
-        if ($notificationsCount > 0) {
+        if (0 < $notificationsCount) {
             $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
         }
 
-        $io->success("Activated $notificationsCount notifications successfully.");
+        $io->success("Activated {$notificationsCount} notifications successfully.");
 
         return Command::SUCCESS;
     }

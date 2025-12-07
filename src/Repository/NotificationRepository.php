@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -13,6 +13,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
+
+use function count;
+use function is_bool;
 
 /**
  * @extends ServiceEntityRepository<Notification>
@@ -29,11 +32,6 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-    /**
-     * @param Notification $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(Notification $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -42,11 +40,6 @@ class NotificationRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param Notification $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(Notification $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -54,7 +47,6 @@ class NotificationRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 
     public function getNumberNotificationsFromLastWeek(): int
     {
@@ -118,27 +110,21 @@ class NotificationRepository extends ServiceEntityRepository
             $qb->andWhere('n.metaData LIKE :text')
                 ->setParameter('text', '%' . $adminNotificationsSearchModel->getText() . '%');
         }
+
         if ($adminNotificationsSearchModel->getType() !== null) {
             $qb->andWhere('n.type = :type')
                 ->setParameter('type', $adminNotificationsSearchModel->getType());
         }
+
         if (is_bool($adminNotificationsSearchModel->getDeleted())) {
             $qb->andWhere('n.deleted = :deleted')
                 ->setParameter('deleted', $adminNotificationsSearchModel->getDeleted());
         }
 
-        switch ($adminNotificationsSearchModel->getOrder()) {
-            case NotificationOrderSearch::OLDEST->value:
-            {
-                $qb->orderBy('n.dateAdd', 'ASC');
-                break;
-            }
-            default:
-            {
-                $qb->orderBy('n.dateAdd', 'DESC');
-                break;
-            }
-        }
+        match ($adminNotificationsSearchModel->getOrder()) {
+            NotificationOrderSearch::OLDEST->value => $qb->orderBy('n.dateAdd', 'ASC'),
+            default                                => $qb->orderBy('n.dateAdd', 'DESC'),
+        };
 
         return $qb->getQuery()->execute();
     }

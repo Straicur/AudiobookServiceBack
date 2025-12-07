@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -9,28 +9,17 @@ use DateTime;
 
 class AdminUserModel
 {
-    private string $id;
-    private bool $active;
-    private bool $banned;
-    private string $email;
-    private string $firstname;
-    private string $lastname;
     private int $dateCreated;
+
     private array $roles = [];
-    private bool $deleted;
+
     private ?string $phoneNumber = null;
+
     private ?AdminUserBanModel $userBan = null;
 
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, string $lastname, DateTime $dateCreated, bool $deleted)
+    public function __construct(private string $id, private bool $active, private bool $banned, private string $email, private string $firstname, private string $lastname, DateTime $dateCreated, private bool $deleted)
     {
-        $this->id = $id;
-        $this->active = $active;
-        $this->banned = $banned;
-        $this->email = $email;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
         $this->dateCreated = $dateCreated->getTimestamp() * 1000;
-        $this->deleted = $deleted;
     }
 
     public function getId(): string

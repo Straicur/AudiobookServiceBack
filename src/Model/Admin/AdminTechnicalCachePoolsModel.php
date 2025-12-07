@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -9,6 +9,7 @@ use App\Model\ModelInterface;
 class AdminTechnicalCachePoolsModel implements ModelInterface
 {
     private array $adminCachePools = [];
+
     private array $userCachePools = [];
 
     /**

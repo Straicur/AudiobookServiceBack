@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -8,15 +8,12 @@ use App\Model\ModelInterface;
 
 class AudiobookCommentsSuccessModel implements ModelInterface
 {
-    /**
-     * @var AudiobookCommentsModel[]
-     */
-    private array $comments;
-
-    public function __construct(array $comments)
-    {
-        $this->comments = $comments;
-    }
+    public function __construct(
+        /**
+         * @var AudiobookCommentsModel[]
+         */
+        private array $comments,
+    ) {}
 
     public function getComments(): array
     {

@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
 use App\Entity\AudiobookCategory;
 use App\Repository\AudiobookCategoryRepository;
 use App\ValueGenerator\CategoryKeyGenerator;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,12 +27,14 @@ class AddCategoryCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addArgument('name', InputArgument::REQUIRED, 'Name of category');
         $this->addArgument('parent', InputArgument::OPTIONAL, 'Category parent name');
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -48,15 +51,16 @@ class AddCategoryCommand extends Command
 
         $newAudiobookCategory = new AudiobookCategory($name, $categoryKeyGenerator);
 
-        if ($parent !== null) {
+        if (null !== $parent) {
             $parentCategory = $this->audiobookCategoryRepository->findOneBy([
                 'name' => $parent,
             ]);
 
-            if ($parentCategory !== null) {
+            if (null !== $parentCategory) {
                 $newAudiobookCategory->setParent($parentCategory);
             }
         }
+
         $newAudiobookCategory->setActive(true);
 
         $this->audiobookCategoryRepository->add($newAudiobookCategory);

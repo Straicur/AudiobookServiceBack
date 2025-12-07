@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -11,9 +11,7 @@ class TranslateService implements TranslateServiceInterface
 {
     private ?string $preferredLanguage = null;
 
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
-    }
+    public function __construct(private readonly TranslatorInterface $translator) {}
 
     public function setPreferredLanguage(Request $request): void
     {
@@ -27,7 +25,7 @@ class TranslateService implements TranslateServiceInterface
 
     public function getTranslation(string $message): string
     {
-        if ($this->preferredLanguage === null) {
+        if (null === $this->preferredLanguage) {
             $this->preferredLanguage = $this->getLocate();
         }
 

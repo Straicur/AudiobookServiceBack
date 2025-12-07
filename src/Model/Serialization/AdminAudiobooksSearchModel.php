@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
 
@@ -9,13 +9,21 @@ use DateTime;
 class AdminAudiobooksSearchModel
 {
     public ?array $categories = [];
+
     public ?string $author = null;
+
     public ?string $title = null;
+
     public ?string $album = null;
+
     public ?int $duration = null;
+
     public ?int $age = null;
+
     public ?DateTime $year = null;
+
     public ?int $parts = null;
+
     public ?int $order = null;
 
     public function getCategories(): ?array
@@ -109,5 +117,4 @@ class AdminAudiobooksSearchModel
     {
         $this->order = $order;
     }
-
 }

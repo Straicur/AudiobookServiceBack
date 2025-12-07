@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\RegisterCodeRepository;
@@ -42,7 +44,6 @@ class RegisterCode
         $this->active = true;
         $this->user = $user;
     }
-
 
     public function getId(): Uuid
     {

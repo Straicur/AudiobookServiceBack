@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+use function array_key_exists;
 
 class AdminCategoryAddQuery
 {
@@ -14,20 +17,10 @@ class AdminCategoryAddQuery
     #[Assert\Type(type: 'string')]
     private string $name;
 
+    /**
+     * @Assert\Collection(fields={})
+     */
     protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'parentId' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'ParentId is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Uuid(),
-                ]),
-            ],
-        ]));
-    }
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'parentId', type: 'string', example: 'UUID', nullable: true),

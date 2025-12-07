@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Twig;
 
@@ -10,18 +10,16 @@ use Twig\TwigFilter;
 
 class ForceTranslationExtension extends AbstractExtension
 {
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
-    }
+    public function __construct(private readonly TranslatorInterface $translator) {}
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('force_translate', [$this, 'forceTranslate']),
+            new TwigFilter('force_translate', $this->forceTranslate(...)),
         ];
     }
 
-    public function forceTranslate($message, $locale, $variables = []): string
+    public function forceTranslate(string $message, ?string $locale, array $variables = []): string
     {
         return $this->translator->trans($message, $variables, null, $locale);
     }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -9,26 +9,9 @@ use App\Model\ModelInterface;
 class NotificationsSuccessModel implements ModelInterface
 {
     /**
-     * @var NotificationModel[]
-     */
-    private array $systemNotifications;
-
-    private int $page;
-
-    private int $limit;
-
-    private int $maxPage;
-
-    /**
      * @param NotificationModel[] $systemNotifications
      */
-    public function __construct(array $systemNotifications, int $page, int $limit, int $maxPage)
-    {
-        $this->systemNotifications = $systemNotifications;
-        $this->page = $page;
-        $this->limit = $limit;
-        $this->maxPage = $maxPage;
-    }
+    public function __construct(private array $systemNotifications, private int $page, private int $limit, private int $maxPage) {}
 
     /**
      * @return NotificationModel[]

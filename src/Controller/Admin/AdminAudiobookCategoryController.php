@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -47,6 +47,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+use function count;
+
 #[OA\Response(
     response   : 400,
     description: 'JSON Data Invalid',
@@ -68,10 +71,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminAudiobookCategory')]
-#[Route('/api/admin')]
 class AdminAudiobookCategoryController extends AbstractController
 {
-    #[Route('/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
+    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly AudiobookCategoryRepository $audiobookCategoryRepository, private readonly TranslateServiceInterface $translateService, private readonly TagAwareCacheInterface $stockCache, private readonly NotificationRepository $notificationRepository, private readonly AudiobookRepository $audiobookRepository) {}
+
+    #[Route('/api/admin/category/add', name: 'adminCategoryAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding new category',
@@ -91,13 +95,8 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryAdd(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryAddQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
+        $adminCategoryAddQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryAddQuery::class);
 
         if ($adminCategoryAddQuery instanceof AdminCategoryAddQuery) {
             $categoryKey = new CategoryKeyGenerator();
@@ -106,31 +105,31 @@ class AdminAudiobookCategoryController extends AbstractController
 
             $additionalData = $adminCategoryAddQuery->getAdditionalData();
 
-            if (array_key_exists('parentId', $additionalData) && $additionalData['parentId'] !== "") {
-                $parentAudiobookCategory = $audiobookCategoryRepository->find($additionalData['parentId']);
+            if (array_key_exists('parentId', $additionalData) && '' !== $additionalData['parentId']) {
+                $parentAudiobookCategory = $this->audiobookCategoryRepository->find($additionalData['parentId']);
 
-                if ($parentAudiobookCategory === null) {
-                    $endpointLogger->error('AudiobookCategory dont exist');
-                    $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation('ParentCategoryDontExists')]);
+                if (null === $parentAudiobookCategory) {
+                    $this->endpointLogger->error('AudiobookCategory dont exist');
+                    $this->translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$this->translateService->getTranslation('ParentCategoryDontExists')]);
                 }
 
                 $newCategory->setParent($parentAudiobookCategory);
             }
 
-            $audiobookCategoryRepository->add($newCategory);
+            $this->audiobookCategoryRepository->add($newCategory);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
+    #[Route('/api/admin/category/edit', name: 'adminCategoryEdit', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing given category',
@@ -150,38 +149,33 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryEdit(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryEditQuery = $requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
+        $adminCategoryEditQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryEditQuery::class);
 
         if ($adminCategoryEditQuery instanceof AdminCategoryEditQuery) {
-            $category = $audiobookCategoryRepository->find($adminCategoryEditQuery->getCategoryId());
+            $category = $this->audiobookCategoryRepository->find($adminCategoryEditQuery->getCategoryId());
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
             $category->setName($adminCategoryEditQuery->getName());
 
-            $audiobookCategoryRepository->add($category);
+            $this->audiobookCategoryRepository->add($category);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
+    #[Route('/api/admin/category/remove', name: 'adminCategoryRemove', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is removing given category',
@@ -201,38 +195,32 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryRemove(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        NotificationRepository $notificationRepository,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryRemoveQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
+        $adminCategoryRemoveQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryRemoveQuery::class);
 
         if ($adminCategoryRemoveQuery instanceof AdminCategoryRemoveQuery) {
-            $category = $audiobookCategoryRepository->find($adminCategoryRemoveQuery->getCategoryId());
+            $category = $this->audiobookCategoryRepository->find($adminCategoryRemoveQuery->getCategoryId());
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $notificationRepository->updateDeleteNotificationsByAction($category->getId());
-            $audiobookCategoryRepository->removeCategoryAndChildren($category);
+            $this->notificationRepository->updateDeleteNotificationsByAction($category->getId());
+            $this->audiobookCategoryRepository->removeCategoryAndChildren($category);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
+    #[Route('/api/admin/category/add/audiobook', name: 'adminCategoryAddAudiobook', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding audiobook to given category',
@@ -252,49 +240,43 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryAddAudiobook(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryAddAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
+        $adminCategoryAddAudiobookQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryAddAudiobookQuery::class);
 
         if ($adminCategoryAddAudiobookQuery instanceof AdminCategoryAddAudiobookQuery) {
-            $category = $audiobookCategoryRepository->find($adminCategoryAddAudiobookQuery->getCategoryId());
+            $category = $this->audiobookCategoryRepository->find($adminCategoryAddAudiobookQuery->getCategoryId());
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $audiobook = $audiobookRepository->find($adminCategoryAddAudiobookQuery->getAudiobookId());
+            $audiobook = $this->audiobookRepository->find($adminCategoryAddAudiobookQuery->getAudiobookId());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $audiobook->addCategory($category);
 
-            $audiobookRepository->add($audiobook);
+            $this->audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
                 AdminStockCacheTags::ADMIN_CATEGORY->value,
                 AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
+    #[Route('/api/admin/category/remove/audiobook', name: 'adminCategoryRemoveAudiobook', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Delete(
         description: 'Endpoint is removing audiobook from given category',
@@ -314,50 +296,44 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryRemoveAudiobook(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryRemoveAudiobookQuery = $requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
+        $adminCategoryRemoveAudiobookQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryRemoveAudiobookQuery::class);
 
         if ($adminCategoryRemoveAudiobookQuery instanceof AdminCategoryRemoveAudiobookQuery) {
-            $category = $audiobookCategoryRepository->find($adminCategoryRemoveAudiobookQuery->getCategoryId());
+            $category = $this->audiobookCategoryRepository->find($adminCategoryRemoveAudiobookQuery->getCategoryId());
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $audiobook = $audiobookRepository->find($adminCategoryRemoveAudiobookQuery->getAudiobookId());
+            $audiobook = $this->audiobookRepository->find($adminCategoryRemoveAudiobookQuery->getAudiobookId());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             $category->removeAudiobook($audiobook);
 
-            $audiobookCategoryRepository->add($category);
-            $audiobookRepository->add($audiobook);
+            $this->audiobookCategoryRepository->add($category);
+            $this->audiobookRepository->add($audiobook);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value,
                 AdminStockCacheTags::ADMIN_CATEGORY->value,
                 AdminStockCacheTags::ADMIN_AUDIOBOOK->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
+    #[Route('/api/admin/category/audiobooks', name: 'adminCategoryAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning all audiobooks in given category',
@@ -378,26 +354,21 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryAudiobooks(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryAudiobooksQuery = $requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
+        $adminCategoryAudiobooksQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryAudiobooksQuery::class);
 
         if ($adminCategoryAudiobooksQuery instanceof AdminCategoryAudiobooksQuery) {
-            $category = $audiobookCategoryRepository->findOneBy([
+            $category = $this->audiobookCategoryRepository->findOneBy([
                 'categoryKey' => $adminCategoryAudiobooksQuery->getCategoryKey(),
             ]);
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
-            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery) {
+            $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_AUDIOBOOKS->value . $adminCategoryAudiobooksQuery->getPage() . $adminCategoryAudiobooksQuery->getCategoryKey(), function (ItemInterface $item) use ($category, $adminCategoryAudiobooksQuery): AdminCategoryAudiobooksSuccessModel {
                 $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                 $item->tag(AdminStockCacheTags::ADMIN_CATEGORY_AUDIOBOOKS->value);
 
@@ -415,7 +386,7 @@ class AdminAudiobookCategoryController extends AbstractController
 
                     if ($index < $maxResult) {
                         $audiobookModel = new AdminCategoryAudiobookModel(
-                            (string)$audiobook->getId(),
+                            (string) $audiobook->getId(),
                             $audiobook->getTitle(),
                             $audiobook->getAuthor(),
                             $audiobook->getYear(),
@@ -436,7 +407,7 @@ class AdminAudiobookCategoryController extends AbstractController
                 $successModel->setPage($adminCategoryAudiobooksQuery->getPage());
                 $successModel->setLimit($adminCategoryAudiobooksQuery->getLimit());
 
-                $successModel->setMaxPage((int)ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
+                $successModel->setMaxPage((int) ceil(count($audiobooks) / $adminCategoryAudiobooksQuery->getLimit()));
 
                 return $successModel;
             });
@@ -444,12 +415,12 @@ class AdminAudiobookCategoryController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
+    #[Route('/api/admin/categories/tree', name: 'adminCategoriesTree', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system as a tree',
@@ -462,20 +433,16 @@ class AdminAudiobookCategoryController extends AbstractController
             ),
         ]
     )]
-    public function adminCategoriesTree(
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        AudiobookRepository $audiobookRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository, $audiobookRepository) {
+    public function adminCategoriesTree(): Response
+    {
+        $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_CATEGORY_TREE->value, function (ItemInterface $item): AdminCategoriesSuccessModel {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
-            $categories = $audiobookCategoryRepository->findBy([
+            $categories = $this->audiobookCategoryRepository->findBy([
                 'parent' => null,
             ]);
-
-            $treeGenerator = new BuildAdminAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository, $audiobookRepository);
+            $treeGenerator = new BuildAdminAudiobookCategoryTreeGenerator($categories, $this->audiobookCategoryRepository, $this->audiobookRepository);
 
             return new AdminCategoriesSuccessModel($treeGenerator->generate());
         });
@@ -483,7 +450,7 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/categories', name: 'adminCategories', methods: ['GET'])]
+    #[Route('/api/admin/categories', name: 'adminCategories', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning all categories in system',
@@ -496,20 +463,16 @@ class AdminAudiobookCategoryController extends AbstractController
             ),
         ]
     )]
-    public function adminCategories(
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORIES->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
+    public function adminCategories(): Response
+    {
+        $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_CATEGORIES->value, function (ItemInterface $item): AdminCategoriesSuccessModel {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
-            $categories = $audiobookCategoryRepository->findBy([], orderBy: ['dateAdd' => 'ASC']);
-
+            $categories = $this->audiobookCategoryRepository->findBy([], orderBy: ['dateAdd' => 'ASC']);
             $successModel = new AdminCategoriesSuccessModel();
-
             foreach ($categories as $category) {
-                $newModel = new AdminCategoryModel((string)$category->getId(), $category->getName(), $category->getActive(), $category->getCategoryKey());
+                $newModel = new AdminCategoryModel((string) $category->getId(), $category->getName(), $category->getActive(), $category->getCategoryKey());
                 $successModel->addCategory($newModel);
             }
 
@@ -519,7 +482,7 @@ class AdminAudiobookCategoryController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
+    #[Route('/api/admin/category/active', name: 'adminCategoryActive', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given category',
@@ -539,38 +502,33 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryActive(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryActiveQuery = $requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
+        $adminCategoryActiveQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryActiveQuery::class);
 
         if ($adminCategoryActiveQuery instanceof AdminCategoryActiveQuery) {
-            $category = $audiobookCategoryRepository->find($adminCategoryActiveQuery->getCategoryId());
+            $category = $this->audiobookCategoryRepository->find($adminCategoryActiveQuery->getCategoryId());
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
 
             $category->setActive($adminCategoryActiveQuery->isActive());
 
-            $audiobookCategoryRepository->add($category);
+            $this->audiobookCategoryRepository->add($category);
 
-            $stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
+            $this->stockCache->invalidateTags([AdminStockCacheTags::ADMIN_CATEGORY->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
+    #[Route('/api/admin/category/detail', name: 'adminCategoryDetail', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning category details',
@@ -591,42 +549,38 @@ class AdminAudiobookCategoryController extends AbstractController
     )]
     public function adminCategoryDetail(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminCategoryDetailQuery = $requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);
+        $adminCategoryDetailQuery = $this->requestService->getRequestBodyContent($request, AdminCategoryDetailQuery::class);
 
         if ($adminCategoryDetailQuery instanceof AdminCategoryDetailQuery) {
-            $category = $audiobookCategoryRepository->findOneBy([
+            $category = $this->audiobookCategoryRepository->findOneBy([
                 'categoryKey' => $adminCategoryDetailQuery->getCategoryKey(),
             ]);
 
-            if ($category === null) {
-                $endpointLogger->error('AudiobookCategory dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('CategoryDontExists')]);
+            if (null === $category) {
+                $this->endpointLogger->error('AudiobookCategory dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
             }
-            $successModel = $stockCache->get(AdminCacheKeys::ADMIN_CATEGORY->value . $category->getId(), function (ItemInterface $item) use ($category) {
+
+            $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_CATEGORY->value . $category->getId(), function (ItemInterface $item) use ($category): AdminCategorySuccessModel {
                 $item->expiresAfter(CacheValidTime::DAY->value);
                 $item->tag(AdminStockCacheTags::ADMIN_CATEGORY->value);
 
                 return new AdminCategorySuccessModel(
-                    (string)$category->getId(),
+                    (string) $category->getId(),
                     $category->getName(),
                     $category->getActive(),
                     $category->getParent()?->getName(),
-                    (string)$category->getParent()?->getId()
+                    (string) $category->getParent()?->getId()
                 );
             });
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

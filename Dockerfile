@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM php:8.2-fpm AS base
+FROM php:8.4-fpm AS base
 
 WORKDIR /var/www/html
 

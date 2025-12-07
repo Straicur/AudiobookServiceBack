@@ -9,7 +9,7 @@ use PhpCsFixer\Runner\Parallel\ParallelConfig;
 return (new Config())
     ->registerCustomFixers(new PhpCsFixerCustomFixers\Fixers())
     ->setRules([
-        '@PHP83Migration'                                                     => true,
+        '@PHP84Migration'                                                     => true,
         '@Symfony'                                                            => true,
         'array_push'                                                          => true,
         'array_syntax'                                                        => ['syntax' => 'short'],

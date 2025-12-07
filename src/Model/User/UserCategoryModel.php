@@ -1,24 +1,17 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
 class UserCategoryModel
 {
-    private string $name;
-    private string $categoryKey;
-
     /**
      * @var UserAudiobookModel[]
      */
     private array $audiobooks = [];
 
-    public function __construct(string $name, string $categoryKey)
-    {
-        $this->name = $name;
-        $this->categoryKey = $categoryKey;
-    }
+    public function __construct(private string $name, private string $categoryKey) {}
 
     /**
      * @return UserAudiobookModel[]

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Admin\Audiobook;
 
 use App\Query\Admin\AdminAudiobookAddQuery;
@@ -15,7 +17,7 @@ interface AudiobookServiceInterface
 
     public function combineFiles(): void;
 
-    public function unzip(string $reAdding = null): string;
+    public function unzip(?string $reAdding = null): string;
 
     public function createAudiobookJsonData(string $folderDir): array;
 

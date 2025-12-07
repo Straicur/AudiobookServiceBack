@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -11,10 +11,6 @@ class AudiobookConfigServiceModel implements ModelInterface
     private string $error = 'Service not configured';
 
     private string $description = 'You need to configurate this service first ';
-
-    public function __construct()
-    {
-    }
 
     public function getError(): string
     {

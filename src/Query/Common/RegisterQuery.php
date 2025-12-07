@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Common;
 
 use DateTime;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use function array_key_exists;
 
 class RegisterQuery
 {
@@ -34,19 +37,10 @@ class RegisterQuery
     #[Assert\Type(type: 'string')]
     private string $password;
 
+    /**
+     * @Assert\Collection(fields={})
+     */
     protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'birthday' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Birthday is empty'),
-                    new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-            ]
-        ]));
-    }
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
@@ -59,7 +53,6 @@ class RegisterQuery
 
         $this->additionalData = $additionalData;
     }
-
 
     public function getAdditionalData(): array
     {

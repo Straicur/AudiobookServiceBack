@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\User;
 
@@ -37,8 +37,7 @@ class UserLoginService implements UserLoginServiceInterface
         private readonly UserBanHistoryRepository $banHistoryRepository,
         private readonly UserRepository $userRepository,
         private readonly MailerInterface $mailer,
-    ) {
-    }
+    ) {}
 
     public function getUserInformation(string $email, Request $request): UserInformation
     {
@@ -46,7 +45,7 @@ class UserLoginService implements UserLoginServiceInterface
             'email' => $email,
         ]);
 
-        if ($userInformation === null) {
+        if (null === $userInformation) {
             $this->translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$this->translateService->getTranslation('EmailDontExists')]);
         }
@@ -95,7 +94,7 @@ class UserLoginService implements UserLoginServiceInterface
             'password' => $passwordHashGenerator->generate(),
         ]);
 
-        if ($passwordEntity === null) {
+        if (null === $passwordEntity) {
             $this->checkLoginAttempts($userInformation, $request);
         }
     }
@@ -112,7 +111,7 @@ class UserLoginService implements UserLoginServiceInterface
 
         $this->resetLoginAttempts($userInformation);
 
-        $banPeriod = (new DateTime())->modify(BanPeriodRage::HOUR_BAN->value);
+        $banPeriod = new DateTime()->modify(BanPeriodRage::HOUR_BAN->value);
 
         $banHistory = new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::MAX_LOGINS_BREAK);
         $this->banHistoryRepository->add($banHistory);
@@ -123,7 +122,7 @@ class UserLoginService implements UserLoginServiceInterface
 
         $this->userRepository->add($user);
 
-        $email = (new TemplatedEmail())
+        $email = new TemplatedEmail()
             ->from($_ENV['INSTITUTION_EMAIL'])
             ->to($userInformation->getEmail())
             ->subject($this->translateService->getTranslation('MaxLoginsMailAttempts'))
@@ -131,7 +130,7 @@ class UserLoginService implements UserLoginServiceInterface
             ->context([
                 'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                 'banPeriod' => BanPeriodRage::HOUR_BAN->value,
-                'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $this->translateService->getLocate(),
+                'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
             ]);
         $this->mailer->send($email);
 
@@ -143,7 +142,7 @@ class UserLoginService implements UserLoginServiceInterface
     {
         $authenticationToken = $this->authenticationTokenRepository->getLastActiveUserAuthenticationToken($user);
 
-        if ($authenticationToken === null) {
+        if (null === $authenticationToken) {
             $authTokenGenerator = new AuthTokenGenerator($user);
             $authenticationToken = new AuthenticationToken($user, $authTokenGenerator);
             $this->authenticationTokenRepository->add($authenticationToken);

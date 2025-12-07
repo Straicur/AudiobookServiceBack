@@ -1,29 +1,17 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
 class UserCategoryTreeModel
 {
-    private string $name;
-    private string $categoryKey;
-    private ?string $parentCategoryKey;
-
     /**
      * @var UserCategoryTreeModel[]
      */
     private array $children = [];
 
-    public function __construct(
-        string $name,
-        string $categoryKey,
-        ?string $parentCategoryKey = null,
-    ) {
-        $this->name = $name;
-        $this->categoryKey = $categoryKey;
-        $this->parentCategoryKey = $parentCategoryKey;
-    }
+    public function __construct(private string $name, private string $categoryKey, private ?string $parentCategoryKey = null) {}
 
     /**
      * @return UserCategoryTreeModel[]

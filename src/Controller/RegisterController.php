@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller;
 
@@ -42,10 +42,11 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: DataNotFoundModel::class)
 )]
 #[OA\Tag(name: 'Register')]
-#[Route('/api')]
 class RegisterController extends AbstractController
 {
-    #[Route('/register', name: 'apiRegister', methods: ['PUT'])]
+    public function __construct(private readonly RequestServiceInterface $requestServiceInterface, private readonly LoggerInterface $endpointLogger, private readonly LoggerInterface $usersLogger, private readonly TranslateServiceInterface $translateService, private readonly UserRegisterServiceInterface $registerService, private readonly RegisterCodeRepository $registerCodeRepository, private readonly RoleRepository $roleRepository, private readonly UserRepository $userRepository, private readonly UserInformationRepository $userInformationRepository, private readonly MailerInterface $mailer) {}
+
+    #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to register user',
         security   : [],
@@ -65,37 +66,33 @@ class RegisterController extends AbstractController
     )]
     public function register(
         Request $request,
-        RequestServiceInterface $requestServiceInterface,
-        LoggerInterface $endpointLogger,
-        LoggerInterface $usersLogger,
-        TranslateServiceInterface $translateService,
-        UserRegisterServiceInterface $registerService,
     ): Response {
-        $registerQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
+        $registerQuery = $this->requestServiceInterface->getRequestBodyContent($request, RegisterQuery::class);
 
         if ($registerQuery instanceof RegisterQuery) {
-            $registerService->checkExistingUsers($registerQuery, $request);
-            $registerService->checkInstitutionLimits($request);
+            $this->registerService->checkExistingUsers($registerQuery, $request);
+            $this->registerService->checkInstitutionLimits($request);
 
-            $newUser = $registerService->createUser($registerQuery);
+            $newUser = $this->registerService->createUser($registerQuery);
 
-            $registerCode = $registerService->getRegisterCode($newUser);
+            $registerCode = $this->registerService->getRegisterCode($newUser);
 
-            /**
+            /*
              * Now user has to click on a link in mail to activate his account
              */
-            $registerService->sendMail($newUser, $registerCode, $request);
+            $this->registerService->sendMail($newUser, $registerCode, $request);
 
-            $usersLogger->info('user.' . $newUser->getUserInformation()->getEmail() . 'registered');
+            $this->usersLogger->info('user.' . $newUser->getUserInformation()->getEmail() . 'registered');
+
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
+    #[Route('/api/register/{email}/{code}', name: 'apiRegisterConfirm', methods: ['GET'])]
     #[OA\Get(
         description: 'Method used to confirm user registration',
         security   : [],
@@ -109,66 +106,59 @@ class RegisterController extends AbstractController
     )]
     public function registerConfirm(
         Request $request,
-        LoggerInterface $usersLogger,
-        LoggerInterface $endpointLogger,
-        RegisterCodeRepository $registerCodeRepository,
-        RoleRepository $roleRepository,
-        UserRepository $userRepository,
-        UserInformationRepository $userInformationRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
         $userEmail = $request->get('email');
         $code = $request->get('code');
 
-        $userInformation = $userInformationRepository->findOneBy([
+        $userInformation = $this->userInformationRepository->findOneBy([
             'email' => $userEmail,
         ]);
 
-        if ($userInformation === null) {
-            $endpointLogger->error('Invalid Credentials');
-            $translateService->setPreferredLanguage($request);
-            throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+        if (null === $userInformation) {
+            $this->endpointLogger->error('Invalid Credentials');
+            $this->translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
         }
 
         $user = $userInformation->getUser();
         $registerCodeGenerator = new RegisterCodeGenerator($code);
 
-        $registerCode = $registerCodeRepository->findOneBy([
+        $registerCode = $this->registerCodeRepository->findOneBy([
             'code' => $registerCodeGenerator->generate(),
         ]);
 
-        if ($registerCode === null || !$registerCode->getActive() || $registerCode->getDateAccept() !== null || $registerCode->getUser() !== $user) {
-            $endpointLogger->error('Invalid Credentials');
-            $translateService->setPreferredLanguage($request);
-            throw new DataNotFoundException([$translateService->getTranslation('WrongCode')]);
+        if (null === $registerCode || !$registerCode->getActive() || $registerCode->getDateAccept() !== null || $registerCode->getUser() !== $user) {
+            $this->endpointLogger->error('Invalid Credentials');
+            $this->translateService->setPreferredLanguage($request);
+            throw new DataNotFoundException([$this->translateService->getTranslation('WrongCode')]);
         }
 
         $registerCode->setActive(false);
         $registerCode->setDateAccept(new DateTime());
 
-        $registerCodeRepository->add($registerCode);
+        $this->registerCodeRepository->add($registerCode);
 
-        $userRole = $roleRepository->findOneBy([
+        $userRole = $this->roleRepository->findOneBy([
             'name' => 'User',
         ]);
 
         $user->addRole($userRole);
         $user->setActive(true);
 
-        $userRepository->add($user);
+        $this->userRepository->add($user);
 
-        $usersLogger->info('user.' . $user->getUserInformation()->getEmail() . 'successfully registered and confirmed');
+        $this->usersLogger->info('user.' . $user->getUserInformation()->getEmail() . 'successfully registered and confirmed');
 
         return $this->render(
             'pages/registered.html.twig',
             [
                 'url'  => $_ENV['FRONTEND_URL'],
-                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                'lang' => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
             ],
         );
     }
 
-    #[Route('/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
+    #[Route('/api/register/code/send', name: 'apiRegisterCodeSend', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to send registration code again',
         security   : [],
@@ -188,65 +178,59 @@ class RegisterController extends AbstractController
     )]
     public function registerCodeSend(
         Request $request,
-        RequestServiceInterface $requestServiceInterface,
-        LoggerInterface $endpointLogger,
-        LoggerInterface $usersLogger,
-        MailerInterface $mailer,
-        RegisterCodeRepository $registerCodeRepository,
-        UserInformationRepository $userInformationRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $registerConfirmSendQuery = $requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
+        $registerConfirmSendQuery = $this->requestServiceInterface->getRequestBodyContent($request, RegisterConfirmSendQuery::class);
 
         if ($registerConfirmSendQuery instanceof RegisterConfirmSendQuery) {
-            $userInfo = $userInformationRepository->findOneBy([
+            $userInfo = $this->userInformationRepository->findOneBy([
                 'email' => $registerConfirmSendQuery->getEmail(),
             ]);
 
-            if ($userInfo === null) {
-                $endpointLogger->error('Invalid Credentials');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $userInfo) {
+                $this->endpointLogger->error('Invalid Credentials');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
             $user = $userInfo->getUser();
 
             if ($user->isActive() || $user->isBanned()) {
-                $endpointLogger->error('Invalid Credentials');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('ActiveOrBanned')]);
+                $this->endpointLogger->error('Invalid Credentials');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('ActiveOrBanned')]);
             }
 
-            $registerCodeRepository->setCodesToNotActive($user);
+            $this->registerCodeRepository->setCodesToNotActive($user);
 
             $registerCodeGenerator = new RegisterCodeGenerator();
 
             $registerCode = new RegisterCode($registerCodeGenerator, $user);
 
-            $registerCodeRepository->add($registerCode);
+            $this->registerCodeRepository->add($registerCode);
 
-            if ($_ENV['APP_ENV'] !== 'test') {
-                $email = (new TemplatedEmail())
+            if ('test' !== $_ENV['APP_ENV']) {
+                $email = new TemplatedEmail()
                     ->from($_ENV['INSTITUTION_EMAIL'])
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject($translateService->getTranslation('AccountActivationCodeSubject'))
+                    ->subject($this->translateService->getTranslation('AccountActivationCodeSubject'))
                     ->htmlTemplate('emails/register.html.twig')
                     ->context([
                         'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         'code'      => $registerCodeGenerator->getBeforeGenerate(),
                         'userEmail' => $user->getUserInformation()->getEmail(),
                         'url'       => $_ENV['BACKEND_URL'],
-                        'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                        'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
-                $mailer->send($email);
+                $this->mailer->send($email);
             }
 
-            $usersLogger->info('user.' . $user->getUserInformation()->getEmail() . 'got new confim email');
+            $this->usersLogger->info('user.' . $user->getUserInformation()->getEmail() . 'got new confim email');
+
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

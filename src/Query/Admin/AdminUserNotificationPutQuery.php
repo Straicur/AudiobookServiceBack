@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use App\Enums\NotificationType;
@@ -8,7 +10,8 @@ use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+use function array_key_exists;
 
 class AdminUserNotificationPutQuery
 {
@@ -32,44 +35,10 @@ class AdminUserNotificationPutQuery
     )]
     private int $notificationUserType;
 
+    /**
+     * @Assert\Collection(fields={})
+     */
     protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'text'        => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Text is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Type('string'),
-                ]),
-                'categoryKey' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'CategoryKey is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Type('string'),
-                ]),
-                'actionId'    => new Assert\Optional([
-                    new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Uuid(),
-                ]),
-                'userId'      => new Assert\Optional([
-                    new Assert\NotBlank(message: 'UserId is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Uuid(),
-                ]),
-                'active'      => new Assert\Optional([
-                    new Assert\NotNull(message: 'Active is empty'),
-                    new Assert\Type('boolean'),
-                ]),
-                'dateActive'      => new Assert\Optional([
-                    new Assert\NotBlank(message: 'DateActive is empty'),
-                    new Assert\NotNull(),
-                    new Assert\Type('datetime'),
-                ]),
-            ],
-        ]));
-    }
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'desc', nullable: true),

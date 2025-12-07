@@ -1,19 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
 class AdminSystemRoleModel
 {
-    private string $name;
-    private int $type;
-
-    public function __construct(string $name, int $type)
-    {
-        $this->name = $name;
-        $this->type = $type;
-    }
+    public function __construct(private string $name, private int $type) {}
 
     public function getName(): string
     {

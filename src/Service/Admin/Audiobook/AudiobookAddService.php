@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Audiobook;
 
@@ -8,20 +8,19 @@ use App\Entity\Audiobook;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\Serialization\AudiobookId3TagsModel;
 use App\Repository\AudiobookCategoryRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
+
+use function array_key_exists;
 
 class AudiobookAddService implements AudiobookAddServiceInterface
 {
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
-        private readonly LoggerInterface $requestLogger,
-    ) {
-    }
+    ) {}
 
     public function getAudiobookId3Tags(array $ID3JsonData): AudiobookId3TagsModel
     {
@@ -39,7 +38,7 @@ class AudiobookAddService implements AudiobookAddServiceInterface
         return $id3SerializeModel;
     }
 
-    public function addAudiobookCategories(Audiobook $audiobook, $additionalData, array &$audiobookCategories): void
+    public function addAudiobookCategories(Audiobook $audiobook, array $additionalData, array &$audiobookCategories): void
     {
         if (array_key_exists('categories', $additionalData)) {
             $categories = $additionalData['categories'];
@@ -47,11 +46,11 @@ class AudiobookAddService implements AudiobookAddServiceInterface
             foreach ($categories as $category) {
                 $audiobookCategory = $this->audiobookCategoryRepository->find(Uuid::fromString($category));
 
-                if ($audiobookCategory !== null) {
+                if (null !== $audiobookCategory) {
                     $audiobook->addCategory($audiobookCategory);
 
                     $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                        (string)$audiobookCategory->getId(),
+                        (string) $audiobookCategory->getId(),
                         $audiobookCategory->getName(),
                         $audiobookCategory->getActive(),
                         $audiobookCategory->getCategoryKey(),

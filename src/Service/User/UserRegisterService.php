@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\User;
 
@@ -31,6 +31,8 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 
+use function count;
+
 class UserRegisterService implements UserRegisterServiceInterface
 {
     public function __construct(
@@ -46,8 +48,7 @@ class UserRegisterService implements UserRegisterServiceInterface
         private readonly UserPasswordRepository $userPasswordRepository,
         private readonly TranslateServiceInterface $translateService,
         private readonly UserSettingsRepository $userSettingsRepository,
-    ) {
-    }
+    ) {}
 
     public function checkExistingUsers(RegisterQuery $registerQuery, Request $request): void
     {
@@ -55,7 +56,7 @@ class UserRegisterService implements UserRegisterServiceInterface
             'email' => $registerQuery->getEmail(),
         ]);
 
-        if ($existingEmail !== null) {
+        if (null !== $existingEmail) {
             $this->endpointLogger->error('Email already exists');
             $this->translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$this->translateService->getTranslation('EmailExists')]);
@@ -65,7 +66,7 @@ class UserRegisterService implements UserRegisterServiceInterface
             'phoneNumber' => $registerQuery->getPhoneNumber(),
         ]);
 
-        if ($existingPhone !== null) {
+        if (null !== $existingPhone) {
             $this->endpointLogger->error('Phone number already exists');
             $this->translateService->setPreferredLanguage($request);
             throw new DataNotFoundException([$this->translateService->getTranslation('PhoneNumberExists')]);
@@ -109,7 +110,7 @@ class UserRegisterService implements UserRegisterServiceInterface
         $additionalData = $registerQuery->getAdditionalData();
         $birthday = $additionalData['birthday'] ?? null;
 
-        if ($birthday !== null) {
+        if (null !== $birthday) {
             $newUserInformation->setBirthday($birthday);
         }
 
@@ -152,8 +153,8 @@ class UserRegisterService implements UserRegisterServiceInterface
 
     public function sendMail(User $newUser, string $registerCode, Request $request): void
     {
-        if ($_ENV['APP_ENV'] !== 'test') {
-            $email = (new TemplatedEmail())
+        if ('test' !== $_ENV['APP_ENV']) {
+            $email = new TemplatedEmail()
                 ->from($_ENV['INSTITUTION_EMAIL'])
                 ->to($newUser->getUserInformation()->getEmail())
                 ->subject($this->translateService->getTranslation('AccountActivationCodeSubject'))
@@ -163,7 +164,7 @@ class UserRegisterService implements UserRegisterServiceInterface
                     'code'      => $registerCode,
                     'userEmail' => $newUser->getUserInformation()->getEmail(),
                     'url'       => $_ENV['BACKEND_URL'],
-                    'lang'      => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $this->translateService->getLocate(),
+                    'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                 ]);
 
             $this->mailer->send($email);

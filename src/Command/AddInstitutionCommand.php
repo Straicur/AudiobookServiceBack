@@ -1,17 +1,20 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
 use App\Entity\Institution;
 use App\Repository\InstitutionRepository;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function count;
 
 #[AsCommand(
     name       : 'audiobookservice:institution:add',
@@ -25,6 +28,7 @@ class AddInstitutionCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addArgument('phoneNumber', InputArgument::REQUIRED, 'Institution phoneNumber');
@@ -32,6 +36,7 @@ class AddInstitutionCommand extends Command
         $this->addArgument('maxUsers', InputArgument::REQUIRED, 'Institution max number of users');
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -50,7 +55,7 @@ class AddInstitutionCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int)$maxAdmins, (int)$maxUsers));
+        $this->institutionRepository->add(new Institution($_ENV['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int) $maxAdmins, (int) $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

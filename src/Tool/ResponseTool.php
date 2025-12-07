@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tool;
 
@@ -9,6 +9,8 @@ use App\Serializer\JsonSerializer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+
+use function strlen;
 
 class ResponseTool
 {
@@ -20,7 +22,7 @@ class ResponseTool
 
         $serializeService = new JsonSerializer();
 
-        $serializedObject = $responseModel !== null ? $serializeService->serialize($responseModel) : null;
+        $serializedObject = null !== $responseModel ? $serializeService->serialize($responseModel) : null;
 
         if ($serializedObject) {
             $headers['Content-Length'] = strlen($serializedObject);
@@ -35,7 +37,7 @@ class ResponseTool
 
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            basename($fileDir),
+            basename((string) $fileDir),
         );
 
         if ($delete) {

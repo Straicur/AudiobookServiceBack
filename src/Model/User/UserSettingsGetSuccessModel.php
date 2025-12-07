@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
@@ -9,22 +9,11 @@ use DateTime;
 
 class UserSettingsGetSuccessModel implements ModelInterface
 {
-    private string $email;
-    private string $phoneNumber;
-    private string $firstname;
-    private string $lastname;
-    private bool $edited;
     private ?int $editableDate = null;
+
     private ?int $birthday = null;
 
-    public function __construct(string $email, string $phoneNumber, string $firstname, string $lastname, bool $edited)
-    {
-        $this->email = $email;
-        $this->phoneNumber = $phoneNumber;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->edited = $edited;
-    }
+    public function __construct(private string $email, private string $phoneNumber, private string $firstname, private string $lastname, private bool $edited) {}
 
     public function getPhoneNumber(): string
     {

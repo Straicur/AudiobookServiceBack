@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Serializer;
 
@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class JsonSerializer implements SerializerInterface
 {
-    private Serializer $serializer;
+    private readonly Serializer $serializer;
 
     public function __construct()
     {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\ValueGenerator;
 
@@ -9,18 +9,18 @@ use App\Model\Common\AudiobookCommentModel;
 use App\Model\Common\AudiobookCommentsModel;
 use App\Repository\AudiobookUserCommentLikeRepository;
 use App\Repository\AudiobookUserCommentRepository;
+use Override;
 use Symfony\Component\Uid\Uuid;
 
 class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 {
     public function __construct(
-        private array $elements,
+        private readonly array $elements,
         private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository,
         private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
         private User $user,
         private bool $admin,
-    ) {
-    }
+    ) {}
 
     private function buildTree(
         array $elements,
@@ -58,14 +58,14 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
 
                 $child = new AudiobookCommentsModel(
                     $userModel,
-                    (string)$element->getId(),
+                    (string) $element->getId(),
                     $element->getComment(),
                     $element->getEdited(),
                     $myComment,
                 );
 
-                if ($parentId !== null) {
-                    $child->setParentId((string)$parentId);
+                if (null !== $parentId) {
+                    $child->setParentId((string) $parentId);
                 }
 
                 if ($admin) {
@@ -83,6 +83,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
                     } else {
                         $unlikes = +1;
                     }
+
                     if ($commentLike->getUser()->getId() === $user->getId()) {
                         $userLike = $commentLike->getLiked();
                     }
@@ -110,6 +111,7 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
         return $branch;
     }
 
+    #[Override]
     public function generate(): array
     {
         return $this->buildTree($this->getElements(), $this->getUser(), $this->isAdmin());
@@ -121,11 +123,6 @@ class BuildAudiobookCommentTreeGenerator implements ValueGeneratorInterface
     private function getElements(): array
     {
         return $this->elements;
-    }
-
-    private function setElements(array $elements): void
-    {
-        $this->elements = $elements;
     }
 
     public function getUser(): User

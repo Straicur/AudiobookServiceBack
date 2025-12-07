@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Report;
 
 use App\Builder\NotificationBuilder;
 use App\Entity\Report;
+use App\Entity\User;
 use App\Enums\NotificationType;
 use App\Enums\NotificationUserType;
 use App\Enums\ReportType;
@@ -22,6 +23,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class AdminReportRejectService implements AdminReportRejectServiceInterface
 {
     private AdminReportRejectQuery $adminReportRejectQuery;
+
     private Request $request;
 
     public function __construct(
@@ -30,8 +32,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
         private readonly NotificationRepository $notificationRepository,
         private readonly MailerInterface $mailer,
         private readonly TranslateServiceInterface $translateService,
-    ) {
-    }
+    ) {}
 
     public function setAdminReportRejectQuery(AdminReportRejectQuery $adminReportRejectQuery): AdminReportRejectService
     {
@@ -50,9 +51,9 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
     public function sendReportResponseToAll(Report $report): void
     {
         $allReports = $this->reportRepository->findBy([
-            "actionId" => $report->getActionId(),
-            "accepted" => false,
-            "denied"   => false,
+            'actionId' => $report->getActionId(),
+            'accepted' => false,
+            'denied'   => false,
         ]);
 
         foreach ($allReports as $allReport) {
@@ -71,7 +72,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
             $this->reportRepository->add($report);
         }
 
-        if ($report->getUser()) {
+        if ($report->getUser() instanceof User) {
             $notificationBuilder = new NotificationBuilder();
 
             $notification = $notificationBuilder
@@ -85,8 +86,8 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
             $this->notificationRepository->add($notification);
         }
 
-        if ($_ENV['APP_ENV'] !== 'test' && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
-            $email = (new TemplatedEmail())
+        if ('test' !== $_ENV['APP_ENV'] && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
+            $email = new TemplatedEmail()
                 ->from($_ENV['INSTITUTION_EMAIL'])
                 ->to($report->getEmail())
                 ->subject($this->translateService->getTranslation('ReportDeniedSubject'))
@@ -94,7 +95,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
                 ->context([
                     'desc'        => $report->getDescription(),
                     'explanation' => $this->adminReportRejectQuery->getAnswer(),
-                    'lang'        => $this->request->getPreferredLanguage() !== null ? $this->request->getPreferredLanguage() : $this->translateService->getLocate(),
+                    'lang'        => $this->request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                 ]);
             $this->mailer->send($email);
         }

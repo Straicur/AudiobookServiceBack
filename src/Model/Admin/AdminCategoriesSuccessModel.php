@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -18,7 +18,7 @@ class AdminCategoriesSuccessModel implements ModelInterface
      */
     public function __construct(?array $categories = null)
     {
-        if ($categories !== null) {
+        if (null !== $categories) {
             $this->categories = $categories;
         }
     }

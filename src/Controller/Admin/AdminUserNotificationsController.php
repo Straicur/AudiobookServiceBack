@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -38,6 +38,8 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function count;
+
 #[OA\Response(
     response   : 400,
     description: 'JSON Data Invalid',
@@ -59,10 +61,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminUserNotifications')]
-#[Route('/api/admin')]
 class AdminUserNotificationsController extends AbstractController
 {
-    #[Route('/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
+    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly NotificationRepository $notificationRepository, private readonly TranslateServiceInterface $translateService, private readonly SerializerInterface $serializer, private readonly AdminNotificationAddServiceInterface $adminNotificationAddService, private readonly TagAwareCacheInterface $stockCache, private readonly AdminNotificationPatchServiceInterface $adminNotificationPatchService) {}
+
+    #[Route('/api/admin/user/notifications', name: 'adminUserNotifications', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of notifications in system',
@@ -83,19 +86,14 @@ class AdminUserNotificationsController extends AbstractController
     )]
     public function adminUserNotifications(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        TranslateServiceInterface $translateService,
-        SerializerInterface $serializer,
     ): Response {
-        $adminUserNotificationsQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
+        $adminUserNotificationsQuery = $this->requestService->getRequestBodyContent($request, AdminUserNotificationsQuery::class);
 
         if ($adminUserNotificationsQuery instanceof AdminUserNotificationsQuery) {
             $notificationSearchData = $adminUserNotificationsQuery->getSearchData();
 
             $notificationsSearchModel = new AdminNotificationsSearchModel();
-            $serializer->deserialize(
+            $this->serializer->deserialize(
                 json_encode($notificationSearchData),
                 AdminNotificationsSearchModel::class,
                 'json',
@@ -105,7 +103,7 @@ class AdminUserNotificationsController extends AbstractController
                 ],
             );
 
-            $allUserSystemNotifications = $notificationRepository->getSearchNotifications($notificationsSearchModel);
+            $allUserSystemNotifications = $this->notificationRepository->getSearchNotifications($notificationsSearchModel);
 
             $systemNotifications = [];
 
@@ -128,18 +126,18 @@ class AdminUserNotificationsController extends AbstractController
                 $systemNotifications,
                 $adminUserNotificationsQuery->getPage(),
                 $adminUserNotificationsQuery->getLimit(),
-                (int)ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()),
+                (int) ceil(count($allUserSystemNotifications) / $adminUserNotificationsQuery->getLimit()),
             );
 
             return ResponseTool::getResponse($systemNotificationSuccessModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
+    #[Route('/api/admin/user/notification', name: 'adminUserNotificationPut', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Put(
         description: 'Endpoint is adding notification',
@@ -159,30 +157,25 @@ class AdminUserNotificationsController extends AbstractController
     )]
     public function adminUserNotificationPut(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AdminNotificationAddServiceInterface $adminNotificationAddService,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserNotificationPutQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
+        $adminUserNotificationPutQuery = $this->requestService->getRequestBodyContent($request, AdminUserNotificationPutQuery::class);
 
         if ($adminUserNotificationPutQuery instanceof AdminUserNotificationPutQuery) {
-            $adminNotificationAddService
+            $this->adminNotificationAddService
                 ->setData($adminUserNotificationPutQuery, $request)
                 ->addNotification();
 
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
+            $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
+    #[Route('/api/admin/user/notification', name: 'adminUserNotificationPatch', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is editing notification',
@@ -202,30 +195,25 @@ class AdminUserNotificationsController extends AbstractController
     )]
     public function adminUserNotificationPatch(
         Request $request,
-        RequestServiceInterface $requestService,
-        AdminNotificationPatchServiceInterface $adminNotificationPatchService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserNotificationPatchQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
+        $adminUserNotificationPatchQuery = $this->requestService->getRequestBodyContent($request, AdminUserNotificationPatchQuery::class);
 
         if ($adminUserNotificationPatchQuery instanceof AdminUserNotificationPatchQuery) {
-            $adminNotificationPatchService
+            $this->adminNotificationPatchService
                 ->setData($adminUserNotificationPatchQuery, $request)
                 ->editNotification();
 
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
+            $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
+    #[Route('/api/admin/user/notification/delete', name: 'adminUserNotificationDelete', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is deleting notification',
@@ -245,34 +233,29 @@ class AdminUserNotificationsController extends AbstractController
     )]
     public function adminUserNotificationDelete(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        NotificationRepository $notificationRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserNotificationDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
+        $adminUserNotificationDeleteQuery = $this->requestService->getRequestBodyContent($request, AdminUserNotificationDeleteQuery::class);
 
         if ($adminUserNotificationDeleteQuery instanceof AdminUserNotificationDeleteQuery) {
-            $notification = $notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
+            $notification = $this->notificationRepository->find($adminUserNotificationDeleteQuery->getNotificationId());
 
-            if ($notification === null) {
-                $endpointLogger->error('Notification dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('NotificationDontExists')]);
+            if (null === $notification) {
+                $this->endpointLogger->error('Notification dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('NotificationDontExists')]);
             }
 
             $notification->setDeleted($adminUserNotificationDeleteQuery->isDelete());
 
-            $notificationRepository->add($notification);
+            $this->notificationRepository->add($notification);
 
-            $stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
+            $this->stockCache->invalidateTags([UserStockCacheTags::USER_NOTIFICATIONS->value]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

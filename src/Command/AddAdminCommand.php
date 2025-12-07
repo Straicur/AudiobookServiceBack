@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
@@ -26,6 +26,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function count;
+use function strlen;
 
 #[AsCommand(
     name       : 'audiobookservice:admin:add',
@@ -63,7 +66,7 @@ class AddAdminCommand extends Command
         $lastname = $input->getArgument('lastname');
         $email = $input->getArgument('email');
         $phone = $input->getArgument('phone');
-        $password = md5($input->getArgument('password'));
+        $password = md5((string) $input->getArgument('password'));
 
         $institution = $this->institutionRepository->findOneBy([
             'name' => $_ENV['INSTITUTION_NAME'],
@@ -75,6 +78,7 @@ class AddAdminCommand extends Command
 
         if ($institution->getMaxAdmins() < count($this->userRepository->getUsersByRole($administrator))) {
             $io->info('To much admins');
+
             return Command::FAILURE;
         }
 
@@ -82,8 +86,9 @@ class AddAdminCommand extends Command
             'email' => $email,
         ]);
 
-        if ($existingEmail !== null) {
+        if (null !== $existingEmail) {
             $io->error('Email exists');
+
             return Command::FAILURE;
         }
 
@@ -91,8 +96,9 @@ class AddAdminCommand extends Command
             'phoneNumber' => $phone,
         ]);
 
-        if ($existingPhone !== null) {
+        if (null !== $existingPhone) {
             $io->error('PhoneNumber exists');
+
             return Command::FAILURE;
         }
 

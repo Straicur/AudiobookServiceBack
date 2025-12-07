@@ -1,25 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
-use App\Model\ModelInterface;
-
 class AudiobookDetailCategoryModel
 {
-    private string $id;
-    private string $name;
-    private bool $active;
-    private string $categoryKey;
-
-    public function __construct(string $id, string $name, bool $active, string $categoryKey)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->active = $active;
-        $this->categoryKey = $categoryKey;
-    }
+    public function __construct(private string $id, private string $name, private bool $active, private string $categoryKey) {}
 
     public function getId(): string
     {

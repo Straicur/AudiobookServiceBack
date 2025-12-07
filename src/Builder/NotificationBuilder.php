@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Builder;
 
@@ -16,20 +16,16 @@ use DateTime;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+
 class NotificationBuilder
 {
-    private Notification $notification;
-
+    /**
+     * @var string[]
+     */
     private array $metaData = [];
 
-    public function __construct(?Notification $notification = null)
-    {
-        if ($notification !== null) {
-            $this->notification = $notification;
-        } else {
-            $this->notification = new Notification();
-        }
-    }
+    public function __construct(private readonly ?Notification $notification = new Notification()) {}
 
     public function setType(NotificationType $notificationType): static
     {
@@ -100,23 +96,23 @@ class NotificationBuilder
 
     public static function read(Notification $notification, ?NotificationCheck $notificationCheck = null): NotificationModel
     {
-        $notificationModel = new NotificationModel((string)$notification->getId(), $notification->getType(), null, null, null);
+        $notificationModel = new NotificationModel((string) $notification->getId(), $notification->getType(), null, null, null);
 
         $metaData = $notification->getMetaData();
 
-        if (array_key_exists('user', $metaData) && $metaData['user'] !== null) {
+        if (array_key_exists('user', $metaData) && null !== $metaData['user']) {
             $notificationModel->setUserType($metaData['user']);
         }
 
-        if (array_key_exists('text', $metaData) && $metaData['text'] !== "") {
+        if (array_key_exists('text', $metaData) && '' !== $metaData['text']) {
             $notificationModel->setText($metaData['text']);
         }
 
-        if (array_key_exists('categoryKey', $metaData) && $metaData['categoryKey'] !== "") {
+        if (array_key_exists('categoryKey', $metaData) && '' !== $metaData['categoryKey']) {
             $notificationModel->setCategoryKey($metaData['categoryKey']);
         }
 
-        if ($notificationCheck !== null) {
+        if (null !== $notificationCheck) {
             $notificationModel->setActive($notificationCheck);
         }
 
@@ -154,13 +150,17 @@ class NotificationBuilder
         }
     }
 
+    /**
+     * @param string[] $keys
+     */
     private function checkMetadata(array $keys): bool
     {
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->metaData) || $this->metaData[$key] === null) {
+            if (!array_key_exists($key, $this->metaData) || null === $this->metaData[$key]) {
                 return false;
             }
         }
+
         return true;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -29,11 +29,6 @@ class AudiobookRepository extends ServiceEntityRepository
         parent::__construct($registry, Audiobook::class);
     }
 
-    /**
-     * @param Audiobook $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(Audiobook $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -42,11 +37,6 @@ class AudiobookRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param Audiobook $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(Audiobook $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -74,14 +64,17 @@ class AudiobookRepository extends ServiceEntityRepository
             $qb->innerJoin('a.categories', 'c', Join::WITH, 'c.id IN (:categories)')
                 ->setParameter('categories', $categories);
         }
+
         if ($audiobooksSearchModel->getAuthor() !== null) {
             $qb->andWhere('a.author LIKE :author')
                 ->setParameter('author', '%' . $audiobooksSearchModel->getAuthor() . '%');
         }
+
         if ($audiobooksSearchModel->getTitle() !== null) {
             $qb->andWhere('a.title LIKE :title')
                 ->setParameter('title', '%' . $audiobooksSearchModel->getTitle() . '%');
         }
+
         if ($audiobooksSearchModel->getAlbum() !== null) {
             $qb->andWhere('a.album LIKE :album')
                 ->setParameter('album', '%' . $audiobooksSearchModel->getAlbum() . '%');
@@ -127,49 +120,33 @@ class AudiobookRepository extends ServiceEntityRepository
         if ($audiobooksSearchModel->getOrder() !== null) {
             switch ($audiobooksSearchModel->getOrder()) {
                 case AudiobookOrderSearch::POPULAR->value:
-                {
                     $qb->innerJoin('a.audiobookInfos', 'ai')
                         ->groupBy('a')
                         ->orderBy('COUNT(ai)', 'DESC');
                     break;
-                }
                 case AudiobookOrderSearch::LEST_POPULAR->value:
-                {
                     $qb->innerJoin('a.audiobookInfos', 'ai')
                         ->groupBy('a')
                         ->orderBy('COUNT(ai)', 'ASC');
                     break;
-                }
                 case AudiobookOrderSearch::LATEST->value:
-                {
                     $qb->orderBy('a.dateAdd', 'DESC');
                     break;
-                }
                 case AudiobookOrderSearch::OLDEST->value:
-                {
                     $qb->orderBy('a.dateAdd', 'ASC');
                     break;
-                }
                 case AudiobookOrderSearch::ALPHABETICAL_DESC->value:
-                {
                     $qb->orderBy('a.title', 'DESC');
                     break;
-                }
                 case AudiobookOrderSearch::ALPHABETICAL_ASC->value:
-                {
                     $qb->orderBy('a.title', 'ASC');
                     break;
-                }
                 case AudiobookOrderSearch::TOP_RATED->value:
-                {
                     $qb->orderBy('a.avgRating', 'DESC');
                     break;
-                }
                 case AudiobookOrderSearch::WORST_RATED->value:
-                {
                     $qb->orderBy('a.avgRating', 'ASC');
                     break;
-                }
             }
         }
 
@@ -186,7 +163,7 @@ class AudiobookRepository extends ServiceEntityRepository
             ->where('a.active = true')
             ->setParameter('category', $category->getId()->toBinary());
 
-        if ($age !== null) {
+        if (null !== $age) {
             $qb->andWhere('a.age <= :age')
                 ->setParameter('age', $age->value);
         }
@@ -251,7 +228,7 @@ class AudiobookRepository extends ServiceEntityRepository
                 ->setParameter('categoryKey', $categoryKey);
         }
 
-        if ($age !== null) {
+        if (null !== $age) {
             $qb->andWhere('a.age <= :age')
                 ->setParameter('age', $age->value);
         }

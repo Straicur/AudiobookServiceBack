@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Exception;
 
@@ -15,33 +15,27 @@ class InvalidJsonDataException extends Exception implements ResponseExceptionInt
 {
     protected $message;
 
-    private ?ConstraintViolationListInterface $validationErrors;
-
-    private ?array $errors;
-
     /**
      * @param string[]|null $errors
      */
-    public function __construct(TranslateServiceInterface $translateService, ?ConstraintViolationListInterface $validationErrors = null, ?array $errors = null)
+    public function __construct(TranslateServiceInterface $translateService, private readonly ?ConstraintViolationListInterface $validationErrors = null, private readonly ?array $errors = null)
     {
         parent::__construct('Bad request');
 
         $this->message = $translateService->getTranslation('InvalidJson');
-        $this->validationErrors = $validationErrors;
-        $this->errors = $errors;
     }
 
     public function getResponse(): Response
     {
         $validationErrors = [];
 
-        for ($i = 0; $i < $this->validationErrors?->count(); $i++) {
+        for ($i = 0; $this->validationErrors?->count() > $i; ++$i) {
             $validationError = $this->validationErrors->get($i);
 
             $validationErrors[] = '[' . $validationError->getPropertyPath() . '] -> ' . $validationError->getMessage();
         }
 
-        if ($this->errors !== null) {
+        if (null !== $this->errors) {
             foreach ($this->errors as $error) {
                 $validationErrors[] = $error;
             }

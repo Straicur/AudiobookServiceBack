@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -11,10 +11,6 @@ class PermissionNotGrantedModel implements ModelInterface
     private string $error = 'Permission not granted';
 
     private string $description = "Authorized user don't have permission to do this";
-
-    public function __construct()
-    {
-    }
 
     public function getError(): string
     {

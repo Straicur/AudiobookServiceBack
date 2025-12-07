@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -36,7 +38,7 @@ class User
     private ?UserInformation $userInformation;
 
     #[ORM\OneToOne(targetEntity: UserSettings::class, mappedBy: 'user', cascade: ['persist'])]
-    private ?UserSettings $userSettings;
+    private ?UserSettings $userSettings = null;
 
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $roles;
@@ -45,7 +47,7 @@ class User
     private ?MyList $myList;
 
     #[ORM\OneToOne(targetEntity: ProposedAudiobooks::class, mappedBy: 'user', cascade: ['persist'])]
-    private ?ProposedAudiobooks $proposedAudiobooks;
+    private ?ProposedAudiobooks $proposedAudiobooks = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $edited;
@@ -76,6 +78,7 @@ class User
     public function setId(Uuid $id): User
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -87,6 +90,7 @@ class User
     public function setDateCreate(DateTime $dateCreate): User
     {
         $this->dateCreate = $dateCreate;
+
         return $this;
     }
 
@@ -98,6 +102,7 @@ class User
     public function setActive(bool $active): User
     {
         $this->active = $active;
+
         return $this;
     }
 
@@ -109,6 +114,7 @@ class User
     public function setBanned(bool $banned): User
     {
         $this->banned = $banned;
+
         return $this;
     }
 

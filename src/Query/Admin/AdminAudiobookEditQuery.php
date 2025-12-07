@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use App\Enums\AudiobookAgeRange;
@@ -184,7 +186,7 @@ class AdminAudiobookEditQuery
             2 => AudiobookAgeRange::FROM7TO12,
             3 => AudiobookAgeRange::FROM12TO16,
             4 => AudiobookAgeRange::FROM16TO18,
-            5 => AudiobookAgeRange::ABOVE18
+            5 => AudiobookAgeRange::ABOVE18,
         };
     }
 

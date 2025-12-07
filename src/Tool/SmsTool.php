@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tool;
 
@@ -12,7 +12,7 @@ class SmsTool
 {
     public function sendSms(string $phone, string $content): bool
     {
-        if ($_ENV['APP_ENV'] !== 'test') {
+        if ('test' !== $_ENV['APP_ENV']) {
             $basic = new Basic($_ENV['SMS_KEY'], $_ENV['SMS_SECRET']);
             $client = new Client($basic);
 

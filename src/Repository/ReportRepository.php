@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -12,6 +12,8 @@ use App\Model\Serialization\AdminReportsSearchModel;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function in_array;
 
 /**
  * @extends ServiceEntityRepository<Report>
@@ -28,11 +30,6 @@ class ReportRepository extends ServiceEntityRepository
         parent::__construct($registry, Report::class);
     }
 
-    /**
-     * @param Report $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(Report $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -41,11 +38,6 @@ class ReportRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param Report $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(Report $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -86,7 +78,7 @@ class ReportRepository extends ServiceEntityRepository
             ->andWhere('(r.type  = :type)')
             ->andWhere('( :dateFrom <= r.dateAdd AND :dateTo >= r.dateAdd)');
 
-        if (($type === ReportType::COMMENT || $type === ReportType::AUDIOBOOK_PROBLEM || $type === ReportType::CATEGORY_PROBLEM) && $actionId !== null) {
+        if (in_array($type, [ReportType::COMMENT, ReportType::AUDIOBOOK_PROBLEM, ReportType::CATEGORY_PROBLEM], true) && null !== $actionId) {
             $qb->andWhere('r.actionId LIKE :actionId')
                 ->setParameter('actionId', '%' . $actionId . '%');
         }
@@ -116,7 +108,7 @@ class ReportRepository extends ServiceEntityRepository
                 ->setParameter('desc', $adminReportsSearchModel->getDesc());
         }
 
-        if ($adminReportsSearchModel->getEmail()  !== null) {
+        if ($adminReportsSearchModel->getEmail() !== null) {
             $qb->andWhere('r.email LIKE :email')
                 ->setParameter('email', $adminReportsSearchModel->getEmail());
         }

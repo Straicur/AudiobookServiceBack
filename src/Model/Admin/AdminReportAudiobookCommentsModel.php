@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,10 +8,8 @@ use App\Model\Common\AudiobookCommentModel;
 
 class AdminReportAudiobookCommentsModel
 {
-    private AudiobookCommentModel $userModel;
-    private string $comment;
-    private bool $isReportedComment;
     private ?bool $deleted = null;
+
     private ?string $parentId = null;
 
     /**
@@ -19,12 +17,7 @@ class AdminReportAudiobookCommentsModel
      */
     private array $children = [];
 
-    public function __construct(AudiobookCommentModel $userModel, string $comment, bool $isReportedComment = false)
-    {
-        $this->userModel = $userModel;
-        $this->comment = $comment;
-        $this->isReportedComment = $isReportedComment;
-    }
+    public function __construct(private AudiobookCommentModel $userModel, private string $comment, private bool $isReportedComment = false) {}
 
     /**
      * @return AdminReportAudiobookCommentsModel[]

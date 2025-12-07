@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -23,11 +23,6 @@ class UserInformationRepository extends ServiceEntityRepository
         parent::__construct($registry, UserInformation::class);
     }
 
-    /**
-     * @param UserInformation $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(UserInformation $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -37,11 +32,6 @@ class UserInformationRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param UserInformation $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(UserInformation $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

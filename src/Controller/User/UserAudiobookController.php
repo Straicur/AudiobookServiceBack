@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\User;
 
@@ -61,6 +61,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function count;
+
 #[OA\Response(
     response   : 400,
     description: 'JSON Data Invalid',
@@ -82,10 +84,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserAudiobook')]
-#[Route('/api/user')]
 class UserAudiobookController extends AbstractController
 {
-    #[Route('/audiobooks', name: 'userAudiobooks', methods: ['POST'])]
+    public function __construct(private readonly RequestServiceInterface $requestService, private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly LoggerInterface $endpointLogger, private readonly AudiobookRepository $audiobookRepository, private readonly AudiobookCategoryRepository $audiobookCategoryRepository, private readonly TranslateServiceInterface $translateService, private readonly TagAwareCacheInterface $stockCache, private readonly MyListRepository $listRepository, private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository, private readonly AudiobookInfoRepository $audiobookInfoRepository, private readonly AudiobookRatingRepository $audiobookRatingRepository, private readonly MyListRepository $myListRepository, private readonly AudiobookRatingRepository $ratingRepository) {}
+
+    #[Route('/api/user/audiobooks', name: 'userAudiobooks', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of categories with audiobooks',
@@ -106,34 +109,25 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobooks(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $userAudiobooksQuery = $requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
+        $userAudiobooksQuery = $this->requestService->getRequestBodyContent($request, UserAudiobooksQuery::class);
 
         if ($userAudiobooksQuery instanceof UserAudiobooksQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $successModel = $stockCache->get(
+            $successModel = $this->stockCache->get(
                 UserCacheKeys::USER_AUDIOBOOKS->value . $user->getId() . '_' . $userAudiobooksQuery->getPage() . $userAudiobooksQuery->getLimit(),
                 function (ItemInterface $item) use (
                     $user,
-                    $userAudiobooksQuery,
-                    $audiobookCategoryRepository,
-                    $audiobookRepository
-                ) {
+                    $userAudiobooksQuery
+                ): UserAudiobooksSuccessModel {
                     $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
                     $item->tag(UserStockCacheTags::USER_AUDIOBOOKS->value);
 
                     $minResult = $userAudiobooksQuery->getPage() * $userAudiobooksQuery->getLimit();
                     $maxResult = $userAudiobooksQuery->getLimit() + $minResult;
 
-                    $allCategories = $audiobookCategoryRepository->getCategoriesByCountAudiobooks();
+                    $allCategories = $this->audiobookCategoryRepository->getCategoriesByCountAudiobooks();
 
                     $successModel = new UserAudiobooksSuccessModel();
 
@@ -150,9 +144,9 @@ class UserAudiobookController extends AbstractController
                         }
 
                         if ($index < $maxResult) {
-                            $audiobooks = $audiobookRepository->getActiveCategoryAudiobooks($category, $age);
+                            $audiobooks = $this->audiobookRepository->getActiveCategoryAudiobooks($category, $age);
 
-                            if (count($audiobooks) === 0) {
+                            if ([] === $audiobooks) {
                                 continue;
                             }
 
@@ -160,7 +154,7 @@ class UserAudiobookController extends AbstractController
 
                             foreach ($audiobooks as $audiobook) {
                                 $categoryModel->addAudiobook(new UserAudiobookModel(
-                                    (string)$audiobook->getId(),
+                                    (string) $audiobook->getId(),
                                     $audiobook->getTitle(),
                                     $audiobook->getAuthor(),
                                     $audiobook->getParts(),
@@ -168,6 +162,7 @@ class UserAudiobookController extends AbstractController
                                     $audiobook->getImgFile(),
                                 ));
                             }
+
                             $successModel->addCategory($categoryModel);
                         } else {
                             break;
@@ -177,19 +172,21 @@ class UserAudiobookController extends AbstractController
                     $successModel->setPage($userAudiobooksQuery->getPage());
                     $successModel->setLimit($userAudiobooksQuery->getLimit());
 
-                    $successModel->setMaxPage((int)ceil(count($allCategories) / $userAudiobooksQuery->getLimit()));
+                    $successModel->setMaxPage((int) ceil(count($allCategories) / $userAudiobooksQuery->getLimit()));
+
                     return $successModel;
                 }
             );
+
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobooks/search', name: 'userAudiobooksSearch', methods: ['POST'])]
+    #[Route('/api/user/audiobooks/search', name: 'userAudiobooksSearch', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning list of audiobooks by title',
@@ -210,30 +207,25 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobooksSearch(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $userAudiobooksSearchQuery = $requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
+        $userAudiobooksSearchQuery = $this->requestService->getRequestBodyContent($request, UserAudiobooksSearchQuery::class);
 
         if ($userAudiobooksSearchQuery instanceof UserAudiobooksSearchQuery) {
             $age = null;
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
             if ($user->getUserInformation()->getBirthday() !== null) {
                 $userParentalControlTool = new UserParentalControlTool();
                 $age = $userParentalControlTool->getUserAudiobookAgeValue($user);
             }
 
-            $allAudiobooks = $audiobookRepository->searchAudiobooksByNameOrKey($userAudiobooksSearchQuery->getTitle(), $userAudiobooksSearchQuery->getCategoryKey(), $age);
+            $allAudiobooks = $this->audiobookRepository->searchAudiobooksByNameOrKey($userAudiobooksSearchQuery->getTitle(), $userAudiobooksSearchQuery->getCategoryKey(), $age);
 
             $successModel = new UserAudiobooksSearchSuccessModel();
 
             foreach ($allAudiobooks as $audiobook) {
                 $audiobookModel = new UserAudiobookDetailModel(
-                    (string)$audiobook->getId(),
+                    (string) $audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
@@ -254,12 +246,12 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/proposed/audiobooks', name: 'userProposedAudiobooks', methods: ['GET'])]
+    #[Route('/api/user/proposed/audiobooks', name: 'userProposedAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of proposed audiobooks',
@@ -272,15 +264,12 @@ class UserAudiobookController extends AbstractController
             ),
         ]
     )]
-    public function userProposedAudiobooks(
-        AuthorizedUserServiceInterface $authorizedUserService,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $user = $authorizedUserService::getAuthorizedUser();
-
-        $successModel = $stockCache->get(
+    public function userProposedAudiobooks(): Response
+    {
+        $user = $this->authorizedUserService::getAuthorizedUser();
+        $successModel = $this->stockCache->get(
             UserCacheKeys::USER_PROPOSED_AUDIOBOOKS->value . $user->getId(),
-            function (ItemInterface $item) use ($user) {
+            function (ItemInterface $item) use ($user): UserProposedAudiobooksSuccessModel {
                 $item->expiresAfter(CacheValidTime::DAY->value);
                 $item->tag(UserStockCacheTags::USER_PROPOSED_AUDIOBOOKS->value);
 
@@ -291,7 +280,7 @@ class UserAudiobookController extends AbstractController
                 foreach ($audiobooks as $audiobook) {
                     if ($audiobook->getActive()) {
                         $audiobookModel = new UserAudiobookDetailModel(
-                            (string)$audiobook->getId(),
+                            (string) $audiobook->getId(),
                             $audiobook->getTitle(),
                             $audiobook->getAuthor(),
                             $audiobook->getParts(),
@@ -313,10 +302,11 @@ class UserAudiobookController extends AbstractController
                 return $successModel;
             }
         );
+
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
+    #[Route('/api/user/audiobook/details', name: 'userAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning details of given audiobook',
@@ -337,97 +327,81 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookDetails(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        MyListRepository $listRepository,
-        AudiobookUserCommentRepository $audiobookUserCommentRepository,
-        AudiobookInfoRepository $audiobookInfoRepository,
-        AudiobookRatingRepository $audiobookRatingRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $userAudiobookDetailsQuery = $requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
+        $userAudiobookDetailsQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookDetailsQuery::class);
 
         if ($userAudiobookDetailsQuery instanceof UserAudiobookDetailsQuery) {
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId(
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId(
                 $userAudiobookDetailsQuery->getAudiobookId(),
                 $userAudiobookDetailsQuery->getCategoryKey()
             );
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            $user = $authorizedUserService::getAuthorizedUser();
-            $successModel = $stockCache->get(
+            $user = $this->authorizedUserService::getAuthorizedUser();
+            $successModel = $this->stockCache->get(
                 UserCacheKeys::USER_AUDIOBOOK->value . $user->getId() . '_' . $audiobook->getId(),
                 function (ItemInterface $item) use (
-                    $audiobookUserCommentRepository,
-                    $audiobookInfoRepository,
                     $user,
-                    $listRepository,
-                    $audiobook,
-                    $audiobookRatingRepository,
-                    $audiobookCategoryRepository
-                ) {
+                    $audiobook
+                ): UserAudiobookDetailsSuccessModel {
                     $item->expiresAfter(CacheValidTime::HALF_A_DAY->value);
                     $item->tag(UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value);
 
-                    $categories = $audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
+                    $categories = $this->audiobookCategoryRepository->getAudiobookActiveCategories($audiobook);
 
                     $audiobookCategories = [];
 
                     foreach ($categories as $category) {
                         $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                            (string)$category->getId(),
+                            (string) $category->getId(),
                             $category->getName(),
                             $category->getActive(),
                             $category->getCategoryKey(),
                         );
                     }
 
-                    $inList = $listRepository->getAudiobookInMyList($user, $audiobook);
+                    $inList = $this->listRepository->getAudiobookInMyList($user, $audiobook);
 
-                    $audiobookInfos = $audiobookInfoRepository->findBy([
-                    'audiobook' => $audiobook->getId(),
-                    'watched'   => true,
-                    'user'      => $user->getId(),
+                    $audiobookInfos = $this->audiobookInfoRepository->findBy([
+                        'audiobook' => $audiobook->getId(),
+                        'watched'   => true,
+                        'user'      => $user->getId(),
                     ]);
 
-                    $parentAudiobookUserComments = $audiobookUserCommentRepository->findBy([
-                    'audiobook' => $audiobook->getId(),
-                    'deleted'   => false,
-                    'parent' => null,
+                    $parentAudiobookUserComments = $this->audiobookUserCommentRepository->findBy([
+                        'audiobook' => $audiobook->getId(),
+                        'deleted'   => false,
+                        'parent'    => null,
                     ]);
 
-                    $childrenAudiobookUserComments = $audiobookUserCommentRepository->getAllActiveChildrenAudiobookComments($audiobook);
+                    $childrenAudiobookUserComments = $this->audiobookUserCommentRepository->getAllActiveChildrenAudiobookComments($audiobook);
 
                     $comments = count($parentAudiobookUserComments) + count($childrenAudiobookUserComments);
 
-                    $userRating = $audiobookRatingRepository->findOneBy([
+                    $userRating = $this->audiobookRatingRepository->findOneBy([
                         'audiobook' => $audiobook->getId(),
                         'user'      => $user->getId(),
                     ]);
 
                     $successModel = new UserAudiobookDetailsSuccessModel(
-                        (string)$audiobook->getId(),
+                        (string) $audiobook->getId(),
                         $audiobook->getTitle(),
                         $audiobook->getAuthor(),
                         $audiobook->getVersion(),
                         $audiobook->getAlbum(),
                         $audiobook->getYear(),
-                        (string)$audiobook->getDuration(),
+                        (string) $audiobook->getDuration(),
                         $audiobook->getParts(),
                         $audiobook->getDescription(),
                         $audiobook->getAge(),
@@ -435,23 +409,23 @@ class UserAudiobookController extends AbstractController
                         $inList,
                         $comments,
                         $audiobook->getAvgRating(),
-                        count($audiobookRatingRepository->findBy([
-                        'audiobook' => $audiobook->getId(),
+                        count($this->audiobookRatingRepository->findBy([
+                            'audiobook' => $audiobook->getId(),
                         ])),
                         $audiobook->getImgFile(),
                     );
 
                     $audiobookInfosAmount = count($audiobookInfos);
 
-                    if ($audiobookInfos !== null && $audiobookInfosAmount >= 1 && $audiobookInfosAmount >= $audiobook->getParts()) {
+                    if (null !== $audiobookInfos && 1 <= $audiobookInfosAmount && $audiobook->getParts() <= $audiobookInfosAmount) {
                         $successModel->setCanRate(true);
                     }
 
-                    if ($audiobookInfosAmount >= 1 && (floor($audiobook->getParts() / 2) <= $audiobookInfosAmount || $audiobook->getParts() === $audiobookInfosAmount)) {
+                    if (1 <= $audiobookInfosAmount && (floor($audiobook->getParts() / 2) <= $audiobookInfosAmount || $audiobook->getParts() === $audiobookInfosAmount)) {
                         $successModel->setCanComment(true);
                     }
 
-                    if ($userRating !== null) {
+                    if (null !== $userRating) {
                         $successModel->setRated(true);
                     }
 
@@ -462,12 +436,12 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobook/info', name: 'userAudiobookInfo', methods: ['POST'])]
+    #[Route('/api/user/audiobook/info', name: 'userAudiobookInfo', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is returning last information about last played part and time of given audiobook',
@@ -488,42 +462,36 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookInfo(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $userAudiobookInfoQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
+        $userAudiobookInfoQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookInfoQuery::class);
 
         if ($userAudiobookInfoQuery instanceof UserAudiobookInfoQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId(
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId(
                 $userAudiobookInfoQuery->getAudiobookId(),
                 $userAudiobookInfoQuery->getCategoryKey()
             );
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            $audiobookInfo = $audiobookInfoRepository->findOneBy([
+            $audiobookInfo = $this->audiobookInfoRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
                 'active'    => true,
                 'user'      => $user->getId(),
             ]);
 
-            if ($audiobookInfo === null) {
+            if (null === $audiobookInfo) {
                 return ResponseTool::getResponse();
             }
 
@@ -536,12 +504,12 @@ class UserAudiobookController extends AbstractController
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobook/like', name: 'userAudiobookLike', methods: ['PATCH'])]
+    #[Route('/api/user/audiobook/like', name: 'userAudiobookLike', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Patch(
         description: 'Endpoint is adding/deleting audiobook from my list',
@@ -561,57 +529,50 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookLike(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        MyListRepository $myListRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $userAudiobookLikeQuery = $requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
+        $userAudiobookLikeQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookLikeQuery::class);
 
         if ($userAudiobookLikeQuery instanceof UserAudiobookLikeQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId(
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId(
                 $userAudiobookLikeQuery->getAudiobookId(),
                 $userAudiobookLikeQuery->getCategoryKey()
             );
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
             $myList = $user->getMyList();
 
-            if ($myListRepository->getAudiobookInMyList($user, $audiobook)) {
+            if ($this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
                 $myList->removeAudiobook($audiobook);
             } else {
                 $myList->addAudiobook($audiobook);
             }
 
-            $myListRepository->add($myList);
+            $this->myListRepository->add($myList);
 
-            $stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId()]);
+            $this->stockCache->invalidateTags([UserStockCacheTags::USER_AUDIOBOOK_DETAIL->value . $audiobook->getId() . $user->getId()]);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/myList/audiobooks', name: 'userMyListAudiobooks', methods: ['GET'])]
+    #[Route('/api/user/myList/audiobooks', name: 'userMyListAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning list of audiobooks from my list',
@@ -624,19 +585,15 @@ class UserAudiobookController extends AbstractController
             ),
         ]
     )]
-    public function userMyListAudiobooks(
-        AuthorizedUserServiceInterface $authorizedUserService,
-    ): Response {
-        $user = $authorizedUserService::getAuthorizedUser();
-
+    public function userMyListAudiobooks(): Response
+    {
+        $user = $this->authorizedUserService::getAuthorizedUser();
         $audiobooks = $user->getMyList()->getAudiobooks();
-
         $successModel = new UserMyListAudiobooksSuccessModel();
-
         foreach ($audiobooks as $audiobook) {
             if ($audiobook->getActive()) {
                 $audiobookModel = new UserAudiobookDetailModel(
-                    (string)$audiobook->getId(),
+                    (string) $audiobook->getId(),
                     $audiobook->getTitle(),
                     $audiobook->getAuthor(),
                     $audiobook->getParts(),
@@ -658,7 +615,7 @@ class UserAudiobookController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/audiobook/info/add', name: 'userAudiobookInfoAdd', methods: ['PUT'])]
+    #[Route('/api/user/audiobook/info/add', name: 'userAudiobookInfoAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding new info about given audiobook',
@@ -678,41 +635,35 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookInfoAdd(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookInfoRepository $audiobookInfoRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $userAudiobookInfoAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
+        $userAudiobookInfoAddQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookInfoAddQuery::class);
 
         if ($userAudiobookInfoAddQuery instanceof UserAudiobookInfoAddQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookInfoAddQuery->getAudiobookId(), $userAudiobookInfoAddQuery->getCategoryKey());
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookInfoAddQuery->getAudiobookId(), $userAudiobookInfoAddQuery->getCategoryKey());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            $audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
+            $this->audiobookInfoRepository->deActiveAudiobookInfos($user, $audiobook);
 
-            $audiobookInfo = $audiobookInfoRepository->findOneBy([
+            $audiobookInfo = $this->audiobookInfoRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
                 'part'      => $userAudiobookInfoAddQuery->getPart(),
                 'user'      => $user->getId(),
             ]);
 
-            if ($audiobookInfo !== null) {
+            if (null !== $audiobookInfo) {
                 if ($audiobookInfo->getEndedTime() < $userAudiobookInfoAddQuery->getEndedTime()) {
                     $audiobookInfo->setEndedTime($userAudiobookInfoAddQuery->getEndedTime());
                 }
@@ -729,22 +680,22 @@ class UserAudiobookController extends AbstractController
                     $user,
                     $audiobook,
                     $userAudiobookInfoAddQuery->getPart(),
-                    (string)$userAudiobookInfoAddQuery->getEndedTime(),
+                    $userAudiobookInfoAddQuery->getEndedTime(),
                     $userAudiobookInfoAddQuery->getWatched(),
                 );
             }
 
-            $audiobookInfoRepository->add($audiobookInfo);
+            $this->audiobookInfoRepository->add($audiobookInfo);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobook/rating/add', name: 'userAudiobookRatingAdd', methods: ['PUT'])]
+    #[Route('/api/user/audiobook/rating/add', name: 'userAudiobookRatingAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is adding/editing user audiobook rating',
@@ -764,67 +715,60 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookRatingAdd(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        AudiobookInfoRepository $audiobookInfoRepository,
-        AudiobookRatingRepository $ratingRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $userAudiobookRatingAddQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
+        $userAudiobookRatingAddQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookRatingAddQuery::class);
 
         if ($userAudiobookRatingAddQuery instanceof UserAudiobookRatingAddQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingAddQuery->getAudiobookId(), $userAudiobookRatingAddQuery->getCategoryKey());
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingAddQuery->getAudiobookId(), $userAudiobookRatingAddQuery->getCategoryKey());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
-            $rating = $ratingRepository->findOneBy([
+            $rating = $this->ratingRepository->findOneBy([
                 'audiobook' => $audiobook->getId(),
                 'user'      => $user->getId(),
             ]);
 
-            if ($rating !== null) {
+            if (null !== $rating) {
                 $rating->setRating($userAudiobookRatingAddQuery->getRating());
             } else {
-                $audiobookInfo = $audiobookInfoRepository->findBy([
+                $audiobookInfo = $this->audiobookInfoRepository->findBy([
                     'audiobook' => $audiobook->getId(),
                     'watched'   => true,
                     'user'      => $user->getId(),
                 ]);
 
                 if (count($audiobookInfo) < $audiobook->getParts()) {
-                    $endpointLogger->error('Audiobook dont exist');
-                    $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotWatched')]);
+                    $this->endpointLogger->error('Audiobook dont exist');
+                    $this->translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotWatched')]);
                 }
 
                 $rating = new AudiobookRating($audiobook, $userAudiobookRatingAddQuery->getRating(), $user);
             }
 
-            $ratingRepository->add($rating);
+            $this->ratingRepository->add($rating);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobook/rating/get', name: 'userAudiobookRatingGet', methods: ['POST'])]
+    #[Route('/api/user/audiobook/rating/get', name: 'userAudiobookRatingGet', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint is getting audiobook overall rating',
@@ -845,37 +789,33 @@ class UserAudiobookController extends AbstractController
     )]
     public function userAudiobookRatingGet(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $userAudiobookRatingGetQuery = $requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
+        $userAudiobookRatingGetQuery = $this->requestService->getRequestBodyContent($request, UserAudiobookRatingGetQuery::class);
 
         if ($userAudiobookRatingGetQuery instanceof UserAudiobookRatingGetQuery) {
-            $audiobook = $audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingGetQuery->getAudiobookId(), $userAudiobookRatingGetQuery->getCategoryKey());
+            $audiobook = $this->audiobookRepository->getAudiobookByCategoryKeyAndId($userAudiobookRatingGetQuery->getAudiobookId(), $userAudiobookRatingGetQuery->getCategoryKey());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
             if (!$audiobook->getActive()) {
-                $endpointLogger->error('Audiobook is not active');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookNotActive')]);
+                $this->endpointLogger->error('Audiobook is not active');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookNotActive')]);
             }
 
             return ResponseTool::getResponse(new UserAudiobookRatingGetSuccessModel($audiobook->getAvgRating()));
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
+    #[Route('/api/user/categories/tree', name: 'userCategoriesTree', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Get(
         description: 'Endpoint is returning all active categories in system as a tree',
@@ -888,20 +828,17 @@ class UserAudiobookController extends AbstractController
             ),
         ]
     )]
-    public function userCategoriesTree(
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $successModel = $stockCache->get(UserCacheKeys::USER_CATEGORY_TREE->value, function (ItemInterface $item) use ($audiobookCategoryRepository) {
+    public function userCategoriesTree(): Response
+    {
+        $successModel = $this->stockCache->get(UserCacheKeys::USER_CATEGORY_TREE->value, function (ItemInterface $item): UserCategoriesSuccessModel {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(UserStockCacheTags::USER_CATEGORIES_TREE->value);
 
-            $categories = $audiobookCategoryRepository->findBy([
+            $categories = $this->audiobookCategoryRepository->findBy([
                 'parent' => null,
                 'active' => true,
             ]);
-
-            $treeGenerator = new BuildUserAudiobookCategoryTreeGenerator($categories, $audiobookCategoryRepository);
+            $treeGenerator = new BuildUserAudiobookCategoryTreeGenerator($categories, $this->audiobookCategoryRepository);
 
             return new UserCategoriesSuccessModel($treeGenerator->generate());
         });

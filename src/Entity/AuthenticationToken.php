@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\AuthenticationTokenRepository;
@@ -37,7 +39,7 @@ class AuthenticationToken
         $this->user = $user;
         $this->token = $tokenGenerator->generate();
         $this->dateCreate = new DateTime();
-        $this->dateExpired = (new DateTime())->modify('+4 hour');
+        $this->dateExpired = new DateTime()->modify('+4 hour');
     }
 
     public function getId(): Uuid

@@ -1,21 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
-use App\Model\ModelInterface;
-
 class AudiobookCoverModel
 {
-    private string $id;
-    private string $url;
-
-    public function __construct(string $id, string $url)
-    {
-        $this->id = $id;
-        $this->url = $url;
-    }
+    public function __construct(private string $id, private string $url) {}
 
     public function getId(): string
     {

@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\User;
 
 use App\Enums\ReportType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserReportQuery
 {
@@ -16,23 +17,10 @@ class UserReportQuery
     #[Assert\LessThan(9)]
     private int $type;
 
+    /**
+     * @Assert\Collection(fields={})
+     */
     protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'description' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Description is empty'),
-                    new Assert\Type(type: 'string'),
-                ]),
-                'actionId'    => new Assert\Optional([
-                    new Assert\NotBlank(message: 'ActionId is empty'),
-                    new Assert\Type(type: 'string'),
-                ]),
-            ],
-        ]));
-    }
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'description', type: 'string', example: 'Desc', nullable: true),
@@ -51,13 +39,13 @@ class UserReportQuery
     public function getType(): ReportType
     {
         return match ($this->type) {
-            1 => ReportType::COMMENT,
-            2 => ReportType::AUDIOBOOK_PROBLEM,
-            3 => ReportType::CATEGORY_PROBLEM,
-            4 => ReportType::SYSTEM_PROBLEM,
-            5 => ReportType::USER_PROBLEM,
-            6 => ReportType::SETTINGS_PROBLEM,
-            7 => ReportType::RECRUITMENT_REQUEST,
+            1       => ReportType::COMMENT,
+            2       => ReportType::AUDIOBOOK_PROBLEM,
+            3       => ReportType::CATEGORY_PROBLEM,
+            4       => ReportType::SYSTEM_PROBLEM,
+            5       => ReportType::USER_PROBLEM,
+            6       => ReportType::SETTINGS_PROBLEM,
+            7       => ReportType::RECRUITMENT_REQUEST,
             default => ReportType::OTHER,
         };
     }

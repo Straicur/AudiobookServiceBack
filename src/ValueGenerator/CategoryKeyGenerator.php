@@ -1,13 +1,14 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\ValueGenerator;
 
-use Exception;
+use Override;
 
 class CategoryKeyGenerator implements ValueGeneratorInterface
 {
+    #[Override]
     public function generate(): string
     {
         $newGeneratedToken = random_bytes(16);

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -23,11 +23,6 @@ class AudiobookRatingRepository extends ServiceEntityRepository
         parent::__construct($registry, AudiobookRating::class);
     }
 
-    /**
-     * @param AudiobookRating $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(AudiobookRating $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -36,11 +31,6 @@ class AudiobookRatingRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param AudiobookRating $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(AudiobookRating $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

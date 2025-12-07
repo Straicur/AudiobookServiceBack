@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\User;
 
 use DateTime;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+use function array_key_exists;
 
 class UserParentControlPatchQuery
 {
@@ -14,19 +17,10 @@ class UserParentControlPatchQuery
     #[Assert\Type(type: 'string')]
     private string $smsCode;
 
+    /**
+     * @Assert\Collection(fields={})
+     */
     protected array $additionalData = [];
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'birthday' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Birthday is empty'),
-                    new Assert\Type(type: 'datetime', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-            ],
-        ]));
-    }
 
     #[OA\Property(property: 'additionalData', properties: [
         new OA\Property(property: 'birthday', type: 'datetime', example: 'd.m.Y', nullable: true),
@@ -39,7 +33,6 @@ class UserParentControlPatchQuery
 
         $this->additionalData = $additionalData;
     }
-
 
     public function getAdditionalData(): array
     {

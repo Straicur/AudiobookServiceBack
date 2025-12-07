@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller;
 
@@ -49,10 +49,11 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Authorize')]
-#[Route('/api')]
 class AuthorizationController extends AbstractController
 {
-    #[Route('/authorize', name: 'apiAuthorize', methods: ['POST'])]
+    public function __construct(private readonly RequestServiceInterface $requestServiceInterface, private readonly LoggerInterface $usersLogger, private readonly LoggerInterface $endpointLogger, private readonly UserLoginServiceInterface $loginService, private readonly TranslateServiceInterface $translateService, private readonly AuthorizedUserServiceInterface $authorizedUserService) {}
+
+    #[Route('/api/authorize', name: 'apiAuthorize', methods: ['POST'])]
     #[OA\Post(
         description: 'Method used to authorize user credentials. Return authorized token',
         security   : [],
@@ -73,22 +74,17 @@ class AuthorizationController extends AbstractController
     )]
     public function login(
         Request $request,
-        RequestServiceInterface $requestServiceInterface,
-        LoggerInterface $usersLogger,
-        LoggerInterface $endpointLogger,
-        UserLoginServiceInterface $loginService,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $authenticationQuery = $requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
+        $authenticationQuery = $this->requestServiceInterface->getRequestBodyContent($request, AuthorizeQuery::class);
 
         if ($authenticationQuery instanceof AuthorizeQuery) {
-            $userInformation = $loginService->getUserInformation($authenticationQuery->getEmail(), $request);
-            $user = $loginService->getValidUser($userInformation, $request);
-            $loginService->loginToService($userInformation, $request, $authenticationQuery->getPassword());
-            $loginService->resetLoginAttempts($userInformation);
-            $authenticationToken = $loginService->getAuthenticationToken($user);
+            $userInformation = $this->loginService->getUserInformation($authenticationQuery->getEmail(), $request);
+            $user = $this->loginService->getValidUser($userInformation, $request);
+            $this->loginService->loginToService($userInformation, $request, $authenticationQuery->getPassword());
+            $this->loginService->resetLoginAttempts($userInformation);
+            $authenticationToken = $this->loginService->getAuthenticationToken($user);
 
-            $usersLogger->info('LOGIN', [$user->getId()->__toString()]);
+            $this->usersLogger->info('LOGIN', [$user->getId()->__toString()]);
 
             $rolesModel = new AuthorizationRolesModel();
             $isAdmin = false;
@@ -106,13 +102,13 @@ class AuthorizationController extends AbstractController
             return ResponseTool::getResponse($responseModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
+        $this->endpointLogger->error('Invalid given Query');
 
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/logout', name: 'apiLogout', methods: ['PATCH'])]
+    #[Route('/api/logout', name: 'apiLogout', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method used to logout user',
@@ -124,19 +120,16 @@ class AuthorizationController extends AbstractController
             ),
         ]
     )]
-    public function logout(
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $usersLogger,
-    ): Response {
-        $authorizedUserService::unAuthorizeUser();
-        $user = $authorizedUserService::getAuthorizedUser();
-
-        $usersLogger->info('LOGOUT', [$user->getId()->__toString()]);
+    public function logout(): Response
+    {
+        $this->authorizedUserService::unAuthorizeUser();
+        $user = $this->authorizedUserService::getAuthorizedUser();
+        $this->usersLogger->info('LOGOUT', [$user->getId()->__toString()]);
 
         return ResponseTool::getResponse();
     }
 
-    #[Route('/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
+    #[Route('/api/authorize/check', name: 'apiAuthorizeCheck', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Method is checking if given token is authorized',

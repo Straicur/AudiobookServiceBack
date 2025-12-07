@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -8,12 +8,7 @@ use App\Model\ModelInterface;
 
 class AudiobookPartSuccessModel implements ModelInterface
 {
-    private string $url;
-
-    public function __construct(string $url)
-    {
-        $this->url = $url;
-    }
+    public function __construct(private string $url) {}
 
     public function getUrl(): string
     {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
@@ -11,20 +11,21 @@ use OpenApi\Attributes as OA;
 class UserReportModel
 {
     private int $type;
+
     private int $dateAdd;
-    private bool $accepted;
-    private bool $denied;
+
     private ?string $description = null;
+
     private ?string $comment = null;
+
     private ?string $answer = null;
+
     private ?int $settleDate = null;
 
-    public function __construct(ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
+    public function __construct(ReportType $type, DateTime $dateAdd, private bool $accepted, private bool $denied)
     {
         $this->type = $type->value;
         $this->dateAdd = $dateAdd->getTimestamp() * 1000;
-        $this->accepted = $accepted;
-        $this->denied = $denied;
     }
 
     #[OA\Property(type: 'integer', enum: [

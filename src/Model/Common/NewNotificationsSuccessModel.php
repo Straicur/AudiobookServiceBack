@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -8,12 +8,7 @@ use App\Model\ModelInterface;
 
 class NewNotificationsSuccessModel implements ModelInterface
 {
-    private int $newNotifications;
-
-    public function __construct(int $newNotifications)
-    {
-        $this->newNotifications = $newNotifications;
-    }
+    public function __construct(private int $newNotifications) {}
 
     public function getNewNotifications(): int
     {

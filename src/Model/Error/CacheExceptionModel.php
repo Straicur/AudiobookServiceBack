@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -11,10 +11,6 @@ class CacheExceptionModel implements ModelInterface
     private string $error = 'Cache key or tag not found';
 
     private string $description = 'Contact us with this error';
-
-    public function __construct()
-    {
-    }
 
     public function getError(): string
     {

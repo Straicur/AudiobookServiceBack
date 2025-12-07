@@ -269,7 +269,7 @@ class DatabaseMockManager
     {
         $registerCodeRepository = $this->getService(AudiobookInfoRepository::class);
 
-        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, (string)$endedTime, $watched);
+        $newRegisterCode = new AudiobookInfo($user, $audiobook, $part, $endedTime, $watched);
 
         if ($watched) {
             $newRegisterCode->setWatched($watched);

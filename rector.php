@@ -40,7 +40,7 @@ return RectorConfig::configure()
         DisallowedEmptyRuleFixerRector::class,
         DisallowedShortTernaryRuleFixerRector::class,
     ])
-     ->withPhpSets(php82: true)
+     ->withPhpSets(php84: true)
      ->withAttributesSets()
      ->withPreparedSets(
          deadCode: true,

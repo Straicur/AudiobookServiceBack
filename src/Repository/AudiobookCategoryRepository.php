@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -25,11 +25,6 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, AudiobookCategory::class);
     }
 
-    /**
-     * @param AudiobookCategory $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(AudiobookCategory $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -38,11 +33,6 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param AudiobookCategory $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(AudiobookCategory $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -91,7 +81,6 @@ class AudiobookCategoryRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
-
 
     /**
      * @return AudiobookCategory[]

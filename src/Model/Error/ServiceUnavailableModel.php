@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -10,12 +10,7 @@ class ServiceUnavailableModel implements ModelInterface
 {
     private string $error = 'Current service is unavailable';
 
-    private array $data;
-
-    public function __construct(array $data = [])
-    {
-        $this->data = $data;
-    }
+    public function __construct(private array $data = []) {}
 
     public function getError(): string
     {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
@@ -19,6 +19,7 @@ use App\Repository\ProposedAudiobooksRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Tool\UserParentalControlTool;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,8 +27,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+use function array_slice;
+use function count;
+
 /**
- * Fired once a day
+ * Fired once a day.
  */
 #[AsCommand(
     name       : 'audiobookservice:proposed:audiobooks',
@@ -49,6 +54,7 @@ class UserProposedAudiobooksCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -62,7 +68,7 @@ class UserProposedAudiobooksCommand extends Command
         foreach ($users as $user) {
             $age = null;
 
-            /**
+            /*
              * Checking if user has parental control
              */
             if ($user->getUserInformation()->getBirthday() !== null) {
@@ -73,23 +79,23 @@ class UserProposedAudiobooksCommand extends Command
             $myList = $user->getMyList();
             $audiobookInfos = $this->audiobookInfoRepository->getActiveAudiobookInfos($user);
 
-            /**
+            /*
              * Checking if user has sufficient amount of data
              */
-            if ((count($myList->getAudiobooks()) + count($audiobookInfos)) <= 10) {
+            if (10 >= (count($myList->getAudiobooks()) + count($audiobookInfos))) {
                 continue;
             }
 
             $userWantedCategories = [];
 
-            /**
+            /*
              * Creating array of points in value and key of categoryId
              */
             foreach ($myList->getAudiobooks() as $audiobook) {
                 foreach ($audiobook->getCategories() as $category) {
                     if ($category->getActive()) {
                         if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
-                            $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 2;
+                            $userWantedCategories[$category->getId()->__toString()] += 2;
                         } else {
                             $userWantedCategories[$category->getId()->__toString()] = 2;
                         }
@@ -101,7 +107,7 @@ class UserProposedAudiobooksCommand extends Command
                 foreach ($audiobookInfo->getAudiobook()->getCategories() as $category) {
                     if ($category->getActive()) {
                         if (array_key_exists($category->getId()->__toString(), $userWantedCategories)) {
-                            $userWantedCategories[$category->getId()->__toString()] = $userWantedCategories[$category->getId()->__toString()] + 1;
+                            ++$userWantedCategories[$category->getId()->__toString()];
                         } else {
                             $userWantedCategories[$category->getId()->__toString()] = 1;
                         }
@@ -118,16 +124,15 @@ class UserProposedAudiobooksCommand extends Command
 
             $selectedCategories[] = $lastCategory[$lastRandomKey];
             /**
-             * $selectedCategories now has 5 categories where user is listening most audiobooks
+             * $selectedCategories now has 5 categories where user is listening most audiobooks.
              */
-
             $proposedAudiobooks = $user->getProposedAudiobooks();
 
             foreach ($proposedAudiobooks->getAudiobooks() as $audiobook) {
                 $proposedAudiobooks->removeAudiobook($audiobook);
             }
 
-            /**
+            /*
              * Now we are selecting audiobook depend on index of category
              */
             foreach ($selectedCategories as $categoryIndex => $category) {
@@ -136,7 +141,7 @@ class UserProposedAudiobooksCommand extends Command
                     'active' => true,
                 ]);
 
-                if ($databaseCategory === null) {
+                if (null === $databaseCategory) {
                     continue;
                 }
 
@@ -150,20 +155,24 @@ class UserProposedAudiobooksCommand extends Command
                     if (($categoryIndex === ProposedAudiobookCategoriesRanges::MOST_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::MOST_WANTED_LIMIT->value) {
                         continue;
                     }
+
                     if (($categoryIndex === ProposedAudiobookCategoriesRanges::WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::WANTED_LIMIT->value) {
                         continue;
                     }
+
                     if (($categoryIndex === ProposedAudiobookCategoriesRanges::LESS_WANTED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::LESS_WANTED_LIMIT->value) {
                         continue;
                     }
+
                     if (($categoryIndex === ProposedAudiobookCategoriesRanges::PROPOSED->value) && $audiobooksAdded >= ProposedAudiobooksRanges::PROPOSED_LIMIT->value) {
                         continue;
                     }
+
                     if (($categoryIndex === ProposedAudiobookCategoriesRanges::RANDOM->value) && $audiobooksAdded >= ProposedAudiobooksRanges::RANDOM_LIMIT->value) {
                         continue;
                     }
 
-                    /**
+                    /*
                      * checking if audiobook is not in myList
                      */
                     if (!$this->myListRepository->getAudiobookInMyList($user, $audiobook)) {
@@ -176,7 +185,7 @@ class UserProposedAudiobooksCommand extends Command
             $this->proposedAudiobooksRepository->add($proposedAudiobooks);
 
             /**
-             * Sending an notification to user about his new proposed audiobooks
+             * Sending an notification to user about his new proposed audiobooks.
              */
             $notificationBuilder = new NotificationBuilder();
 

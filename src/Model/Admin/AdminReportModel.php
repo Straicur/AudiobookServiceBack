@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -10,29 +10,34 @@ use OpenApi\Attributes as OA;
 
 class AdminReportModel
 {
-    private string $id;
     private int $type;
+
     private int $dateAdd;
-    private bool $accepted;
-    private bool $denied;
+
     private int $similarReports = 0;
+
     private ?string $description = null;
+
     private ?string $actionId = null;
+
     private ?string $email = null;
+
     private ?string $ip = null;
+
     private ?AdminUserModel $user = null;
+
     private ?string $answer = null;
+
     private ?AdminReportAudiobookCommentsModel $comment = null;
+
     private ?AdminUserBanModel $userBan = null;
+
     private ?int $settleDate = null;
 
-    public function __construct(string $id, ReportType $type, DateTime $dateAdd, bool $accepted, bool $denied)
+    public function __construct(private string $id, ReportType $type, DateTime $dateAdd, private bool $accepted, private bool $denied)
     {
-        $this->id = $id;
         $this->type = $type->value;
         $this->dateAdd = $dateAdd->getTimestamp() * 1000;
-        $this->accepted = $accepted;
-        $this->denied = $denied;
     }
 
     public function getId(): string
