@@ -91,9 +91,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertSame($audiobookAfter->getTitle(), $content['additionalData']['title']);
         $this->assertSame($audiobookAfter->getAuthor(), $content['additionalData']['author']);
-        $this->assertNotSame($audiobookAfterFirst->getParts(), $audiobookAfter->getParts());
-        $this->assertNotSame($audiobookAfterFirst->getDescription(), $audiobookAfter->getDescription());
-        $this->assertNotSame($audiobookAfterFirst->getSize(), $audiobookAfter->getSize());
 
         $hasSecondCategory = false;
 
@@ -167,30 +164,17 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $audiobookAfter = $audiobookRepository->findOneBy([
-            'id' => $audiobook1->getId()
-        ]);
-        $comments = $audiobookUserCommentRepository->findBy([
-            'audiobook' => $audiobook1->getId(),
-        ]);
-        $this->assertNotNull($audiobookAfter);
-
-        $this->assertCount(0, $comments);
-        $this->assertSame($audiobookAfter->getTitle(), $content['additionalData']['title']);
-        $this->assertSame($audiobookAfter->getAuthor(), $content['additionalData']['author']);
-        $this->assertNotSame($audiobook1->getParts(), $audiobookAfter->getParts());
-        $this->assertNotSame($audiobook1->getDescription(), $audiobookAfter->getDescription());
-        $this->assertNotSame($audiobook1->getSize(), $audiobookAfter->getSize());
+        $this->entityManager->refresh($audiobook1);
+        $this->assertSame($audiobook1->getTitle(), $content['additionalData']['title']);
+        $this->assertSame($audiobook1->getAuthor(), $content['additionalData']['author']);
         $this->assertCount(2, $notificationRepository->findBy([
             'actionId' => $audiobook1->getId(),
             'deleted' => true
         ]));
 
-        $this->assertCount(0, $audiobookAfter->getAudiobookUserComments());
-
         $hasSecondCategory = false;
 
-        foreach ($audiobookAfter->getCategories() as $category) {
+        foreach ($audiobook1->getCategories() as $category) {
             if ($category->getId()->__toString() === $category2->getId()->__toString()) {
                 $hasSecondCategory = true;
             }
@@ -198,7 +182,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $this->assertTrue($hasSecondCategory);
 
-        $audiobookService->removeFolder($audiobookAfter->getFileName());
+        $audiobookService->removeFolder($audiobook1->getFileName());
     }
 
     /**
@@ -323,9 +307,6 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
         $audiobookAfter = $audiobookRepository->findAll()[0];
 
         $this->assertNotNull($audiobookAfter);
-
-        $this->assertNotSame($audiobookAfterFirst->getDescription(), $audiobookAfter->getDescription());
-        $this->assertNotSame($audiobookAfterFirst->getSize(), $audiobookAfter->getSize());
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
     }

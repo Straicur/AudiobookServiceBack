@@ -167,7 +167,7 @@ class Notification
         $this->notificationChecks = $notificationChecks;
     }
 
-    public function getDateDeleted(): DateTime
+    public function getDateDeleted(): ?DateTime
     {
         return $this->dateDeleted;
     }

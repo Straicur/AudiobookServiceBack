@@ -150,8 +150,7 @@ class NotificationRepository extends ServiceEntityRepository
             ->set('n.deleted', 'true')
             ->set('n.dateDeleted', ':dateDeleted')
             ->where('n.actionId = :actionId')
-            ->andWhere('n.deleted = :deletedStatus')
-            ->setParameter('deletedStatus', false)
+            ->andWhere('n.deleted = 0')
             ->setParameter('dateDeleted', new DateTime())
             ->setParameter('actionId', $actionId->toBinary());
 
