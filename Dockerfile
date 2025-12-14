@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN echo "date.timezone = UTC" > /usr/local/etc/php/conf.d/timezone.ini
 
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN usermod -u 1000 www-data
@@ -39,16 +40,13 @@ RUN set -eux; \
     mkdir -p ${MAIN_DIR}; \
     chown -R www-data:www-data ${MAIN_DIR};
 
-COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
-
-COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
-
 COPY --link composer.* symfony.* ./
+COPY --link . /var/www/html/
+
 # TODO tu było dodatkowo w composer install --no-dev
 RUN set -eux; \
     composer install --no-cache --prefer-dist --no-autoloader --no-scripts --no-progress
 
-COPY --link . /var/www/html/
 # TODO tu było dodatkowo w composer dump-autoload --no-dev
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative; \
