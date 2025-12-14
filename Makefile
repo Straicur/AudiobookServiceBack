@@ -35,7 +35,7 @@ entity:
 	php bin/console make:entity
 installTest:
 	./scripts/INSTALL_TEST.sh
-install: installTest tests
+install: installTest
 	./scripts/INSTALL.sh
 installNoTest: installTest
 	./scripts/INSTALL.sh

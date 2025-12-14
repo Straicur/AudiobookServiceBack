@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use function count;
 
 #[AsCommand(
@@ -24,6 +25,7 @@ class AddInstitutionCommand extends Command
 {
     public function __construct(
         private readonly InstitutionRepository $institutionRepository,
+        #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName
     ) {
         parent::__construct();
     }
@@ -55,7 +57,7 @@ class AddInstitutionCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($_ENV['INSTITUTION_NAME'], $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int) $maxAdmins, (int) $maxUsers));
+        $this->institutionRepository->add(new Institution($this->institutionName, $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int) $maxAdmins, (int) $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');
