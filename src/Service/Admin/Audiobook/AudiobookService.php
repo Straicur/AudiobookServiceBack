@@ -11,6 +11,7 @@ use App\Service\TranslateServiceInterface;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 use ZipArchive;
@@ -32,13 +33,15 @@ class AudiobookService implements AudiobookServiceInterface
     public function __construct(
         private readonly AudiobooksID3TagsReaderServiceInterface $audiobooksID3TagsReaderService,
         private readonly TranslateServiceInterface $translateService,
+        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir,
+        #[Autowire(env: 'INSTITUTION_VOLUMEN')] private readonly string $institutionName,
     ) {}
 
     public function configure(AdminAudiobookAddFileInterface $query): void
     {
         $this->query = $query;
-        $this->whole_dir_path = $_ENV['MAIN_DIR'] . '/' . $this->query->getHashName();
-        $this->whole_zip_path = $_ENV['MAIN_DIR'] . '/' . $this->query->getFileName();
+        $this->whole_dir_path = $this->main_dir. '/' . $this->query->getHashName();
+        $this->whole_zip_path = $this->main_dir . '/' . $this->query->getFileName();
     }
 
     public function checkAndAddFile(): void
@@ -47,11 +50,11 @@ class AudiobookService implements AudiobookServiceInterface
 
         $fsObject = new Filesystem();
 
-        $size = $this->checkSystemStorage($_ENV['MAIN_DIR']);
+        $size = $this->checkSystemStorage($this->main_dir);
 
         $this->checkOrCreateAudiobookFolder($fsObject);
 
-        if ((int) $_ENV['INSTITUTION_VOLUMEN'] <= $size) {
+        if ((int) $this->institutionName <= $size) {
             $this->removeFolder($this->whole_dir_path);
             throw new DataNotFoundException([$this->translateService->getTranslation('SystemVolumen')]);
         }
@@ -155,7 +158,7 @@ class AudiobookService implements AudiobookServiceInterface
         $dir = trim($zip->getNameIndex(0), '/');
         $dir = explode('/', $dir)[0];
 
-        $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
+        $extracted = $zip->extractTo($this->main_dir);
 
         if (!$extracted) {
             $this->removeFolder($file);
@@ -171,7 +174,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $amountOfSameFolders = 0;
 
-        if ($handle = opendir($_ENV['MAIN_DIR'])) {
+        if ($handle = opendir($this->main_dir)) {
             while (false !== ($entry = readdir($handle))) {
                 if (str_contains($entry, $this->query->getFileName())) {
                     ++$amountOfSameFolders;
@@ -183,7 +186,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $newName = $this->whole_zip_path . $amountOfSameFolders;
 
-        rename($_ENV['MAIN_DIR'] . '/' . $dir, $newName);
+        rename($this->main_dir . '/' . $dir, $newName);
 
         return $newName;
     }

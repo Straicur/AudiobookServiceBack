@@ -16,6 +16,7 @@ use App\Repository\ReportRepository;
 use App\Service\TranslateServiceInterface;
 use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -32,6 +33,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
         private readonly NotificationRepository $notificationRepository,
         private readonly MailerInterface $mailer,
         private readonly TranslateServiceInterface $translateService,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
     ) {}
 
     public function setAdminReportRejectQuery(AdminReportRejectQuery $adminReportRejectQuery): AdminReportRejectService
@@ -88,7 +90,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
 
         if ('test' !== $_ENV['APP_ENV'] && $report->getIp() && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
             $email = new TemplatedEmail()
-                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->from($this->institutionEmail)
                 ->to($report->getEmail())
                 ->subject($this->translateService->getTranslation('ReportDeniedSubject'))
                 ->htmlTemplate('emails/reportDenied.html.twig')

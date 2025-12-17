@@ -34,6 +34,7 @@ use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
+use App\Service\SmsService;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\Tool\SmsTool;
@@ -46,6 +47,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -76,7 +78,26 @@ use Throwable;
 #[OA\Tag(name: 'UserSettings')]
 class UserSettingsController extends AbstractController
 {
-    public function __construct(private readonly RequestServiceInterface $requestService, private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly LoggerInterface $endpointLogger, private readonly UserPasswordRepository $userPasswordRepository, private readonly TranslateServiceInterface $translateService, private readonly AuthenticationTokenRepository $authenticationTokenRepository, private readonly UserEditRepository $userEditRepository, private readonly UserEditRepository $editRepository, private readonly MailerInterface $mailer, private readonly UserRepository $userRepository, private readonly UserInformationRepository $userInformationRepository, private readonly UserDeleteRepository $userDeleteRepository, private readonly UserParentalControlCodeRepository $controlCodeRepository, private readonly TagAwareCacheInterface $stockCache) {}
+    public function __construct(
+        private readonly RequestServiceInterface $requestService,
+        private readonly AuthorizedUserServiceInterface $authorizedUserService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly UserPasswordRepository $userPasswordRepository,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly AuthenticationTokenRepository $authenticationTokenRepository,
+        private readonly UserEditRepository $userEditRepository,
+        private readonly UserEditRepository $editRepository,
+        private readonly MailerInterface $mailer,
+        private readonly UserRepository $userRepository,
+        private readonly UserInformationRepository $userInformationRepository,
+        private readonly UserDeleteRepository $userDeleteRepository,
+        private readonly UserParentalControlCodeRepository $controlCodeRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+        private readonly SmsService $smsTool,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
+        #[Autowire(env: 'FRONTEND_URL')] private readonly string $frontendUrl,
+    ) {}
 
     #[Route('/api/user/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
@@ -182,7 +203,7 @@ class UserSettingsController extends AbstractController
 
         if ('test' !== $_ENV['APP_ENV']) {
             $email = new TemplatedEmail()
-                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
                 ->subject($this->translateService->getTranslation('ChangePasswordSubject'))
                 ->htmlTemplate('emails/userSettingsPasswordChangeCode.html.twig')
@@ -229,10 +250,8 @@ class UserSettingsController extends AbstractController
 
         $this->editRepository->add($newEditedUser);
 
-        $smsTool = new SmsTool();
-
         try {
-            $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $this->translateService->getTranslation('SmsCodeContent') . ': ' . $newEditedUser->getCode() . ' ');
+            $status = $this->smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $this->translateService->getTranslation('SmsCodeContent') . ': ' . $newEditedUser->getCode() . ' ');
         } catch (Throwable $e) {
             $this->endpointLogger->error($e->getMessage());
             $this->translateService->setPreferredLanguage($request);
@@ -328,7 +347,7 @@ class UserSettingsController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('ChangeEmailSubject'))
                     ->htmlTemplate('emails/userSettingsEmailChange.html.twig')
@@ -336,7 +355,7 @@ class UserSettingsController extends AbstractController
                         'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         'id'        => $user->getId()->__toString(),
                         'userEmail' => $userSettingsEmailQuery->getNewEmail(),
-                        'url'       => $_ENV['BACKEND_URL'],
+                        'url'       => $this->backendUrl,
                         'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
                 $this->mailer->send($email);
@@ -415,7 +434,7 @@ class UserSettingsController extends AbstractController
         return $this->render(
             'pages/userSettingsEmailChange.html.twig',
             [
-                'url'  => $_ENV['FRONTEND_URL'],
+                'url'  => $this->frontendUrl,
                 'lang' => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
             ],
         );
@@ -462,7 +481,7 @@ class UserSettingsController extends AbstractController
 
         if ('test' !== $_ENV['APP_ENV']) {
             $email = new TemplatedEmail()
-                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
                 ->subject($this->translateService->getTranslation('RequestDeleteAccountSubject'))
                 ->htmlTemplate('emails/userDeleteProcessing.html.twig')
@@ -510,7 +529,7 @@ class UserSettingsController extends AbstractController
 
         if ('test' !== $_ENV['APP_ENV']) {
             $email = new TemplatedEmail()
-                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
                 ->subject($this->translateService->getTranslation('ChangeUserDataSubject'))
                 ->htmlTemplate('emails/userSettingsChangeCode.html.twig')
@@ -670,14 +689,14 @@ class UserSettingsController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('PasswordResetSubject'))
                     ->htmlTemplate('emails/userSettingsResetPassword.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         'id'       => $user->getId()->__toString(),
-                        'url'      => $_ENV['FRONTEND_URL'],
+                        'url'      => $this->frontendUrl,
                         'lang'     => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
                 $this->mailer->send($email);
@@ -788,10 +807,8 @@ class UserSettingsController extends AbstractController
 
         $this->controlCodeRepository->add($newUserParentalControlCode, false);
 
-        $smsTool = new SmsTool();
-
         try {
-            $status = $smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $this->translateService->getTranslation('SmsCodeContent') . ': ' . $newUserParentalControlCode->getCode() . ' ');
+            $status = $this->smsTool->sendSms($user->getUserInformation()->getPhoneNumber(), $this->translateService->getTranslation('SmsCodeContent') . ': ' . $newUserParentalControlCode->getCode() . ' ');
         } catch (Throwable $e) {
             $this->endpointLogger->error($e->getMessage());
             $this->translateService->setPreferredLanguage($request);
@@ -865,7 +882,7 @@ class UserSettingsController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('ParentControlChangedSubject'))
                     ->htmlTemplate('emails/userParentControlChanged.html.twig')

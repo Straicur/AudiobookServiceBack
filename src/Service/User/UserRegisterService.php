@@ -28,6 +28,7 @@ use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\RegisterCodeGenerator;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 
@@ -48,6 +49,9 @@ class UserRegisterService implements UserRegisterServiceInterface
         private readonly UserPasswordRepository $userPasswordRepository,
         private readonly TranslateServiceInterface $translateService,
         private readonly UserSettingsRepository $userSettingsRepository,
+        #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
     ) {}
 
     public function checkExistingUsers(RegisterQuery $registerQuery, Request $request): void
@@ -76,7 +80,7 @@ class UserRegisterService implements UserRegisterServiceInterface
     public function checkInstitutionLimits(Request $request): void
     {
         $institution = $this->institutionRepository->findOneBy([
-            'name' => $_ENV['INSTITUTION_NAME'],
+            'name' => $this->institutionName,
         ]);
 
         $guest = $this->roleRepository->findOneBy([
@@ -155,7 +159,7 @@ class UserRegisterService implements UserRegisterServiceInterface
     {
         if ('test' !== $_ENV['APP_ENV']) {
             $email = new TemplatedEmail()
-                ->from($_ENV['INSTITUTION_EMAIL'])
+                ->from($this->institutionEmail)
                 ->to($newUser->getUserInformation()->getEmail())
                 ->subject($this->translateService->getTranslation('AccountActivationCodeSubject'))
                 ->htmlTemplate('emails/register.html.twig')
@@ -163,7 +167,7 @@ class UserRegisterService implements UserRegisterServiceInterface
                     'userName'  => $newUser->getUserInformation()->getFirstname() . ' ' . $newUser->getUserInformation()->getLastname(),
                     'code'      => $registerCode,
                     'userEmail' => $newUser->getUserInformation()->getEmail(),
-                    'url'       => $_ENV['BACKEND_URL'],
+                    'url'       => $this->backendUrl,
                     'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                 ]);
 

@@ -57,6 +57,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -92,7 +93,24 @@ use function count;
 #[OA\Tag(name: 'AdminUser')]
 class AdminUserController extends AbstractController
 {
-    public function __construct(private readonly RoleRepository $roleRepository, private readonly TagAwareCacheInterface $stockCache, private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly UserRepository $userRepository, private readonly TranslateServiceInterface $translateService, private readonly UserPasswordRepository $userPasswordRepository, private readonly UserInformationRepository $userInformationRepository, private readonly UserDeleteRepository $userDeleteRepository, private readonly UserBanHistoryRepository $banHistoryRepository, private readonly SerializerInterface $serializer, private readonly MailerInterface $mailer, private readonly NotificationRepository $notificationRepository) {}
+    public function __construct(
+        private readonly RoleRepository $roleRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+        private readonly RequestServiceInterface $requestService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly UserRepository $userRepository,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly UserPasswordRepository $userPasswordRepository,
+        private readonly UserInformationRepository $userInformationRepository,
+        private readonly UserDeleteRepository $userDeleteRepository,
+        private readonly UserBanHistoryRepository $banHistoryRepository,
+        private readonly SerializerInterface $serializer,
+        private readonly MailerInterface $mailer,
+        private readonly NotificationRepository $notificationRepository,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+    ) {
+
+    }
 
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
@@ -647,7 +665,7 @@ class AdminUserController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('AccountDeletedSubject'))
                     ->htmlTemplate('emails/userDeleted.html.twig')
@@ -875,7 +893,7 @@ class AdminUserController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('AccountDeletedSubject'))
                     ->htmlTemplate('emails/userDeleted.html.twig')
@@ -952,7 +970,7 @@ class AdminUserController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('DeletionRejectedSubject'))
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')

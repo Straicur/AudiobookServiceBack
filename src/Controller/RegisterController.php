@@ -26,6 +26,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -44,7 +45,21 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Register')]
 class RegisterController extends AbstractController
 {
-    public function __construct(private readonly RequestServiceInterface $requestServiceInterface, private readonly LoggerInterface $endpointLogger, private readonly LoggerInterface $usersLogger, private readonly TranslateServiceInterface $translateService, private readonly UserRegisterServiceInterface $registerService, private readonly RegisterCodeRepository $registerCodeRepository, private readonly RoleRepository $roleRepository, private readonly UserRepository $userRepository, private readonly UserInformationRepository $userInformationRepository, private readonly MailerInterface $mailer) {}
+    public function __construct(
+        private readonly RequestServiceInterface $requestServiceInterface,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly LoggerInterface $usersLogger,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly UserRegisterServiceInterface $registerService,
+        private readonly RegisterCodeRepository $registerCodeRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UserInformationRepository $userInformationRepository,
+        private readonly MailerInterface $mailer,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'FRONTEND_URL')] private readonly string $frontendUrl,
+        #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
+    ) {}
 
     #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
     #[OA\Put(
@@ -152,7 +167,7 @@ class RegisterController extends AbstractController
         return $this->render(
             'pages/registered.html.twig',
             [
-                'url'  => $_ENV['FRONTEND_URL'],
+                'url'  => $this->frontendUrl,
                 'lang' => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
             ],
         );
@@ -210,7 +225,7 @@ class RegisterController extends AbstractController
 
             if ('test' !== $_ENV['APP_ENV']) {
                 $email = new TemplatedEmail()
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
                     ->subject($this->translateService->getTranslation('AccountActivationCodeSubject'))
                     ->htmlTemplate('emails/register.html.twig')
@@ -218,7 +233,7 @@ class RegisterController extends AbstractController
                         'userName'  => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
                         'code'      => $registerCodeGenerator->getBeforeGenerate(),
                         'userEmail' => $user->getUserInformation()->getEmail(),
-                        'url'       => $_ENV['BACKEND_URL'],
+                        'url'       => $this->backendUrl,
                         'lang'      => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
                 $this->mailer->send($email);

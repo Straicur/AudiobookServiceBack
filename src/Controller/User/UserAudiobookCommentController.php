@@ -42,6 +42,7 @@ use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -74,7 +75,20 @@ use function count;
 #[OA\Tag(name: 'UserAudiobookComment')]
 class UserAudiobookCommentController extends AbstractController
 {
-    public function __construct(private readonly RequestServiceInterface $requestService, private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly LoggerInterface $endpointLogger, private readonly AudiobookRepository $audiobookRepository, private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository, private readonly AudiobookInfoRepository $audiobookInfoRepository, private readonly TranslateServiceInterface $translateService, private readonly TagAwareCacheInterface $stockCache, private readonly UserRepository $userRepository, private readonly UserBanHistoryRepository $banHistoryRepository, private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository) {}
+    public function __construct(
+        private readonly RequestServiceInterface $requestService,
+        private readonly AuthorizedUserServiceInterface $authorizedUserService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly AudiobookRepository $audiobookRepository,
+        private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        private readonly AudiobookInfoRepository $audiobookInfoRepository,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly TagAwareCacheInterface $stockCache,
+        private readonly UserRepository $userRepository,
+        private readonly UserBanHistoryRepository $banHistoryRepository,
+        private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+        #[Autowire(env: 'INSTITUTION_USER_COMMENTS_LIMIT')] private readonly string $institutionUserCommentsLimit,
+    ) {}
 
     #[Route('/api/user/audiobook/comment/add', name: 'userAudiobookCommentAdd', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
@@ -130,7 +144,7 @@ class UserAudiobookCommentController extends AbstractController
 
             $lastUserComments = count($this->audiobookUserCommentRepository->getUserLastCommentsByMinutes($user, '20'));
 
-            if ((int) $_ENV['INSTITUTION_USER_COMMENTS_LIMIT'] < $lastUserComments) {
+            if ((int) $this->institutionUserCommentsLimit < $lastUserComments) {
                 $banPeriod = new DateTime()->modify(BanPeriodRage::HOUR_BAN->value);
 
                 $user

@@ -24,6 +24,7 @@ use App\ValueGenerator\AuthTokenGenerator;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 
@@ -37,6 +38,7 @@ class UserLoginService implements UserLoginServiceInterface
         private readonly UserBanHistoryRepository $banHistoryRepository,
         private readonly UserRepository $userRepository,
         private readonly MailerInterface $mailer,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
     ) {}
 
     public function getUserInformation(string $email, Request $request): UserInformation
@@ -123,7 +125,7 @@ class UserLoginService implements UserLoginServiceInterface
         $this->userRepository->add($user);
 
         $email = new TemplatedEmail()
-            ->from($_ENV['INSTITUTION_EMAIL'])
+            ->from($this->institutionEmail)
             ->to($userInformation->getEmail())
             ->subject($this->translateService->getTranslation('MaxLoginsMailAttempts'))
             ->htmlTemplate('emails/userBanTooManyLoginsAttempts.html.twig')

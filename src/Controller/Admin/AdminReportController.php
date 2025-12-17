@@ -43,6 +43,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -76,7 +77,21 @@ use function count;
 #[OA\Tag(name: 'AdminReport')]
 class AdminReportController extends AbstractController
 {
-    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly TranslateServiceInterface $translateService, private readonly ReportRepository $reportRepository, private readonly MailerInterface $mailer, private readonly AudiobookUserCommentRepository $commentRepository, private readonly UserRepository $userRepository, private readonly UserBanHistoryRepository $banHistoryRepository, private readonly AdminReportAcceptServiceInterface $adminReportService, private readonly AdminReportRejectServiceInterface $adminReportRejectService, private readonly UserDeleteRepository $userDeleteRepository, private readonly SerializerInterface $serializer) {}
+    public function __construct(
+        private readonly RequestServiceInterface $requestService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly ReportRepository $reportRepository,
+        private readonly MailerInterface $mailer,
+        private readonly AudiobookUserCommentRepository $commentRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UserBanHistoryRepository $banHistoryRepository,
+        private readonly AdminReportAcceptServiceInterface $adminReportService,
+        private readonly AdminReportRejectServiceInterface $adminReportRejectService,
+        private readonly UserDeleteRepository $userDeleteRepository,
+        private readonly SerializerInterface $serializer,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+    ) {}
 
     #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
@@ -157,7 +172,7 @@ class AdminReportController extends AbstractController
 
                     if ('test' !== $_ENV['APP_ENV'] && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
                         $email = new TemplatedEmail()
-                            ->from($_ENV['INSTITUTION_EMAIL'])
+                            ->from($this->institutionEmail)
                             ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())
                             ->subject($this->translateService->getTranslation('AdminReportAcceptedOrRejected'))
                             ->htmlTemplate('emails/userBanned.html.twig')

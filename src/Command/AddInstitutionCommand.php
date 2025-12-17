@@ -25,7 +25,8 @@ class AddInstitutionCommand extends Command
 {
     public function __construct(
         private readonly InstitutionRepository $institutionRepository,
-        #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName
+        #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
     ) {
         parent::__construct();
     }
@@ -57,7 +58,7 @@ class AddInstitutionCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->institutionRepository->add(new Institution($this->institutionName, $_ENV['INSTITUTION_EMAIL'], $phoneNumber, (int) $maxAdmins, (int) $maxUsers));
+        $this->institutionRepository->add(new Institution($this->institutionName, $this->institutionEmail, $phoneNumber, (int) $maxAdmins, (int) $maxUsers));
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Success');

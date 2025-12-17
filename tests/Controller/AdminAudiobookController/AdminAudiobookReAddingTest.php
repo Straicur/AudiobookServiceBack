@@ -253,7 +253,7 @@ class AdminAudiobookReAddingTest extends AbstractWebTest
 
         $audiobookService->removeFolder($audiobookAfter->getFileName());
 
-        $audiobookService->removeFolder($_ENV['MAIN_DIR'] . '/' . $content['hashName']);
+        $audiobookService->removeFolder($this->mainDir  . '/' . $content['hashName']);
     }
 
     /**
