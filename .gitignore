@@ -5,7 +5,6 @@
 /.env.prod.local
 /.env.local.php
 /.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
@@ -31,3 +30,5 @@ phpstan.neon
 ###< friendsofphp/php-cs-fixer ###
 
 /config/secrets/dev/dev.decrypt.private.php
+/config/secrets/prod/prod.decrypt.private.php
+/config/secrets/test/test.decrypt.private.php
