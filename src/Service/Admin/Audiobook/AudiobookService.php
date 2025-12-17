@@ -34,7 +34,7 @@ class AudiobookService implements AudiobookServiceInterface
         private readonly AudiobooksID3TagsReaderServiceInterface $audiobooksID3TagsReaderService,
         private readonly TranslateServiceInterface $translateService,
         #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir,
-        #[Autowire(env: 'INSTITUTION_VOLUMEN')] private readonly string $institutionName,
+        #[Autowire(env: 'INSTITUTION_VOLUMEN')] private readonly int $institutionVolumen,
     ) {}
 
     public function configure(AdminAudiobookAddFileInterface $query): void
@@ -54,7 +54,7 @@ class AudiobookService implements AudiobookServiceInterface
 
         $this->checkOrCreateAudiobookFolder($fsObject);
 
-        if ((int) $this->institutionName <= $size) {
+        if ($this->institutionVolumen <= $size) {
             $this->removeFolder($this->whole_dir_path);
             throw new DataNotFoundException([$this->translateService->getTranslation('SystemVolumen')]);
         }
