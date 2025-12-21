@@ -6,11 +6,17 @@ namespace App\Model\Admin;
 
 use App\Enums\UserRoles;
 use DateTime;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminUserModel
 {
     private int $dateCreated;
 
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserRoles::class))
+    )]
     private array $roles = [];
 
     private ?string $phoneNumber = null;

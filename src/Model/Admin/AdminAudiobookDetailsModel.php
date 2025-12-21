@@ -8,6 +8,7 @@ use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use DateTime;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminAudiobookDetailsModel
 {
@@ -33,6 +34,10 @@ class AdminAudiobookDetailsModel
         /**
          * @var AudiobookDetailCategoryModel[]
          */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AudiobookDetailCategoryModel::class))
+        )]
         private array $categories,
     ) {
         $this->year = $year->getTimestamp() * 1000;

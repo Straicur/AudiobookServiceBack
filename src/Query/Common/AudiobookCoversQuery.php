@@ -10,9 +10,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AudiobookCoversQuery
 {
-    /**
-     * @Assert\All()
-     */
+    #[Assert\All([
+        new Assert\NotBlank()
+    ])]
     private array $audiobooks = [];
 
     public function getAudiobooks(): array

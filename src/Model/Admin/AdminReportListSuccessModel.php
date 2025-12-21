@@ -5,12 +5,18 @@ declare(strict_types = 1);
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminReportListSuccessModel implements ModelInterface
 {
     /**
      * @var AdminReportModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminReportModel::class))
+    )]
     private array $reports = [];
 
     private int $page;

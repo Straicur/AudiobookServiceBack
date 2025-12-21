@@ -22,9 +22,15 @@ class AdminUserNotificationsQuery
     #[Assert\Type(type: 'integer')]
     private int $limit;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'text'=> new Assert\NotBlank(allowNull: true),
+            'type'=> new Assert\NotBlank(allowNull: true),
+            'deleted'=> new Assert\NotNull(),
+            'order'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [

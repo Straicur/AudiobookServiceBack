@@ -34,9 +34,18 @@ class AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
     #[Assert\Type(type: 'integer')]
     private int $parts;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'categories'=> new Assert\All([
+                new Assert\NotBlank()
+            ]),
+            'author'=> new Assert\NotBlank(allowNull: true),
+            'title'=> new Assert\NotBlank(allowNull: true),
+            'age'=> new Assert\NotBlank(allowNull: true),
+            'year'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

@@ -6,6 +6,8 @@ namespace App\Model\Admin;
 
 use App\Model\Common\NotificationModel;
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminUserNotificationsSuccessModel implements ModelInterface
 {
@@ -13,6 +15,10 @@ class AdminUserNotificationsSuccessModel implements ModelInterface
         /**
          * @var NotificationModel[]
          */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: NotificationModel::class))
+        )]
         private array $systemNotifications,
         private int $page,
         private int $limit,

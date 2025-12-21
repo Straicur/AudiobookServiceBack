@@ -17,9 +17,13 @@ class UserReportQuery
     #[Assert\LessThan(9)]
     private int $type;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'description'=> new Assert\NotBlank(allowNull: true),
+            'actionId'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

@@ -27,9 +27,12 @@ class UserAudiobookCommentAddQuery
     #[Assert\Type(type: 'string')]
     private string $comment;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'parentId'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

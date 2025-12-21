@@ -22,9 +22,13 @@ class AdminAudiobookActiveQuery
     #[Assert\Type(type: 'boolean')]
     private bool $active;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'type'=> new Assert\NotBlank(allowNull: true),
+            'text'=> new Assert\NotBlank(allowNull: true),
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

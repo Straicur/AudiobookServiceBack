@@ -5,12 +5,18 @@ declare(strict_types = 1);
 namespace App\Model\User;
 
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class UserAudiobooksSuccessModel implements ModelInterface
 {
     /**
      * @var UserCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserCategoryModel::class))
+    )]
     private array $categories = [];
 
     private int $page;

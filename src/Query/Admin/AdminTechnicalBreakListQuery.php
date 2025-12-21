@@ -22,9 +22,16 @@ class AdminTechnicalBreakListQuery
     #[Assert\Type(type: 'integer')]
     private int $limit;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'nameOrLastname'=> new Assert\NotBlank(allowNull: true),
+            'active'=> new Assert\NotBlank(allowNull: true),
+            'order'=> new Assert\NotBlank(allowNull: true),
+            'dateFrom'=> new Assert\NotBlank(allowNull: true),
+            'dateTo'=> new Assert\NotBlank(allowNull: true),
+        ],
+        allowMissingFields: true,
+    )]
     protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [

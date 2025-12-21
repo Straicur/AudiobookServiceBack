@@ -4,11 +4,18 @@ declare(strict_types = 1);
 
 namespace App\Model\User;
 
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
+
 class UserCategoryTreeModel
 {
     /**
      * @var UserCategoryTreeModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserCategoryTreeModel::class))
+    )]
     private array $children = [];
 
     public function __construct(private string $name, private string $categoryKey, private ?string $parentCategoryKey = null) {}

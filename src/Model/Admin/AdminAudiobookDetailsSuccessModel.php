@@ -9,6 +9,7 @@ use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\ModelInterface;
 use DateTime;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminAudiobookDetailsSuccessModel implements ModelInterface
 {
@@ -35,6 +36,10 @@ class AdminAudiobookDetailsSuccessModel implements ModelInterface
         /**
          * @var AudiobookDetailCategoryModel[]
          */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AudiobookDetailCategoryModel::class))
+        )]
         private array $categories,
         private int $ratingAmount,
         private ?string $imgFile,

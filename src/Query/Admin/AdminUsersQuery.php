@@ -22,9 +22,18 @@ class AdminUsersQuery
     #[Assert\Type(type: 'integer')]
     private int $limit;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'email'=> new Assert\NotBlank(allowNull: true),
+            'phoneNumber'=> new Assert\NotBlank(allowNull: true),
+            'firstname'=> new Assert\NotBlank(allowNull: true),
+            'lastname'=> new Assert\NotBlank(allowNull: true),
+            'active'=> new Assert\NotNull(),
+            'banned'=> new Assert\NotNull(),
+            'order'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [

@@ -4,11 +4,17 @@ declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 class AdminCategoryModel
 {
     /**
      * @var AdminCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminCategoryModel::class))
+    )]
     private array $children = [];
 
     public function __construct(private string $id, private string $name, private bool $active, private string $categoryKey, private ?int $audiobooks = null, private ?string $parentCategoryKey = null) {}

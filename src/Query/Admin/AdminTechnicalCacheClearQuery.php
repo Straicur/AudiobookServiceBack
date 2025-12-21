@@ -9,9 +9,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AdminTechnicalCacheClearQuery
 {
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'pools'=> new Assert\All([
+                new Assert\NotBlank()
+            ]),
+            'admin'=> new Assert\NotNull(),
+            'user'=> new Assert\NotNull(),
+            'all'=> new Assert\NotNull()
+        ],
+        allowMissingFields: true,
+    )]
     protected array $cacheData = [];
 
     #[OA\Property(property: 'cacheData', properties: [

@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Model\Common;
 
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AudiobookCommentsSuccessModel implements ModelInterface
 {
@@ -12,6 +14,10 @@ class AudiobookCommentsSuccessModel implements ModelInterface
         /**
          * @var AudiobookCommentsModel[]
          */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AudiobookCommentsModel::class))
+        )]
         private array $comments,
     ) {}
 

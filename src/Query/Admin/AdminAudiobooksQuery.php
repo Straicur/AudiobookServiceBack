@@ -23,9 +23,22 @@ class AdminAudiobooksQuery
     #[Assert\Type(type: 'integer')]
     private int $limit;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'categories'=> new Assert\All([
+                new Assert\NotBlank()
+            ]),
+            'author'=> new Assert\NotBlank(allowNull: true),
+            'title'=> new Assert\NotBlank(allowNull: true),
+            'album'=> new Assert\NotBlank(allowNull: true),
+            'duration'=> new Assert\NotBlank(allowNull: true),
+            'parts'=> new Assert\NotBlank(allowNull: true),
+            'age'=> new Assert\NotBlank(allowNull: true),
+            'order'=> new Assert\NotBlank(allowNull: true),
+            'year'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [

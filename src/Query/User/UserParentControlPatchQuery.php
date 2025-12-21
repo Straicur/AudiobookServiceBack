@@ -17,9 +17,12 @@ class UserParentControlPatchQuery
     #[Assert\Type(type: 'string')]
     private string $smsCode;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'birthday'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

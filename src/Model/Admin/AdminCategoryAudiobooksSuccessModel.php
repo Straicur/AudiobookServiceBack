@@ -5,12 +5,18 @@ declare(strict_types = 1);
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminCategoryAudiobooksSuccessModel implements ModelInterface
 {
     /**
      * @var AdminCategoryAudiobookModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminCategoryAudiobookModel::class))
+    )]
     private array $audiobooks = [];
 
     private int $page;

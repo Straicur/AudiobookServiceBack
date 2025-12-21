@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Model\Admin;
 
 use App\Model\Common\AudiobookCommentModel;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminReportAudiobookCommentsModel
 {
@@ -15,6 +17,10 @@ class AdminReportAudiobookCommentsModel
     /**
      * @var AdminReportAudiobookCommentsModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminReportAudiobookCommentsModel::class))
+    )]
     private array $children = [];
 
     public function __construct(private AudiobookCommentModel $userModel, private string $comment, private bool $isReportedComment = false) {}

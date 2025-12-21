@@ -5,12 +5,18 @@ declare(strict_types = 1);
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AdminCategoriesSuccessModel implements ModelInterface
 {
     /**
      * @var AdminCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminCategoryModel::class))
+    )]
     private array $categories = [];
 
     /**

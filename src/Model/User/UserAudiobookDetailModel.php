@@ -6,6 +6,7 @@ namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class UserAudiobookDetailModel
 {
@@ -14,6 +15,10 @@ class UserAudiobookDetailModel
     /**
      * @var UserAudiobookCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserAudiobookCategoryModel::class))
+    )]
     private array $categories = [];
 
     public function __construct(private string $id, private string $title, private string $author, private int $parts, AudiobookAgeRange $age, private ?string $imgFile)

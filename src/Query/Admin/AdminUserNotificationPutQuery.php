@@ -35,9 +35,17 @@ class AdminUserNotificationPutQuery
     )]
     private int $notificationUserType;
 
-    /**
-     * @Assert\Collection(fields={})
-     */
+    #[Assert\Collection(
+        fields: [
+            'text'=> new Assert\NotBlank(allowNull: true),
+            'categoryKey'=> new Assert\NotBlank(allowNull: true),
+            'actionId'=> new Assert\NotBlank(allowNull: true),
+            'userId'=> new Assert\NotBlank(allowNull: true),
+            'active'=> new Assert\NotBlank(allowNull: true),
+            'dateActive'=> new Assert\NotBlank(allowNull: true)
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [

@@ -3,6 +3,8 @@
 declare(strict_types = 1);
 
 namespace App\Model\Common;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Attribute\Model;
 
 class AudiobookCommentsModel
 {
@@ -19,6 +21,10 @@ class AudiobookCommentsModel
     /**
      * @var AudiobookCommentsModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AudiobookCommentsModel::class))
+    )]
     private array $children = [];
 
     public function __construct(private AudiobookCommentModel $userModel, private string $id, private string $comment, private bool $edited, private bool $myComment) {}
