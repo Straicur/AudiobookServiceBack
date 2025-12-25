@@ -42,9 +42,7 @@ class AdminAudiobooksQuery
     protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [
-        new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
-            new OA\Items(type: 'string', example: 'UUID'),
-        ]),
+        new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'string', example: 'UUID'), nullable: true),
         new OA\Property(property: 'author', type: 'string', example: 'author', nullable: true),
         new OA\Property(property: 'title', type: 'string', example: 'title', nullable: true),
         new OA\Property(property: 'album', type: 'string', example: 'album', nullable: true),

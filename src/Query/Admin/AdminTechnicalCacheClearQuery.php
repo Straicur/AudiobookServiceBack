@@ -23,9 +23,7 @@ class AdminTechnicalCacheClearQuery
     protected array $cacheData = [];
 
     #[OA\Property(property: 'cacheData', properties: [
-        new OA\Property(property: 'pools', type: 'array', nullable: true, attachables: [
-            new OA\Items(type: 'string', example: 'Admin...'),
-        ]),
+        new OA\Property(property: 'pools', type: 'array', items: new OA\Items(type: 'string', example: 'Admin...'), nullable: true),
         new OA\Property(property: 'admin', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'user', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'all', type: 'boolean', example: true, nullable: true),

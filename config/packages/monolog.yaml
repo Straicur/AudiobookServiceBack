@@ -9,8 +9,11 @@ when@dev:
     monolog:
         handlers:
             main:
-                type: group
-                members: [log_error, log_debug]
+                type: rotating_file
+                path: "%kernel.logs_dir%/dev/%kernel.environment%.log"
+                level: debug
+                channels: ["!event","!deprecation","!security"]
+                max_files: 0
             log_error:
                 type: fingers_crossed
                 action_level: error

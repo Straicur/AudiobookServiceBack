@@ -20,9 +20,7 @@ class AudiobookCoversQuery
         return $this->audiobooks;
     }
 
-    #[OA\Property(property: 'audiobooks', type: 'array', nullable: true, attachables: [
-        new OA\Items(type: 'string', example: 'UUID'),
-    ])]
+    #[OA\Property(property: 'audiobooks', type: 'array', items: new OA\Items(type: 'string', example: 'UUID'), nullable: true)]
     public function setAudiobooks(array $audiobooks): void
     {
         foreach ($audiobooks as &$audiobook) {

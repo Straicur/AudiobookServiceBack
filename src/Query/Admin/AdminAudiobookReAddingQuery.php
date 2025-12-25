@@ -63,9 +63,7 @@ class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
     protected array $additionalData = [];
 
     #[OA\Property(property: 'additionalData', properties: [
-        new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
-            new OA\Items(type: 'string', example: 'UUID'),
-        ]),
+        new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'string', example: 'UUID'), nullable: true),
         new OA\Property(property: 'title', type: 'string', example: 'Tytuł', nullable: true),
         new OA\Property(property: 'author', type: 'string', example: 'Autor', nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),

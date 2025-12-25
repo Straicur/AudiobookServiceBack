@@ -15,7 +15,4 @@ nelmio_api_doc:
     areas: # to filter documented areas
         default:
             path_patterns:
-                - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
-            with_attribute: true
-            name_patterns:
-                - ^App\Controller\
+                - ^/api(?!/doc$)
