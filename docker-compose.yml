@@ -17,6 +17,7 @@ services:
       PHP_INI_MEMORY_LIMIT: 512M
     volumes:
       - .:/var/www/html
+      - audiobooks-data:/home/straicer/opt/audiobooks
 
   nginx:
     image: nginx:stable-alpine
@@ -27,6 +28,7 @@ services:
     volumes:
       - .:/var/www/html:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - audiobooks-data:/home/straicer/opt/audiobooks:ro
     depends_on:
       - db
       - redis
@@ -53,3 +55,4 @@ services:
 volumes:
   db-data:
   redis_data:
+  audiobooks-data:

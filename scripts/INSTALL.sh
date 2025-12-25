@@ -46,3 +46,7 @@ php bin/console audiobookservice:category:add "Powieść"
 php bin/console audiobookservice:category:add "Wiersz"
 
 php bin/console  cache:pool:clear stock_cache
+
+mkdir -p /home/straicer/opt/audiobooks/
+chown -R www-data:www-data /home/straicer/opt/audiobooks/
+chmod -R 755 /home/straicer/opt/audiobooks/
