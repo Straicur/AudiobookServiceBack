@@ -29,7 +29,7 @@ class UserAudiobookCommentAddQuery
 
     #[Assert\Collection(
         fields: [
-            'parentId'=> new Assert\NotBlank(allowNull: true)
+            'parentId' => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminAudiobooksSuccessModel implements ModelInterface
 {

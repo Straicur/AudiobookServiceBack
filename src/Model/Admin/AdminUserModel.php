@@ -6,8 +6,8 @@ namespace App\Model\Admin;
 
 use App\Enums\UserRoles;
 use DateTime;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminUserModel
 {

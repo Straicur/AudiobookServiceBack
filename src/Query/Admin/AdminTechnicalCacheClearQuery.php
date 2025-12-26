@@ -11,12 +11,12 @@ class AdminTechnicalCacheClearQuery
 {
     #[Assert\Collection(
         fields: [
-            'pools'=> new Assert\All([
-                new Assert\NotBlank()
+            'pools' => new Assert\All([
+                new Assert\NotBlank(),
             ]),
-            'admin'=> new Assert\NotNull(),
-            'user'=> new Assert\NotNull(),
-            'all'=> new Assert\NotNull()
+            'admin' => new Assert\NotNull(),
+            'user'  => new Assert\NotNull(),
+            'all'   => new Assert\NotNull(),
         ],
         allowMissingFields: true,
     )]

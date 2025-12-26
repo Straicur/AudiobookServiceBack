@@ -39,7 +39,7 @@ class RegisterQuery
 
     #[Assert\Collection(
         fields: [
-            'birthday'=> new Assert\NotBlank(allowNull: true)
+            'birthday' => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

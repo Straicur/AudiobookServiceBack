@@ -19,8 +19,8 @@ class UserReportQuery
 
     #[Assert\Collection(
         fields: [
-            'description'=> new Assert\NotBlank(allowNull: true),
-            'actionId'=> new Assert\NotBlank(allowNull: true)
+            'description' => new Assert\NotBlank(allowNull: true),
+            'actionId'    => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

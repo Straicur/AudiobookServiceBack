@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Model\Common;
 
 use App\Model\ModelInterface;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class NotificationsSuccessModel implements ModelInterface
 {
@@ -21,7 +21,7 @@ class NotificationsSuccessModel implements ModelInterface
         private array $systemNotifications,
         private int $page,
         private int $limit,
-        private int $maxPage
+        private int $maxPage,
     ) {}
 
     /**

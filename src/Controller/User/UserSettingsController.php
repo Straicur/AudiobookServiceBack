@@ -37,7 +37,6 @@ use App\Service\RequestServiceInterface;
 use App\Service\SmsService;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
-use App\Tool\SmsTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use App\ValueGenerator\UserEditConfirmGenerator;
 use App\ValueGenerator\UserParentalControlCodeGenerator;

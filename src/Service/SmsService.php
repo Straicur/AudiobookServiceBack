@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -12,11 +12,9 @@ use Vonage\SMS\Message\SMS;
 class SmsService
 {
     public function __construct(
-        #[Autowire(env: 'SMS_KEY')] private readonly string    $smsKey,
-        #[Autowire(env: 'SMS_SECRET')] private readonly string $smsSecret
-    )
-    {
-    }
+        #[Autowire(env: 'SMS_KEY')] private readonly string $smsKey,
+        #[Autowire(env: 'SMS_SECRET')] private readonly string $smsSecret,
+    ) {}
 
     public function sendSms(string $phone, string $content): bool
     {

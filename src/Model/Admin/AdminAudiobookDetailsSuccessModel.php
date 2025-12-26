@@ -8,8 +8,8 @@ use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\ModelInterface;
 use DateTime;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminAudiobookDetailsSuccessModel implements ModelInterface
 {

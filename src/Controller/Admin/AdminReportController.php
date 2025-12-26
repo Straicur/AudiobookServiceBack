@@ -90,7 +90,7 @@ class AdminReportController extends AbstractController
         private readonly AdminReportRejectServiceInterface $adminReportRejectService,
         private readonly UserDeleteRepository $userDeleteRepository,
         private readonly SerializerInterface $serializer,
-        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
     ) {}
 
     #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]

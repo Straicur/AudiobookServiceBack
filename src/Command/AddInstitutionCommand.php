@@ -13,8 +13,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
 use function count;
 
 #[AsCommand(
@@ -26,7 +26,7 @@ class AddInstitutionCommand extends Command
     public function __construct(
         private readonly InstitutionRepository $institutionRepository,
         #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName,
-        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
     ) {
         parent::__construct();
     }

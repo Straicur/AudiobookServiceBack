@@ -24,11 +24,11 @@ class AdminTechnicalBreakListQuery
 
     #[Assert\Collection(
         fields: [
-            'nameOrLastname'=> new Assert\NotBlank(allowNull: true),
-            'active'=> new Assert\NotBlank(allowNull: true),
-            'order'=> new Assert\NotBlank(allowNull: true),
-            'dateFrom'=> new Assert\NotBlank(allowNull: true),
-            'dateTo'=> new Assert\NotBlank(allowNull: true),
+            'nameOrLastname' => new Assert\NotBlank(allowNull: true),
+            'active'         => new Assert\NotBlank(allowNull: true),
+            'order'          => new Assert\NotBlank(allowNull: true),
+            'dateFrom'       => new Assert\NotBlank(allowNull: true),
+            'dateTo'         => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

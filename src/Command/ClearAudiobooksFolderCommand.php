@@ -20,9 +20,8 @@ use Symfony\Component\Filesystem\Filesystem;
 class ClearAudiobooksFolderCommand extends Command
 {
     public function __construct(
-        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir
-    )
-    {
+        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir,
+    ) {
         parent::__construct();
     }
 

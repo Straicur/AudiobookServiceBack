@@ -36,13 +36,13 @@ class AdminAudiobookAddQuery implements AdminAudiobookAddFileInterface
 
     #[Assert\Collection(
         fields: [
-            'categories'=> new Assert\All([
-                new Assert\NotBlank()
+            'categories' => new Assert\All([
+                new Assert\NotBlank(),
             ]),
-            'author'=> new Assert\NotBlank(allowNull: true),
-            'title'=> new Assert\NotBlank(allowNull: true),
-            'age'=> new Assert\NotBlank(allowNull: true),
-            'year'=> new Assert\NotBlank(allowNull: true)
+            'author' => new Assert\NotBlank(allowNull: true),
+            'title'  => new Assert\NotBlank(allowNull: true),
+            'age'    => new Assert\NotBlank(allowNull: true),
+            'year'   => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

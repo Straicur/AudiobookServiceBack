@@ -6,8 +6,8 @@ namespace App\Model\Admin;
 
 use App\Model\Common\NotificationModel;
 use App\Model\ModelInterface;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminUserNotificationsSuccessModel implements ModelInterface
 {

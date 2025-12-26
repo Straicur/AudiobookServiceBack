@@ -25,17 +25,17 @@ class AdminReportListQuery
 
     #[Assert\Collection(
         fields: [
-            'actionId'=> new Assert\NotBlank(allowNull: true),
-            'description'=> new Assert\NotBlank(allowNull: true),
-            'email'=> new Assert\NotBlank(allowNull: true),
-            'ip'=> new Assert\NotBlank(allowNull: true),
-            'type'=> new Assert\NotBlank(allowNull: true),
-            'user'=> new Assert\NotBlank(allowNull: true),
-            'accepted'=> new Assert\NotBlank(allowNull: true),
-            'denied'=> new Assert\NotBlank(allowNull: true),
-            'dateFrom'=> new Assert\NotBlank(allowNull: true),
-            'dateTo'=> new Assert\NotBlank(allowNull: true),
-            'order'=> new Assert\NotBlank(allowNull: true)
+            'actionId'    => new Assert\NotBlank(allowNull: true),
+            'description' => new Assert\NotBlank(allowNull: true),
+            'email'       => new Assert\NotBlank(allowNull: true),
+            'ip'          => new Assert\NotBlank(allowNull: true),
+            'type'        => new Assert\NotBlank(allowNull: true),
+            'user'        => new Assert\NotBlank(allowNull: true),
+            'accepted'    => new Assert\NotBlank(allowNull: true),
+            'denied'      => new Assert\NotBlank(allowNull: true),
+            'dateFrom'    => new Assert\NotBlank(allowNull: true),
+            'dateTo'      => new Assert\NotBlank(allowNull: true),
+            'order'       => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

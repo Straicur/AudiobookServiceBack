@@ -33,7 +33,7 @@ class AdminReportRejectService implements AdminReportRejectServiceInterface
         private readonly NotificationRepository $notificationRepository,
         private readonly MailerInterface $mailer,
         private readonly TranslateServiceInterface $translateService,
-        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
     ) {}
 
     public function setAdminReportRejectQuery(AdminReportRejectQuery $adminReportRejectQuery): AdminReportRejectService

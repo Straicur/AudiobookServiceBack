@@ -24,8 +24,8 @@ class AdminAudiobookActiveQuery
 
     #[Assert\Collection(
         fields: [
-            'type'=> new Assert\NotBlank(allowNull: true),
-            'text'=> new Assert\NotBlank(allowNull: true),
+            'type' => new Assert\NotBlank(allowNull: true),
+            'text' => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

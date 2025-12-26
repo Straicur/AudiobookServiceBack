@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class UserAudiobookDetailModel
 {

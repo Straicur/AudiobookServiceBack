@@ -107,10 +107,8 @@ class AdminUserController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly MailerInterface $mailer,
         private readonly NotificationRepository $notificationRepository,
-        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
-    ) {
-
-    }
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+    ) {}
 
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]

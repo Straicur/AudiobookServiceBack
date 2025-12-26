@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class AudiobookCoversQuery
 {
     #[Assert\All([
-        new Assert\NotBlank()
+        new Assert\NotBlank(),
     ])]
     private array $audiobooks = [];
 

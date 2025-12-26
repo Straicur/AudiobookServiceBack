@@ -40,7 +40,7 @@ class AudiobookService implements AudiobookServiceInterface
     public function configure(AdminAudiobookAddFileInterface $query): void
     {
         $this->query = $query;
-        $this->whole_dir_path = $this->main_dir. '/' . $this->query->getHashName();
+        $this->whole_dir_path = $this->main_dir . '/' . $this->query->getHashName();
         $this->whole_zip_path = $this->main_dir . '/' . $this->query->getFileName();
     }
 

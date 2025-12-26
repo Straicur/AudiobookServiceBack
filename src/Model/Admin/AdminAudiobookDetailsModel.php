@@ -7,8 +7,8 @@ namespace App\Model\Admin;
 use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use DateTime;
-use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminAudiobookDetailsModel
 {

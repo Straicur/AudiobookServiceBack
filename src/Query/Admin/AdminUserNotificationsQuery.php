@@ -24,10 +24,10 @@ class AdminUserNotificationsQuery
 
     #[Assert\Collection(
         fields: [
-            'text'=> new Assert\NotBlank(allowNull: true),
-            'type'=> new Assert\NotBlank(allowNull: true),
-            'deleted'=> new Assert\NotNull(),
-            'order'=> new Assert\NotBlank(allowNull: true)
+            'text'    => new Assert\NotBlank(allowNull: true),
+            'type'    => new Assert\NotBlank(allowNull: true),
+            'deleted' => new Assert\NotNull(),
+            'order'   => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]

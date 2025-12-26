@@ -38,7 +38,7 @@ class UserLoginService implements UserLoginServiceInterface
         private readonly UserBanHistoryRepository $banHistoryRepository,
         private readonly UserRepository $userRepository,
         private readonly MailerInterface $mailer,
-        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
     ) {}
 
     public function getUserInformation(string $email, Request $request): UserInformation

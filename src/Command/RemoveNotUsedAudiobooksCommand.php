@@ -12,8 +12,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
 use const GLOB_NOSORT;
 
 /**
@@ -28,7 +28,7 @@ class RemoveNotUsedAudiobooksCommand extends Command
     public function __construct(
         private readonly AudiobookRepository $audiobookRepository,
         private readonly AudiobookService $audiobookService,
-        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir
+        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir,
     ) {
         parent::__construct();
     }

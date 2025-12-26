@@ -37,12 +37,12 @@ class AdminUserNotificationPutQuery
 
     #[Assert\Collection(
         fields: [
-            'text'=> new Assert\NotBlank(allowNull: true),
-            'categoryKey'=> new Assert\NotBlank(allowNull: true),
-            'actionId'=> new Assert\NotBlank(allowNull: true),
-            'userId'=> new Assert\NotBlank(allowNull: true),
-            'active'=> new Assert\NotBlank(allowNull: true),
-            'dateActive'=> new Assert\NotBlank(allowNull: true)
+            'text'        => new Assert\NotBlank(allowNull: true),
+            'categoryKey' => new Assert\NotBlank(allowNull: true),
+            'actionId'    => new Assert\NotBlank(allowNull: true),
+            'userId'      => new Assert\NotBlank(allowNull: true),
+            'active'      => new Assert\NotBlank(allowNull: true),
+            'dateActive'  => new Assert\NotBlank(allowNull: true),
         ],
         allowMissingFields: true,
     )]
