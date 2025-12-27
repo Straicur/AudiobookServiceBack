@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      target: test
+      args:
+        MAIN_DIR: /home/www-data/test/opt/audiobooks
+    environment:
+      APP_ENV: test
+    volumes:
+      - .:/var/www/html
+      - audiobooks-test-data:/tmp/audiobooks_test
+
+volumes:
+  audiobooks-test-data:

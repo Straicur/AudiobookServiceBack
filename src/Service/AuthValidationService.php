@@ -22,6 +22,7 @@ use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use DateTime;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -34,6 +35,7 @@ class AuthValidationService implements AuthValidationServiceInterface
         private readonly UserRepository $userRepository,
         private readonly UserDeleteRepository $deleteRepository,
         private readonly TagAwareCacheInterface $stockCache,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     public function getAuthenticatedUserToken(Request $request): AuthenticationToken
@@ -81,7 +83,7 @@ class AuthValidationService implements AuthValidationServiceInterface
             ]);
         });
 
-        if (('test' !== $_ENV['APP_ENV']) && null !== $technicalBreak && !$user->getUserSettings()->isAdmin()) {
+        if (true === $this->sendEmail && null !== $technicalBreak && !$user->getUserSettings()->isAdmin()) {
             throw new TechnicalBreakException();
         }
     }

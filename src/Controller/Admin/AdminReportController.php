@@ -91,6 +91,7 @@ class AdminReportController extends AbstractController
         private readonly UserDeleteRepository $userDeleteRepository,
         private readonly SerializerInterface $serializer,
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
@@ -170,7 +171,7 @@ class AdminReportController extends AbstractController
                         $this->reportRepository->add($report);
                     }
 
-                    if ('test' !== $_ENV['APP_ENV'] && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
+                    if (true === $this->sendEmail && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
                         $email = new TemplatedEmail()
                             ->from($this->institutionEmail)
                             ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())

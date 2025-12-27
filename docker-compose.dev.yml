@@ -1,17 +1,14 @@
-version: '3.7'
-
 services:
   app:
     build:
-      target: dev # Użycie etapu 'dev' z Dockerfile
+      target: dev
+      args:
+        MAIN_DIR: /home/www-data/opt/audiobooks
     environment:
-      SERVER_NAME: ${SERVER_NAME:-localhost}
-      APP_ENV: dev # Ustawienie środowiska na dev
-      XDEBUG_CLIENT_HOST: host.docker.internal # Konfiguracja dla Xdebug
+      APP_ENV: dev
     volumes:
-      - .:/var/www/html # Wymagane w dev do edycji kodu na żywo
-      - ~/.ssh/id_rsa:/home/www-data/.ssh/id_rsa:ro # Opcjonalnie: jeśli potrzebujesz kluczy SSH
+      - .:/var/www/html
+      - audiobooks-dev-data:/home/www-data/opt/audiobooks_dev
 
-  nginx:
-    volumes:
-      - .:/var/www/html # W dev nie jest potrzebne :ro, aby debugować/edytować statyczne pliki
+volumes:
+  audiobooks-dev-data:

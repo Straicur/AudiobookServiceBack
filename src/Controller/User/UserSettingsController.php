@@ -96,6 +96,7 @@ class UserSettingsController extends AbstractController
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
         #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
         #[Autowire(env: 'FRONTEND_URL')] private readonly string $frontendUrl,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     #[Route('/api/user/settings/password', name: 'userSettingsPassword', methods: ['PATCH'])]
@@ -200,7 +201,7 @@ class UserSettingsController extends AbstractController
 
         $this->editRepository->add($newEditedUser);
 
-        if ('test' !== $_ENV['APP_ENV']) {
+        if (true === $this->sendEmail) {
             $email = new TemplatedEmail()
                 ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
@@ -344,7 +345,7 @@ class UserSettingsController extends AbstractController
 
             $this->userRepository->add($user);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
@@ -478,7 +479,7 @@ class UserSettingsController extends AbstractController
 
         $this->userDeleteRepository->add($userDelete);
 
-        if ('test' !== $_ENV['APP_ENV']) {
+        if (true === $this->sendEmail) {
             $email = new TemplatedEmail()
                 ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
@@ -526,7 +527,7 @@ class UserSettingsController extends AbstractController
 
         $this->editRepository->add($newEditedUser);
 
-        if ('test' !== $_ENV['APP_ENV']) {
+        if (true === $this->sendEmail) {
             $email = new TemplatedEmail()
                 ->from($this->institutionEmail)
                 ->to($user->getUserInformation()->getEmail())
@@ -686,7 +687,7 @@ class UserSettingsController extends AbstractController
 
             $this->userRepository->add($user);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
@@ -879,7 +880,7 @@ class UserSettingsController extends AbstractController
             $controlCode->setActive(false);
             $this->controlCodeRepository->add($controlCode);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())

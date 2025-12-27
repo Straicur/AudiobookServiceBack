@@ -59,6 +59,7 @@ class RegisterController extends AbstractController
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
         #[Autowire(env: 'FRONTEND_URL')] private readonly string $frontendUrl,
         #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     #[Route('/api/register', name: 'apiRegister', methods: ['PUT'])]
@@ -223,7 +224,7 @@ class RegisterController extends AbstractController
 
             $this->registerCodeRepository->add($registerCode);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())

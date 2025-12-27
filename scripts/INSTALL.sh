@@ -1,11 +1,15 @@
 #!/bin/bash
 
-if [ ! -f .env.local ]; then
-  echo "File .env.local not exist"
+if [ -z "$APP_ENV" ]; then
+  echo "Error: APP_ENV is not set!"
   exit 1
 fi
 
-composer install
+if [ "$APP_ENV" == "test" ]; then
+  echo "Error: APP_ENV is set to '$APP_ENV', but 'dev or prod' is required to run install."
+  exit 1
+fi
+
 php bin/console doctrine:database:drop --force
 php bin/console doctrine:database:create
 echo | php bin/console doctrine:migrations:migrate
@@ -46,7 +50,3 @@ php bin/console audiobookservice:category:add "Powieść"
 php bin/console audiobookservice:category:add "Wiersz"
 
 php bin/console  cache:pool:clear stock_cache
-
-mkdir -p /home/straicer/opt/audiobooks/
-chown -R www-data:www-data /home/straicer/opt/audiobooks/
-chmod -R 755 /home/straicer/opt/audiobooks/

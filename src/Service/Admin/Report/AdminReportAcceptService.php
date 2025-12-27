@@ -34,6 +34,7 @@ class AdminReportAcceptService implements AdminReportAcceptServiceInterface
         private readonly MailerInterface $mailer,
         private readonly TranslateServiceInterface $translateService,
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     public function setAdminReportAcceptQuery(AdminReportAcceptQuery $adminReportAcceptQuery): AdminReportAcceptService
@@ -86,7 +87,7 @@ class AdminReportAcceptService implements AdminReportAcceptServiceInterface
             $this->notificationRepository->add($notification);
         }
 
-        if ('test' !== $_ENV['APP_ENV'] && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
+        if (true === $this->sendEmail && $report->getEmail() && $report->getType() !== ReportType::RECRUITMENT_REQUEST) {
             $email = new TemplatedEmail()
                 ->from($this->institutionEmail)
                 ->to($report->getEmail())

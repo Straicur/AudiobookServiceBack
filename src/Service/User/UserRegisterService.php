@@ -52,6 +52,7 @@ class UserRegisterService implements UserRegisterServiceInterface
         #[Autowire(env: 'INSTITUTION_NAME')] private readonly string $institutionName,
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
         #[Autowire(env: 'BACKEND_URL')] private readonly string $backendUrl,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     public function checkExistingUsers(RegisterQuery $registerQuery, Request $request): void
@@ -157,7 +158,7 @@ class UserRegisterService implements UserRegisterServiceInterface
 
     public function sendMail(User $newUser, string $registerCode, Request $request): void
     {
-        if ('test' !== $_ENV['APP_ENV']) {
+        if (true === $this->sendEmail) {
             $email = new TemplatedEmail()
                 ->from($this->institutionEmail)
                 ->to($newUser->getUserInformation()->getEmail())

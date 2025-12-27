@@ -14,11 +14,12 @@ class SmsService
     public function __construct(
         #[Autowire(env: 'SMS_KEY')] private readonly string $smsKey,
         #[Autowire(env: 'SMS_SECRET')] private readonly string $smsSecret,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     public function sendSms(string $phone, string $content): bool
     {
-        if ('test' !== $_ENV['APP_ENV']) {
+        if (true === $this->sendEmail) {
             $basic = new Basic($this->smsKey, $this->smsSecret);
             $client = new Client($basic);
 

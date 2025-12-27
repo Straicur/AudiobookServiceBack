@@ -108,6 +108,7 @@ class AdminUserController extends AbstractController
         private readonly MailerInterface $mailer,
         private readonly NotificationRepository $notificationRepository,
         #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
     ) {}
 
     #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
@@ -661,7 +662,7 @@ class AdminUserController extends AbstractController
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
@@ -889,7 +890,7 @@ class AdminUserController extends AbstractController
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
@@ -966,7 +967,7 @@ class AdminUserController extends AbstractController
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ('test' !== $_ENV['APP_ENV']) {
+            if (true === $this->sendEmail) {
                 $email = new TemplatedEmail()
                     ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
