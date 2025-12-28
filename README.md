@@ -2,11 +2,18 @@
 
 <h3>AudiobookServiceBack is the backend of my audiobook management application. It is a Rest Api that responds to requests from the front. It's my portfolio project, Symfony is the framework in which I want to develop and this project contains many examples of the use of this framework. This is a further implementation of the concept that i have used for our engineering work. It was created in the concept of MVC architecture. At first, it was supposed to be a regular system for managing audiobooks without the possibility of sharing it with other users and was supposed to be limited to only the administrator functionalities. However, the project has been developed much more and is now an implementation of a system that could compete with other such services on the Internet (rather, at first on a much smaller scale).</h2>
 
+<h3>The project has recently been refreshed by adding: </h3>
+- Secrets
+- Packages upgrade
+- PHP version upgrade from 8.1 to 8.4
+- Adding rector, csfixer, and phpStan
+- Most importantly, Docker
+
 <h2>💻 Built with</h2>
 
 Technologies used in the project:
 
-*   Php 8.1
+*   Php 8.4
 *   Symfoy 6.4 (Rest Api)
 *   Redis
 *   MySql
@@ -22,7 +29,6 @@ Technologies used in the project:
 All files are saved on the server in the specified path (it has over-size protection on disk). Adding an audiobook involves receiving a portion of the zip file as a base64 string in requests. After receiving all the parts, the file is assembled in its entirety unzipped in the appropriate folder. In addition, the application extracts the id3 data from the mp3 file of the audiobook and saves it to an Entity as the basic data to be changed later when preparing the audiobook. </br> 
 Authentication is possible through a generated token, which must be added to the header for almost every request. Queries are sent as json, the application serializes them to objects accordingly and works on classes, not pure json. Errors are subject to logging with the monologue package and if any occur, the appropriate response 500, 400, 401, 403, 409 is returned. </br> For the audiobook to work properly, it must be provided in the appropriate zip format (mp3 files and cover JPG or PNG). When an error occurs, the audiobook can be deleted from the disk, and before activation, it is not visible to users. This also applies to the entire category and the audiobooks plugged into it. As an additional security measure, in addition to the Uuid itself for access to data sent from the api (audiobook details), a corresponding category key is required, created together with it. Translations have also been added, which, depending on the language or localization sent in the header, return a message to the user in the appropriate language (currently Polish and English). </br> Tests have also been added to check and catch errors that are returned respectively (you can start them with 'make tests'). With the addition of the make package, you can execute shell commands that have been prepared to set up the server faster and add basic data. They mostly execute prepared symfony commands and can be found in the Makefile. </br> A smpt server has also been added, which sends emails appropriate to the situation, which are also translated. Additionally, SMS API is used (Vonage). Also listeners are included and tools that encapsulate minor functionalities that are repetitive or need to be encapsulated in one place. I have had implemented api swagger for easier work with api and describing appropriate endpoints. </br> System is staged using OVH hosting on an Ubuntu system and using nginx, redis, phpfpm, PHP 8.1 and Symfony 6.4. </br> 
 Redis is used to cache queries for specific users. This reduces the use of the server and the responses are faster, the only problem with this solution is that in the system are not immediately visible in every part of the system.
-
 
 ![image](https://github.com/user-attachments/assets/49a1c1cd-3aca-4e37-8cdb-ea3b4dfccdc0)
 
@@ -53,39 +59,50 @@ You have to be an admin to do these things. Admins are added with special comman
 
 <h2>🛠️ Installation Steps:</h2>
 
-<p>1. Install all Php 8.1 dependencies</p>
+<p>1. Install Docker</p>
 
-<p>2. Install MySql server and redis</p>
+<p>2.  Clone project and create a .env.local file and complete the file with the appropriate data based on the .env file. You need to remember about secrets like MAILER_DSN (I was using a gmail) and smsapi SMS_KEY and SMS_SECRET for Vonage. These are free versions so you can set them up. Without them, the system will not work properly in all places</p>
 
-<p>3. Install maker and Docker</p>
+<p>3. Get a secret key from me or create your own</p>
 
-<p>4. Clone project and create a .env.local file and complete the file with the appropriate data based on the .env file. You need to remember about secrets like MAILER_DSN (I was using a gmail) and smsapi SMS_KEY and SMS_SECRET for Vonage. These are free versions so you can set them up. Without them, the system will not work properly in all places </p>
+<p>4. Use docker to initialize project</p>
 
-<p>5. Do a command</p>
+
+<h4>Dev</h4> <h5>I work in this environment</h5>
+```
+sudo docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+```
+
+<h4>Prod</h4> <h5>It is pre-optimized for production</h5>
+```
+sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+<p>4a. For a dev and prod you can use to populate database with this command</p>
 
 ```
 make install
 ```
+<hr/>
 
-<p>6. Run a redis</p>
+<h4>Test</h4> <h5>Only for running tests. It runs on a separate database</h5>
+```
+sudo docker compose -f docker-compose.yml -f docker-compose.test.yml up --build -d
+```
+<p>4a. For a test to run a tests you have to populate database first with this command</p>
 
 ```
-docker compose up
+make installTest
+```
+<p>4b.💣 After that you can run tests and check if everything is correct</p>
+
+```
+make systemTests
 ```
 
-<p>7. Run a symfony project</p>
+<p>5. Access api doc on </p>
 
 ```
-symfony serve or php bin/console serve
-```
-
-
-<h2> 💣 Running Tests</h2>
-
-To run tests, run the following command
-
-```bash
-  make tests
+http://127.0.1.0:8080/api/doc
 ```
 
 <h2>🛡️ License:</h2>
