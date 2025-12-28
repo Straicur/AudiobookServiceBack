@@ -2,12 +2,12 @@
 
 <h3>AudiobookServiceBack is the backend of my audiobook management application. It is a Rest Api that responds to requests from the front. It's my portfolio project, Symfony is the framework in which I want to develop and this project contains many examples of the use of this framework. This is a further implementation of the concept that i have used for our engineering work. It was created in the concept of MVC architecture. At first, it was supposed to be a regular system for managing audiobooks without the possibility of sharing it with other users and was supposed to be limited to only the administrator functionalities. However, the project has been developed much more and is now an implementation of a system that could compete with other such services on the Internet (rather, at first on a much smaller scale).</h2>
 
-<h3>The project has recently been refreshed by adding: </h3>
-- Secrets
-- Packages upgrade
+<h3>The project has recently been refreshed by: </h3>
+- Adding secrets
+- Packages upgrade and cleaning composer
 - PHP version upgrade from 8.1 to 8.4
-- Adding rector, csfixer, and phpStan
-- Most importantly, Docker
+- Adding rector, csfixer, and phpStan <- and running them
+- Most importantly, adding Docker
 
 <h2>💻 Built with</h2>
 
