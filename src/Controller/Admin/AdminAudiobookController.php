@@ -97,7 +97,27 @@ use function in_array;
 #[OA\Tag(name: 'AdminAudiobook')]
 class AdminAudiobookController extends AbstractController
 {
-    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly AudiobookRepository $audiobookRepository, private readonly AudiobookCategoryRepository $audiobookCategoryRepository, private readonly AudiobookRatingRepository $audiobookRatingRepository, private readonly TranslateServiceInterface $translateService, private readonly TagAwareCacheInterface $stockCache, private readonly LoggerInterface $usersLogger, private readonly AudiobookServiceInterface $audiobookService, private readonly AudiobookAddService $addService, private readonly NotificationRepository $notificationRepository, private readonly AudiobookInfoRepository $audiobookInfoRepository, private readonly AudiobookUserCommentRepository $commentRepository, private readonly SerializerInterface $serializer, private readonly UserRepository $userRepository, private readonly RoleRepository $roleRepository, private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository, private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository) {}
+    public function __construct(
+        private readonly RequestServiceInterface $requestService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly AudiobookRepository $audiobookRepository,
+        private readonly AudiobookCategoryRepository $audiobookCategoryRepository,
+        private readonly AudiobookRatingRepository $audiobookRatingRepository,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly TagAwareCacheInterface $stockCache,
+        private readonly LoggerInterface $usersLogger,
+        private readonly AudiobookServiceInterface $audiobookService,
+        private readonly AudiobookAddService $addService,
+        private readonly NotificationRepository $notificationRepository,
+        private readonly AudiobookInfoRepository $audiobookInfoRepository,
+        private readonly AudiobookUserCommentRepository $commentRepository,
+        private readonly SerializerInterface $serializer,
+        private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly AudiobookUserCommentRepository $audiobookUserCommentRepository,
+        private readonly AuthorizedUserServiceInterface $authorizedUserService,
+        private readonly AudiobookUserCommentLikeRepository $audiobookUserCommentLikeRepository,
+    ) {}
 
     #[Route('/api/admin/audiobook/details', name: 'adminAudiobookDetails', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
@@ -238,7 +258,6 @@ class AdminAudiobookController extends AbstractController
         Request $request,
     ): Response {
         $adminAudiobookAddQuery = $this->requestService->getRequestBodyContent($request, AdminAudiobookAddQuery::class);
-
         if ($adminAudiobookAddQuery instanceof AdminAudiobookAddQuery) {
             $this->audiobookService->configure($adminAudiobookAddQuery);
             $this->audiobookService->checkAndAddFile();

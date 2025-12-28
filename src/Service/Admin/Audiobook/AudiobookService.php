@@ -8,6 +8,7 @@ use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddFileInterface;
 use App\Service\TranslateServiceInterface;
+use Exception;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -149,46 +150,51 @@ class AudiobookService implements AudiobookServiceInterface
     {
         $this->checkConfiguration();
 
-        $file = $this->whole_zip_path . '.zip';
-
+        $zipFile = $this->whole_zip_path . '.zip';
         $zip = new ZipArchive();
 
-        $zip->open($file);
-
-        $dir = trim($zip->getNameIndex(0), '/');
-        $dir = explode('/', $dir)[0];
-
-        $extracted = $zip->extractTo($this->main_dir);
-
-        if (!$extracted) {
-            $this->removeFolder($file);
+        if ($zip->open($zipFile) !== true) {
+            throw new Exception('Nie można otworzyć pliku ZIP: ' . $zipFile);
         }
 
-        $zip->close();
+        // 1. Pobieramy nazwę pierwszego elementu w ZIP (zazwyczaj główny folder)
+        $dirInZip = trim($zip->getNameIndex(0), '/');
+        $dirInZip = explode('/', $dirInZip)[0];
 
-        unlink($file);
+        // 2. Wypakowujemy do folderu tymczasowego lub bezpośrednio do main_dir
+        $extracted = $zip->extractTo($this->main_dir);
+        $zip->close();
+        unlink($zipFile);
+
+        if (!$extracted) {
+            throw new Exception('Błąd podczas wypakowywania pliku.');
+        }
 
         if (null !== $reAdding && is_dir($reAdding)) {
             $this->removeFolder($reAdding);
         }
 
-        $amountOfSameFolders = 0;
+        // --- POPRAWIONA LOGIKA NAZEWNICTWA ---
 
-        if ($handle = opendir($this->main_dir)) {
-            while (false !== ($entry = readdir($handle))) {
-                if (str_contains($entry, $this->query->getFileName())) {
-                    ++$amountOfSameFolders;
-                }
-            }
+        $baseTargetDir = $this->main_dir . '/' . $this->query->getFileName();
+        $finalTargetDir = $baseTargetDir;
+        $counter = 1;
 
-            closedir($handle);
+        // Sprawdzamy, czy folder o tej nazwie już istnieje.
+        // Jeśli tak, dodajemy _1, _2 itd. aż znajdziemy wolną nazwę.
+        while (file_exists($finalTargetDir)) {
+            $finalTargetDir = $baseTargetDir . '_' . $counter;
+            ++$counter;
         }
 
-        $newName = $this->whole_zip_path . $amountOfSameFolders;
+        // 3. Zmieniamy nazwę z tej "zipowej" na naszą docelową (unikalną)
+        $originalPath = $this->main_dir . '/' . $dirInZip;
 
-        rename($this->main_dir . '/' . $dir, $newName);
+        if (is_dir($originalPath) && $originalPath !== $finalTargetDir) {
+            rename($originalPath, $finalTargetDir);
+        }
 
-        return $newName;
+        return $finalTargetDir;
     }
 
     public function createAudiobookJsonData(string $folderDir): array

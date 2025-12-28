@@ -26,7 +26,7 @@ return [
     MonologBundle::class            => ['all' => true],
     DebugBundle::class              => ['dev' => true],
     MakerBundle::class              => ['all' => true],
-    NelmioApiDocBundle::class       => ['dev' => true, 'test' => true],
+    NelmioApiDocBundle::class       => ['all' => true],
     TwigExtraBundle::class          => ['all' => true],
     DAMADoctrineTestBundle::class   => ['test' => true],
     NelmioCorsBundle::class         => ['all' => true],

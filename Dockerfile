@@ -19,6 +19,7 @@ RUN usermod -u 1000 www-data
 
 # Etap deweloperski
 FROM base AS dev
+ARG MAIN_DIR
 ENV APP_ENV=dev
 # Tworzymy MAIN_DIR dla dev
 RUN mkdir -p ${MAIN_DIR} && chown www-data:www-data ${MAIN_DIR}
@@ -26,6 +27,7 @@ USER www-data
 
 # Etap testowy
 FROM base AS test
+ARG MAIN_DIR
 ENV APP_ENV=test
 
 RUN echo "memory_limit=-1" > /usr/local/etc/php/conf.d/test.ini
@@ -36,6 +38,7 @@ USER www-data
 
 # Etap produkcyjny
 FROM base AS prod
+ARG MAIN_DIR
 ENV APP_ENV=prod
 
 RUN mkdir -p ${MAIN_DIR} && chown www-data:www-data ${MAIN_DIR}
