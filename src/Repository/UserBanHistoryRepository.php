@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -25,11 +25,6 @@ class UserBanHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, UserBanHistory::class);
     }
 
-    /**
-     * @param UserBanHistory $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(UserBanHistory $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -38,11 +33,6 @@ class UserBanHistoryRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param UserBanHistory $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(UserBanHistory $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

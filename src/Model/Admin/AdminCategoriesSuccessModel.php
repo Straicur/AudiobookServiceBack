@@ -1,16 +1,22 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminCategoriesSuccessModel implements ModelInterface
 {
     /**
      * @var AdminCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminCategoryModel::class))
+    )]
     private array $categories = [];
 
     /**
@@ -18,7 +24,7 @@ class AdminCategoriesSuccessModel implements ModelInterface
      */
     public function __construct(?array $categories = null)
     {
-        if ($categories !== null) {
+        if (null !== $categories) {
             $this->categories = $categories;
         }
     }

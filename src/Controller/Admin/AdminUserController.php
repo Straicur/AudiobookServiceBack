@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -28,7 +28,6 @@ use App\Model\Error\DataNotFoundModel;
 use App\Model\Error\JsonDataInvalidModel;
 use App\Model\Error\NotAuthorizeModel;
 use App\Model\Error\PermissionNotGrantedModel;
-use App\Model\Serialization\AdminAudiobooksSearchModel;
 use App\Model\Serialization\AdminUsersSearchModel;
 use App\Query\Admin\AdminUserActivateQuery;
 use App\Query\Admin\AdminUserBanQuery;
@@ -53,11 +52,12 @@ use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use App\ValueGenerator\PasswordHashGenerator;
 use DateTime;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -67,6 +67,8 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+
+use function count;
 
 #[OA\Response(
     response   : 400,
@@ -89,10 +91,27 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminUser')]
-#[Route('/api/admin')]
 class AdminUserController extends AbstractController
 {
-    #[Route('/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
+    public function __construct(
+        private readonly RoleRepository $roleRepository,
+        private readonly TagAwareCacheInterface $stockCache,
+        private readonly RequestServiceInterface $requestService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly UserRepository $userRepository,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly UserPasswordRepository $userPasswordRepository,
+        private readonly UserInformationRepository $userInformationRepository,
+        private readonly UserDeleteRepository $userDeleteRepository,
+        private readonly UserBanHistoryRepository $banHistoryRepository,
+        private readonly SerializerInterface $serializer,
+        private readonly MailerInterface $mailer,
+        private readonly NotificationRepository $notificationRepository,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
+    ) {}
+
+    #[Route('/api/admin/user/system/roles', name: 'adminUserSystemRoles', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning roles in system',
@@ -105,18 +124,14 @@ class AdminUserController extends AbstractController
             ),
         ]
     )]
-    public function adminUserSystemRoles(
-        RoleRepository $roleRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_ROLES->value, function (ItemInterface $item) use ($roleRepository) {
+    public function adminUserSystemRoles(): Response
+    {
+        $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_ROLES->value, function (ItemInterface $item): AdminUserSystemRolesSuccessModel {
             $item->expiresAfter(CacheValidTime::DAY->value);
             $item->tag(AdminStockCacheTags::ADMIN_ROLES->value);
 
-            $roles = $roleRepository->getSystemRoles();
-
+            $roles = $this->roleRepository->getSystemRoles();
             $successModel = new AdminUserSystemRolesSuccessModel();
-
             foreach ($roles as $role) {
                 switch ($role->getName()) {
                     case UserRolesNames::GUEST->value:
@@ -134,7 +149,7 @@ class AdminUserController extends AbstractController
         return ResponseTool::getResponse($successModel);
     }
 
-    #[Route('/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
+    #[Route('/api/admin/user/role/add', name: 'adminUserRoleAdd', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is Adding role to user',
@@ -154,38 +169,33 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserRoleAdd(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        RoleRepository $roleRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserRoleAddQuery = $requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
+        $adminUserRoleAddQuery = $this->requestService->getRequestBodyContent($request, AdminUserRoleAddQuery::class);
 
         if ($adminUserRoleAddQuery instanceof AdminUserRoleAddQuery) {
-            $user = $userRepository->find($adminUserRoleAddQuery->getUserId());
+            $user = $this->userRepository->find($adminUserRoleAddQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
             switch ($adminUserRoleAddQuery->getRole()) {
                 case UserRoles::GUEST:
-                    $role = $roleRepository->findOneBy([
+                    $role = $this->roleRepository->findOneBy([
                         'name' => UserRolesNames::GUEST,
                     ]);
                     break;
 
                 case UserRoles::USER:
-                    $role = $roleRepository->findOneBy([
+                    $role = $this->roleRepository->findOneBy([
                         'name' => UserRolesNames::USER,
                     ]);
                     break;
@@ -193,17 +203,17 @@ class AdminUserController extends AbstractController
 
             $user->addRole($role);
 
-            $userRepository->add($user);
+            $this->userRepository->add($user);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
+    #[Route('/api/admin/user/role/remove', name: 'adminUserRoleRemove', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is removing role for user',
@@ -223,37 +233,32 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserRoleRemove(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        RoleRepository $roleRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserRoleRemoveQuery = $requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
+        $adminUserRoleRemoveQuery = $this->requestService->getRequestBodyContent($request, AdminUserRoleRemoveQuery::class);
 
         if ($adminUserRoleRemoveQuery instanceof AdminUserRoleRemoveQuery) {
-            $user = $userRepository->find($adminUserRoleRemoveQuery->getUserId());
+            $user = $this->userRepository->find($adminUserRoleRemoveQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
             switch ($adminUserRoleRemoveQuery->getRole()) {
                 case UserRoles::GUEST:
-                    $role = $roleRepository->findOneBy([
+                    $role = $this->roleRepository->findOneBy([
                         'name' => UserRolesNames::GUEST,
                     ]);
                     break;
                 case UserRoles::USER:
-                    $role = $roleRepository->findOneBy([
+                    $role = $this->roleRepository->findOneBy([
                         'name' => UserRolesNames::USER,
                     ]);
                     break;
@@ -261,17 +266,17 @@ class AdminUserController extends AbstractController
 
             $user->removeRole($role);
 
-            $userRepository->add($user);
+            $this->userRepository->add($user);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
+    #[Route('/api/admin/user/activate', name: 'adminUserActivate', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is activating given user',
@@ -291,30 +296,25 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserActivate(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        RoleRepository $roleRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserActivateQuery = $requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
+        $adminUserActivateQuery = $this->requestService->getRequestBodyContent($request, AdminUserActivateQuery::class);
 
         if ($adminUserActivateQuery instanceof AdminUserActivateQuery) {
-            $user = $userRepository->find($adminUserActivateQuery->getUserId());
+            $user = $this->userRepository->find($adminUserActivateQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            $userRole = $roleRepository->findOneBy([
+            $userRole = $this->roleRepository->findOneBy([
                 'name' => UserRolesNames::USER,
             ]);
 
@@ -322,17 +322,17 @@ class AdminUserController extends AbstractController
                 ->addRole($userRole)
                 ->setActive(true);
 
-            $userRepository->add($user);
+            $this->userRepository->add($user);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
+    #[Route('/api/admin/user/ban', name: 'adminUserBan', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is banning/unbanning user',
@@ -352,41 +352,37 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserBan(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserBanQuery = $requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
+        $adminUserBanQuery = $this->requestService->getRequestBodyContent($request, AdminUserBanQuery::class);
 
         if ($adminUserBanQuery instanceof AdminUserBanQuery) {
-            $user = $userRepository->find($adminUserBanQuery->getUserId());
+            $user = $this->userRepository->find($adminUserBanQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
             $user->setBanned($adminUserBanQuery->isBanned());
 
-            $userRepository->add($user);
+            $this->userRepository->add($user);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
+    #[Route('/api/admin/user/change/password', name: 'adminUserChangePassword', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing password of given user',
@@ -406,29 +402,25 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserChangePassword(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserPasswordRepository $userPasswordRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserChangePasswordQuery = $requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
+        $adminUserChangePasswordQuery = $this->requestService->getRequestBodyContent($request, AdminUserChangePasswordQuery::class);
 
         if ($adminUserChangePasswordQuery instanceof AdminUserChangePasswordQuery) {
-            $user = $userRepository->find($adminUserChangePasswordQuery->getUserId());
+            $user = $this->userRepository->find($adminUserChangePasswordQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
-            $userPassword = $userPasswordRepository->findOneBy([
+
+            $userPassword = $this->userPasswordRepository->findOneBy([
                 'user' => $user->getId(),
             ]);
 
@@ -436,17 +428,17 @@ class AdminUserController extends AbstractController
 
             $userPassword->setPassword($passwordGenerator);
 
-            $userPasswordRepository->add($userPassword);
+            $this->userPasswordRepository->add($userPassword);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
+    #[Route('/api/admin/user/change/phone', name: 'adminUserChangePhone', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is changing phone number of given user',
@@ -466,54 +458,49 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserChangePhone(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserInformationRepository $userInformationRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserChangePhoneQuery = $requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
+        $adminUserChangePhoneQuery = $this->requestService->getRequestBodyContent($request, AdminUserChangePhoneQuery::class);
 
         if ($adminUserChangePhoneQuery instanceof AdminUserChangePhoneQuery) {
-            $user = $userRepository->find($adminUserChangePhoneQuery->getUserId());
+            $user = $this->userRepository->find($adminUserChangePhoneQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            $duplicatedNumber = $userInformationRepository->findOneBy([
+            $duplicatedNumber = $this->userInformationRepository->findOneBy([
                 'phoneNumber' => $adminUserChangePhoneQuery->getNewPhone(),
             ]);
 
-            if ($duplicatedNumber !== null) {
-                $endpointLogger->error('User PhoneNumber Exists');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('PhoneNumberExists')]);
+            if (null !== $duplicatedNumber) {
+                $this->endpointLogger->error('User PhoneNumber Exists');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('PhoneNumberExists')]);
             }
 
             $userInfo = $user->getUserInformation();
 
             $userInfo->setPhoneNumber($adminUserChangePhoneQuery->getNewPhone());
 
-            $userInformationRepository->add($userInfo);
+            $this->userInformationRepository->add($userInfo);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/users', name: 'adminUsers', methods: ['POST'])]
+    #[Route('/api/admin/users', name: 'adminUsers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users in system',
@@ -534,15 +521,8 @@ class AdminUserController extends AbstractController
     )]
     public function adminUsers(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserDeleteRepository $userDeleteRepository,
-        UserBanHistoryRepository $banHistoryRepository,
-        TranslateServiceInterface $translateService,
-        SerializerInterface $serializer,
     ): Response {
-        $adminUsersQuery = $requestService->getRequestBodyContent($request, AdminUsersQuery::class);
+        $adminUsersQuery = $this->requestService->getRequestBodyContent($request, AdminUsersQuery::class);
 
         if ($adminUsersQuery instanceof AdminUsersQuery) {
             $successModel = new AdminUsersSuccessModel();
@@ -550,7 +530,7 @@ class AdminUserController extends AbstractController
             $usersSearchData = $adminUsersQuery->getSearchData();
 
             $userSearchModel = new AdminUsersSearchModel();
-            $serializer->deserialize(
+            $this->serializer->deserialize(
                 json_encode($usersSearchData),
                 AdminUsersSearchModel::class,
                 'json',
@@ -563,20 +543,20 @@ class AdminUserController extends AbstractController
             $minResult = $adminUsersQuery->getPage() * $adminUsersQuery->getLimit();
             $maxResult = $adminUsersQuery->getLimit() + $minResult;
 
-            $allUsers = $userRepository->searchUsers($userSearchModel);
+            $allUsers = $this->userRepository->searchUsers($userSearchModel);
 
             foreach ($allUsers as $index => $user) {
                 if ($index < $minResult) {
                     continue;
                 }
 
-                if ($userRepository->userIsAdmin($user)) {
+                if ($this->userRepository->userIsAdmin($user)) {
                     ++$maxResult;
                 } elseif ($index < $maxResult) {
-                    $userDeleted = $userDeleteRepository->userInToDeleteList($user);
+                    $userDeleted = $this->userDeleteRepository->userInToDeleteList($user);
 
                     $userModel = new AdminUserModel(
-                        (string)$user->getId(),
+                        (string) $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
                         $user->getUserInformation()->getEmail(),
@@ -589,9 +569,9 @@ class AdminUserController extends AbstractController
                     $userModel->setPhoneNumber($user->getUserInformation()->getPhoneNumber());
 
                     if ($user->isBanned()) {
-                        $userBan = $banHistoryRepository->getActiveBan($user);
+                        $userBan = $this->banHistoryRepository->getActiveBan($user);
 
-                        if ($userBan !== null) {
+                        if (null !== $userBan) {
                             $userModel->setUserBan(new AdminUserBanModel($userBan->getDateFrom(), $userBan->getDateTo(), $userBan->getType()));
                         }
                     }
@@ -616,17 +596,17 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUsersQuery->getPage());
             $successModel->setLimit($adminUsersQuery->getLimit());
 
-            $successModel->setMaxPage((int)ceil(count($allUsers) / $adminUsersQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($allUsers) / $adminUsersQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
+    #[Route('/api/admin/user/delete', name: 'adminUserDelete', methods: ['DELETE'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Delete(
         description: 'Endpoint is deleting given user',
@@ -646,36 +626,29 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserDelete(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserDeleteRepository $userDeleteRepository,
-        MailerInterface $mailer,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserDeleteQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
+        $adminUserDeleteQuery = $this->requestService->getRequestBodyContent($request, AdminUserDeleteQuery::class);
 
         if ($adminUserDeleteQuery instanceof AdminUserDeleteQuery) {
-            $user = $userRepository->find($adminUserDeleteQuery->getUserId());
+            $user = $this->userRepository->find($adminUserDeleteQuery->getUserId());
 
-            if ($user === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if (null === $user) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            if ($userRepository->userIsAdmin($user)) {
-                $endpointLogger->error('User is admin');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDontExists')]);
+            if ($this->userRepository->userIsAdmin($user)) {
+                $this->endpointLogger->error('User is admin');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
             }
 
-            $userDelete = $userDeleteRepository->findOneBy([
+            $userDelete = $this->userDeleteRepository->findOneBy([
                 'user' => $user->getId(),
             ]);
 
-            if ($userDelete === null) {
+            if (null === $userDelete) {
                 $userDelete = new UserDelete($user);
             }
 
@@ -683,34 +656,34 @@ class AdminUserController extends AbstractController
                 ->setDeleted(true)
                 ->setDateDeleted(new DateTime());
 
-            $userDeleteRepository->add($userDelete);
+            $this->userDeleteRepository->add($userDelete);
 
-            $stockCache->invalidateTags([
+            $this->stockCache->invalidateTags([
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ($_ENV['APP_ENV'] !== 'test') {
-                $email = (new TemplatedEmail())
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+            if (true === $this->sendEmail) {
+                $email = new TemplatedEmail()
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject($translateService->getTranslation('AccountDeletedSubject'))
+                    ->subject($this->translateService->getTranslation('AccountDeletedSubject'))
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                        'lang'     => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
-                $mailer->send($email);
+                $this->mailer->send($email);
             }
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
+    #[Route('/api/admin/user/delete/list', name: 'adminUserDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of users to delete',
@@ -731,13 +704,8 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserDeleteList(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserDeleteRepository $userDeleteRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
+        $adminUserDeleteListQuery = $this->requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
             $successModel = new AdminUserDeleteListSuccessModel();
@@ -745,20 +713,23 @@ class AdminUserController extends AbstractController
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
             $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
 
-            $allDeleteUsers = $userDeleteRepository->findBy([
+            $allDeleteUsers = $this->userDeleteRepository->findBy([
                 'deleted' => true,
             ]);
 
             foreach ($allDeleteUsers as $index => $userDelete) {
                 $user = $userDelete->getUser();
+                if ($index < $minResult) {
+                    continue;
+                }
 
-                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                if ($this->userRepository->userIsAdmin($user)) {
                     continue;
                 }
 
                 if ($index < $maxResult) {
                     $userDeleteModel = new AdminUserDeleteModel(
-                        (string)$user->getId(),
+                        (string) $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
                         $user->getUserInformation()->getEmail(),
@@ -780,17 +751,17 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUserDeleteListQuery->getPage());
             $successModel->setLimit($adminUserDeleteListQuery->getLimit());
 
-            $successModel->setMaxPage((int)ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
+    #[Route('/api/admin/user/to/delete/list', name: 'adminUserToDeleteList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning list of already delete users',
@@ -811,13 +782,8 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserToDeleteList(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserDeleteRepository $userDeleteRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $adminUserDeleteListQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
+        $adminUserDeleteListQuery = $this->requestService->getRequestBodyContent($request, AdminUserDeleteListQuery::class);
 
         if ($adminUserDeleteListQuery instanceof AdminUserDeleteListQuery) {
             $successModel = new AdminUserDeleteListSuccessModel();
@@ -825,18 +791,21 @@ class AdminUserController extends AbstractController
             $minResult = $adminUserDeleteListQuery->getPage() * $adminUserDeleteListQuery->getLimit();
             $maxResult = $adminUserDeleteListQuery->getLimit() + $minResult;
 
-            $allDeleteUsers = $userDeleteRepository->getUsersToDelete();
+            $allDeleteUsers = $this->userDeleteRepository->getUsersToDelete();
 
             foreach ($allDeleteUsers as $index => $userDelete) {
                 $user = $userDelete->getUser();
+                if ($index < $minResult) {
+                    continue;
+                }
 
-                if ($index < $minResult || $userRepository->userIsAdmin($user)) {
+                if ($this->userRepository->userIsAdmin($user)) {
                     continue;
                 }
 
                 if ($index < $maxResult) {
                     $userDeleteModel = new AdminUserDeleteModel(
-                        (string)$user->getId(),
+                        (string) $user->getId(),
                         $user->isActive(),
                         $user->isBanned(),
                         $user->getUserInformation()->getEmail(),
@@ -858,17 +827,17 @@ class AdminUserController extends AbstractController
             $successModel->setPage($adminUserDeleteListQuery->getPage());
             $successModel->setLimit($adminUserDeleteListQuery->getLimit());
 
-            $successModel->setMaxPage((int)ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($allDeleteUsers) / $adminUserDeleteListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
+    #[Route('/api/admin/user/delete/accept', name: 'adminUserDeleteAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is deleting given user',
@@ -888,67 +857,61 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserDeleteAccept(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserDeleteRepository $userDeleteRepository,
-        MailerInterface $mailer,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserDeleteAcceptQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
+        $adminUserDeleteAcceptQuery = $this->requestService->getRequestBodyContent($request, AdminUserDeleteAcceptQuery::class);
 
         if ($adminUserDeleteAcceptQuery instanceof AdminUserDeleteAcceptQuery) {
-            $userDelete = $userDeleteRepository->findOneBy([
+            $userDelete = $this->userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteAcceptQuery->getUserId(),
             ]);
 
-            if ($userDelete === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDeleteDontExists')]);
+            if (null === $userDelete) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDeleteDontExists')]);
             }
 
             $user = $userDelete->getUser();
 
-            $userInDelete = $userDeleteRepository->userInList($user);
+            $userInDelete = $this->userDeleteRepository->userInList($user);
 
             if ($userInDelete) {
-                $endpointLogger->error('User in list');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDeleted')]);
+                $this->endpointLogger->error('User in list');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDeleted')]);
             }
 
             $userDelete->setDeleted(true);
             $userDelete->setDateDeleted(new DateTime());
 
-            $userDeleteRepository->add($userDelete);
+            $this->userDeleteRepository->add($userDelete);
 
-            $stockCache->invalidateTags([
+            $this->stockCache->invalidateTags([
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ($_ENV['APP_ENV'] !== 'test') {
-                $email = (new TemplatedEmail())
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+            if (true === $this->sendEmail) {
+                $email = new TemplatedEmail()
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject($translateService->getTranslation('AccountDeletedSubject'))
+                    ->subject($this->translateService->getTranslation('AccountDeletedSubject'))
                     ->htmlTemplate('emails/userDeleted.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                        'lang'     => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
-                $mailer->send($email);
+                $this->mailer->send($email);
             }
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
+    #[Route('/api/admin/user/delete/decline', name: 'adminUserDeleteDecline', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Patch(
         description: 'Endpoint is declining user request to delete his account',
@@ -968,61 +931,53 @@ class AdminUserController extends AbstractController
     )]
     public function adminUserDeleteDecline(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        UserRepository $userRepository,
-        UserDeleteRepository $userDeleteRepository,
-        MailerInterface $mailer,
-        NotificationRepository $notificationRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $adminUserDeleteDeclineQuery = $requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
+        $adminUserDeleteDeclineQuery = $this->requestService->getRequestBodyContent($request, AdminUserDeleteDeclineQuery::class);
 
         if ($adminUserDeleteDeclineQuery instanceof AdminUserDeleteDeclineQuery) {
-            $userDelete = $userDeleteRepository->findOneBy([
+            $userDelete = $this->userDeleteRepository->findOneBy([
                 'user' => $adminUserDeleteDeclineQuery->getUserId(),
             ]);
 
-            if ($userDelete === null) {
-                $endpointLogger->error('User dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDeleteDontExists')]);
+            if (null === $userDelete) {
+                $this->endpointLogger->error('User dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDeleteDontExists')]);
             }
 
             $user = $userDelete->getUser();
 
-            $userInDelete = $userDeleteRepository->userInList($user);
+            $userInDelete = $this->userDeleteRepository->userInList($user);
 
             if ($userInDelete) {
-                $endpointLogger->error('User in list');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserDeleted')]);
+                $this->endpointLogger->error('User in list');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserDeleted')]);
             }
 
             $userDelete->setDeclined(true);
 
-            $userDeleteRepository->add($userDelete);
+            $this->userDeleteRepository->add($userDelete);
 
             $user->setActive(true);
 
-            $userRepository->add($user);
+            $this->userRepository->add($user);
 
-            $stockCache->invalidateTags([
+            $this->stockCache->invalidateTags([
                 UserStockCacheTags::USER_DELETED->value,
             ]);
 
-            if ($_ENV['APP_ENV'] !== 'test') {
-                $email = (new TemplatedEmail())
-                    ->from($_ENV['INSTITUTION_EMAIL'])
+            if (true === $this->sendEmail) {
+                $email = new TemplatedEmail()
+                    ->from($this->institutionEmail)
                     ->to($user->getUserInformation()->getEmail())
-                    ->subject($translateService->getTranslation('DeletionRejectedSubject'))
+                    ->subject($this->translateService->getTranslation('DeletionRejectedSubject'))
                     ->htmlTemplate('emails/userDeletedDecline.html.twig')
                     ->context([
                         'userName' => $user->getUserInformation()->getFirstname() . ' ' . $user->getUserInformation()->getLastname(),
-                        'lang'     => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                        'lang'     => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                     ]);
-                $mailer->send($email);
+                $this->mailer->send($email);
             }
 
             $notificationBuilder = new NotificationBuilder();
@@ -1033,15 +988,15 @@ class AdminUserController extends AbstractController
                 ->addUser($user)
                 ->setUserAction(NotificationUserType::SYSTEM)
                 ->setActive(true)
-                ->build($stockCache);
+                ->build($this->stockCache);
 
-            $notificationRepository->add($notification);
+            $this->notificationRepository->add($notification);
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Enums\NotificationType;
@@ -22,7 +24,7 @@ class Notification
     private Uuid $id;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private ?int $type;
+    private ?int $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTime $dateAdd;
@@ -31,7 +33,7 @@ class Notification
     private ?Uuid $actionId = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $metaData;
+    private ?string $metaData = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
@@ -111,7 +113,7 @@ class Notification
 
     public function getMetaData(): array
     {
-        return json_decode($this->metaData, true);
+        return json_decode((string) $this->metaData, true);
     }
 
     public function setMetaData(string $metaData): self
@@ -167,7 +169,7 @@ class Notification
         $this->notificationChecks = $notificationChecks;
     }
 
-    public function getDateDeleted(): DateTime
+    public function getDateDeleted(): ?DateTime
     {
         return $this->dateDeleted;
     }

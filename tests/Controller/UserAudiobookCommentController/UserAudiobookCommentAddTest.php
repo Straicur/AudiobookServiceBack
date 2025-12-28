@@ -44,14 +44,14 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         json_decode($response->getContent(), true);
 
@@ -89,13 +89,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -197,13 +197,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             'additionalData' => []
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
 
         $userAfter = $userRepository->find($user->getId());
         $this->assertTrue($userAfter->isBanned());
@@ -240,13 +240,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -280,13 +280,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentAddEmptyRequestData(): void
@@ -297,13 +297,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentAddPermission(): void
@@ -328,13 +328,13 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookCommentAddLogOut(): void
@@ -357,10 +357,10 @@ class UserAudiobookCommentAddTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/audiobook/comment/add', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/audiobook/comment/add', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

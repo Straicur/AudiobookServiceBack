@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
 
@@ -9,15 +9,25 @@ use DateTime;
 class AdminReportsSearchModel
 {
     public ?string $actionId = null;
+
     public ?string $desc = null;
+
     public ?string $email = null;
+
     public ?string $ip = null;
+
     public ?int $type = null;
+
     public ?bool $user = null;
+
     public ?bool $accepted = null;
+
     public ?bool $denied = null;
+
     public ?DateTime $dateFrom = null;
+
     public ?DateTime $dateTo = null;
+
     public ?int $order = null;
 
     public function getActionId(): ?string

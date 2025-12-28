@@ -1,20 +1,28 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminTechnicalBreakSuccessModel implements ModelInterface
 {
     public int $page;
+
     public int $limit;
+
     public int $maxPage;
 
     /**
      * @var AdminTechnicalBreakModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminTechnicalBreakModel::class))
+    )]
     private array $technicalBreaks = [];
 
     /**

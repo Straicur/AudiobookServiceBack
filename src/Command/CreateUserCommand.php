@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
@@ -18,12 +18,15 @@ use App\Repository\UserPasswordRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserSettingsRepository;
 use App\ValueGenerator\PasswordHashGenerator;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function strlen;
 
 #[AsCommand(
     name       : 'audiobookservice:users:create',
@@ -43,6 +46,7 @@ class CreateUserCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addArgument('firstname', InputArgument::REQUIRED, 'User firstname');
@@ -53,6 +57,7 @@ class CreateUserCommand extends Command
         $this->addArgument('roles', InputArgument::IS_ARRAY, 'User roles');
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -61,7 +66,7 @@ class CreateUserCommand extends Command
         $lastname = $input->getArgument('lastname');
         $email = $input->getArgument('email');
         $phone = $input->getArgument('phone');
-        $password = md5($input->getArgument('password'));
+        $password = md5((string) $input->getArgument('password'));
         $roles = $input->getArgument('roles');
 
         $passwordGenerator = new PasswordHashGenerator($password);
@@ -79,8 +84,9 @@ class CreateUserCommand extends Command
             'email' => $email,
         ]);
 
-        if ($existingEmail !== null) {
+        if (null !== $existingEmail) {
             $io->error('Email exists');
+
             return Command::FAILURE;
         }
 
@@ -88,8 +94,9 @@ class CreateUserCommand extends Command
             'phoneNumber' => $phone,
         ]);
 
-        if ($existingPhone !== null) {
+        if (null !== $existingPhone) {
             $io->error('PhoneNumber exists');
+
             return Command::FAILURE;
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -9,6 +9,8 @@ use App\Entity\UserDelete;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function count;
 
 /**
  * @extends ServiceEntityRepository<UserDelete>
@@ -25,11 +27,6 @@ class UserDeleteRepository extends ServiceEntityRepository
         parent::__construct($registry, UserDelete::class);
     }
 
-    /**
-     * @param UserDelete $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(UserDelete $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -38,11 +35,6 @@ class UserDeleteRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param UserDelete $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(UserDelete $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

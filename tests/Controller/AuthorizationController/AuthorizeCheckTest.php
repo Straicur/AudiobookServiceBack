@@ -20,7 +20,7 @@ class AuthorizeCheckTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/authorize/check', server: [
+        $this->webClient->request('POST', '/api/authorize/check', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -39,21 +39,21 @@ class AuthorizeCheckTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user, (new DateTime())->modify('-1 day'));
 
-        self::$webClient->request('POST', '/api/authorize/check', server: [
+        $this->webClient->request('POST', '/api/authorize/check', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAuthorizeCheckLogOut(): void
     {
-        self::$webClient->request('POST', '/api/authorize/check');
+        $this->webClient->request('POST', '/api/authorize/check');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

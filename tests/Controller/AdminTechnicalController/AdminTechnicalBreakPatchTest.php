@@ -25,7 +25,7 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -55,13 +55,13 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
             'technicalBreakId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakPatchEmptyRequestData(): void
@@ -74,13 +74,13 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakPatchPermission(): void
@@ -95,13 +95,13 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
             'technicalBreakId' => $technicalBreak->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/break', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakPatchLogOut(): void
@@ -114,10 +114,10 @@ class AdminTechnicalBreakPatchTest extends AbstractWebTest
             'technicalBreakId' => $technicalBreak->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/break', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/technical/break', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

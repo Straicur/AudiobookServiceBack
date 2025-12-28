@@ -1,14 +1,21 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
+
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AuthorizationRolesModel
 {
     /**
      * @var AuthorizationRoleModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AuthorizationRoleModel::class))
+    )]
     private array $authorizationRoleModels;
 
     /**

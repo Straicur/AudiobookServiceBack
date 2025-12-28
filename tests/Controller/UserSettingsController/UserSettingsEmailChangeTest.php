@@ -24,7 +24,7 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
 
         $userEdit = $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL, (new DateTime())->modify('+1 day'));
 
-        self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
+        $this->webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
@@ -54,11 +54,11 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addUserEdit($user, false, UserEditType::EMAIL, (new DateTime())->modify('-1 day'));
 
-        self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
+        $this->webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -70,11 +70,11 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
 
         $this->databaseMockManager->testFunc_addUserEdit($user, true, UserEditType::EMAIL, (new DateTime())->modify('-1 day'));
 
-        self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
+        $this->webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user->getId()->__toString());
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -86,11 +86,11 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
             'User',
             'Administrator'], true, 'zaq12wsx', edited: true, editableDate: (new DateTime())->modify('+1 month'));
 
-        self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/66666c4e-16e6-1ecc-9890-a7e8b0073d3b');
+        $this->webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/66666c4e-16e6-1ecc-9890-a7e8b0073d3b');
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -104,19 +104,19 @@ class UserSettingsEmailChangeTest extends AbstractWebTest
 
         $user2 = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test2@cos.pl', '+48123123128', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
-        self::$webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user2->getId()->__toString());
+        $this->webClient->request('GET', '/api/user/settings/email/change/test2@cos.pl/' . $user2->getId()->__toString());
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsEmailChangeEmptyRequestData(): void
     {
-        self::$webClient->request('GET', '/api/user/settings/email/change//');
+        $this->webClient->request('GET', '/api/user/settings/email/change//');
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 }

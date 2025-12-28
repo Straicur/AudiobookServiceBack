@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -17,6 +17,8 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Persistence\ManagerRegistry;
 
+use function count;
+
 /**
  * @extends ServiceEntityRepository<User>
  *
@@ -32,11 +34,6 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * @param User $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(User $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -46,11 +43,6 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(User $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -227,48 +219,46 @@ class UserRepository extends ServiceEntityRepository
             $qb->andWhere('ui.email LIKE :email')
                 ->setParameter('email', '%' . $adminUsersSearchModel->getEmail() . '%');
         }
+
         if ($adminUsersSearchModel->getPhoneNumber() !== null) {
             $qb->andWhere('ui.phoneNumber LIKE :phoneNumber')
                 ->setParameter('phoneNumber', '%' . $adminUsersSearchModel->getPhoneNumber() . '%');
         }
+
         if ($adminUsersSearchModel->getFirstname() !== null) {
             $qb->andWhere('ui.firstname LIKE :firstname')
                 ->setParameter('firstname', '%' . $adminUsersSearchModel->getFirstname() . '%');
         }
+
         if ($adminUsersSearchModel->getLastname() !== null) {
             $qb->andWhere('ui.lastname LIKE :lastname')
                 ->setParameter('lastname', '%' . $adminUsersSearchModel->getLastname() . '%');
         }
+
         if ($adminUsersSearchModel->getActive() !== null) {
             $qb->andWhere('u.active = :active')
                 ->setParameter('active', $adminUsersSearchModel->getActive());
         }
+
         if ($adminUsersSearchModel->getBanned() !== null) {
             $qb->andWhere('u.banned = :banned')
                 ->setParameter('banned', $adminUsersSearchModel->getBanned());
         }
+
         if ($adminUsersSearchModel->getOrder() !== null) {
             switch ($adminUsersSearchModel->getOrder()) {
                 case UserOrderSearch::LATEST->value:
-                {
                     $qb->orderBy('u.dateCreate', 'DESC');
                     break;
-                }
                 case UserOrderSearch::OLDEST->value:
-                {
                     $qb->orderBy('u.dateCreate', 'ASC');
                     break;
-                }
                 case UserOrderSearch::ALPHABETICAL_ASC->value:
-                {
                     $qb->orderBy('ui.email', 'ASC');
                     break;
-                }
                 case UserOrderSearch::ALPHABETICAL_DESC->value:
-                {
                     $qb->orderBy('ui.email', 'DESC');
                     break;
-                }
             }
         }
 

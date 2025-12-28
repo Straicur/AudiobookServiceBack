@@ -32,35 +32,19 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
         $fileBase = fopen(self::BASE64_ONE_PART_FILE, 'rb');
         $readData = fread($fileBase, filesize(self::BASE64_ONE_PART_FILE));
 
-        $content = [
-            'hashName' => 'c91c03ea6c46a86cbc019be3d71d0a1a',
-            'fileName' => 'Base',
-            'base64' => $readData,
-            'part' => 1,
-            'parts' => 1,
-            'additionalData' => [
-                'categories' => [
-                    $category2->getId(),
-                    $category1->getId()
-                ],
-                'title' => 'tytul',
-                'author' => 'author'
-            ]
-        ];
+        $audiobookAfter = $this->databaseMockManager->testFunc_addAudiobookFromFileInOnePart(
+            hashName: 'c91c03ea6c46a86cbc019be3d71d0a1a',
+            fileName: 'Base',
+            base64: $readData,
+            categories: [
+                $category2->getId()->__toString(),
+                $category1->getId()->__toString()
+            ],
+            title: 'tytul',
+            author: 'author'
+        );
+
         $token = $this->databaseMockManager->testFunc_loginUser($user);
-
-        self::$webClient->request('PUT', '/api/admin/audiobook/add', server: [
-            'HTTP_authorization' => $token->getToken()
-        ], content: json_encode($content));
-
-        self::assertResponseIsSuccessful();
-        self::assertResponseStatusCodeSame(201);
-
-        $audiobookAfter = $audiobookRepository->findOneBy([
-            'title' => $content['additionalData']['title']
-        ]);
-
-        $this->assertNotNull($audiobookAfter);
 
         $fileBase2 = fopen(self::base64ImgFile, 'rb');
         $readData2 = fread($fileBase2, filesize(self::base64ImgFile));
@@ -71,7 +55,7 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
             'audiobookId' => $audiobookAfter->getId(),
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
@@ -102,13 +86,13 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminAudiobookChangeCoverEmptyRequestData(): void
@@ -122,13 +106,13 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $content2 = [];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookChangeCoverPermission(): void
@@ -145,13 +129,13 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/change/cover', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookChangeCoverLogOut(): void
@@ -160,10 +144,10 @@ class AdminAudiobookChangeCoverTest extends AbstractWebTest
             'audiobookId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b',
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/change/cover', content: json_encode($content2));
+        $this->webClient->request('PATCH', '/api/admin/audiobook/change/cover', content: json_encode($content2));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

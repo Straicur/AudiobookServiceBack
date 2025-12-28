@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Enums\ReportType;
@@ -30,6 +32,7 @@ class Report
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $denied;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 

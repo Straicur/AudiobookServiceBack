@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
 
@@ -9,15 +9,25 @@ use DateTime;
 class AudiobookId3TagsModel
 {
     public ?string $album = null;
+
     public ?string $artist = null;
+
     public ?string $comment = null;
+
     public ?string $version = '1';
+
     public ?string $title = null;
+
     public ?string $encoded = null;
+
     public ?DateTime $year = null;
+
     public ?int $duration = null;
+
     public ?string $size = null;
+
     public ?int $parts = 0;
+
     public ?string $imgFileDir = null;
 
     public function __construct(
@@ -27,14 +37,14 @@ class AudiobookId3TagsModel
 
     public function getAlbum(): string
     {
-
         return $this->album;
     }
 
     public function setAlbum(?string $album): void
     {
-        if ($album === null) {
+        if (null === $album) {
             $this->album = '';
+
             return;
         }
 
@@ -58,8 +68,9 @@ class AudiobookId3TagsModel
 
     public function setComment(?string $comment): void
     {
-        if ($comment === null) {
+        if (null === $comment) {
             $this->comment = '';
+
             return;
         }
 
@@ -108,7 +119,7 @@ class AudiobookId3TagsModel
             return;
         }
 
-        $this->year = DateTime::createFromFormat('d.m.Y', $year);
+        $this->year = DateTime::createFromFormat('d.m.Y', $testYear);
     }
 
     public function getDuration(): int
@@ -118,8 +129,9 @@ class AudiobookId3TagsModel
 
     public function setDuration(?int $duration): void
     {
-        if ($duration === null) {
+        if (null === $duration) {
             $this->duration = 0;
+
             return;
         }
 
@@ -133,8 +145,9 @@ class AudiobookId3TagsModel
 
     public function setSize(?string $size): void
     {
-        if ($size === null) {
+        if (null === $size) {
             $this->size = '1';
+
             return;
         }
 
@@ -148,8 +161,9 @@ class AudiobookId3TagsModel
 
     public function setParts(?int $parts): void
     {
-        if ($parts === null) {
+        if (null === $parts) {
             $this->parts = 1;
+
             return;
         }
 
@@ -163,8 +177,9 @@ class AudiobookId3TagsModel
 
     public function setImgFileDir(?string $imgFileDir): void
     {
-        if ($imgFileDir === null) {
+        if (null === $imgFileDir) {
             $this->imgFileDir = '';
+
             return;
         }
 

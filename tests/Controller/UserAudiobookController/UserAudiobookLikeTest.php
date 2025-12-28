@@ -33,7 +33,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => $category1->getCategoryKey()
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -70,7 +70,7 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => $category1->getCategoryKey()
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -102,13 +102,13 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -127,13 +127,13 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => $category1->getCategoryKey()
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserAudiobookLikeEmptyRequestData(): void
@@ -144,13 +144,13 @@ class UserAudiobookLikeTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookLikePermission(): void
@@ -169,13 +169,13 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => $category1->getCategoryKey()
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', server: [
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserAudiobookLikeLogOut(): void
@@ -190,10 +190,10 @@ class UserAudiobookLikeTest extends AbstractWebTest
             'categoryKey' => $category1->getCategoryKey()
         ];
 
-        self::$webClient->request('PATCH', '/api/user/audiobook/like', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/audiobook/like', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

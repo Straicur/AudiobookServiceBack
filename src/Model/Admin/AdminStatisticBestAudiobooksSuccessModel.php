@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,19 +8,7 @@ use App\Model\ModelInterface;
 
 class AdminStatisticBestAudiobooksSuccessModel implements ModelInterface
 {
-    private ?AdminAudiobookDetailsModel $firstAudiobook;
-    private ?AdminAudiobookDetailsModel $secondAudiobook;
-    private ?AdminAudiobookDetailsModel $thirdAudiobook;
-
-    public function __construct(
-        ?AdminAudiobookDetailsModel $firstAudiobook = null,
-        ?AdminAudiobookDetailsModel $secondAudiobook = null,
-        ?AdminAudiobookDetailsModel $thirdAudiobook = null
-    ) {
-        $this->firstAudiobook = $firstAudiobook;
-        $this->secondAudiobook = $secondAudiobook;
-        $this->thirdAudiobook = $thirdAudiobook;
-    }
+    public function __construct(private ?AdminAudiobookDetailsModel $firstAudiobook = null, private ?AdminAudiobookDetailsModel $secondAudiobook = null, private ?AdminAudiobookDetailsModel $thirdAudiobook = null) {}
 
     public function getFirstAudiobook(): ?AdminAudiobookDetailsModel
     {

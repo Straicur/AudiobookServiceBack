@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -10,7 +10,9 @@ use DateTime;
 class AdminUserBanModel
 {
     private int $dateFrom;
+
     private int $dateTo;
+
     private int $type;
 
     public function __construct(DateTime $dateFrom, DateTime $dateTo, UserBanType $type)

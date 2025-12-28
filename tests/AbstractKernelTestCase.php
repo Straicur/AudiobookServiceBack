@@ -20,7 +20,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         }
 
         if ($this->databaseMockManager === null) {
-            $this->databaseMockManager = new DatabaseMockManager(self::$kernel);
+            $this->databaseMockManager = new DatabaseMockManager(static::getContainer());
         }
 
         $this->commandApplication = new Application(self::$kernel);

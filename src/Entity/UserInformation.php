@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\UserInformationRepository;
@@ -58,6 +60,7 @@ class UserInformation
     {
         return $this->email;
     }
+
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -81,6 +84,7 @@ class UserInformation
     {
         return $this->firstname;
     }
+
     public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;

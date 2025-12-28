@@ -39,7 +39,7 @@ class ReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/report', server: [
+        $this->webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -79,13 +79,13 @@ class ReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/report', server: [
+        $this->webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testReportEmptyRequestData(): void
@@ -99,12 +99,12 @@ class ReportTest extends AbstractWebTest
             'ip' => '127.0.0.1',
         ];
 
-        self::$webClient->request('PUT', '/api/report', server: [
+        $this->webClient->request('PUT', '/api/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

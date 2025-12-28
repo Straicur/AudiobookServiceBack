@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Audiobook;
 
@@ -8,30 +8,41 @@ use App\Exception\AudiobookConfigServiceException;
 use App\Exception\DataNotFoundException;
 use App\Query\Admin\AdminAudiobookAddFileInterface;
 use App\Service\TranslateServiceInterface;
+use Exception;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 use ZipArchive;
 
+use function array_key_exists;
+use function in_array;
+use function strlen;
+
+use const GLOB_NOSORT;
+
 class AudiobookService implements AudiobookServiceInterface
 {
-    private AdminAudiobookAddFileInterface|null $query = null;
+    private ?AdminAudiobookAddFileInterface $query = null;
+
     private string $whole_dir_path = '';
+
     private string $whole_zip_path = '';
 
     public function __construct(
         private readonly AudiobooksID3TagsReaderServiceInterface $audiobooksID3TagsReaderService,
         private readonly TranslateServiceInterface $translateService,
-    ) {
-    }
+        #[Autowire(env: 'MAIN_DIR')] private readonly string $main_dir,
+        #[Autowire(env: 'INSTITUTION_VOLUMEN')] private readonly int $institutionVolumen,
+    ) {}
 
     public function configure(AdminAudiobookAddFileInterface $query): void
     {
         $this->query = $query;
-        $this->whole_dir_path = $_ENV['MAIN_DIR'] . '/' . $this->query->getHashName();
-        $this->whole_zip_path = $_ENV['MAIN_DIR'] . '/' . $this->query->getFileName();
+        $this->whole_dir_path = $this->main_dir . '/' . $this->query->getHashName();
+        $this->whole_zip_path = $this->main_dir . '/' . $this->query->getFileName();
     }
 
     public function checkAndAddFile(): void
@@ -40,11 +51,11 @@ class AudiobookService implements AudiobookServiceInterface
 
         $fsObject = new Filesystem();
 
-        $size = $this->checkSystemStorage($_ENV['MAIN_DIR']);
+        $size = $this->checkSystemStorage($this->main_dir);
 
         $this->checkOrCreateAudiobookFolder($fsObject);
 
-        if ($size >= (int)$_ENV['INSTITUTION_VOLUMEN']) {
+        if ($this->institutionVolumen <= $size) {
             $this->removeFolder($this->whole_dir_path);
             throw new DataNotFoundException([$this->translateService->getTranslation('SystemVolumen')]);
         }
@@ -60,7 +71,7 @@ class AudiobookService implements AudiobookServiceInterface
     {
         if (!$fsObject->exists($this->whole_dir_path)) {
             $old = umask(0);
-            $fsObject->mkdir($this->whole_dir_path, 0775);
+            $fsObject->mkdir($this->whole_dir_path, 0o775);
             umask($old);
         }
     }
@@ -91,14 +102,15 @@ class AudiobookService implements AudiobookServiceInterface
 
         if ($handle = opendir($this->whole_dir_path)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry !== '.' && $entry !== '..') {
+                if ('.' !== $entry && '..' !== $entry) {
                     ++$amountOfFiles;
                 }
             }
+
             closedir($handle);
         }
 
-        return ($amountOfFiles === $this->query->getParts());
+        return $this->query->getParts() === $amountOfFiles;
     }
 
     public function combineFiles(): void
@@ -134,49 +146,55 @@ class AudiobookService implements AudiobookServiceInterface
         $this->removeFolder($this->whole_dir_path);
     }
 
-    public function unzip(string $reAdding = null): string
+    public function unzip(?string $reAdding = null): string
     {
         $this->checkConfiguration();
 
-        $file = $this->whole_zip_path . '.zip';
-
+        $zipFile = $this->whole_zip_path . '.zip';
         $zip = new ZipArchive();
 
-        $zip->open($file);
-
-        $dir = trim($zip->getNameIndex(0), '/');
-        $dir = explode("/", $dir)[0];
-
-        $extracted = $zip->extractTo($_ENV['MAIN_DIR']);
-
-        if (!$extracted) {
-            $this->removeFolder($file);
+        if ($zip->open($zipFile) !== true) {
+            throw new Exception('Nie można otworzyć pliku ZIP: ' . $zipFile);
         }
 
+        // 1. Pobieramy nazwę pierwszego elementu w ZIP (zazwyczaj główny folder)
+        $dirInZip = trim($zip->getNameIndex(0), '/');
+        $dirInZip = explode('/', $dirInZip)[0];
+
+        // 2. Wypakowujemy do folderu tymczasowego lub bezpośrednio do main_dir
+        $extracted = $zip->extractTo($this->main_dir);
         $zip->close();
+        unlink($zipFile);
 
-        unlink($file);
+        if (!$extracted) {
+            throw new Exception('Błąd podczas wypakowywania pliku.');
+        }
 
-        if ($reAdding !== null && is_dir($reAdding)) {
+        if (null !== $reAdding && is_dir($reAdding)) {
             $this->removeFolder($reAdding);
         }
 
-        $amountOfSameFolders = 0;
+        // --- POPRAWIONA LOGIKA NAZEWNICTWA ---
 
-        if ($handle = opendir($_ENV['MAIN_DIR'])) {
-            while (false !== ($entry = readdir($handle))) {
-                if (str_contains($entry, $this->query->getFileName())) {
-                    ++$amountOfSameFolders;
-                }
-            }
-            closedir($handle);
+        $baseTargetDir = $this->main_dir . '/' . $this->query->getFileName();
+        $finalTargetDir = $baseTargetDir;
+        $counter = 1;
+
+        // Sprawdzamy, czy folder o tej nazwie już istnieje.
+        // Jeśli tak, dodajemy _1, _2 itd. aż znajdziemy wolną nazwę.
+        while (file_exists($finalTargetDir)) {
+            $finalTargetDir = $baseTargetDir . '_' . $counter;
+            ++$counter;
         }
 
-        $newName = $this->whole_zip_path . $amountOfSameFolders;
+        // 3. Zmieniamy nazwę z tej "zipowej" na naszą docelową (unikalną)
+        $originalPath = $this->main_dir . '/' . $dirInZip;
 
-        rename($_ENV['MAIN_DIR'] . '/' . $dir, $newName);
+        if (is_dir($originalPath) && $originalPath !== $finalTargetDir) {
+            rename($originalPath, $finalTargetDir);
+        }
 
-        return $newName;
+        return $finalTargetDir;
     }
 
     public function createAudiobookJsonData(string $folderDir): array
@@ -191,11 +209,11 @@ class AudiobookService implements AudiobookServiceInterface
 
         if ($handle = opendir($folderDir)) {
             while (false !== ($entry = readdir($handle))) {
-                if ($entry !== '.' && $entry !== '..') {
+                if ('.' !== $entry && '..' !== $entry) {
                     $file_parts = pathinfo($entry);
-                    if ($file_parts['extension'] === 'mp3' && !empty($entry)) {
+                    if ('mp3' === $file_parts['extension'] && !empty($entry)) {
                         $mp3file = $entry;
-                        $parts++;
+                        ++$parts;
 
                         $mp3Dir = $folderDir . '/' . $mp3file;
 
@@ -204,10 +222,10 @@ class AudiobookService implements AudiobookServiceInterface
                         $this->audiobooksID3TagsReaderService->setFileName($mp3Dir);
                         $id3TrackData = $this->audiobooksID3TagsReaderService->getTagsInfo();
 
-                        $mp3Duration += (int)$id3TrackData['playtime_seconds'];
+                        $mp3Duration += (int) $id3TrackData['playtime_seconds'];
 
                         if (array_key_exists('tags', $id3TrackData) && !empty($id3TrackData['tags'])) {
-                            $id3Tags =  current($id3TrackData['tags']);
+                            $id3Tags = current($id3TrackData['tags']);
 
                             $sameKeys = array_intersect_key($id3Data, $id3Tags);
 
@@ -221,14 +239,15 @@ class AudiobookService implements AudiobookServiceInterface
                                 $id3Data[$index] = current($id3Tags[$index]);
                             }
                         }
-                    } elseif ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
+                    } elseif (in_array($file_parts['extension'], ['jpg', 'jpeg', 'png'], true)) {
                         $img = $entry;
-                        if ($img !== '' && $imgDir === null) {
+                        if (null === $imgDir) {
                             $imgDir = '/files/' . pathinfo($folderDir)['filename'] . '/' . $img;
                         }
                     }
                 }
             }
+
             closedir($handle);
         }
 
@@ -237,7 +256,7 @@ class AudiobookService implements AudiobookServiceInterface
         $id3Data['parts'] = $parts;
         $id3Data['title'] = $this->query->getFileName();
 
-        if ($imgDir !== null) {
+        if (null !== $imgDir) {
             $id3Data['imgFileDir'] = $imgDir;
         }
 
@@ -253,7 +272,7 @@ class AudiobookService implements AudiobookServiceInterface
         } catch (Throwable) {
         }
 
-        if ($it) {
+        if ($it instanceof RecursiveDirectoryIterator) {
             $files = new RecursiveIteratorIterator(
                 $it,
                 RecursiveIteratorIterator::CHILD_FIRST
@@ -273,7 +292,7 @@ class AudiobookService implements AudiobookServiceInterface
 
     private function checkConfiguration(): void
     {
-        if ($this->query === null) {
+        if (null === $this->query) {
             throw new AudiobookConfigServiceException();
         }
     }

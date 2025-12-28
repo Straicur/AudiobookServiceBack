@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -10,15 +10,7 @@ class JsonDataInvalidModel implements ModelInterface
 {
     private string $error = 'Invalid JSON Data';
 
-    private string $expectingClass;
-
-    private array $validationErrors;
-
-    public function __construct(string $expectingClass, array $validationErrors = [])
-    {
-        $this->expectingClass = $expectingClass;
-        $this->validationErrors = $validationErrors;
-    }
+    public function __construct(private string $expectingClass, private array $validationErrors = []) {}
 
     public function getError(): string
     {

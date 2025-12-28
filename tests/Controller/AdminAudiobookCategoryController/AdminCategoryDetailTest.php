@@ -37,14 +37,14 @@ class AdminCategoryDetailTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/category/detail', server: [
+        $this->webClient->request('POST', '/api/admin/category/detail', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
         $this->assertIsArray($responseContent);
@@ -74,13 +74,13 @@ class AdminCategoryDetailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/category/detail', server: [
+        $this->webClient->request('POST', '/api/admin/category/detail', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminCategoryDetailEmptyRequestData(): void
@@ -94,13 +94,13 @@ class AdminCategoryDetailTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/category/detail', server: [
+        $this->webClient->request('POST', '/api/admin/category/detail', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminCategoryDetailPermission(): void
@@ -115,13 +115,13 @@ class AdminCategoryDetailTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/category/detail', server: [
+        $this->webClient->request('POST', '/api/admin/category/detail', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminCategoryDetailLogOut(): void
@@ -133,10 +133,10 @@ class AdminCategoryDetailTest extends AbstractWebTest
             'categoryKey' => $category2->getCategoryKey(),
         ];
 
-        self::$webClient->request('POST', '/api/admin/category/detail', content: json_encode($content));
+        $this->webClient->request('POST', '/api/admin/category/detail', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

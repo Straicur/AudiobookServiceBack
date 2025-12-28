@@ -1,19 +1,23 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
-
-use DateTime;
 
 class AdminUsersSearchModel
 {
     public ?string $email = null;
+
     public ?string $phoneNumber = null;
+
     public ?string $firstname = null;
+
     public ?string $lastname = null;
+
     public ?bool $active = null;
+
     public ?bool $banned = null;
+
     public ?int $order = null;
 
     public function getEmail(): ?string

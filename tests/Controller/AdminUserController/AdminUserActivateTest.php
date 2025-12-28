@@ -24,7 +24,7 @@ class AdminUserActivateTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -54,13 +54,13 @@ class AdminUserActivateTest extends AbstractWebTest
             'userId' => $user2->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -80,13 +80,13 @@ class AdminUserActivateTest extends AbstractWebTest
             'userId' => '66666c4e-16e6-1ecc-9890-a7e8b0073d3b'
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminUserActivateEmptyRequestData(): void
@@ -101,13 +101,13 @@ class AdminUserActivateTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserActivatePermission(): void
@@ -121,13 +121,13 @@ class AdminUserActivateTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/activate', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserActivateLogOut(): void
@@ -142,10 +142,10 @@ class AdminUserActivateTest extends AbstractWebTest
             'userId' => $user2->getId()
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/activate', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/user/activate', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

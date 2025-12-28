@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
 {
@@ -42,48 +43,27 @@ class AdminAudiobookReAddingQuery implements AdminAudiobookAddFileInterface
     #[Assert\NotNull(message: 'DeleteNotifications is null')]
     #[Assert\Type(type: 'boolean')]
     private bool $deleteNotifications;
+
     #[Assert\NotNull(message: 'DeleteComments is null')]
     #[Assert\Type(type: 'boolean')]
     private bool $deleteComments;
 
+    #[Assert\Collection(
+        fields: [
+            'categories' => new Assert\All([
+                new Assert\NotBlank(),
+            ]),
+            'author' => new Assert\NotBlank(allowNull: true),
+            'title'  => new Assert\NotBlank(allowNull: true),
+            'age'    => new Assert\NotBlank(allowNull: true),
+            'year'   => new Assert\NotBlank(allowNull: true),
+        ],
+        allowMissingFields: true,
+    )]
     protected array $additionalData = [];
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('additionalData', new Assert\Collection([
-            'fields' => [
-                'categories' => new Assert\Optional([
-                    new Assert\All(constraints: [
-                        new Assert\NotBlank(message: 'Categories is empty'),
-                        new Assert\Regex(pattern: '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', message: 'Bad Uuid'),
-                        new Assert\Uuid()
-                    ])
-                ]),
-                'title' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Title is empty'),
-                    new Assert\Type(type: 'string')
-                ]),
-                'author' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Author is empty'),
-                    new Assert\Type(type: 'string')
-                ]),
-                'year' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Year is empty'),
-                    new Assert\Type(type: 'string'),
-                ]),
-                'age'  => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Age is empty'),
-                    new Assert\Type(type: 'integer'),
-                ]),
-            ],
-        ]));
-    }
-
-
     #[OA\Property(property: 'additionalData', properties: [
-        new OA\Property(property: 'categories', type: 'array', nullable: true, attachables: [
-            new OA\Items(type: 'string', example: 'UUID'),
-        ]),
+        new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'string', example: 'UUID'), nullable: true),
         new OA\Property(property: 'title', type: 'string', example: 'Tytuł', nullable: true),
         new OA\Property(property: 'author', type: 'string', example: 'Autor', nullable: true),
         new OA\Property(property: 'year', type: 'datetime', example: 'd.m.Y', nullable: true),

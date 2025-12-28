@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Annotation;
 
 use App\Enums\UserRolesNames;
@@ -8,15 +10,10 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD)]
 class AuthValidation
 {
-    private bool $checkAuthToken;
-
-    private array $roles;
-
-    public function __construct(bool $checkAuthToken, array $roles = [UserRolesNames::GUEST])
-    {
-        $this->checkAuthToken = $checkAuthToken;
-        $this->roles = $roles;
-    }
+    /**
+     * @param UserRolesNames[] $roles
+     */
+    public function __construct(private bool $checkAuthToken, private array $roles = [UserRolesNames::GUEST]) {}
 
     public function isCheckAuthToken(): bool
     {
@@ -28,7 +25,9 @@ class AuthValidation
         $this->checkAuthToken = $checkAuthToken;
     }
 
-
+    /**
+     * @return UserRolesNames[]
+     */
     public function getRoles(): array
     {
         return $this->roles;

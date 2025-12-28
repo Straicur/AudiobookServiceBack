@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\User;
 
@@ -26,13 +26,16 @@ use App\Service\AuthorizedUserServiceInterface;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+
+use function array_key_exists;
+use function count;
 
 #[OA\Response(
     response   : 400,
@@ -55,10 +58,11 @@ use Symfony\Component\Routing\Attribute\Route;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'UserReport')]
-#[Route('/api')]
 class UserReportController extends AbstractController
 {
-    #[Route('/report', name: 'apiReport', methods: ['PUT'])]
+    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly TranslateServiceInterface $translateService, private readonly ReportRepository $reportRepository, private readonly AuthorizedUserServiceInterface $authorizedUserService, private readonly AudiobookUserCommentRepository $commentRepository) {}
+
+    #[Route('/api/report', name: 'apiReport', methods: ['PUT'])]
     #[OA\Put(
         description: 'Method used to report for not logged users',
         security   : [],
@@ -78,24 +82,20 @@ class UserReportController extends AbstractController
     )]
     public function report(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        ReportRepository $reportRepository,
     ): Response {
-        $userNotAuthorizedUserReportQuery = $requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
+        $userNotAuthorizedUserReportQuery = $this->requestService->getRequestBodyContent($request, UserNotAuthorizedUserReportQuery::class);
 
         if ($userNotAuthorizedUserReportQuery instanceof UserNotAuthorizedUserReportQuery) {
             $ip = $userNotAuthorizedUserReportQuery->getIp();
             $email = $userNotAuthorizedUserReportQuery->getEmail();
 
             if (!empty($ip)) {
-                $amountOfReports = $reportRepository->notLoggedUserReportsCount($ip, $email, $userNotAuthorizedUserReportQuery->getType());
+                $amountOfReports = $this->reportRepository->notLoggedUserReportsCount($ip, $email, $userNotAuthorizedUserReportQuery->getType());
 
                 if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::IP_LIMIT->value) {
-                    $endpointLogger->error('To many reports from this ip');
-                    $translateService->setPreferredLanguage($request);
-                    throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+                    $this->endpointLogger->error('To many reports from this ip');
+                    $this->translateService->setPreferredLanguage($request);
+                    throw new DataNotFoundException([$this->translateService->getTranslation('UserToManyReports')]);
                 }
             }
 
@@ -106,6 +106,7 @@ class UserReportController extends AbstractController
             if (array_key_exists('actionId', $additionalData)) {
                 $actionId = $additionalData['actionId'];
             }
+
             if (array_key_exists('description', $additionalData)) {
                 $description = $additionalData['description'];
             }
@@ -121,24 +122,26 @@ class UserReportController extends AbstractController
             if ($actionId) {
                 $newReport->setActionId($actionId);
             }
+
             if ($description) {
                 $newReport->setDescription($description);
             }
+
             if ($userNotAuthorizedUserReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
                 $newReport->setDenied(true);
             }
 
-            $reportRepository->add($newReport);
+            $this->reportRepository->add($newReport);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/report', name: 'apiUserReport', methods: ['PUT'])]
+    #[Route('/api/user/report', name: 'apiUserReport', methods: ['PUT'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Put(
         description: 'Endpoint is used for users to report bad behavior',
@@ -158,13 +161,8 @@ class UserReportController extends AbstractController
     )]
     public function userReport(
         Request $request,
-        RequestServiceInterface $requestService,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        ReportRepository $reportRepository,
     ): Response {
-        $userReportQuery = $requestService->getRequestBodyContent($request, UserReportQuery::class);
+        $userReportQuery = $this->requestService->getRequestBodyContent($request, UserReportQuery::class);
 
         if ($userReportQuery instanceof UserReportQuery) {
             $additionalData = $userReportQuery->getAdditionalData();
@@ -174,17 +172,18 @@ class UserReportController extends AbstractController
             if (array_key_exists('actionId', $additionalData)) {
                 $actionId = $additionalData['actionId'];
             }
+
             if (array_key_exists('description', $additionalData)) {
                 $description = $additionalData['description'];
             }
 
-            $user = $authorizedUserService::getAuthorizedUser();
-            $amountOfReports = $reportRepository->loggedUserReportsCount($user, $userReportQuery->getType(), $actionId);
+            $user = $this->authorizedUserService::getAuthorizedUser();
+            $amountOfReports = $this->reportRepository->loggedUserReportsCount($user, $userReportQuery->getType(), $actionId);
 
             if ($amountOfReports[array_key_first($amountOfReports)] >= ReportLimits::EMAIL_LIMIT->value) {
-                $endpointLogger->error('To many reports from this ip');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+                $this->endpointLogger->error('To many reports from this ip');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserToManyReports')]);
             }
 
             $newReport = new Report($userReportQuery->getType());
@@ -195,24 +194,26 @@ class UserReportController extends AbstractController
             if ($actionId) {
                 $newReport->setActionId($actionId);
             }
+
             if ($description) {
                 $newReport->setDescription($description);
             }
+
             if ($userReportQuery->getType() === ReportType::RECRUITMENT_REQUEST) {
                 $newReport->setDenied(true);
             }
 
-            $reportRepository->add($newReport);
+            $this->reportRepository->add($newReport);
 
             return ResponseTool::getResponse(httpCode: Response::HTTP_CREATED);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/user/reports', name: 'apiUserReports', methods: ['POST'])]
+    #[Route('/api/user/reports', name: 'apiUserReports', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::USER])]
     #[OA\Post(
         description: 'Endpoint returning user reports',
@@ -232,19 +233,13 @@ class UserReportController extends AbstractController
     )]
     public function userReports(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AuthorizedUserServiceInterface $authorizedUserService,
-        ReportRepository $reportRepository,
-        TranslateServiceInterface $translateService,
-        AudiobookUserCommentRepository $commentRepository,
     ): Response {
-        $adminReportListQuery = $requestService->getRequestBodyContent($request, UserReportListQuery::class);
+        $adminReportListQuery = $this->requestService->getRequestBodyContent($request, UserReportListQuery::class);
 
         if ($adminReportListQuery instanceof UserReportListQuery) {
-            $user = $authorizedUserService::getAuthorizedUser();
+            $user = $this->authorizedUserService::getAuthorizedUser();
 
-            $reports = $reportRepository->findBy(['user' => $user], ['dateAdd' => 'DESC']);
+            $reports = $this->reportRepository->findBy(['user' => $user], ['dateAdd' => 'DESC']);
 
             $successModel = new UserReportListSuccessModel();
 
@@ -267,17 +262,19 @@ class UserReportController extends AbstractController
                     if ($report->getDescription()) {
                         $reportModel->setDescription($report->getDescription());
                     }
+
                     if ($report->getAnswer()) {
                         $reportModel->setAnswer($report->getAnswer());
                     }
+
                     if ($report->getSettleDate()) {
                         $reportModel->setSettleDate($report->getSettleDate());
                     }
 
                     if ($report->getType() === ReportType::COMMENT && $report->getActionId() !== null) {
-                        $comment = $commentRepository->find($report->getActionId());
+                        $comment = $this->commentRepository->find($report->getActionId());
 
-                        if ($comment !== null) {
+                        if (null !== $comment) {
                             $reportModel->setComment($comment->getComment());
                         }
                     }
@@ -290,13 +287,13 @@ class UserReportController extends AbstractController
 
             $successModel->setPage($adminReportListQuery->getPage());
             $successModel->setLimit($adminReportListQuery->getLimit());
-            $successModel->setMaxPage((int)ceil(count($reports) / $adminReportListQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($reports) / $adminReportListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

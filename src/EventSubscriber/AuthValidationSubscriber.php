@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
@@ -17,13 +17,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+use function count;
+use function is_array;
+
 class AuthValidationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $requestLogger,
         private readonly AuthValidationServiceInterface $authValidationService,
-    ) {
-    }
+    ) {}
 
     public function onControllerCall(ControllerEvent $event): void
     {
@@ -69,7 +71,7 @@ class AuthValidationSubscriber implements EventSubscriberInterface
                         AuthorizedUserService::setAuthorizedUser($authToken->getUser());
                     }
                 }
-            } catch (ReflectionException | NonUniqueResultException | InvalidArgumentException) {
+            } catch (ReflectionException|NonUniqueResultException|InvalidArgumentException) {
                 throw new DataNotFoundException();
             }
         }

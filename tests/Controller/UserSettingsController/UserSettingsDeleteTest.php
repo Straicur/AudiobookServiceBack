@@ -22,7 +22,7 @@ class UserSettingsDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -48,13 +48,13 @@ class UserSettingsDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(409);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsDeletePermission(): void
@@ -63,21 +63,21 @@ class UserSettingsDeleteTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/settings/delete', server: [
+        $this->webClient->request('PATCH', '/api/user/settings/delete', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsDeleteLogOut(): void
     {
-        self::$webClient->request('PATCH', '/api/user/settings/delete');
+        $this->webClient->request('PATCH', '/api/user/settings/delete');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

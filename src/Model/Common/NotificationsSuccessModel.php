@@ -1,34 +1,28 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class NotificationsSuccessModel implements ModelInterface
 {
     /**
-     * @var NotificationModel[]
-     */
-    private array $systemNotifications;
-
-    private int $page;
-
-    private int $limit;
-
-    private int $maxPage;
-
-    /**
      * @param NotificationModel[] $systemNotifications
      */
-    public function __construct(array $systemNotifications, int $page, int $limit, int $maxPage)
-    {
-        $this->systemNotifications = $systemNotifications;
-        $this->page = $page;
-        $this->limit = $limit;
-        $this->maxPage = $maxPage;
-    }
+    public function __construct(
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: NotificationModel::class))
+        )]
+        private array $systemNotifications,
+        private int $page,
+        private int $limit,
+        private int $maxPage,
+    ) {}
 
     /**
      * @return NotificationModel[]

@@ -25,7 +25,7 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
+        $this->webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
@@ -34,7 +34,7 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
 
         $this->assertCount(1, $userEditRepository->findAll());
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -61,13 +61,13 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
+        $this->webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserSettingsPasswordCodeChangePermission(): void
@@ -78,23 +78,23 @@ class UserSettingsPasswordCodeTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/user/settings/password/code', server : [
+        $this->webClient->request('PUT', '/api/user/settings/password/code', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserSettingsPasswordCodeChangeLogOut(): void
     {
         $content = [];
 
-        self::$webClient->request('PUT', '/api/user/settings/password/code', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/settings/password/code', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

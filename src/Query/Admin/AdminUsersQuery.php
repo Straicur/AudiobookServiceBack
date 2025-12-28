@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use App\Enums\UserOrderSearch;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+use function array_key_exists;
 
 class AdminUsersQuery
 {
@@ -18,43 +21,20 @@ class AdminUsersQuery
     #[Assert\NotBlank(message: 'Limit is empty')]
     #[Assert\Type(type: 'integer')]
     private int $limit;
-    protected array $searchData = [];
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('searchData', new Assert\Collection([
-            'fields' => [
-                'email'       => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Email is empty'),
-                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'phoneNumber' => new Assert\Optional([
-                    new Assert\NotBlank(message: 'PhoneNumber is empty'),
-                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'firstname'   => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Firstname is empty'),
-                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'lastname'    => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Lastname is empty'),
-                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'active'      => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'banned'      => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'order'       => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Order is empty'),
-                    new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0),
-                    new Assert\LessThan(5),
-                ]),
-            ],
-        ]));
-    }
+    #[Assert\Collection(
+        fields: [
+            'email'       => new Assert\NotBlank(allowNull: true),
+            'phoneNumber' => new Assert\NotBlank(allowNull: true),
+            'firstname'   => new Assert\NotBlank(allowNull: true),
+            'lastname'    => new Assert\NotBlank(allowNull: true),
+            'active'      => new Assert\NotNull(),
+            'banned'      => new Assert\NotNull(),
+            'order'       => new Assert\NotBlank(allowNull: true),
+        ],
+        allowMissingFields: true,
+    )]
+    protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'email', type: 'string', example: 'email', nullable: true),
@@ -68,18 +48,17 @@ class AdminUsersQuery
     public function setSearchData(array $searchData): void
     {
         if (
-            array_key_exists('order', $searchData) &&
-            $searchData['order'] !== UserOrderSearch::LATEST->value &&
-            $searchData['order'] !== UserOrderSearch::OLDEST->value &&
-            $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value &&
-            $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value
+            array_key_exists('order', $searchData)
+            && $searchData['order'] !== UserOrderSearch::LATEST->value
+            && $searchData['order'] !== UserOrderSearch::OLDEST->value
+            && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_ASC->value
+            && $searchData['order'] !== UserOrderSearch::ALPHABETICAL_DESC->value
         ) {
             $searchData['order'] = UserOrderSearch::LATEST->value;
         }
 
         $this->searchData = $searchData;
     }
-
 
     public function getSearchData(): array
     {

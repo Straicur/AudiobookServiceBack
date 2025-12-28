@@ -61,14 +61,14 @@ class UserReportsTest extends AbstractWebTest
             'limit' => 10,
         ];
 
-        self::$webClient->request('POST', '/api/user/reports', server: [
+        $this->webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -96,13 +96,13 @@ class UserReportsTest extends AbstractWebTest
             'page' => 0,
         ];
 
-        self::$webClient->request('POST', '/api/user/reports', server: [
+        $this->webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserReportsPermission(): void
@@ -116,13 +116,13 @@ class UserReportsTest extends AbstractWebTest
             'limit' => 10,
         ];
 
-        self::$webClient->request('POST', '/api/user/reports', server: [
+        $this->webClient->request('POST', '/api/user/reports', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserReportsLogOut(): void
@@ -132,10 +132,10 @@ class UserReportsTest extends AbstractWebTest
             'limit' => 10,
         ];
 
-        self::$webClient->request('POST', '/api/user/reports', content: json_encode($content));
+        $this->webClient->request('POST', '/api/user/reports', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

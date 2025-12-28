@@ -19,7 +19,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        $this->webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -42,7 +42,7 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        $this->webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
@@ -58,21 +58,21 @@ class AdminTechnicalBreakPutTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PUT', '/api/admin/technical/break', server: [
+        $this->webClient->request('PUT', '/api/admin/technical/break', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakPutLogOut(): void
     {
-        self::$webClient->request('PUT', '/api/admin/technical/break');
+        $this->webClient->request('PUT', '/api/admin/technical/break');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

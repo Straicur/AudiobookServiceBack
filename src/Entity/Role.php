@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\RoleRepository;
@@ -39,6 +41,7 @@ class Role
     public function setId(Uuid $id): Role
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -50,6 +53,7 @@ class Role
     public function setName(string $name): Role
     {
         $this->name = $name;
+
         return $this;
     }
 

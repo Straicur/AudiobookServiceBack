@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -17,7 +17,7 @@ class RequestService implements RequestServiceInterface
 
     public function __construct(
         private readonly ValidatorInterface $validator,
-        private readonly TranslateServiceInterface $translateService
+        private readonly TranslateServiceInterface $translateService,
     ) {
         $this->serializer = new JsonSerializer();
     }

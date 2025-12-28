@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
@@ -9,14 +9,10 @@ use DateTime;
 
 class UserAudiobookInfoSuccessModel implements ModelInterface
 {
-    private int $part;
-    private int $endedTime;
     private int $watchingDate;
 
-    public function __construct(int $part, int $endedTime, DateTime $watchingDate)
+    public function __construct(private int $part, private int $endedTime, DateTime $watchingDate)
     {
-        $this->part = $part;
-        $this->endedTime = $endedTime;
         $this->watchingDate = $watchingDate->getTimestamp() * 1000;
     }
 

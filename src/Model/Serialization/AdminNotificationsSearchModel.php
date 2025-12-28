@@ -1,14 +1,17 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Serialization;
 
 class AdminNotificationsSearchModel
 {
     public ?string $text = null;
+
     public ?int $type = null;
+
     public ?bool $deleted = null;
+
     public ?int $order = null;
 
     public function getText(): ?string

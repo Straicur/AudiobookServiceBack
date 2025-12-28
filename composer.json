@@ -4,7 +4,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=8.1",
+    "php": "^8.4",
     "ext-ctype": "*",
     "ext-curl": "*",
     "ext-iconv": "*",
@@ -14,10 +14,8 @@
     "doctrine/doctrine-bundle": "*",
     "doctrine/doctrine-migrations-bundle": "^3.3",
     "doctrine/orm": "*",
-    "guzzlehttp/psr7": "^1",
     "james-heinrich/getid3": "^1.9",
-    "monolog/monolog": "^2.5",
-    "nelmio/api-doc-bundle": "^4.8",
+    "nelmio/api-doc-bundle": "^5.8",
     "nelmio/cors-bundle": "^2.2",
     "openpayu/openpayu": "^2.3",
     "predis/predis": "^2.2",
@@ -33,6 +31,7 @@
     "symfony/framework-bundle": "6.4.*",
     "symfony/google-mailer": "6.4.*",
     "symfony/mailer": "6.4.*",
+    "symfony/maker-bundle": "^1.65",
     "symfony/monolog-bundle": "^3.7",
     "symfony/property-access": "6.4.*",
     "symfony/proxy-manager-bridge": "6.4.*",
@@ -53,6 +52,7 @@
   "config": {
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
+      "phpstan/extension-installer": true,
       "symfony/flex": true,
       "symfony/runtime": true
     },
@@ -90,7 +90,12 @@
     ],
     "post-update-cmd": [
       "@auto-scripts"
-    ]
+    ],
+    "rector": "php vendor/bin/rector process --config=./rector.php --dry-run --memory-limit=16G",
+    "rector:fix": "php vendor/bin/rector process --config=./rector.php --memory-limit=16G",
+    "cs": "php vendor/bin/php-cs-fixer fix --config=./php-cs-fixer.php --dry-run",
+    "cs:fix": "php vendor/bin/php-cs-fixer fix --config=./php-cs-fixer.php",
+    "phpstan": "php vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit=16G"
   },
   "conflict": {
     "symfony/symfony": "*"
@@ -105,13 +110,22 @@
     "dama/doctrine-test-bundle": "v7.2.*",
     "doctrine/doctrine-fixtures-bundle": "*",
     "fakerphp/faker": "*",
-    "phpunit/phpunit": "^9.5",
+    "friendsofphp/php-cs-fixer": "^3.90",
+    "guzzlehttp/psr7": "^2.8",
+    "kubawerlos/php-cs-fixer-custom-fixers": "^3.35",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpstan/phpstan-doctrine": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
+    "phpstan/phpstan-symfony": "^2.0",
+    "phpunit/phpunit": "^10",
+    "rector/rector": "^2.2",
     "roave/security-advisories": "dev-master",
     "squizlabs/php_codesniffer": "*",
     "symfony/browser-kit": "6.4.*",
     "symfony/css-selector": "6.4.*",
     "symfony/debug-bundle": "6.4.*",
-    "symfony/maker-bundle": "*",
     "symfony/panther": "*",
     "symfony/phpunit-bridge": "^6.4",
     "symfony/stopwatch": "6.4.*",

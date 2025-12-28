@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -38,11 +38,12 @@ use App\Service\RequestServiceInterface;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
 use DateTime;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -50,6 +51,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+
+use function count;
 
 #[OA\Response(
     response   : 400,
@@ -72,10 +75,26 @@ use Symfony\Component\Serializer\SerializerInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminReport')]
-#[Route('/api/admin')]
 class AdminReportController extends AbstractController
 {
-    #[Route('/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
+    public function __construct(
+        private readonly RequestServiceInterface $requestService,
+        private readonly LoggerInterface $endpointLogger,
+        private readonly TranslateServiceInterface $translateService,
+        private readonly ReportRepository $reportRepository,
+        private readonly MailerInterface $mailer,
+        private readonly AudiobookUserCommentRepository $commentRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UserBanHistoryRepository $banHistoryRepository,
+        private readonly AdminReportAcceptServiceInterface $adminReportService,
+        private readonly AdminReportRejectServiceInterface $adminReportRejectService,
+        private readonly UserDeleteRepository $userDeleteRepository,
+        private readonly SerializerInterface $serializer,
+        #[Autowire(env: 'INSTITUTION_EMAIL')] private readonly string $institutionEmail,
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
+    ) {}
+
+    #[Route('/api/admin/report/accept', name: 'apiAdminReportAccept', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to accept report',
@@ -95,44 +114,35 @@ class AdminReportController extends AbstractController
     )]
     public function apiAdminReportAccept(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        ReportRepository $reportRepository,
-        MailerInterface $mailer,
-        AudiobookUserCommentRepository $commentRepository,
-        UserRepository $userRepository,
-        UserBanHistoryRepository $banHistoryRepository,
-        AdminReportAcceptServiceInterface $adminReportService,
     ): Response {
-        $adminReportAcceptQuery = $requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
+        $adminReportAcceptQuery = $this->requestService->getRequestBodyContent($request, AdminReportAcceptQuery::class);
 
         if ($adminReportAcceptQuery instanceof AdminReportAcceptQuery) {
-            $report = $reportRepository->find($adminReportAcceptQuery->getReportId());
+            $report = $this->reportRepository->find($adminReportAcceptQuery->getReportId());
 
-            if ($report === null || $report->getAccepted() || $report->getDenied()) {
-                $endpointLogger->error('Cant find report');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AdminReportAcceptedOrRejected')]);
+            if (null === $report || $report->getAccepted() || $report->getDenied()) {
+                $this->endpointLogger->error('Cant find report');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AdminReportAcceptedOrRejected')]);
             }
 
             if ($report->getActionId() !== null && $report->getType() === ReportType::COMMENT) {
-                $comment = $commentRepository->find($report->getActionId());
+                $comment = $this->commentRepository->find($report->getActionId());
 
-                if ($comment !== null && $adminReportAcceptQuery->getBanPeriod() !== null) {
+                if (null !== $comment && $adminReportAcceptQuery->getBanPeriod() !== null) {
                     $user = $comment->getUser();
 
                     $comment->setDeleted(true);
-                    $commentRepository->add($comment);
+                    $this->commentRepository->add($comment);
 
                     if ($adminReportAcceptQuery->getBanPeriod() === BanPeriodRage::SYSTEM) {
-                        $bannedAmount = count($banHistoryRepository->findBy([
+                        $bannedAmount = count($this->banHistoryRepository->findBy([
                             'user' => $user->getId(),
                         ]));
 
                         if ($bannedAmount === UserBanAmount::NONE->value) {
                             $periodTo = BanPeriodRage::HALF_DAY_BAN->value;
-                        } elseif ($bannedAmount > 0 && $bannedAmount <= UserBanAmount::LOW->value) {
+                        } elseif (0 < $bannedAmount && $bannedAmount <= UserBanAmount::LOW->value) {
                             $periodTo = BanPeriodRage::ONE_DAY_BAN->value;
                         } elseif ($bannedAmount > UserBanAmount::LOW->value && $bannedAmount <= UserBanAmount::MEDIUM->value) {
                             $periodTo = BanPeriodRage::FIVE_DAY_BAN->value;
@@ -144,59 +154,60 @@ class AdminReportController extends AbstractController
                     } else {
                         $periodTo = $adminReportAcceptQuery->getBanPeriod()->value;
                     }
-                    $banPeriod = (new DateTime())->modify($periodTo);
+
+                    $banPeriod = new DateTime()->modify($periodTo);
 
                     if ($periodTo !== BanPeriodRage::NOT_BANNED->value && !$user->getUserSettings()->isAdmin() && (!$user->isBanned() || ($user->getBannedTo() === null || $user->getBannedTo() < $banPeriod))) {
                         $user
                             ->setBanned(true)
                             ->setBannedTo($banPeriod);
 
-                        $userRepository->add($user);
+                        $this->userRepository->add($user);
 
                         $banHistory = new UserBanHistory($user, new DateTime(), $banPeriod, UserBanType::COMMENT);
 
-                        $banHistoryRepository->add($banHistory);
+                        $this->banHistoryRepository->add($banHistory);
                         $report->setBanned($banHistory);
-                        $reportRepository->add($report);
+                        $this->reportRepository->add($report);
                     }
 
-                    if ($_ENV['APP_ENV'] !== 'test' && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
-                        $email = (new TemplatedEmail())
-                            ->from($_ENV['INSTITUTION_EMAIL'])
+                    if (true === $this->sendEmail && $report->getType() !== ReportType::RECRUITMENT_REQUEST && $user->getUserInformation()->getEmail()) {
+                        $email = new TemplatedEmail()
+                            ->from($this->institutionEmail)
                             ->to($report->getEmail() ?? $user->getUserInformation()->getEmail())
-                            ->subject($translateService->getTranslation('AdminReportAcceptedOrRejected'))
+                            ->subject($this->translateService->getTranslation('AdminReportAcceptedOrRejected'))
                             ->htmlTemplate('emails/userBanned.html.twig')
                             ->context([
-                                'name'   => $user->getUserInformation()->getFirstname(),
+                                'name'    => $user->getUserInformation()->getFirstname(),
                                 'comment' => $comment->getComment(),
-                                'answer'    => $adminReportAcceptQuery->getAnswer(),
-                                'dateTo' => $banPeriod->format('d.m.Y'),
-                                'lang' => $request->getPreferredLanguage() !== null ? $request->getPreferredLanguage() : $translateService->getLocate(),
+                                'answer'  => $adminReportAcceptQuery->getAnswer(),
+                                'dateTo'  => $banPeriod->format('d.m.Y'),
+                                'lang'    => $request->getPreferredLanguage() ?? $this->translateService->getLocate(),
                             ]);
-                        $mailer->send($email);
+                        $this->mailer->send($email);
                     }
                 }
             }
 
-            $adminReportService
+            $this->adminReportService
                 ->setAdminReportAcceptQuery($adminReportAcceptQuery)
                 ->setRequest($request);
 
             if (!$adminReportAcceptQuery->isAcceptOthers()) {
-                $adminReportService->sendReportResponse($report);
+                $this->adminReportService->sendReportResponse($report);
             } else {
-                $adminReportService->sendReportResponseToAll($report);
+                $this->adminReportService->sendReportResponseToAll($report);
             }
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
+    #[Route('/api/admin/report/reject', name: 'apiAdminReportReject', methods: ['PATCH'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR])]
     #[OA\Patch(
         description: 'Endpoint is used to reject report',
@@ -216,42 +227,37 @@ class AdminReportController extends AbstractController
     )]
     public function apiAdminReportReject(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        ReportRepository $reportRepository,
-        AdminReportRejectServiceInterface $adminReportService,
     ): Response {
-        $adminReportRejectQuery = $requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
+        $adminReportRejectQuery = $this->requestService->getRequestBodyContent($request, AdminReportRejectQuery::class);
 
         if ($adminReportRejectQuery instanceof AdminReportRejectQuery) {
-            $report = $reportRepository->find($adminReportRejectQuery->getReportId());
+            $report = $this->reportRepository->find($adminReportRejectQuery->getReportId());
 
-            if ($report === null || $report->getAccepted() || $report->getDenied()) {
-                $endpointLogger->error('Cant find report');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('UserToManyReports')]);
+            if (null === $report || $report->getAccepted() || $report->getDenied()) {
+                $this->endpointLogger->error('Cant find report');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('UserToManyReports')]);
             }
 
-            $adminReportService
+            $this->adminReportRejectService
                 ->setAdminReportRejectQuery($adminReportRejectQuery)
                 ->setRequest($request);
 
             if (!$adminReportRejectQuery->isRejectOthers()) {
-                $adminReportService->sendReportResponse($report);
+                $this->adminReportRejectService->sendReportResponse($report);
             } else {
-                $adminReportService->sendReportResponseToAll($report);
+                $this->adminReportRejectService->sendReportResponseToAll($report);
             }
 
             return ResponseTool::getResponse();
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/report/list', name: 'apiAdminReportList', methods: ['POST'])]
+    #[Route('/api/admin/report/list', name: 'apiAdminReportList', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is used to get report list',
@@ -272,21 +278,14 @@ class AdminReportController extends AbstractController
     )]
     public function apiAdminReportList(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        TranslateServiceInterface $translateService,
-        ReportRepository $reportRepository,
-        UserDeleteRepository $userDeleteRepository,
-        AudiobookUserCommentRepository $commentRepository,
-        SerializerInterface $serializer,
     ): Response {
-        $adminReportListQuery = $requestService->getRequestBodyContent($request, AdminReportListQuery::class);
+        $adminReportListQuery = $this->requestService->getRequestBodyContent($request, AdminReportListQuery::class);
 
         if ($adminReportListQuery instanceof AdminReportListQuery) {
             $reportSearchData = $adminReportListQuery->getSearchData();
 
             $reportSearchModel = new AdminReportsSearchModel();
-            $serializer->deserialize(
+            $this->serializer->deserialize(
                 json_encode($reportSearchData),
                 AdminReportsSearchModel::class,
                 'json',
@@ -298,7 +297,7 @@ class AdminReportController extends AbstractController
 
             $successModel = new AdminReportListSuccessModel();
 
-            $reports = $reportRepository->getReportsByPage($reportSearchModel);
+            $reports = $this->reportRepository->getReportsByPage($reportSearchModel);
 
             $minResult = $adminReportListQuery->getPage() * $adminReportListQuery->getLimit();
             $maxResult = $adminReportListQuery->getLimit() + $minResult;
@@ -310,7 +309,7 @@ class AdminReportController extends AbstractController
 
                 if ($index < $maxResult) {
                     $reportModel = new AdminReportModel(
-                        (string)$report->getId(),
+                        (string) $report->getId(),
                         $report->getType(),
                         $report->getDateAdd(),
                         $report->getAccepted(),
@@ -320,28 +319,33 @@ class AdminReportController extends AbstractController
                     if ($report->getDescription()) {
                         $reportModel->setDescription($report->getDescription());
                     }
+
                     if ($report->getActionId()) {
-                        $reportModel->setActionId((string)$report->getActionId());
+                        $reportModel->setActionId((string) $report->getActionId());
                     }
+
                     if ($report->getEmail()) {
                         $reportModel->setEmail($report->getEmail());
                     }
+
                     if ($report->getIp()) {
                         $reportModel->setIp($report->getIp());
                     }
+
                     if ($report->getAnswer()) {
                         $reportModel->setAnswer($report->getAnswer());
                     }
+
                     if ($report->getSettleDate()) {
                         $reportModel->setSettleDate($report->getSettleDate());
                     }
 
                     if ($report->getUser()) {
-                        $userDeleted = $userDeleteRepository->userInToDeleteList($report->getUser());
+                        $userDeleted = $this->userDeleteRepository->userInToDeleteList($report->getUser());
 
                         $reportModel->setUser(
                             new AdminUserModel(
-                                (string)$report->getUser()->getId(),
+                                (string) $report->getUser()->getId(),
                                 $report->getUser()->isActive(),
                                 $report->getUser()->isBanned(),
                                 $report->getUser()->getUserInformation()->getEmail(),
@@ -354,11 +358,11 @@ class AdminReportController extends AbstractController
                     }
 
                     if ($report->getType() === ReportType::COMMENT && $report->getActionId() !== null) {
-                        $comment = $commentRepository->find($report->getActionId());
+                        $comment = $this->commentRepository->find($report->getActionId());
 
-                        if ($comment !== null) {
+                        if (null !== $comment) {
                             if ($comment->getParent() !== null) {
-                                $children = $commentRepository->findBy(['parent' => $comment->getParent()]);
+                                $children = $this->commentRepository->findBy(['parent' => $comment->getParent()]);
                                 $parent = $comment->getParent();
 
                                 $userModel = new AudiobookCommentModel(
@@ -396,12 +400,13 @@ class AdminReportController extends AbstractController
                                     true
                                 );
                             }
+
                             $reportModel->setComment($commentModel);
                         }
                     }
 
                     if ($report->getActionId()) {
-                        $similarReports = $reportRepository->getSimilarReportsCount($report->getActionId());
+                        $similarReports = $this->reportRepository->getSimilarReportsCount($report->getActionId());
                         $reportModel->setSimilarReports(empty($similarReports) ? 0 : $similarReports[array_key_first($similarReports)]);
                     }
 
@@ -423,13 +428,13 @@ class AdminReportController extends AbstractController
 
             $successModel->setPage($adminReportListQuery->getPage());
             $successModel->setLimit($adminReportListQuery->getLimit());
-            $successModel->setMaxPage((int)ceil(count($reports) / $adminReportListQuery->getLimit()));
+            $successModel->setMaxPage((int) ceil(count($reports) / $adminReportListQuery->getLimit()));
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

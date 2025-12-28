@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use App\Enums\NotificationOrderSearch;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+use function array_key_exists;
 
 class AdminUserNotificationsQuery
 {
@@ -18,34 +21,17 @@ class AdminUserNotificationsQuery
     #[Assert\NotBlank(message: 'Limit is empty')]
     #[Assert\Type(type: 'integer')]
     private int $limit;
-    protected array $searchData = [];
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('searchData', new Assert\Collection([
-            'fields' => [
-                'text'    => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Text is empty'),
-                    new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'type'    => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Type is empty'),
-                    new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0),
-                    new Assert\LessThan(7),
-                ]),
-                'deleted' => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'order'   => new Assert\Optional([
-                    new Assert\NotBlank(message: 'Order is empty'),
-                    new Assert\Type(type: 'integer', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    new Assert\GreaterThan(0),
-                    new Assert\LessThan(9),
-                ]),
-            ],
-        ]));
-    }
+    #[Assert\Collection(
+        fields: [
+            'text'    => new Assert\NotBlank(allowNull: true),
+            'type'    => new Assert\NotBlank(allowNull: true),
+            'deleted' => new Assert\NotNull(),
+            'order'   => new Assert\NotBlank(allowNull: true),
+        ],
+        allowMissingFields: true,
+    )]
+    protected array $searchData = [];
 
     #[OA\Property(property: 'searchData', properties: [
         new OA\Property(property: 'text', type: 'string', example: 'text', nullable: true),
@@ -56,9 +42,9 @@ class AdminUserNotificationsQuery
     public function setSearchData(array $searchData): void
     {
         if (
-            array_key_exists('order', $searchData) &&
-            $searchData['order'] !== NotificationOrderSearch::LATEST->value &&
-            $searchData['order'] !== NotificationOrderSearch::OLDEST->value
+            array_key_exists('order', $searchData)
+            && $searchData['order'] !== NotificationOrderSearch::LATEST->value
+            && $searchData['order'] !== NotificationOrderSearch::OLDEST->value
         ) {
             $searchData['order'] = NotificationOrderSearch::LATEST->value;
         }
@@ -66,12 +52,10 @@ class AdminUserNotificationsQuery
         $this->searchData = $searchData;
     }
 
-
     public function getSearchData(): array
     {
         return $this->searchData;
     }
-
 
     #[OA\Property(type: 'integer', example: 0)]
     public function getPage(): int
@@ -79,19 +63,16 @@ class AdminUserNotificationsQuery
         return $this->page;
     }
 
-
     public function setPage(int $page): void
     {
         $this->page = $page;
     }
-
 
     #[OA\Property(type: 'integer', example: 10)]
     public function getLimit(): int
     {
         return $this->limit;
     }
-
 
     public function setLimit(int $limit): void
     {

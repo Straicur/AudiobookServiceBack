@@ -28,7 +28,7 @@ class UserResetPasswordTest extends AbstractWebTest
             'email' => $user->getUserInformation()->getEmail()
         ];
 
-        self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
+        $this->webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
@@ -55,21 +55,21 @@ class UserResetPasswordTest extends AbstractWebTest
             'email' => 'test2@cos.pl'
         ];
 
-        self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
+        $this->webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserResetPasswordEmptyRequestData(): void
     {
         $content = [];
 
-        self::$webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
+        $this->webClient->request('POST', '/api/user/reset/password', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

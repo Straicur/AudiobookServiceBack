@@ -38,14 +38,14 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        $this->webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -68,13 +68,13 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        $this->webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakListPermission(): void
@@ -100,13 +100,13 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('POST', '/api/admin/technical/break/list', server: [
+        $this->webClient->request('POST', '/api/admin/technical/break/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalBreakListLogOut(): void
@@ -130,10 +130,10 @@ class AdminTechnicalBreakListTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
+        $this->webClient->request('POST', '/api/admin/technical/break/list', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

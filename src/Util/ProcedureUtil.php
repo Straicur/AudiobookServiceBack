@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Util;
 
@@ -8,9 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ProcedureUtil
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
-    }
+    public function __construct(private readonly EntityManagerInterface $entityManager) {}
 
     public function executeStoredProcedure(string $procedureName, array $params = []): void
     {

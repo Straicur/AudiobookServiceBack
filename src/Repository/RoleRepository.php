@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -23,11 +23,6 @@ class RoleRepository extends ServiceEntityRepository
         parent::__construct($registry, Role::class);
     }
 
-    /**
-     * @param Role $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(Role $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -37,11 +32,6 @@ class RoleRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param Role $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(Role $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

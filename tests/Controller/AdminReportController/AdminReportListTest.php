@@ -60,14 +60,14 @@ class AdminReportListTest extends AbstractWebTest
             'searchData' => []
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', server: [
+        $this->webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -118,14 +118,14 @@ class AdminReportListTest extends AbstractWebTest
             'searchData' => [],
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', server : [
+        $this->webClient->request('POST', '/api/admin/report/list', server : [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -202,14 +202,14 @@ class AdminReportListTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', server: [
+        $this->webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -242,13 +242,13 @@ class AdminReportListTest extends AbstractWebTest
             'page' => 0
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', server: [
+        $this->webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminReportListPermission(): void
@@ -270,13 +270,13 @@ class AdminReportListTest extends AbstractWebTest
             'additionalData' => []
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', server: [
+        $this->webClient->request('POST', '/api/admin/report/list', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminReportListLogOut(): void
@@ -296,10 +296,10 @@ class AdminReportListTest extends AbstractWebTest
             'additionalData' => []
         ];
 
-        self::$webClient->request('POST', '/api/admin/report/list', content: json_encode($content));
+        $this->webClient->request('POST', '/api/admin/report/list', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

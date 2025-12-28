@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tool;
 
@@ -14,7 +14,7 @@ class UserParentalControlTool
     {
         $birthday = $user->getUserInformation()->getBirthday();
 
-        if ($birthday === null) {
+        if (null === $birthday) {
             return null;
         }
 
@@ -22,23 +22,23 @@ class UserParentalControlTool
 
         $age = $today->diff($birthday)->y;
 
-        if ($age >= 3 && $age < 7) {
+        if (3 <= $age && 7 > $age) {
             return AudiobookAgeRange::FROM3TO7;
         }
 
-        if ($age >= 7 && $age < 12) {
+        if (7 <= $age && 12 > $age) {
             return AudiobookAgeRange::FROM7TO12;
         }
 
-        if ($age >= 12 && $age < 16) {
+        if (12 <= $age && 16 > $age) {
             return AudiobookAgeRange::FROM12TO16;
         }
 
-        if ($age >= 16 && $age < 18) {
+        if (16 <= $age && 18 > $age) {
             return AudiobookAgeRange::FROM16TO18;
         }
 
-        if ($age >= 18) {
+        if (18 <= $age) {
             return AudiobookAgeRange::ABOVE18;
         }
 

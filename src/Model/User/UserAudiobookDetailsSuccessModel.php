@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
@@ -8,69 +8,48 @@ use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use App\Model\ModelInterface;
 use DateTime;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 
 class UserAudiobookDetailsSuccessModel implements ModelInterface
 {
-    private string $id;
-    private string $title;
-    private string $author;
-    private string $version;
-    private string $album;
     private int $year;
-    private string $duration;
-    private int $parts;
-    private string $description;
+
     private int $age;
-    private float $avgRating;
-    private int $ratingAmount;
 
-    /**
-     * @var AudiobookDetailCategoryModel[]
-     */
-    private array $categories;
-
-    private bool $inList;
-    private int $comments;
     private bool $canRate = false;
+
     private bool $canComment = false;
+
     private bool $rated = false;
-    private ?string $imgFile;
 
     public function __construct(
-        string $id,
-        string $title,
-        string $author,
-        string $version,
-        string $album,
+        private string $id,
+        private string $title,
+        private string $author,
+        private string $version,
+        private string $album,
         DateTime $year,
-        string $duration,
-        int $parts,
-        string $description,
+        private string $duration,
+        private int $parts,
+        private string $description,
         AudiobookAgeRange $age,
-        array $categories,
-        bool $inList,
-        int $comments,
-        float $avgRating,
-        int $ratingAmount,
-        ?string $imgFile
+        /**
+         * @var AudiobookDetailCategoryModel[]
+         */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AudiobookDetailCategoryModel::class))
+        )]
+        private array $categories,
+        private bool $inList,
+        private int $comments,
+        private float $avgRating,
+        private int $ratingAmount,
+        private ?string $imgFile,
     ) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->author = $author;
-        $this->version = $version;
-        $this->album = $album;
         $this->year = $year->getTimestamp() * 1000;
-        $this->duration = $duration;
-        $this->parts = $parts;
-        $this->description = $description;
         $this->age = $age->value;
-        $this->categories = $categories;
-        $this->inList = $inList;
-        $this->comments = $comments;
-        $this->avgRating = $avgRating;
-        $this->ratingAmount = $ratingAmount;
-        $this->imgFile = $imgFile;
     }
 
     public function getId(): string

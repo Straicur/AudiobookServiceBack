@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -12,25 +12,23 @@ use Symfony\Component\Uid\Uuid;
 
 class NotificationModel
 {
-    private string $id;
-    private ?string $actionId;
-    private ?int $userType;
     private int $notificationType;
-    private ?int $dateAdd;
-    private ?string $text;
-    private ?string $categoryKey;
-    private ?bool $delete;
-    private ?int $active;
-    private ?bool $activated;
-    private ?int $activatedDate;
 
-    public function __construct(string $id, NotificationType $notificationType, ?string $actionId, ?int $userType, ?bool $delete)
+    private ?int $dateAdd = null;
+
+    private ?string $text = null;
+
+    private ?string $categoryKey = null;
+
+    private ?int $active = null;
+
+    private ?bool $activated = null;
+
+    private ?int $activatedDate = null;
+
+    public function __construct(private string $id, NotificationType $notificationType, private ?string $actionId, private ?int $userType, private ?bool $delete)
     {
-        $this->id = $id;
         $this->notificationType = $notificationType->value;
-        $this->actionId = $actionId;
-        $this->userType = $userType;
-        $this->delete = $delete;
     }
 
     public function getActionId(): ?string
@@ -143,5 +141,4 @@ class NotificationModel
     {
         $this->activatedDate = $activatedDate?->getTimestamp() * 1000;
     }
-
 }

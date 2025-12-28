@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Error;
 
@@ -11,10 +11,6 @@ class GeneratorExceptionModel implements ModelInterface
     private string $error = 'Service generator error';
 
     private string $description = 'Please contact us';
-
-    public function __construct()
-    {
-    }
 
     public function getError(): string
     {

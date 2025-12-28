@@ -1,19 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
 class AudiobookCommentModel
 {
-    private string $email;
-    private string $name;
-
-    public function __construct(string $email, string $name)
-    {
-        $this->email = $email;
-        $this->name = $name;
-    }
+    public function __construct(private string $email, private string $name) {}
 
     public function getEmail(): string
     {

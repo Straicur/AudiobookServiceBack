@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
@@ -8,17 +8,7 @@ use App\Model\ModelInterface;
 
 class AuthorizationSuccessModel implements ModelInterface
 {
-    private string $token;
-    private AuthorizationRolesModel $roles;
-
-    private bool $isAdmin;
-
-    public function __construct(string $token, AuthorizationRolesModel $roles, bool $isAdmin)
-    {
-        $this->token = $token;
-        $this->roles = $roles;
-        $this->isAdmin = $isAdmin;
-    }
+    public function __construct(private string $token, private AuthorizationRolesModel $roles, private bool $isAdmin) {}
 
     public function getToken(): string
     {

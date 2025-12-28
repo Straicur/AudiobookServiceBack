@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Notification;
 
@@ -22,9 +22,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+
 class AdminNotificationAddService implements AdminNotificationAddServiceInterface
 {
     private AdminUserNotificationPutQuery $adminUserNotificationPutQuery;
+
     private Request $request;
 
     public function __construct(
@@ -36,8 +39,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
         private readonly TranslateServiceInterface $translateService,
         private readonly TagAwareCacheInterface $stockCache,
         private readonly LoggerInterface $endpointLogger,
-    ) {
-    }
+    ) {}
 
     public function setData(AdminUserNotificationPutQuery $adminUserNotificationPutQuery, Request $request): self
     {
@@ -73,8 +75,6 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
                 $notificationBuilder = $this->addAdminNotification($notificationBuilder, $additionalData);
                 break;
             case NotificationType::NEW_CATEGORY:
-                $notificationBuilder = $this->addNewCategoryNotification($notificationBuilder, $additionalData);
-                break;
             case NotificationType::PROPOSED:
                 $notificationBuilder = $this->addNewCategoryNotification($notificationBuilder, $additionalData);
                 break;
@@ -95,7 +95,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
 
         $notification = match ($this->adminUserNotificationPutQuery->getNotificationType()) {
             NotificationType::NORMAL, NotificationType::NEW_CATEGORY => $this->sendToUsers($notification),
-            NotificationType::NEW_AUDIOBOOK => $this->sendToProposalUsers($notification, $audiobook)
+            NotificationType::NEW_AUDIOBOOK => $this->sendToProposalUsers($notification, $audiobook),
         };
 
         $this->notificationRepository->add($notification);
@@ -124,7 +124,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
 
         $user = $this->userRepository->find($additionalData['userId']);
 
-        if ($user === null) {
+        if (null === $user) {
             $this->endpointLogger->error('User dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
@@ -155,7 +155,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
             'categoryKey' => $additionalData['categoryKey'],
         ]);
 
-        if ($category === null) {
+        if (null === $category) {
             $this->endpointLogger->error('Category dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('CategoryDontExists')]);
@@ -175,7 +175,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
     }
 
     /**
-     * @return  array{NotificationBuilder, Audiobook}
+     * @return array{NotificationBuilder, Audiobook}
      */
     private function addNewAudiobookNotification(NotificationBuilder $notificationBuilder, array $additionalData): array
     {
@@ -187,7 +187,7 @@ class AdminNotificationAddService implements AdminNotificationAddServiceInterfac
 
         $audiobook = $this->audiobookRepository->find($additionalData['actionId']);
 
-        if ($audiobook === null) {
+        if (null === $audiobook) {
             $this->endpointLogger->error('Audiobook dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);

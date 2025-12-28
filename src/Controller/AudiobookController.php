@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller;
 
@@ -24,7 +24,7 @@ use App\Repository\AudiobookRepository;
 use App\Service\RequestServiceInterface;
 use App\Service\TranslateServiceInterface;
 use App\Tool\ResponseTool;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +34,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Throwable;
+
+use function in_array;
 
 #[OA\Response(
     response   : 400,
@@ -56,10 +58,11 @@ use Throwable;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'Audiobook')]
-#[Route('/api')]
 class AudiobookController extends AbstractController
 {
-    #[Route('/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
+    public function __construct(private readonly RequestServiceInterface $requestService, private readonly LoggerInterface $endpointLogger, private readonly AudiobookRepository $audiobookRepository, private readonly TranslateServiceInterface $translateService, private readonly TagAwareCacheInterface $stockCache) {}
+
+    #[Route('/api/audiobook/part', name: 'audiobookPart', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning specific part of audiobook',
@@ -80,26 +83,22 @@ class AudiobookController extends AbstractController
     )]
     public function audiobookPart(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
-        TagAwareCacheInterface $stockCache,
     ): Response {
-        $audiobookPartQuery = $requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
+        $audiobookPartQuery = $this->requestService->getRequestBodyContent($request, AudiobookPartQuery::class);
 
         if ($audiobookPartQuery instanceof AudiobookPartQuery) {
-            $audiobook = $audiobookRepository->find($audiobookPartQuery->getAudiobookId());
+            $audiobook = $this->audiobookRepository->find($audiobookPartQuery->getAudiobookId());
 
-            if ($audiobook === null) {
-                $endpointLogger->error('Audiobook dont exist');
-                $translateService->setPreferredLanguage($request);
-                throw new DataNotFoundException([$translateService->getTranslation('AudiobookDontExists')]);
+            if (null === $audiobook) {
+                $this->endpointLogger->error('Audiobook dont exist');
+                $this->translateService->setPreferredLanguage($request);
+                throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
             }
 
-            $dir = $stockCache->get(UserCacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
+            $dir = $this->stockCache->get(UserCacheKeys::USER_AUDIOBOOK_PART->value . $audiobook->getId() . '_' . $audiobookPartQuery->getPart(), function (ItemInterface $item) use ($audiobook, $audiobookPartQuery) {
                 $item->expiresAfter(CacheValidTime::HOUR->value);
                 $item->tag(UserStockCacheTags::USER_AUDIOBOOK_PART->value);
+
                 $allParts = [];
 
                 try {
@@ -110,44 +109,45 @@ class AudiobookController extends AbstractController
 
                 if ($handle) {
                     while (false !== ($entry = readdir($handle))) {
-                        if ($entry !== '.' && $entry !== '..') {
+                        if ('.' !== $entry && '..' !== $entry) {
                             $file_parts = pathinfo($entry);
 
-                            if ($file_parts['extension'] === 'mp3') {
+                            if ('mp3' === $file_parts['extension']) {
                                 $allParts[] = $file_parts['basename'];
                             }
                         }
                     }
                 }
 
-                $dir = "";
+                $dir = '';
 
                 sort($allParts);
 
                 foreach ($allParts as $x => $val) {
-                    if ($x === $audiobookPartQuery->getPart()) {
+                    if ($audiobookPartQuery->getPart() === $x) {
                         $dir = $val;
                         break;
                     }
                 }
+
                 return $dir;
             });
 
-            if ($dir === "") {
+            if ('' === $dir) {
                 return ResponseTool::getResponse(new AudiobookPartSuccessModel(''));
             }
 
-            $partDir = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $dir;
+            $partDir = '/files/' . pathinfo((string) $audiobook->getFileName())['filename'] . '/' . $dir;
 
             return ResponseTool::getResponse(new AudiobookPartSuccessModel($partDir));
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 
-    #[Route('/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
+    #[Route('/api/audiobook/covers', name: 'audiobookCovers', methods: ['POST'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::USER, UserRolesNames::RECRUITER])]
     #[OA\Post(
         description: 'Endpoint is returning covers paths for given audiobooks',
@@ -168,12 +168,8 @@ class AudiobookController extends AbstractController
     )]
     public function audiobookCovers(
         Request $request,
-        RequestServiceInterface $requestService,
-        LoggerInterface $endpointLogger,
-        AudiobookRepository $audiobookRepository,
-        TranslateServiceInterface $translateService,
     ): Response {
-        $audiobookCoversQuery = $requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
+        $audiobookCoversQuery = $this->requestService->getRequestBodyContent($request, AudiobookCoversQuery::class);
 
         if ($audiobookCoversQuery instanceof AudiobookCoversQuery) {
             $successModel = new AudiobookCoversSuccessModel();
@@ -181,36 +177,38 @@ class AudiobookController extends AbstractController
             foreach ($audiobookCoversQuery->getAudiobooks() as $audiobookId) {
                 $audiobook = null;
                 if ($audiobookId) {
-                    $audiobook = $audiobookRepository->find($audiobookId);
+                    $audiobook = $this->audiobookRepository->find($audiobookId);
                 }
 
-                $imgUrl = "";
+                $imgUrl = '';
                 if ($audiobook) {
                     $handle = opendir($audiobook->getFileName());
-                    $img = "";
+                    $img = '';
                     if ($handle) {
                         while (false !== ($entry = readdir($handle))) {
-                            if ($entry !== '.' && $entry !== '..') {
+                            if ('.' !== $entry && '..' !== $entry) {
                                 $file_parts = pathinfo($entry);
-                                if ($file_parts['extension'] === 'jpg' || $file_parts['extension'] === 'jpeg' || $file_parts['extension'] === 'png') {
+                                if (in_array($file_parts['extension'], ['jpg', 'jpeg', 'png'], true)) {
                                     $img = $file_parts['basename'];
                                     break;
                                 }
                             }
                         }
                     }
-                    if ($img !== "") {
-                        $imgUrl = '/files/' . pathinfo($audiobook->getFileName())['filename'] . '/' . $img;
+
+                    if ('' !== $img) {
+                        $imgUrl = '/files/' . pathinfo((string) $audiobook->getFileName())['filename'] . '/' . $img;
                     }
-                    $successModel->addAudiobookCoversModel(new AudiobookCoverModel((string)$audiobook->getId(), $imgUrl));
+
+                    $successModel->addAudiobookCoversModel(new AudiobookCoverModel((string) $audiobook->getId(), $imgUrl));
                 }
             }
 
             return ResponseTool::getResponse($successModel);
         }
 
-        $endpointLogger->error('Invalid given Query');
-        $translateService->setPreferredLanguage($request);
-        throw new InvalidJsonDataException($translateService);
+        $this->endpointLogger->error('Invalid given Query');
+        $this->translateService->setPreferredLanguage($request);
+        throw new InvalidJsonDataException($this->translateService);
     }
 }

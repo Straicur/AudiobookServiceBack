@@ -1,0 +1,3 @@
+<?php // prod.encrypt.public on Wed, 17 Dec 2025 19:06:57 +0000
+
+return "K\x7C\x25X\xEE9\xED\xC9\xFCH\xDB\x90S\x0C\xCAkWa\x7C\xD9\x40H\x7F\x90\xFB3\x21G\x2ApKG";

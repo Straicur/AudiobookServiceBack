@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,20 +8,7 @@ use App\Model\ModelInterface;
 
 class AdminCategorySuccessModel implements ModelInterface
 {
-    private string $id;
-    private string $name;
-    private bool $active;
-    private ?string $parentCategoryName;
-    private ?string $parentCategoryId;
-
-    public function __construct(string $id, string $name, bool $active, ?string $parentCategoryName = null, ?string $parentCategoryId = null)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->active = $active;
-        $this->parentCategoryName = $parentCategoryName;
-        $this->parentCategoryId = $parentCategoryId;
-    }
+    public function __construct(private string $id, private string $name, private bool $active, private ?string $parentCategoryName = null, private ?string $parentCategoryId = null) {}
 
     public function getId(): string
     {

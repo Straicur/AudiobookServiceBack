@@ -1,63 +1,47 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
 use App\Enums\AudiobookAgeRange;
 use App\Model\Common\AudiobookDetailCategoryModel;
 use DateTime;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 
 class AdminAudiobookDetailsModel
 {
-    private string $id;
-    private string $title;
-    private string $author;
-    private string $version;
-    private string $album;
     private int $year;
-    private int $duration;
-    private string $size;
-    private int $parts;
-    private string $description;
-    private int $age;
-    private bool $active;
-    private ?string $encoded;
 
-    /**
-     * @var AudiobookDetailCategoryModel[]
-     */
-    private array $categories;
+    private int $age;
+
+    private ?string $encoded = null;
 
     public function __construct(
-        string $id,
-        string $title,
-        string $author,
-        string $version,
-        string $album,
+        private string $id,
+        private string $title,
+        private string $author,
+        private string $version,
+        private string $album,
         DateTime $year,
-        int $duration,
-        string $size,
-        int $parts,
-        string $description,
+        private int $duration,
+        private string $size,
+        private int $parts,
+        private string $description,
         AudiobookAgeRange $age,
-        bool $active,
-        array $categories
+        private bool $active,
+        /**
+         * @var AudiobookDetailCategoryModel[]
+         */
+        #[OA\Property(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: AudiobookDetailCategoryModel::class))
+        )]
+        private array $categories,
     ) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->author = $author;
-        $this->version = $version;
-        $this->album = $album;
         $this->year = $year->getTimestamp() * 1000;
-        $this->duration = $duration;
-        $this->size = $size;
-        $this->parts = $parts;
-        $this->description = $description;
         $this->age = $age->value;
-        $this->active = $active;
-        $this->categories = $categories;
     }
 
     public function getId(): string

@@ -37,14 +37,14 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/report', server: [
+        $this->webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(201);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         json_decode($response->getContent(), true);
 
@@ -83,13 +83,13 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/report', server: [
+        $this->webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserReportEmptyRequestData(): void
@@ -103,13 +103,13 @@ class UserReportTest extends AbstractWebTest
                 'description' => 'DESC',
             ]];
 
-        self::$webClient->request('PUT', '/api/user/report', server: [
+        $this->webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserReportPermission(): void
@@ -133,13 +133,13 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/report', server: [
+        $this->webClient->request('PUT', '/api/user/report', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserReportLogOut(): void
@@ -161,10 +161,10 @@ class UserReportTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PUT', '/api/user/report', content: json_encode($content));
+        $this->webClient->request('PUT', '/api/user/report', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

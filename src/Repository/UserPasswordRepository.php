@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -23,11 +23,6 @@ class UserPasswordRepository extends ServiceEntityRepository
         parent::__construct($registry, UserPassword::class);
     }
 
-    /**
-     * @param UserPassword $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(UserPassword $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -37,11 +32,6 @@ class UserPasswordRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param UserPassword $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(UserPassword $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

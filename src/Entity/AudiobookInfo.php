@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\AudiobookInfoRepository;
@@ -41,7 +43,7 @@ class AudiobookInfo
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $watched;
 
-    public function __construct(User $user, Audiobook $audiobook, int $part, string $endedTime, bool $watched)
+    public function __construct(User $user, Audiobook $audiobook, int $part, int $endedTime, bool $watched)
     {
         $this->user = $user;
         $this->audiobook = $audiobook;

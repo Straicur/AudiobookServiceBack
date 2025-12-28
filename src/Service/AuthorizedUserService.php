@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -35,7 +35,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
 
     public static function getAuthorizedUser(): User
     {
-        if (self::$authorizedUser === null) {
+        if (null === self::$authorizedUser) {
             throw new AuthenticationException();
         }
 
@@ -44,7 +44,7 @@ class AuthorizedUserService implements AuthorizedUserServiceInterface
 
     public static function unAuthorizeUser(): void
     {
-        if (self::$authenticationToken !== null) {
+        if (null !== self::$authenticationToken) {
             self::$authenticationToken->setDateExpired(new DateTime());
             self::$authenticationTokenRepository->add(self::$authenticationToken);
         }

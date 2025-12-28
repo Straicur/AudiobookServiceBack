@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,18 +8,13 @@ use DateTime;
 
 class AdminTechnicalBreakModel
 {
-    public string $id;
-    public bool $active;
     public int $dateFrom;
-    public ?int $dateTo = null;
-    public string $user;
 
-    public function __construct(string $id, bool $active, DateTime $dateFrom, string $user)
+    public ?int $dateTo = null;
+
+    public function __construct(public string $id, public bool $active, DateTime $dateFrom, public string $user)
     {
-        $this->id = $id;
-        $this->active = $active;
         $this->dateFrom = $dateFrom->getTimestamp() * 1000;
-        $this->user = $user;
     }
 
     public function getId(): string

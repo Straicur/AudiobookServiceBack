@@ -1,16 +1,22 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class UserReportListSuccessModel implements ModelInterface
 {
     /**
      * @var UserReportModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserReportModel::class))
+    )]
     private array $reports = [];
 
     private int $page;

@@ -26,7 +26,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -52,7 +52,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -78,7 +78,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -104,7 +104,7 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -127,13 +127,13 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminTechnicalCacheClearLogOut(): void
@@ -147,10 +147,10 @@ class AdminTechnicalCacheClearTest extends AbstractWebTest
             ]
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/technical/cache/clear', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/technical/cache/clear', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
@@ -8,13 +8,7 @@ use App\Model\ModelInterface;
 
 class UserAudiobookRatingGetSuccessModel implements ModelInterface
 {
-    private int $ratingPercent;
-
-    public function __construct(int $ratingPercent)
-    {
-        $this->ratingPercent = $ratingPercent;
-    }
-
+    public function __construct(private int $ratingPercent) {}
 
     public function getRatingPercent(): int
     {

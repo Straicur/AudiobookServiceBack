@@ -15,7 +15,7 @@ use DateTime;
 
 class AdminCategoryRemoveTest extends AbstractWebTest
 {
-    public function testAdminCategoryRemoveAudiobookCorrect(): void
+    public function testAdminCategoryRemoveCorrect(): void
     {
         $audiobookCategoryRepository = $this->getService(AudiobookCategoryRepository::class);
         $audiobookRepository = $this->getService(AudiobookRepository::class);
@@ -48,25 +48,22 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
+        $this->webClient->request('DELETE', '/api/admin/category/remove', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $not1After = $notificationRepository->findOneBy([
-            'id' => $notification1->getId()
-        ]);
-        $this->assertNotNull($not1After);
-        $this->assertTrue($not1After->getDeleted());
-        $this->assertNotNull($not1After->getDateDeleted());
+        $this->entityManager->refresh($notification1);
 
-        $not2After = $notificationRepository->findOneBy([
-            'id' => $notification2->getId()
-        ]);
-        $this->assertNotNull($not2After);
-        $this->assertFalse($not2After->getDeleted());
+        $this->assertNotNull($notification1);
+        $this->assertTrue($notification1->getDeleted());
+        $this->assertNotNull($notification1->getDateDeleted());
+
+        $this->entityManager->refresh($notification2);
+        $this->assertNotNull($notification2);
+        $this->assertFalse($notification2->getDeleted());
 
 
         $this->assertCount(13, $audiobookCategoryRepository->findAll());
@@ -91,7 +88,7 @@ class AdminCategoryRemoveTest extends AbstractWebTest
     /**
      * Test checks bad given categoryId
      */
-    public function testAdminCategoryRemoveAudiobookIncorrectCategoryId(): void
+    public function testAdminCategoryRemoveIncorrectCategoryId(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -104,16 +101,16 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
+        $this->webClient->request('DELETE', '/api/admin/category/remove', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookEmptyRequestData(): void
+    public function testAdminCategoryRemoveEmptyRequestData(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User', 'Administrator'], true, 'zaq12wsx');
 
@@ -124,16 +121,16 @@ class AdminCategoryRemoveTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
+        $this->webClient->request('DELETE', '/api/admin/category/remove', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookPermission(): void
+    public function testAdminCategoryRemovePermission(): void
     {
         $user = $this->databaseMockManager->testFunc_addUser('User', 'Test', 'test@cos.pl', '+48123123123', ['Guest', 'User'], true, 'zaq12wsx');
 
@@ -145,16 +142,16 @@ class AdminCategoryRemoveTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('DELETE', '/api/admin/category/remove', server: [
+        $this->webClient->request('DELETE', '/api/admin/category/remove', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
-    public function testAdminCategoryRemoveAudiobookLogOut(): void
+    public function testAdminCategoryRemoveLogOut(): void
     {
         $category1 = $this->databaseMockManager->testFunc_addAudiobookCategory('1');
         $category2 = $this->databaseMockManager->testFunc_addAudiobookCategory('2', $category1);
@@ -163,10 +160,10 @@ class AdminCategoryRemoveTest extends AbstractWebTest
             'categoryId' => $category2->getId(),
         ];
 
-        self::$webClient->request('DELETE', '/api/admin/category/remove', content: json_encode($content));
+        $this->webClient->request('DELETE', '/api/admin/category/remove', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

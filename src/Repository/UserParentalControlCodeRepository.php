@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -9,6 +9,8 @@ use App\Entity\UserParentalControlCode;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function count;
 
 /**
  * @extends ServiceEntityRepository<UserParentalControlCode>
@@ -25,11 +27,6 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         parent::__construct($registry, UserParentalControlCode::class);
     }
 
-    /**
-     * @param UserParentalControlCode $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(UserParentalControlCode $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -38,11 +35,6 @@ class UserParentalControlCodeRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param UserParentalControlCode $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(UserParentalControlCode $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

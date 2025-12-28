@@ -41,7 +41,7 @@ class AdminAudiobookEditTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -96,13 +96,13 @@ class AdminAudiobookEditTest extends AbstractWebTest
             'encoded' => '2',
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminAudiobookEditEmptyRequestData(): void
@@ -121,13 +121,13 @@ class AdminAudiobookEditTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookEditPermission(): void
@@ -159,13 +159,13 @@ class AdminAudiobookEditTest extends AbstractWebTest
             'encoded' => '2',
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
+        $this->webClient->request('PATCH', '/api/admin/audiobook/edit', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminAudiobookEditLogOut(): void
@@ -198,10 +198,10 @@ class AdminAudiobookEditTest extends AbstractWebTest
             'encoded' => '2XD',
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/audiobook/edit', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/audiobook/edit', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

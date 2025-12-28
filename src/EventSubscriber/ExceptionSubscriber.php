@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
@@ -18,8 +18,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $responseLogger,
-    ) {
-    }
+    ) {}
 
     public function onKernelException(ExceptionEvent $event): void
     {
@@ -27,8 +26,8 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof ResponseExceptionInterface) {
             $loggingContext = [
-                'statusCode' => $exception->getResponse()->getStatusCode(),
-                'file' => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
+                'statusCode'   => $exception->getResponse()->getStatusCode(),
+                'file'         => '[' . $exception->getLine() . '](' . $exception->getFile() . ')',
                 'responseData' => json_decode($exception->getResponse()->getContent(), true),
             ];
 
@@ -37,7 +36,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $event->setResponse($exception->getResponse());
         } else {
             $this->responseLogger->critical('ResponseException', ['class' => $exception::class,
-                                                                  'data'  => $exception]);
+                'data'                                                    => $exception]);
 
             $loggingContext = [
                 'message' => $exception->getMessage(),
@@ -46,21 +45,15 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
             switch ($exception::class) {
                 case NotFoundHttpException::class:
-                {
                     $notFoundException = new DataNotFoundException([$exception->getMessage()]);
-
                     $this->responseLogger->error('NotFoundHttpException', $loggingContext);
                     $event->setResponse($notFoundException->getResponse());
                     break;
-                }
                 case InvalidArgumentException::class:
-                {
                     $notFoundException = new CacheException();
-
                     $this->responseLogger->error('InvalidArgumentException', $loggingContext);
                     $event->setResponse($notFoundException->getResponse());
                     break;
-                }
             }
         }
     }

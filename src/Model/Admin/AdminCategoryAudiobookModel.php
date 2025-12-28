@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -10,39 +10,24 @@ use OpenApi\Attributes as OA;
 
 class AdminCategoryAudiobookModel
 {
-    private string $id;
-    private string $title;
-    private string $author;
     private int $year;
-    private int $duration;
-    private string $size;
-    private int $parts;
+
     private int $age;
-    private bool $active;
-    private float $avgRating;
 
     public function __construct(
-        string $id,
-        string $title,
-        string $author,
+        private string $id,
+        private string $title,
+        private string $author,
         DateTime $year,
-        int $duration,
-        string $size,
-        int $parts,
-        float $avgRating,
+        private int $duration,
+        private string $size,
+        private int $parts,
+        private float $avgRating,
         AudiobookAgeRange $age,
-        bool $active
+        private bool $active,
     ) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->author = $author;
         $this->year = $year->getTimestamp() * 1000;
-        $this->duration = $duration;
-        $this->size = $size;
-        $this->parts = $parts;
-        $this->avgRating = $avgRating;
         $this->age = $age->value;
-        $this->active = $active;
     }
 
     public function getId(): string

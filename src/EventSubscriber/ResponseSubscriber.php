@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
@@ -17,8 +17,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         private readonly AuthenticationTokenRepository $authenticationTokenRepository,
         private readonly TechnicalBreakRepository $technicalBreakRepository,
         private readonly LoggerInterface $responseLogger,
-    ) {
-    }
+    ) {}
 
     public function onKernelResponse(ResponseEvent $event): void
     {
@@ -28,7 +27,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         $authorizationHeaderField = $request->headers->get('authorization');
 
         $authToken = null;
-        if ($authorizationHeaderField !== null) {
+        if (null !== $authorizationHeaderField) {
             $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
         }
 
@@ -36,7 +35,7 @@ class ResponseSubscriber implements EventSubscriberInterface
             'active' => true,
         ]);
 
-        if ($technicalBreak !== null) {
+        if (null !== $technicalBreak) {
             $response->headers->set('Technical-Break', 'true');
         }
 

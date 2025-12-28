@@ -25,7 +25,7 @@ class RegisterCodeSendTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/register/code/send', server: [
+        $this->webClient->request('POST', '/api/register/code/send', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -50,13 +50,13 @@ class RegisterCodeSendTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/register/code/send', server: [
+        $this->webClient->request('POST', '/api/register/code/send', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -74,13 +74,13 @@ class RegisterCodeSendTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/register/code/send', server: [
+        $this->webClient->request('POST', '/api/register/code/send', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testRegisterCodeEmptyRequest(): void
@@ -91,12 +91,12 @@ class RegisterCodeSendTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('POST', '/api/register/code/send', server: [
+        $this->webClient->request('POST', '/api/register/code/send', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

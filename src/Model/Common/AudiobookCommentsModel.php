@@ -1,19 +1,20 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Common;
 
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
+
 class AudiobookCommentsModel
 {
-    private AudiobookCommentModel $userModel;
-    private string $id;
-    private string $comment;
-    private bool $edited;
-    private bool $myComment;
     private ?bool $deleted = null;
+
     private ?bool $liked = null;
+
     private int $audiobookCommentLike = 0;
+
     private int $audiobookCommentUnlike = 0;
 
     private ?string $parentId = null;
@@ -21,16 +22,13 @@ class AudiobookCommentsModel
     /**
      * @var AudiobookCommentsModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AudiobookCommentsModel::class))
+    )]
     private array $children = [];
 
-    public function __construct(AudiobookCommentModel $userModel, string $id, string $comment, bool $edited, bool $myComment)
-    {
-        $this->userModel = $userModel;
-        $this->id = $id;
-        $this->comment = $comment;
-        $this->edited = $edited;
-        $this->myComment = $myComment;
-    }
+    public function __construct(private AudiobookCommentModel $userModel, private string $id, private string $comment, private bool $edited, private bool $myComment) {}
 
     /**
      * @return AudiobookCommentsModel[]

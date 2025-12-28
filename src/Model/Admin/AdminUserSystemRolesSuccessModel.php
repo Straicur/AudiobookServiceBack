@@ -1,13 +1,19 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class AdminUserSystemRolesSuccessModel implements ModelInterface
 {
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: AdminSystemRoleModel::class))
+    )]
     private array $roles = [];
 
     /**

@@ -1,16 +1,22 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
 use App\Model\ModelInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 
 class UserCategoriesSuccessModel implements ModelInterface
 {
     /**
      * @var UserCategoryTreeModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserCategoryTreeModel::class))
+    )]
     private array $categories = [];
 
     /**
@@ -18,7 +24,7 @@ class UserCategoriesSuccessModel implements ModelInterface
      */
     public function __construct(?array $categories = null)
     {
-        if ($categories !== null) {
+        if (null !== $categories) {
             $this->categories = $categories;
         }
     }

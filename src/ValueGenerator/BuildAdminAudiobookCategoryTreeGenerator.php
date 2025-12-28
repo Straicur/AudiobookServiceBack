@@ -1,22 +1,24 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\ValueGenerator;
 
 use App\Model\Admin\AdminCategoryModel;
 use App\Repository\AudiobookCategoryRepository;
 use App\Repository\AudiobookRepository;
+use Override;
 use Symfony\Component\Uid\Uuid;
+
+use function count;
 
 class BuildAdminAudiobookCategoryTreeGenerator implements ValueGeneratorInterface
 {
     public function __construct(
-        private array $elements,
+        private readonly array $elements,
         private readonly AudiobookCategoryRepository $categoryRepository,
         private readonly AudiobookRepository $audiobookRepository,
-    ) {
-    }
+    ) {}
 
     private function buildTree(array $elements, ?Uuid $parentId = null): array
     {
@@ -31,12 +33,12 @@ class BuildAdminAudiobookCategoryTreeGenerator implements ValueGeneratorInterfac
                 $audiobooks = $this->audiobookRepository->getCategoryAudiobooks($element);
 
                 $child = new AdminCategoryModel(
-                    (string)$element->getId(),
+                    (string) $element->getId(),
                     $element->getName(),
                     $element->getActive(),
                     $element->getCategoryKey(),
                     count($audiobooks),
-                    (string)$parentId
+                    (string) $parentId
                 );
 
                 if (!empty($children)) {
@@ -54,6 +56,7 @@ class BuildAdminAudiobookCategoryTreeGenerator implements ValueGeneratorInterfac
         return $branch;
     }
 
+    #[Override]
     public function generate(): array
     {
         return $this->buildTree($this->getElements());
@@ -65,10 +68,5 @@ class BuildAdminAudiobookCategoryTreeGenerator implements ValueGeneratorInterfac
     private function getElements(): array
     {
         return $this->elements;
-    }
-
-    private function setElements(array $elements): void
-    {
-        $this->elements = $elements;
     }
 }

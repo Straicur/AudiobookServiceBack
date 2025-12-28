@@ -28,7 +28,7 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        $this->webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -60,7 +60,7 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        $this->webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -95,13 +95,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        $this->webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testUserParentControlPatchEmptyRequestData(): void
@@ -112,13 +112,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        $this->webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserParentControlPatchPermission(): void
@@ -134,13 +134,13 @@ class UserParentControlPatchTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user);
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', server: [
+        $this->webClient->request('PATCH', '/api/user/parent/control', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testUserParentControlPatchLogOut(): void
@@ -152,10 +152,10 @@ class UserParentControlPatchTest extends AbstractWebTest
             ],
         ];
 
-        self::$webClient->request('PATCH', '/api/user/parent/control', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/user/parent/control', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

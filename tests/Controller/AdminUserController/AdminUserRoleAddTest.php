@@ -29,7 +29,7 @@ class AdminUserRoleAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -60,13 +60,13 @@ class AdminUserRoleAddTest extends AbstractWebTest
             'role' => UserRoles::USER->value
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     /**
@@ -87,13 +87,13 @@ class AdminUserRoleAddTest extends AbstractWebTest
             'role' => UserRoles::USER->value
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminUserRoleAddEmptyRequestData(): void
@@ -108,13 +108,13 @@ class AdminUserRoleAddTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserRoleAddPermission(): void
@@ -129,13 +129,13 @@ class AdminUserRoleAddTest extends AbstractWebTest
         ];
         $token = $this->databaseMockManager->testFunc_loginUser($user1);
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', server: [
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminUserRoleAddLogOut(): void
@@ -147,10 +147,10 @@ class AdminUserRoleAddTest extends AbstractWebTest
             'role' => UserRoles::USER->value
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/user/role/add', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/user/role/add', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -11,6 +11,8 @@ use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function count;
 
 /**
  * @extends ServiceEntityRepository<TechnicalBreak>
@@ -27,11 +29,6 @@ class TechnicalBreakRepository extends ServiceEntityRepository
         parent::__construct($registry, TechnicalBreak::class);
     }
 
-    /**
-     * @param TechnicalBreak $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(TechnicalBreak $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -40,11 +37,6 @@ class TechnicalBreakRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param TechnicalBreak $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(TechnicalBreak $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -87,15 +79,11 @@ class TechnicalBreakRepository extends ServiceEntityRepository
         if ($adminTechnicalBreaksSearchModel->getOrder() !== null) {
             switch ($adminTechnicalBreaksSearchModel->getOrder()) {
                 case TechnicalBreakOrder::LATEST->value:
-                {
                     $qb->orderBy('tb.dateFrom', 'DESC');
                     break;
-                }
                 case TechnicalBreakOrder::OLDEST->value:
-                {
                     $qb->orderBy('tb.dateFrom', 'ASC');
                     break;
-                }
             }
         } else {
             $qb->orderBy('tb.dateFrom', 'DESC');
@@ -103,7 +91,6 @@ class TechnicalBreakRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->execute();
     }
-
 
     public function getNumberTechnicalBreakFromLastWeak(): int
     {

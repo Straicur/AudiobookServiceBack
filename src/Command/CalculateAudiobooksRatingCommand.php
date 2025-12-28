@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
 use App\Enums\Cache\AdminStockCacheTags;
 use App\Enums\Cache\UserStockCacheTags;
 use App\Util\ProcedureUtil;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
- * Fired once a day
+ * Fired once a day.
  */
 #[AsCommand(
     name       : 'audiobookservice:calculate:rating',
@@ -30,10 +31,7 @@ class CalculateAudiobooksRatingCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-    }
-
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

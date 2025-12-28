@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -9,6 +9,8 @@ use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function count;
 
 /**
  * @extends ServiceEntityRepository<AuthenticationToken>
@@ -25,11 +27,6 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, AuthenticationToken::class);
     }
 
-    /**
-     * @param AuthenticationToken $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(AuthenticationToken $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -39,11 +36,6 @@ class AuthenticationTokenRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param AuthenticationToken $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(AuthenticationToken $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -27,11 +27,6 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, AudiobookUserComment::class);
     }
 
-    /**
-     * @param AudiobookUserComment $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(AudiobookUserComment $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -40,11 +35,6 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param AudiobookUserComment $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(AudiobookUserComment $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);
@@ -63,7 +53,7 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
             ->andWhere('c.user = :user')
             ->andWhere('c.dateAdd >= :dateAdd')
             ->setParameter('user', $user->getId()->toBinary())
-            ->setParameter('dateAdd', (new DateTime())->modify('-' . $minutes . ' minutes'));
+            ->setParameter('dateAdd', new DateTime()->modify('-' . $minutes . ' minutes'));
 
         return $qb->getQuery()->execute();
     }
@@ -78,7 +68,7 @@ class AudiobookUserCommentRepository extends ServiceEntityRepository
             ->andWhere('c.user = :user')
             ->andWhere('c.dateAdd < :dateAdd')
             ->setParameter('user', $user->getId()->toBinary())
-            ->setParameter('dateAdd', (new DateTime())->modify('-' . $minutes . ' minutes'));
+            ->setParameter('dateAdd', new DateTime()->modify('-' . $minutes . ' minutes'));
 
         $qb->getQuery()->execute();
     }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -10,6 +10,8 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function count;
 
 /**
  * @extends ServiceEntityRepository<MyList>
@@ -26,11 +28,6 @@ class MyListRepository extends ServiceEntityRepository
         parent::__construct($registry, MyList::class);
     }
 
-    /**
-     * @param MyList $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(MyList $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -39,11 +36,6 @@ class MyListRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param MyList $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(MyList $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

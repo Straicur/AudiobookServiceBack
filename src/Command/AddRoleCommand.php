@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Command;
 
 use App\Entity\Role;
 use App\Repository\RoleRepository;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,11 +25,13 @@ class AddRoleCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addArgument('roleName', InputArgument::REQUIRED, 'Role name');
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -38,7 +41,7 @@ class AddRoleCommand extends Command
 
         $this->roleRepository->add($roleEntity);
 
-        $io->success("Role $roleName add successfully.");
+        $io->success("Role {$roleName} add successfully.");
 
         return Command::SUCCESS;
     }

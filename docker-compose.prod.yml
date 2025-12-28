@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      target: prod
+      args:
+        MAIN_DIR: /home/www-data/opt/audiobooks
+    environment:
+      APP_ENV: prod
+    volumes:
+      - audiobooks-prod-data:/var/opt/audiobooks_prod
+
+volumes:
+  audiobooks-prod-data:

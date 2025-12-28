@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\Admin;
 
@@ -24,13 +24,15 @@ use App\Repository\NotificationRepository;
 use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserRepository;
 use App\Tool\ResponseTool;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+
+use function count;
 
 #[OA\Response(
     response   : 400,
@@ -53,10 +55,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
     content    : new Model(type: PermissionNotGrantedModel::class)
 )]
 #[OA\Tag(name: 'AdminStatistics')]
-#[Route('/api/admin')]
 class AdminStatisticsController extends AbstractController
 {
-    #[Route('/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
+    public function __construct(private readonly UserRepository $userRepository, private readonly AudiobookCategoryRepository $audiobookCategoryRepository, private readonly AudiobookRepository $audiobookRepository, private readonly AuthenticationTokenRepository $authenticationTokenRepository, private readonly NotificationRepository $notificationRepository, private readonly TechnicalBreakRepository $technicalBreakRepository, private readonly TagAwareCacheInterface $stockCache) {}
+
+    #[Route('/api/admin/statistic/main', name: 'adminStatisticMain', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint is returning main statistic data',
@@ -69,15 +72,8 @@ class AdminStatisticsController extends AbstractController
             ),
         ]
     )]
-    public function adminStatisticMain(
-        UserRepository $userRepository,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        AudiobookRepository $audiobookRepository,
-        AuthenticationTokenRepository $authenticationTokenRepository,
-        NotificationRepository $notificationRepository,
-        TechnicalBreakRepository $technicalBreakRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
+    public function adminStatisticMain(): Response
+    {
         [
             $users,
             $categories,
@@ -86,26 +82,24 @@ class AdminStatisticsController extends AbstractController
             $lastWeekLogins,
             $lastWeekNotifications,
             $lastWeekSystemBreaks,
-        ] = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item) use ($userRepository, $audiobookCategoryRepository, $audiobookRepository, $authenticationTokenRepository, $notificationRepository, $technicalBreakRepository) {
-                $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
-                $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
+        ] = $this->stockCache->get(AdminCacheKeys::ADMIN_STATISTICS->value, function (ItemInterface $item): array {
+            $item->expiresAfter(CacheValidTime::TEN_MINUTES->value);
+            $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
-                $users = count($userRepository->findBy([
+            $users = count($this->userRepository->findBy([
                 'active' => true,
-                ]));
-
-                $categories = count($audiobookCategoryRepository->findBy([
+            ]));
+            $categories = count($this->audiobookCategoryRepository->findBy([
                 'active' => true,
-                ]));
-
-                $audiobooks = count($audiobookRepository->findBy([
+            ]));
+            $audiobooks = count($this->audiobookRepository->findBy([
                 'active' => true,
-                ]));
+            ]));
+            $lastWeekRegistered = $this->userRepository->newUsersFromLastWeak();
+            $lastWeekLogins = $this->authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
+            $lastWeekNotifications = $this->notificationRepository->getNumberNotificationsFromLastWeek();
+            $lastWeekSystemBreaks = $this->technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
 
-                $lastWeekRegistered = $userRepository->newUsersFromLastWeak();
-                $lastWeekLogins = $authenticationTokenRepository->getNumberOfAuthenticationTokensFromLast7Days();
-                $lastWeekNotifications = $notificationRepository->getNumberNotificationsFromLastWeek();
-                $lastWeekSystemBreaks = $technicalBreakRepository->getNumberTechnicalBreakFromLastWeak();
             return [
                 $users,
                 $categories,
@@ -130,7 +124,7 @@ class AdminStatisticsController extends AbstractController
         );
     }
 
-    #[Route('/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
+    #[Route('/api/admin/statistic/best/audiobooks', name: 'adminStatisticBestAudiobooks', methods: ['GET'])]
     #[AuthValidation(checkAuthToken: true, roles: [UserRolesNames::ADMINISTRATOR, UserRolesNames::RECRUITER])]
     #[OA\Get(
         description: 'Endpoint  is returning most liked audiobooks statistics',
@@ -143,18 +137,14 @@ class AdminStatisticsController extends AbstractController
             ),
         ]
     )]
-    public function adminStatisticBestAudiobooks(
-        AudiobookRepository $audiobookRepository,
-        AudiobookCategoryRepository $audiobookCategoryRepository,
-        TagAwareCacheInterface $stockCache,
-    ): Response {
-        $topAudiobooks = $audiobookRepository->getBestAudiobooks();
-
-        if (count($topAudiobooks) === 0) {
+    public function adminStatisticBestAudiobooks(): Response
+    {
+        $topAudiobooks = $this->audiobookRepository->getBestAudiobooks();
+        if ([] === $topAudiobooks) {
             return ResponseTool::getResponse();
         }
 
-        $successModel = $stockCache->get(AdminCacheKeys::ADMIN_STATISTICS_AUDIOBOOKS->value, function (ItemInterface $item) use ($topAudiobooks, $audiobookCategoryRepository) {
+        $successModel = $this->stockCache->get(AdminCacheKeys::ADMIN_STATISTICS_AUDIOBOOKS->value, function (ItemInterface $item) use ($topAudiobooks): AdminStatisticBestAudiobooksSuccessModel {
             $item->expiresAfter(CacheValidTime::TWO_HOURS->value);
             $item->tag(AdminStockCacheTags::ADMIN_STATISTICS->value);
 
@@ -163,11 +153,11 @@ class AdminStatisticsController extends AbstractController
             foreach ($topAudiobooks as $idx => $topAudiobook) {
                 $audiobookCategories = [];
 
-                $categories = $audiobookCategoryRepository->getAudiobookCategories($topAudiobook);
+                $categories = $this->audiobookCategoryRepository->getAudiobookCategories($topAudiobook);
 
                 foreach ($categories as $category) {
                     $audiobookCategories[] = new AudiobookDetailCategoryModel(
-                        (string)$category->getId(),
+                        (string) $category->getId(),
                         $category->getName(),
                         $category->getActive(),
                         $category->getCategoryKey(),
@@ -175,7 +165,7 @@ class AdminStatisticsController extends AbstractController
                 }
 
                 $audiobookModel = new AdminAudiobookDetailsModel(
-                    (string)$topAudiobook->getId(),
+                    (string) $topAudiobook->getId(),
                     $topAudiobook->getTitle(),
                     $topAudiobook->getAuthor(),
                     $topAudiobook->getVersion(),

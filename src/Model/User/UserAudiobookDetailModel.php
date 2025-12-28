@@ -1,33 +1,29 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\User;
 
 use App\Enums\AudiobookAgeRange;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 
 class UserAudiobookDetailModel
 {
-    private string $id;
-    private string $title;
-    private string $author;
-    private int $parts;
     private int $age;
+
     /**
      * @var UserAudiobookCategoryModel[]
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: UserAudiobookCategoryModel::class))
+    )]
     private array $categories = [];
-    private ?string $imgFile;
 
-    public function __construct(string $id, string $title, string $author, int $parts, AudiobookAgeRange $age, ?string $imgFile)
+    public function __construct(private string $id, private string $title, private string $author, private int $parts, AudiobookAgeRange $age, private ?string $imgFile)
     {
-        $this->id = $id;
-        $this->title = $title;
-        $this->author = $author;
-        $this->parts = $parts;
         $this->age = $age->value;
-        $this->imgFile = $imgFile;
     }
 
     public function getId(): string

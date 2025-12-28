@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Model\Admin;
 
@@ -8,25 +8,9 @@ use DateTime;
 
 class AdminUserDeleteModel
 {
-    private string $id;
-    private bool $active;
-    private bool $banned;
-    private string $email;
-    private string $firstname;
-    private bool $deleted;
-    private bool $declined;
     private ?int $dateDeleted = null;
 
-    public function __construct(string $id, bool $active, bool $banned, string $email, string $firstname, bool $deleted, bool $declined)
-    {
-        $this->id = $id;
-        $this->active = $active;
-        $this->banned = $banned;
-        $this->email = $email;
-        $this->firstname = $firstname;
-        $this->deleted = $deleted;
-        $this->declined = $declined;
-    }
+    public function __construct(private string $id, private bool $active, private bool $banned, private string $email, private string $firstname, private bool $deleted, private bool $declined) {}
 
     public function getId(): string
     {

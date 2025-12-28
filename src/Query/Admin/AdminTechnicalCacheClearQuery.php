@@ -1,42 +1,29 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Query\Admin;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class AdminTechnicalCacheClearQuery
 {
+    #[Assert\Collection(
+        fields: [
+            'pools' => new Assert\All([
+                new Assert\NotBlank(),
+            ]),
+            'admin' => new Assert\NotNull(),
+            'user'  => new Assert\NotNull(),
+            'all'   => new Assert\NotNull(),
+        ],
+        allowMissingFields: true,
+    )]
     protected array $cacheData = [];
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addPropertyConstraint('cacheData', new Assert\Collection([
-            'fields' => [
-                'pools' => new Assert\Optional([
-                    new Assert\All(constraints: [
-                        new Assert\NotBlank(message: 'Pools is empty'),
-                        new Assert\Type(type: 'string', message: 'The value {{ value }} is not a valid {{ type }}'),
-                    ]),
-                ]),
-                'admin' => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'user'  => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-                'all'   => new Assert\Optional([
-                    new Assert\Type(type: 'boolean', message: 'The value {{ value }} is not a valid {{ type }}'),
-                ]),
-            ],
-        ]));
-    }
-
     #[OA\Property(property: 'cacheData', properties: [
-        new OA\Property(property: 'pools', type: 'array', nullable: true, attachables: [
-            new OA\Items(type: 'string', example: 'Admin...'),
-        ]),
+        new OA\Property(property: 'pools', type: 'array', items: new OA\Items(type: 'string', example: 'Admin...'), nullable: true),
         new OA\Property(property: 'admin', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'user', type: 'boolean', example: true, nullable: true),
         new OA\Property(property: 'all', type: 'boolean', example: true, nullable: true),

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -24,11 +24,6 @@ class RegisterCodeRepository extends ServiceEntityRepository
         parent::__construct($registry, RegisterCode::class);
     }
 
-    /**
-     * @param RegisterCode $entity
-     * @param bool $flush
-     * @return void
-     */
     public function add(RegisterCode $entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -37,11 +32,6 @@ class RegisterCodeRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param RegisterCode $entity
-     * @param bool $flush
-     * @return void
-     */
     public function remove(RegisterCode $entity, bool $flush = true): void
     {
         $this->getEntityManager()->remove($entity);

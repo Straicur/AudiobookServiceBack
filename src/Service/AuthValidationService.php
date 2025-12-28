@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service;
 
@@ -22,6 +22,7 @@ use App\Repository\TechnicalBreakRepository;
 use App\Repository\UserDeleteRepository;
 use App\Repository\UserRepository;
 use DateTime;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -34,20 +35,20 @@ class AuthValidationService implements AuthValidationServiceInterface
         private readonly UserRepository $userRepository,
         private readonly UserDeleteRepository $deleteRepository,
         private readonly TagAwareCacheInterface $stockCache,
-    ) {
-    }
+        #[Autowire(env: 'bool:SEND_EMAIL')] private readonly bool $sendEmail,
+    ) {}
 
     public function getAuthenticatedUserToken(Request $request): AuthenticationToken
     {
         $authorizationHeaderField = $request->headers->get('authorization');
 
-        if ($authorizationHeaderField === null) {
+        if (null === $authorizationHeaderField) {
             throw new AuthenticationException();
         }
 
         $authToken = $this->authenticationTokenRepository->findActiveToken($authorizationHeaderField);
 
-        if ($authToken === null) {
+        if (null === $authToken) {
             throw new AuthenticationException();
         }
 
@@ -66,7 +67,7 @@ class AuthValidationService implements AuthValidationServiceInterface
             ]);
         });
 
-        if ($userDeleted !== null) {
+        if (null !== $userDeleted) {
             throw new UserDeletedException();
         }
     }
@@ -82,7 +83,7 @@ class AuthValidationService implements AuthValidationServiceInterface
             ]);
         });
 
-        if (($_ENV['APP_ENV'] !== 'test') && $technicalBreak !== null && !$user->getUserSettings()->isAdmin()) {
+        if (true === $this->sendEmail && null !== $technicalBreak && !$user->getUserSettings()->isAdmin()) {
             throw new TechnicalBreakException();
         }
     }
@@ -111,6 +112,7 @@ class AuthValidationService implements AuthValidationServiceInterface
     {
         $dateNew = clone $authToken->getDateExpired();
         $dateNew->modify('+3 second');
+
         $authToken->setDateExpired($dateNew);
 
         $this->authenticationTokenRepository->add($authToken);

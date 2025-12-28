@@ -47,14 +47,14 @@ class AdminStatisticMainTest extends AbstractWebTest
 
         $token = $this->databaseMockManager->testFunc_loginUser($admin);
 
-        self::$webClient->request('GET', '/api/admin/statistic/main', server: [
+        $this->webClient->request('GET', '/api/admin/statistic/main', server: [
             'HTTP_authorization' => $token->getToken()
         ]);
 
         self::assertResponseIsSuccessful();
         self::assertResponseStatusCodeSame(200);
 
-        $response = self::$webClient->getResponse();
+        $response = $this->webClient->getResponse();
 
         $responseContent = json_decode($response->getContent(), true);
 
@@ -80,10 +80,10 @@ class AdminStatisticMainTest extends AbstractWebTest
 
     public function testAdminStatisticMainLogout(): void
     {
-        self::$webClient->request('GET', '/api/admin/statistic/main');
+        $this->webClient->request('GET', '/api/admin/statistic/main');
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }

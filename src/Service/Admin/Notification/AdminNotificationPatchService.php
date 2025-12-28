@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Admin\Notification;
 
@@ -20,9 +20,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+use function array_key_exists;
+
 class AdminNotificationPatchService implements AdminNotificationPatchServiceInterface
 {
     private AdminUserNotificationPatchQuery $adminUserNotificationPatchQuery;
+
     private Request $request;
 
     public function __construct(
@@ -33,8 +36,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         private readonly TagAwareCacheInterface $stockCache,
         private readonly LoggerInterface $endpointLogger,
         private readonly AudiobookRepository $audiobookRepository,
-    ) {
-    }
+    ) {}
 
     public function setData(AdminUserNotificationPatchQuery $adminUserNotificationPutQuery, Request $request): self
     {
@@ -48,7 +50,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
     {
         $notification = $this->notificationRepository->find($this->adminUserNotificationPatchQuery->getNotificationId());
 
-        if ($notification === null) {
+        if (null === $notification) {
             $this->endpointLogger->error('Notification dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('NotificationDontExists')]);
@@ -73,7 +75,6 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
         $notificationBuilder
             ->setType($this->adminUserNotificationPatchQuery->getNotificationType())
             ->setUserAction($this->adminUserNotificationPatchQuery->getNotificationUserType());
-
 
         if (array_key_exists('dateActive', $additionalData)) {
             $notificationBuilder->setDateActive($additionalData['dateActive']);
@@ -124,7 +125,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
 
         $user = $this->userRepository->find($additionalData['actionId']);
 
-        if ($user === null) {
+        if (null === $user) {
             $this->endpointLogger->error('User dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('UserDontExists')]);
@@ -148,7 +149,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
 
         $audiobook = $this->audiobookRepository->find($additionalData['actionId']);
 
-        if ($audiobook === null) {
+        if (null === $audiobook) {
             $this->endpointLogger->error('Audiobook dont exist');
             $this->translateService->setPreferredLanguage($this->request);
             throw new DataNotFoundException([$this->translateService->getTranslation('AudiobookDontExists')]);
@@ -159,7 +160,7 @@ class AdminNotificationPatchService implements AdminNotificationPatchServiceInte
 
     public function addUsersToNotification(NotificationBuilder $notificationBuilder, ?array $users): NotificationBuilder
     {
-        if ($users !== null) {
+        if (null !== $users) {
             foreach ($users as $user) {
                 $notificationBuilder->addUser($user);
             }

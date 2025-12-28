@@ -36,7 +36,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        $this->webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
@@ -83,7 +83,7 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => true,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        $this->webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken(),
         ], content: json_encode($content));
 
@@ -131,13 +131,13 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        $this->webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(404);
 
-        $this->responseTool->testErrorResponseData(self::$webClient);
+        $this->responseTool->testErrorResponseData($this->webClient);
     }
 
     public function testAdminReportRejectEmptyRequestData(): void
@@ -155,13 +155,13 @@ class AdminReportRejectTest extends AbstractWebTest
 
         $content = [];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        $this->webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(400);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminReportRejectPermission(): void
@@ -184,13 +184,13 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', server: [
+        $this->webClient->request('PATCH', '/api/admin/report/reject', server: [
             'HTTP_authorization' => $token->getToken()
         ], content: json_encode($content));
 
         self::assertResponseStatusCodeSame(403);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 
     public function testAdminReportRejectLogOut(): void
@@ -211,10 +211,10 @@ class AdminReportRejectTest extends AbstractWebTest
             'rejectOthers' => false,
         ];
 
-        self::$webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
+        $this->webClient->request('PATCH', '/api/admin/report/reject', content: json_encode($content));
 
         self::assertResponseStatusCodeSame(401);
 
-        $this->responseTool->testBadResponseData(self::$webClient);
+        $this->responseTool->testBadResponseData($this->webClient);
     }
 }
