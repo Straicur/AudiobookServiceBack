@@ -10,6 +10,10 @@ if [ "$APP_ENV" == "test" ]; then
   exit 1
 fi
 
+if [ "$APP_ENV" == "dev" ]; then
+  composer install
+fi
+
 php bin/console doctrine:database:drop --force
 php bin/console doctrine:database:create
 echo | php bin/console doctrine:migrations:migrate
