@@ -69,11 +69,13 @@ You have to be an admin to do these things. Admins are added with special comman
 
 
 <h4>Dev</h4> <h5>I work in this environment</h5>
+
 ```
 sudo docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
 ```
 
 <h4>Prod</h4> <h5>It is pre-optimized for production</h5>
+
 ```
 sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 ```
